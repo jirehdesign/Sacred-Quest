@@ -1,783 +1,910 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sacred Quests & Ancient Words</title>
+    <title>Spiritual Quest - Tabletop Board Game</title>
     <style>
-      :root {
-        --bible: #3498db;
-        /* Blue */
-        --history: #e74c3c;
-        /* Red */
-        --culture: #2ecc71;
-        /* Green */
-        --hebrew: #f1c40f;
-        /* Yellow */
-        --wild: #9b59b6;
-        /* Purple for Hub */
-        --bg: #1a1a2e;
-        --panel: #16213e;
-        --text: #ecf0f1;
-        --highlight: #ffffff;
-      }
-      body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: var(--bg);
-        color: var(--text);
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      h1 {
-        text-align: center;
-        color: var(--hebrew);
-        margin-bottom: 5px;
-      }
-      .subtitle {
-        color: #888;
-        margin-top: 0;
-        margin-bottom: 20px;
-        text-align: center;
-      }
-      #setup-screen,
-      #game-screen {
-        background-color: var(--panel);
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        max-width: 900px;
-        width: 100%;
-      }
-      #game-screen {
-        display: none;
-        flex-direction: column;
-        align-items: center;
-      }
-      .player-entry {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      input,
-      select,
-      button {
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #444;
-        background: #0f3460;
-        color: white;
-        font-size: 16px;
-      }
-      button {
-        background: #e94560;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background 0.2s;
-      }
-      button:hover {
-        background: #ff5e7e;
-      }
-      button:disabled {
-        background: #555;
-        cursor: not-allowed;
-      }
-      /* Board & SVG */
-      #board-container {
-        position: relative;
-        width: 500px;
-        height: 500px;
-        margin: 20px 0;
-        background: #111a2e;
-        border-radius: 50%;
-        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
-      }
-      svg {
-        width: 100%;
-        height: 100%;
-      }
-      .edge {
-        stroke: #333;
-        stroke-width: 4;
-      }
-      .node {
-        stroke: #222;
-        stroke-width: 3;
-        transition: all 0.3s;
-      }
-      .node.valid-target {
-        stroke: var(--highlight);
-        stroke-width: 5;
-        cursor: pointer;
-        filter: drop-shadow(0 0 10px white);
-        animation: pulse 1.5s infinite;
-      }
-      .node.valid-target:hover {
-        transform: scale(1.3);
-        transform-origin: center;
-      }
-      @keyframes pulse {
-        0% {
-          filter: drop-shadow(0 0 5px white);
+        :root {
+            --bg-color: #12121e;
+            --card-bg: #1e1e30;
+            --accent-gold: #f1c40f;
+            --accent-red: #e74c3c;
+            --accent-green: #2ecc71;
+            --accent-blue: #3498db;
+            --accent-purple: #9b59b6;
+            --text-color: #f5f5f7;
+            --bible-color: #3498db;
+            --history-color: #e74c3c;
+            --culture-color: #2ecc71;
+            --hebrew-color: #f1c40f;
         }
-        50% {
-          filter: drop-shadow(0 0 15px white);
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        100% {
-          filter: drop-shadow(0 0 5px white);
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
         }
-      }
-      .player-token {
-        position: absolute;
-        width: 35px;
-        height: 35px;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-        transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-        transform: translate(-50%, -50%);
-        z-index: 10;
-        pointer-events: none;
-      }
-      /* Dashboards */
-      #dashboards {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        width: 100%;
-        justify-content: center;
-      }
-      .dashboard {
-        background: #0f3460;
-        padding: 10px 20px;
-        border-radius: 10px;
-        min-width: 160px;
-        text-align: center;
-        border: 2px solid transparent;
-        transition: 0.3s;
-      }
-      .dashboard.active {
-        border-color: var(--hebrew);
-        box-shadow: 0 0 20px rgba(241, 196, 15, 0.3);
-        transform: scale(1.05);
-      }
-      .wedges-container {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        margin-top: 10px;
-      }
-      .wedge-icon {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: #222;
-        border: 2px solid #444;
-      }
-      .wedge-icon.has-wedge.bible {
-        background: var(--bible);
-        border-color: #fff;
-        box-shadow: 0 0 8px var(--bible);
-      }
-      .wedge-icon.has-wedge.history {
-        background: var(--history);
-        border-color: #fff;
-        box-shadow: 0 0 8px var(--history);
-      }
-      .wedge-icon.has-wedge.culture {
-        background: var(--culture);
-        border-color: #fff;
-        box-shadow: 0 0 8px var(--culture);
-      }
-      .wedge-icon.has-wedge.hebrew {
-        background: var(--hebrew);
-        border-color: #fff;
-        box-shadow: 0 0 8px var(--hebrew);
-      }
-      /* Controls */
-      #controls {
-        margin-top: 10px;
-        text-align: center;
-        background: #0f3460;
-        padding: 20px;
-        border-radius: 10px;
-        width: 100%;
-      }
-      #die-result {
-        font-size: 50px;
-        margin: 10px;
-        font-weight: bold;
-        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-      }
-      #action-text {
-        font-size: 18px;
-        color: var(--hebrew);
-        font-weight: bold;
-        min-height: 25px;
-      }
-      /* Modals */
-      #modal,
-      #hub-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 100;
-      }
-      .modal-content {
-        background: var(--panel);
-        padding: 30px;
-        border-radius: 15px;
-        max-width: 600px;
-        width: 90%;
-        text-align: center;
-        border: 1px solid #333;
-      }
-      .category-badge {
-        display: inline-block;
-        padding: 8px 20px;
-        border-radius: 20px;
-        font-weight: bold;
-        margin-bottom: 15px;
-        text-transform: uppercase;
-        font-size: 14px;
-        letter-spacing: 1px;
-        color: white;
-      }
-      .options-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-top: 25px;
-      }
-      .option-btn {
-        background: #0f3460;
-        padding: 15px;
-        font-size: 16px;
-        border: 2px solid #2a5298;
-      }
-      .option-btn:hover:not(:disabled) {
-        background: #3498db;
-        border-color: white;
-      }
-      #feedback {
-        font-size: 22px;
-        font-weight: bold;
-        margin-top: 25px;
-        height: 30px;
-      }
+
+        /* --- SETUP SCREEN --- */
+        #setup-screen {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 550px;
+            text-align: center;
+            border: 1px solid rgba(241, 196, 15, 0.3);
+        }
+
+        #setup-screen h1 {
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .player-entry {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        input, select, button {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #2a2a40;
+            color: var(--text-color);
+            font-size: 15px;
+            outline: none;
+        }
+
+        input.p-name { flex: 2; }
+        select.p-avatar { flex: 1.5; }
+        select.p-level { flex: 1.5; }
+
+        button {
+            cursor: pointer;
+            background: var(--accent-gold);
+            color: #12121e;
+            font-weight: bold;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-group button { flex: 1; }
+
+        /* --- GAME SCREEN --- */
+        #game-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        #board-container {
+            position: relative;
+            margin: 15px 0;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            border-radius: 50%;
+            background: #1a1a2e;
+        }
+
+        canvas {
+            display: block;
+            border-radius: 50%;
+        }
+
+        /* --- DASHBOARD --- */
+        #dashboards {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .p-card {
+            background: var(--card-bg);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            min-width: 200px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .p-card.active-turn {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
+            transform: scale(1.03);
+        }
+
+        .wedge-badges {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .badge {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            opacity: 0.25;
+            border: 1px solid #fff;
+            display: inline-block;
+        }
+
+        .badge.earned { opacity: 1; box-shadow: 0 0 8px currentColor; }
+        .badge.b-bible { background: var(--bible-color); }
+        .badge.b-history { background: var(--history-color); }
+        .badge.b-culture { background: var(--culture-color); }
+        .badge.b-hebrew { background: var(--hebrew-color); }
+
+        /* --- CONTROLS --- */
+        #controls {
+            text-align: center;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        #action-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--accent-gold);
+        }
+
+        #die-result {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid var(--accent-gold);
+            position: relative;
+        }
+
+        .modal-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .q-text {
+            font-size: 20px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .opts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .opt-btn {
+            background: #2a2a40;
+            color: var(--text-color);
+            padding: 14px;
+            text-align: left;
+            border-radius: 8px;
+            border: 1px solid #444;
+            transition: background 0.2s;
+        }
+
+        .opt-btn:hover { background: #3b3b5c; }
+        .opt-btn.correct { background: var(--accent-green) !important; color: #12121e; font-weight: bold; }
+        .opt-btn.wrong { background: var(--accent-red) !important; color: #fff; }
+
+        /* --- CONFETTI CANVAS --- */
+        #confetti-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
     </style>
-  </head>
-  <body>
-    <h1>Sacred Quests & Ancient Words</h1>
-    <p class="subtitle">Collect all 4 wedges, return to the center Hub, and choose your final category to win!</p>
-    <!-- Setup Screen -->
+</head>
+<body>
+
+    <!-- SETUP SCREEN -->
     <div id="setup-screen">
-      <h2>Setup Players</h2>
-      <div id="players-list"></div>
-      <div style="margin-top: 20px; display: flex; justify-content: space-between;">
-        <button onclick="addPlayerField()">+ Add Player</button>
-        <button onclick="startGame()" style="background: var(--culture);">Start Game</button>
-      </div>
-    </div>
-    <!-- Game Screen -->
-    <div id="game-screen">
-      <div id="dashboards"></div>
-      <div id="board-container">
-        <svg id="board-svg" viewBox="0 0 500 500"></svg>
-        <div id="tokens-container"></div>
-      </div>
-      <div id="controls">
-        <div id="action-text">Waiting to start...</div>
-        <div id="die-result">🎲</div>
-        <button id="roll-btn" onclick="rollDie()" style="padding: 15px 40px; font-size: 22px; border-radius: 30px;">Roll Die</button>
-      </div>
-    </div>
-    <!-- Hub Category Selection Modal -->
-    <div id="hub-modal">
-      <div class="modal-content">
-        <h2 style="color: var(--wild); margin-top: 0;">CENTER HUB!</h2>
-        <p id="hub-msg" style="font-size: 18px; margin-bottom: 20px;">Choose your category:</p>
-        <div class="options-grid">
-          <button class="option-btn" style="border-color: var(--bible); border-width: 3px;" onclick="selectHubCategory('bible')">Bible Trivia</button>
-          <button class="option-btn" style="border-color: var(--history); border-width: 3px;" onclick="selectHubCategory('history')">Christian History</button>
-          <button class="option-btn" style="border-color: var(--culture); border-width: 3px;" onclick="selectHubCategory('culture')">Jewish Culture</button>
-          <button class="option-btn" style="border-color: var(--hebrew); border-width: 3px;" onclick="selectHubCategory('hebrew')">Hebrew Language</button>
+        <h1>📜 Spiritual Quest</h1>
+        <p style="margin-bottom: 20px; color: #aaa;">Collect all 4 category wedges and reach the center hub to win!</p>
+        <div id="players-list"></div>
+        <div class="btn-group">
+            <button onclick="addPlayerField()">+ Add Player</button>
+            <button onclick="startGame()" style="background: var(--accent-green);">Start Game 🚀</button>
         </div>
-      </div>
     </div>
-    <!-- Question Modal -->
-    <div id="modal">
-      <div class="modal-content">
-        <div id="q-category" class="category-badge">Category</div>
-        <h2 id="q-text" style="margin: 10px 0;">Question goes here?</h2>
-        <div class="options-grid" id="q-options"></div>
-        <div id="feedback"></div>
-      </div>
-    </div>
-    <script>
-      // --- GAME DATA (Add your full generated batches here) ---
-      let questionBank = [];
-      const CATEGORIES = ['bible', 'history', 'culture', 'hebrew'];
-      const COLORS = {
-        bible: 'var(--bible)',
-        history: 'var(--history)',
-        culture: 'var(--culture)',
-        hebrew: 'var(--hebrew)',
-        wild: 'var(--wild)'
-      };
-      // Explicitly define ring categories to ensure exactly one wedge of each color
-      const RING_CAT_MAP = [
-        'bible', 'hebrew', 'culture', 'history', 'bible', 'hebrew', // Index 0: Bible Wedge
-        'history', 'bible', 'hebrew', 'culture', 'history', 'bible', // Index 6: History Wedge
-        'culture', 'history', 'bible', 'hebrew', 'culture', 'history', // Index 12: Culture Wedge
-        'hebrew', 'culture', 'history', 'bible', 'hebrew', 'culture' // Index 18: Hebrew Wedge
-      ];
-      // --- GRAPH-BASED BOARD ---
-      const nodes = {};
-      const CENTER = 250;
-      const RADIUS = 200;
-      function initGraph() {
-        // 1. Center Hub
-        nodes['hub'] = {
-          id: 'hub',
-          x: CENTER,
-          y: CENTER,
-          cat: 'wild',
-          isWedge: false,
-          r: 25,
-          neighbors: []
-        };
-        // 2. Outer Ring (24 nodes)
-        for (let i = 0; i < 24; i++) {
-          let angle = (i * 15 - 90) * (Math.PI / 180);
-          nodes[`r${i}`] = {
-            id: `r${i}`,
-            x: CENTER + RADIUS * Math.cos(angle),
-            y: CENTER + RADIUS * Math.sin(angle),
-            cat: RING_CAT_MAP[i], // Pull from explicitly mapped colors
-            isWedge: (i % 6 === 0),
-            r: (i % 6 === 0) ? 18 : 12,
-            neighbors: [`r${(i+1)%24}`, `r${(i+23)%24}`]
-          };
-        }
-        // 3. Spokes (4 spokes connecting Hub to Wedges)
-        const spokeIntersections = [0, 6, 12, 18];
-        spokeIntersections.forEach((ringIdx, spokeIdx) => {
-          let angle = (ringIdx * 15 - 90) * (Math.PI / 180);
-          let prevNode = 'hub';
-          for (let j = 1; j <= 3; j++) {
-            let id = `s${spokeIdx}_${j}`;
-            let dist = RADIUS * (j / 4);
-            nodes[id] = {
-              id: id,
-              x: CENTER + dist * Math.cos(angle),
-              y: CENTER + dist * Math.sin(angle),
-              cat: CATEGORIES[(spokeIdx + j) % 4],
-              isWedge: false,
-              r: 12,
-              neighbors: [prevNode]
-            };
-            nodes[prevNode].neighbors.push(id);
-            prevNode = id;
-          }
-          nodes[prevNode].neighbors.push(`r${ringIdx}`);
-          nodes[`r${ringIdx}`].neighbors.push(prevNode);
-        });
-      }
-      // --- GAME STATE ---
-      let players = [];
-      let currentPlayerIndex = 0;
-      let currentQuestion = null;
-      let isWinAttempt = false;
-      // --- AUDIO ---
-      const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-      function playTone(freq, type, startTime, duration, volStart, volEnd) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        gain.gain.setValueAtTime(volStart, startTime);
-        gain.gain.exponentialRampToValueAtTime(volEnd, startTime + duration);
-        osc.start(startTime);
-        osc.stop(startTime + duration);
-        return osc;
-      }
-      function playRollSound() {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        let now = audioCtx.currentTime;
-        for (let i = 0; i < 5; i++) {
-          playTone(300 + Math.random() * 200, 'triangle', now + (i * 0.1), 0.05, 0.1, 0.01);
-        }
-      }
-      function playMoveSound() {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        playTone(400, 'sine', audioCtx.currentTime, 0.1, 0.1, 0.01);
-      }
-      function playCorrectSound() {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        let now = audioCtx.currentTime;
-        playTone(523.25, 'sine', now, 0.4, 0.2, 0.01);
-        playTone(659.25, 'sine', now + 0.1, 0.4, 0.2, 0.01);
-        playTone(783.99, 'sine', now + 0.2, 0.4, 0.2, 0.01);
-        playTone(1046.50, 'sine', now + 0.3, 0.6, 0.3, 0.01);
-      }
-      function playWrongSound() {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(50, now + 0.5);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-        osc.start(now);
-        osc.stop(now + 0.5);
-      }
-      function playWinSound() {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        let now = audioCtx.currentTime;
-        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
-          playTone(f, 'square', now + (i * 0.15), 0.3, 0.2, 0.01);
-        });
-        now += 0.6;
-        [523.25, 659.25, 783.99, 1046.50].forEach(f => {
-          playTone(f, 'square', now, 1.5, 0.3, 0.01);
-        });
-      }
-      // --- SETUP ---
-      const avatars = ["🦁", "🕊️", "👑", "📜", "🏺", "🛡️", "🐪", "🍇", "🕎", "🐟", "🐑", "🍞", "🎺", "🌴"];
-      function addPlayerField() {
-        const div = document.createElement('div');
-        div.className = 'player-entry';
-        let avatarOpts = avatars.map(a => `<option value="${a}">${a}</option>`).join('');
-        div.innerHTML = `
-        <input type="text" placeholder="Player Name" class="p-name">
-        <select class="p-avatar">${avatarOpts}</select>
-        <select class="p-level">
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-        </select>
-    `;
-        document.getElementById('players-list').appendChild(div);
-      }
-      async function startGame() {
-        const entries = document.querySelectorAll('.player-entry');
-        players = []; // Reset players on new game
-        entries.forEach((entry, index) => {
-          const name = entry.querySelector('.p-name').value || `Player ${index + 1}`;
-          players.push({
-            id: index,
-            name: name,
-            avatar: entry.querySelector('.p-avatar').value,
-            level: entry.querySelector('.p-level').value,
-            nodeId: 'hub',
-            score: 0,
-            wedges: {
-              bible: false,
-              history: false,
-              culture: false,
-              hebrew: false
-            }
-          });
-        });
-        if (players.length === 0) return alert("Add at least one player!");
-        // Fetch the external JSON question bank
-        try {
-          const response = await fetch('sacredquest.json');
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          questionBank = await response.json();
-          console.log(`Loaded ${questionBank.length} questions successfully.`);
-        } catch (error) {
-          console.error("Failed to load questions:", error);
-          alert("Error loading 'sacredquest.json'. Make sure the file is in the exact same directory as your HTML file and served via a local web server.");
-          return;
-        }
-        document.getElementById('setup-screen').style.display = 'none';
-        document.getElementById('game-screen').style.display = 'flex';
-        initGraph();
-        drawBoard();
-        updateDashboards();
-        updatePlayerTokens();
-        setTurnText();
-      }
-      // --- RENDERING ---
-      function drawBoard() {
-        const svg = document.getElementById('board-svg');
-        svg.innerHTML = '';
-        let drawnEdges = new Set();
-        Object.values(nodes).forEach(node => {
-          node.neighbors.forEach(nId => {
-            let edgeKey = [node.id, nId].sort().join('-');
-            if (!drawnEdges.has(edgeKey)) {
-              drawnEdges.add(edgeKey);
-              let neighbor = nodes[nId];
-              let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-              line.setAttribute("x1", node.x);
-              line.setAttribute("y1", node.y);
-              line.setAttribute("x2", neighbor.x);
-              line.setAttribute("y2", neighbor.y);
-              line.setAttribute("class", "edge");
-              svg.appendChild(line);
-            }
-          });
-        });
-        Object.values(nodes).forEach(node => {
-          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-          circle.setAttribute("id", `svg-${node.id}`);
-          circle.setAttribute("cx", node.x);
-          circle.setAttribute("cy", node.y);
-          circle.setAttribute("r", node.r);
-          circle.setAttribute("fill", COLORS[node.cat]);
-          circle.setAttribute("class", "node");
-          if (node.isWedge) {
-            circle.setAttribute("stroke", "#fff");
-            circle.setAttribute("stroke-width", "4");
-          }
-          if (node.id === 'hub') {
-            circle.setAttribute("stroke", "#fff");
-            circle.setAttribute("stroke-width", "5");
-          }
-          svg.appendChild(circle);
-        });
-      }
-      function updatePlayerTokens() {
-        const container = document.getElementById('tokens-container');
-        container.innerHTML = '';
-        let nodeCounts = {};
-        players.forEach(p => {
-          if (!nodeCounts[p.nodeId]) nodeCounts[p.nodeId] = [];
-          nodeCounts[p.nodeId].push(p);
-        });
-        players.forEach(p => {
-          const node = nodes[p.nodeId];
-          const token = document.createElement('div');
-          token.className = 'player-token';
-          token.innerText = p.avatar;
-          token.id = `token-p${p.id}`;
-          let stackIndex = nodeCounts[p.nodeId].indexOf(p);
-          let offset = stackIndex * 8;
-          token.style.left = `${node.x + offset}px`;
-          token.style.top = `${node.y + offset}px`;
-          container.appendChild(token);
-        });
-      }
-      function updateDashboards() {
-        const container = document.getElementById('dashboards');
-        container.innerHTML = '';
-        players.forEach((p, idx) => {
-          const dash = document.createElement('div');
-          dash.className = `dashboard ${idx === currentPlayerIndex ? 'active' : ''}`;
-          dash.innerHTML = `
-            <h3 style="margin: 0 0 5px 0;">${p.avatar} ${p.name}</h3>
-            <div style="font-size: 12px; color: #aaa;">Score: ${p.score}</div>
-            <div class="wedges-container">
-                <div class="wedge-icon ${p.wedges.bible ? 'has-wedge bible' : ''}" title="Bible"></div>
-                <div class="wedge-icon ${p.wedges.history ? 'has-wedge history' : ''}" title="History"></div>
-                <div class="wedge-icon ${p.wedges.culture ? 'has-wedge culture' : ''}" title="Culture"></div>
-                <div class="wedge-icon ${p.wedges.hebrew ? 'has-wedge hebrew' : ''}" title="Hebrew"></div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen">
+        <div id="dashboards"></div>
+
+        <div id="board-container">
+            <canvas id="boardCanvas" width="600" height="600"></canvas>
+        </div>
+
+        <div id="controls">
+            <div id="action-text">Waiting to start...</div>
+            <div id="die-result">🎲</div>
+            <div style="display: flex; gap: 15px; justify-content: center; align-items: center; margin-top: 10px;">
+                <button id="roll-btn" onclick="rollDie()" style="padding: 12px 35px; font-size: 20px; border-radius: 30px;">Roll Die</button>
+                <button id="music-btn" onclick="toggleMusic()" style="padding: 12px 20px; font-size: 15px; border-radius: 30px; background: #e94560; color: #fff;">🎵 Music: OFF</button>
             </div>
-        `;
-          container.appendChild(dash);
-        });
-      }
-      function setTurnText() {
-        document.getElementById('action-text').innerText = `${players[currentPlayerIndex].name}'s turn to roll!`;
-      }
-      // --- MOVEMENT LOGIC ---
-      function rollDie() {
-        document.getElementById('roll-btn').disabled = true;
-        playRollSound();
-        let rolls = 0;
-        const interval = setInterval(() => {
-          document.getElementById('die-result').innerText = Math.floor(Math.random() * 6) + 1;
-          rolls++;
-          if (rolls > 15) {
-            clearInterval(interval);
-            const finalRoll = Math.floor(Math.random() * 6) + 1;
-            document.getElementById('die-result').innerText = finalRoll;
-            showDestinations(finalRoll);
-          }
-        }, 40);
-      }
-      function getValidDestinations(startId, steps) {
-        let results = new Set();
-        function dfs(currentId, remainingSteps, visited) {
-          if (remainingSteps === 0) {
-            results.add(currentId);
-            return;
-          }
-          let node = nodes[currentId];
-          for (let nId of node.neighbors) {
-            if (!visited.has(nId)) {
-              let newVisited = new Set(visited);
-              newVisited.add(nId);
-              dfs(nId, remainingSteps - 1, newVisited);
+        </div>
+    </div>
+
+    <!-- QUESTION MODAL -->
+    <div id="question-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-meta">
+                <span id="q-category">BIBLE</span>
+                <span id="q-level">BEGINNER</span>
+            </div>
+            <div id="q-text" class="q-text">Loading question...</div>
+            <div id="q-options" class="opts-grid"></div>
+            <div id="q-feedback" style="margin-top: 15px; font-weight: bold; font-size: 18px;"></div>
+        </div>
+    </div>
+
+    <!-- CONFETTI CANVAS -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <script>
+        // --- AVATARS (30 Options) ---
+        const avatars = [
+            "🦁 Lion", "🕊️ Dove", "👑 Crown", "📜 Scroll", "🏺 Jar", 
+            "🛡️ Shield", "🐪 Camel", "🍇 Grapes", "🕎 Menorah", "🐟 Fish", 
+            "🐑 Sheep", "🍞 Bread", "🎺 Trumpet", "🌴 Palm", "⛵ Boat", 
+            "⛰️ Mountain", "🔥 Fire", "🌊 Wave", "🌾 Wheat", "🍎 Apple", 
+            "🏹 Bow", "🕯️ Candle", "💎 Gem", "🏰 Fortress", "🦅 Eagle", 
+            "🐂 Ox", "🐆 Leopard", "🐴 Horse", "🌳 Tree", "⭐ Star"
+        ];
+
+        // --- GAME STATE ---
+        let questionBank = [];
+        let players = [];
+        let currentPlayerIdx = 0;
+        let hasRolled = false;
+        let lastDieRoll = 0;
+        let graph = {};
+        let reachableNodes = [];
+
+        // --- AUDIO SYNTHESIZER (Web Audio API) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let musicPlaying = false;
+        let musicInterval = null;
+        let bgStep = 0;
+        let bgVolume = 1.0; // Dynamic volume multiplier (1.0 = normal, 0.2 = ducked during question)
+
+        const bgScale = [146.83, 174.61, 196.00, 220.00, 261.63, 293.66, 349.23, 440.00];
+        const bgMelody = [0, 2, 3, 5, 4, 3, 2, 1, 0, 3, 5, 7, 6, 5, 3, 1, 0, 4, 3, 2];
+
+        function playTone(freq, type, startTime, duration, vol = 0.1, ramp = 0.01) {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, startTime);
+                gain.gain.setValueAtTime(0.0001, startTime);
+                gain.gain.exponentialRampToValueAtTime(vol, startTime + ramp);
+                gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(startTime);
+                osc.stop(startTime + duration);
+            } catch (e) { console.error(e); }
+        }
+
+        function playNextBgNote() {
+            if (!musicPlaying) return;
+            const freq = bgScale[bgMelody[bgStep]];
+            bgStep = (bgStep + 1) % bgMelody.length;
+            const currentVol = 0.03 * bgVolume;
+            if (currentVol > 0) {
+                playTone(freq, 'sine', audioCtx.currentTime, 1.4, currentVol, 0.03);
             }
-          }
         }
-        dfs(startId, steps, new Set([startId]));
-        return Array.from(results);
-      }
-      function showDestinations(steps) {
-        const p = players[currentPlayerIndex];
-        const validNodeIds = getValidDestinations(p.nodeId, steps);
-        if (validNodeIds.length === 0) {
-          nextTurn();
-          return;
+
+        function toggleMusic() {
+            musicPlaying = !musicPlaying;
+            const btn = document.getElementById('music-btn');
+            if (musicPlaying) {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                btn.innerText = '🎵 Music: ON';
+                btn.style.background = '#2ecc71';
+                playNextBgNote();
+                musicInterval = setInterval(playNextBgNote, 650);
+            } else {
+                btn.innerText = '🎵 Music: OFF';
+                btn.style.background = '#e94560';
+                clearInterval(musicInterval);
+            }
         }
-        document.getElementById('action-text').innerText = `Select a glowing space to move to!`;
-        validNodeIds.forEach(id => {
-          const circle = document.getElementById(`svg-${id}`);
-          circle.classList.add('valid-target');
-          circle.onclick = () => moveToNode(id, validNodeIds);
-        });
-      }
-      function moveToNode(targetId, allValidIds) {
-        playMoveSound();
-        allValidIds.forEach(id => {
-          const circle = document.getElementById(`svg-${id}`);
-          circle.classList.remove('valid-target');
-          circle.onclick = null;
-        });
-        const p = players[currentPlayerIndex];
-        p.nodeId = targetId;
-        updatePlayerTokens();
-        setTimeout(() => {
-          handleLandedSpace();
-        }, 600);
-      }
-      // --- QUESTIONS & GAMEPLAY ---
-      function handleLandedSpace() {
-        const p = players[currentPlayerIndex];
-        const node = nodes[p.nodeId];
-        isWinAttempt = false;
-        // Center Hub triggers custom Category Selection UI
-        if (node.id === 'hub') {
-          const hasAllWedges = (p.wedges.bible && p.wedges.history && p.wedges.culture && p.wedges.hebrew);
-          if (hasAllWedges) {
-            isWinAttempt = true;
-            document.getElementById('hub-msg').innerText = "🏆 FINAL WIN ATTEMPT! Choose your category: 🏆";
-          } else {
-            document.getElementById('hub-msg').innerText = "WILD CARD! Choose your category:";
-          }
-          document.getElementById('hub-modal').style.display = 'flex';
-          return; // Wait for user to click a category button
+
+        function playRollSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            for (let i = 0; i < 8; i++) {
+                const time = now + (i * 0.05);
+                const freq = 200 + Math.random() * 400;
+                playTone(freq, 'triangle', time, 0.04, 0.08, 0.001);
+            }
         }
-        // Standard Space
-        loadQuestionAndShowModal(node.cat, node);
-      }
-      function selectHubCategory(cat) {
-        document.getElementById('hub-modal').style.display = 'none';
-        loadQuestionAndShowModal(cat, nodes['hub']);
-      }
-      function loadQuestionAndShowModal(qCat, node) {
-        const p = players[currentPlayerIndex];
-        const available = questionBank.filter(q => q.cat === qCat && q.level === p.level);
-        if (available.length === 0) {
-          alert(`Out of questions for ${qCat.toUpperCase()} at the ${p.level.toUpperCase()} level! Ask Gemini for the next batch.`);
-          nextTurn();
-          return;
+
+        function playCorrectSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            playTone(523.25, 'sine', now, 0.15, 0.15); // C5
+            playTone(659.25, 'sine', now + 0.1, 0.25, 0.15); // E5
         }
-        currentQuestion = available[Math.floor(Math.random() * available.length)];
-        showQuestionModal(node, qCat);
-      }
-      function showQuestionModal(node, activeCat) {
-        document.getElementById('modal').style.display = 'flex';
-        let badgeText = activeCat.toUpperCase();
-        let badgeColor = COLORS[activeCat];
-        if (node.id === 'hub') {
-          badgeText = isWinAttempt ? "🏆 FINAL WIN ATTEMPT! (" + activeCat.toUpperCase() + ") 🏆" : "WILD CARD (" + activeCat.toUpperCase() + ")";
-          badgeColor = COLORS.wild;
-        } else if (node.isWedge) {
-          badgeText += " - WEDGE SPACE!";
+
+        function playWrongSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            playTone(220.00, 'sawtooth', now, 0.2, 0.15); // A3
+            playTone(207.65, 'sawtooth', now + 0.15, 0.3, 0.15); // Ab3
         }
-        const catBadge = document.getElementById('q-category');
-        catBadge.innerText = badgeText;
-        catBadge.style.background = badgeColor;
-        document.getElementById('q-text').innerText = currentQuestion.q;
-        document.getElementById('feedback').innerText = '';
-        const optsGrid = document.getElementById('q-options');
-        optsGrid.innerHTML = '';
-        currentQuestion.opts.forEach((opt, index) => {
-          const btn = document.createElement('button');
-          btn.className = 'option-btn';
-          btn.innerText = opt;
-          btn.onclick = () => checkAnswer(index, node);
-          optsGrid.appendChild(btn);
-        });
-      }
-      function checkAnswer(selectedIndex, node) {
-        const p = players[currentPlayerIndex];
-        const opts = document.querySelectorAll('.option-btn');
-        opts.forEach(btn => btn.disabled = true);
-        if (selectedIndex === currentQuestion.ans) {
-          // CORRECT
-          if (isWinAttempt) {
-            playWinSound();
-            document.getElementById('feedback').innerText = "🎉 CORRECT! YOU WIN THE GAME! 🎉";
-            document.getElementById('feedback').style.color = "#f1c40f";
-            setTimeout(() => {
-              alert(`${p.name} HAS WON THE GAME!`);
-              location.reload();
-            }, 3000);
-            return;
-          }
-          playCorrectSound();
-          let fbText = "Correct! +10 Points.";
-          p.score += 10;
-          if (node.isWedge && !p.wedges[currentQuestion.cat]) {
-            p.wedges[currentQuestion.cat] = true;
-            fbText += " YOU EARNED A WEDGE!";
-          }
-          document.getElementById('feedback').innerText = fbText;
-          document.getElementById('feedback').style.color = "#2ecc71";
-          setTimeout(() => {
-            document.getElementById('modal').style.display = 'none';
+
+        function playWedgeSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            const arpeggio = [523.25, 659.25, 783.99, 1046.50];
+            arpeggio.forEach((freq, idx) => {
+                playTone(freq, 'sine', now + (idx * 0.09), 0.5, 0.15, 0.01);
+            });
+        }
+
+        function playVictorySound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            const fanfare = [
+                { freq: 523.25, dur: 0.15, delay: 0.0 },
+                { freq: 523.25, dur: 0.15, delay: 0.15 },
+                { freq: 523.25, dur: 0.15, delay: 0.30 },
+                { freq: 659.25, dur: 0.40, delay: 0.45 },
+                { freq: 783.99, dur: 0.40, delay: 0.85 },
+                { freq: 1046.50, dur: 1.20, delay: 1.25 }
+            ];
+            fanfare.forEach(n => playTone(n.freq, 'triangle', now + n.delay, n.dur, 0.25, 0.02));
+        }
+
+        // --- SETUP PLAYER FIELDS ---
+        function addPlayerField() {
+            const list = document.getElementById('players-list');
+            if (list.children.length >= 4) return alert("Maximum 4 players allowed.");
+            
+            const div = document.createElement('div');
+            div.className = 'player-entry';
+            const avatarOpts = avatars.map(a => `<option value="${a.split(' ')[0]}">${a}</option>`).join('');
+            
+            div.innerHTML = `
+                <input type="text" placeholder="Player ${list.children.length + 1} Name" class="p-name">
+                <select class="p-avatar">${avatarOpts}</select>
+                <select class="p-level">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            `;
+            list.appendChild(div);
+        }
+
+        // Initial 2 player fields
+        addPlayerField();
+        addPlayerField();
+
+        // --- START GAME ---
+        async function startGame() {
+            const entries = document.querySelectorAll('.player-entry');
+            players = [];
+
+            entries.forEach((entry, idx) => {
+                const name = entry.querySelector('.p-name').value.trim() || `Player ${idx + 1}`;
+                players.push({
+                    id: idx,
+                    name: name,
+                    avatar: entry.querySelector('.p-avatar').value,
+                    level: entry.querySelector('.p-level').value,
+                    nodeId: 'hub',
+                    score: 0,
+                    wedges: { bible: false, history: false, culture: false, hebrew: false }
+                });
+            });
+
+            if (players.length === 0) return alert("Add at least one player!");
+
+            // Fetch external JSON question bank
+            try {
+                const response = await fetch('sacredquest.json');
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                questionBank = await response.json();
+            } catch (error) {
+                console.error("Failed to load questions:", error);
+                alert("Could not load 'sacredquest.json'. Please ensure it exists in the same folder and you are running a local web server or GitHub Pages.");
+                return;
+            }
+
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+
+            if (!musicPlaying) toggleMusic();
+
+            initGraph();
+            drawBoard();
             updateDashboards();
-            document.getElementById('roll-btn').disabled = false;
-            document.getElementById('action-text').innerText = `${p.name} gets to roll again!`;
-          }, 2000);
-        } else {
-          // WRONG
-          playWrongSound();
-          document.getElementById('feedback').innerText = `Incorrect. The answer was: ${currentQuestion.opts[currentQuestion.ans]}`;
-          document.getElementById('feedback').style.color = "#e74c3c";
-          setTimeout(() => {
-            document.getElementById('modal').style.display = 'none';
-            nextTurn();
-          }, 2500);
+            setTurnText();
         }
-      }
-      function nextTurn() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-        updateDashboards();
-        document.getElementById('roll-btn').disabled = false;
-        document.getElementById('die-result').innerText = '🎲';
-        setTurnText();
-      }
-      addPlayerField();
+
+        // --- GRAPH & BOARD INITIALIZATION ---
+        function initGraph() {
+            graph = {};
+            const center = { x: 300, y: 300 };
+            const radius = 220;
+            const categories = ['bible', 'history', 'culture', 'hebrew'];
+
+            // Hub Center
+            graph['hub'] = { id: 'hub', x: center.x, y: center.y, type: 'hub', category: 'wildcard', neighbors: [] };
+
+            // 24 Outer Ring Nodes
+            for (let i = 0; i < 24; i++) {
+                const angle = (i * 15 - 90) * (Math.PI / 180);
+                const x = center.x + radius * Math.cos(angle);
+                const y = center.y + radius * Math.sin(angle);
+                const id = `ring_${i}`;
+                
+                let type = 'normal';
+                let category = categories[i % 4];
+
+                // Wedges at 0 (Bible), 6 (History), 12 (Culture), 18 (Hebrew)
+                if (i === 0) { type = 'wedge'; category = 'bible'; }
+                else if (i === 6) { type = 'wedge'; category = 'history'; }
+                else if (i === 12) { type = 'wedge'; category = 'culture'; }
+                else if (i === 18) { type = 'wedge'; category = 'hebrew'; }
+
+                graph[id] = { id, x, y, type, category, neighbors: [] };
+            }
+
+            // Connect Outer Ring
+            for (let i = 0; i < 24; i++) {
+                const curr = `ring_${i}`;
+                const next = `ring_${(i + 1) % 24}`;
+                const prev = `ring_${(i - 1 + 24) % 24}`;
+                graph[curr].neighbors.push(next, prev);
+            }
+
+            // 4 Spokes connecting Hub to Ring Wedges (0, 6, 12, 18)
+            const wedgeIndices = [0, 6, 12, 18];
+            wedgeIndices.forEach((ringIdx, spokeIdx) => {
+                const targetRingId = `ring_${ringIdx}`;
+                const ringNode = graph[targetRingId];
+                
+                // 2 intermediate spoke nodes
+                const s1_id = `spoke_${spokeIdx}_1`;
+                const s2_id = `spoke_${spokeIdx}_2`;
+
+                const dx = (ringNode.x - center.x) / 3;
+                const dy = (ringNode.y - center.y) / 3;
+
+                graph[s1_id] = { id: s1_id, x: center.x + dx, y: center.y + dy, type: 'normal', category: ringNode.category, neighbors: ['hub', s2_id] };
+                graph[s2_id] = { id: s2_id, x: center.x + dx * 2, y: center.y + dy * 2, type: 'normal', category: ringNode.category, neighbors: [s1_id, targetRingId] };
+
+                graph['hub'].neighbors.push(s1_id);
+                graph[targetRingId].neighbors.push(s2_id);
+            });
+        }
+
+        // --- BOARD DRAWING ---
+        function drawBoard() {
+            const canvas = document.getElementById('boardCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const catColors = {
+                bible: '#3498db',
+                history: '#e74c3c',
+                culture: '#2ecc71',
+                hebrew: '#f1c40f',
+                wildcard: '#9b59b6'
+            };
+
+            // Draw Connections
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            Object.values(graph).forEach(node => {
+                node.neighbors.forEach(nId => {
+                    const target = graph[nId];
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y);
+                    ctx.lineTo(target.x, target.y);
+                    ctx.stroke();
+                });
+            });
+
+            // Draw Nodes
+            Object.values(graph).forEach(node => {
+                ctx.beginPath();
+                const radius = node.type === 'hub' ? 32 : (node.type === 'wedge' ? 20 : 14);
+                ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = catColors[node.category] || '#fff';
+                ctx.fill();
+
+                if (reachableNodes.includes(node.id)) {
+                    ctx.lineWidth = 4;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.stroke();
+                } else {
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#12121e';
+                    ctx.stroke();
+                }
+
+                if (node.type === 'wedge') {
+                    ctx.fillStyle = '#12121e';
+                    ctx.font = 'bold 12px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('W', node.x, node.y);
+                } else if (node.type === 'hub') {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 14px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('HUB', node.x, node.y);
+                }
+            });
+
+            // Draw Player Tokens
+            players.forEach((p, idx) => {
+                const node = graph[p.nodeId];
+                if (!node) return;
+
+                // Offset multiple tokens on same node
+                const offsetAngle = (idx * (360 / players.length)) * (Math.PI / 180);
+                const offsetDist = players.filter(other => other.nodeId === p.nodeId).length > 1 ? 12 : 0;
+                const px = node.x + offsetDist * Math.cos(offsetAngle);
+                const py = node.y + offsetDist * Math.sin(offsetAngle);
+
+                ctx.font = '22px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(p.avatar, px, py);
+            });
+        }
+
+        // --- DASHBOARD UI ---
+        function updateDashboards() {
+            const container = document.getElementById('dashboards');
+            container.innerHTML = '';
+
+            players.forEach((p, idx) => {
+                const card = document.createElement('div');
+                card.className = `p-card ${idx === currentPlayerIdx ? 'active-turn' : ''}`;
+                card.innerHTML = `
+                    <div style="font-size: 20px;">${p.avatar} <strong>${p.name}</strong></div>
+                    <div style="font-size: 12px; color: #aaa; text-transform: capitalize;">${p.level} • Score: ${p.score}</div>
+                    <div class="wedge-badges">
+                        <span class="badge b-bible ${p.wedges.bible ? 'earned' : ''}" title="Bible"></span>
+                        <span class="badge b-history ${p.wedges.history ? 'earned' : ''}" title="History"></span>
+                        <span class="badge b-culture ${p.wedges.culture ? 'earned' : ''}" title="Culture"></span>
+                        <span class="badge b-hebrew ${p.wedges.hebrew ? 'earned' : ''}" title="Hebrew"></span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function setTurnText(msg) {
+            const p = players[currentPlayerIdx];
+            document.getElementById('action-text').innerText = msg || `${p.avatar} ${p.name}'s Turn - Roll the die!`;
+        }
+
+        // --- GAMEPLAY CONTROLS ---
+        function rollDie() {
+            if (hasRolled) return;
+            playRollSound();
+
+            hasRolled = true;
+            lastDieRoll = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('die-result').innerText = `🎲 ${lastDieRoll}`;
+
+            const player = players[currentPlayerIdx];
+            reachableNodes = getReachableNodes(player.nodeId, lastDieRoll);
+            drawBoard();
+
+            setTurnText(`${player.name} rolled a ${lastDieRoll}! Click a highlighted space to move.`);
+
+            // Attach click handler on canvas for movement
+            const canvas = document.getElementById('boardCanvas');
+            canvas.onclick = handleCanvasClick;
+        }
+
+        function getReachableNodes(startNodeId, steps) {
+            let currentSet = new Set([startNodeId]);
+            
+            for (let s = 0; s < steps; s++) {
+                let nextSet = new Set();
+                currentSet.forEach(nodeId => {
+                    graph[nodeId].neighbors.forEach(neighbor => {
+                        nextSet.add(neighbor);
+                    });
+                });
+                currentSet = nextSet;
+            }
+            return Array.from(currentSet);
+        }
+
+        function handleCanvasClick(e) {
+            const canvas = document.getElementById('boardCanvas');
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            for (let nodeId of reachableNodes) {
+                const node = graph[nodeId];
+                const dist = Math.hypot(node.x - clickX, node.y - clickY);
+                if (dist <= 25) {
+                    canvas.onclick = null; // Remove handler
+                    movePlayer(nodeId);
+                    break;
+                }
+            }
+        }
+
+        function movePlayer(targetNodeId) {
+            const player = players[currentPlayerIdx];
+            player.nodeId = targetNodeId;
+            reachableNodes = [];
+            drawBoard();
+
+            const node = graph[targetNodeId];
+            handleSpaceAction(node);
+        }
+
+        function handleSpaceAction(node) {
+            const player = players[currentPlayerIdx];
+
+            // HUB WIN CHECK
+            if (node.type === 'hub') {
+                const hasAllWedges = Object.values(player.wedges).every(w => w === true);
+                if (hasAllWedges) {
+                    promptCategoryChoiceForWin(player);
+                    return;
+                }
+            }
+
+            // Regular question prompt
+            let cat = node.category;
+            if (cat === 'wildcard') {
+                const cats = ['bible', 'history', 'culture', 'hebrew'];
+                cat = cats[Math.floor(Math.random() * cats.length)];
+            }
+
+            fetchQuestion(cat, player.level);
+        }
+
+        function promptCategoryChoiceForWin(player) {
+            const cats = ['bible', 'history', 'culture', 'hebrew'];
+            const chosenCat = prompt(`FINAL WIN CHALLENGE! Choose your category:\n1. Bible\n2. History\n3. Culture\n4. Hebrew`, "1");
+            const catMap = { "1": "bible", "2": "history", "3": "culture", "4": "hebrew" };
+            const selectedCat = catMap[chosenCat] || "bible";
+            
+            fetchQuestion(selectedCat, player.level, true);
+        }
+
+        function fetchQuestion(category, level, isWinAttempt = false) {
+            const filtered = questionBank.filter(q => q.cat === category && q.level === level);
+            let qData;
+            if (filtered.length > 0) {
+                qData = filtered[Math.floor(Math.random() * filtered.length)];
+            } else {
+                // Fallback to any category question if specific combo missing
+                qData = questionBank[Math.floor(Math.random() * questionBank.length)];
+            }
+            showQuestionModal(qData, isWinAttempt);
+        }
+
+        function showQuestionModal(qData, isWinAttempt = false) {
+            bgVolume = 0.2; // Lower music volume while answering
+
+            const modal = document.getElementById('question-modal');
+            document.getElementById('q-category').innerText = qData.cat.toUpperCase() + (isWinAttempt ? " (WIN ATTEMPT!)" : "");
+            document.getElementById('q-level').innerText = qData.level.toUpperCase();
+            document.getElementById('q-text').innerText = qData.q;
+            document.getElementById('q-feedback').innerText = '';
+
+            const optsDiv = document.getElementById('q-options');
+            optsDiv.innerHTML = '';
+
+            qData.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(idx, qData.ans, isWinAttempt, qData.cat);
+                optsDiv.appendChild(btn);
+            });
+
+            modal.style.display = 'flex';
+        }
+
+        function handleAnswer(selectedIdx, correctIdx, isWinAttempt, category) {
+            const player = players[currentPlayerIdx];
+            const buttons = document.querySelectorAll('.opt-btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const currentNode = graph[player.nodeId];
+
+            if (selectedIdx === correctIdx) {
+                buttons[selectedIdx].classList.add('correct');
+                playCorrectSound();
+                player.score += 100;
+                document.getElementById('q-feedback').innerText = "✨ Correct!";
+
+                // Award wedge if landed on matching wedge space
+                if (currentNode.type === 'wedge' && currentNode.category === category) {
+                    if (!player.wedges[category]) {
+                        player.wedges[category] = true;
+                        playWedgeSound();
+                        document.getElementById('q-feedback').innerText = `🎉 Correct! You earned the ${category.toUpperCase()} wedge!`;
+                    }
+                }
+
+                if (isWinAttempt) {
+                    setTimeout(() => {
+                        closeQuestionModal();
+                        declareWinner(player);
+                    }, 1200);
+                    return;
+                }
+            } else {
+                buttons[selectedIdx].classList.add('wrong');
+                buttons[correctIdx].classList.add('correct');
+                playWrongSound();
+                document.getElementById('q-feedback').innerText = "❌ Incorrect!";
+            }
+
+            setTimeout(() => {
+                closeQuestionModal();
+                nextTurn();
+            }, 1800);
+        }
+
+        function closeQuestionModal() {
+            document.getElementById('question-modal').style.display = 'none';
+            bgVolume = 1.0; // Restore background music volume
+        }
+
+        function nextTurn() {
+            hasRolled = false;
+            currentPlayerIdx = (currentPlayerIdx + 1) % players.length;
+            updateDashboards();
+            drawBoard();
+            setTurnText();
+        }
+
+        function declareWinner(player) {
+            playVictorySound();
+            triggerConfetti();
+            document.getElementById('action-text').innerText = `🏆 ${player.name.toUpperCase()} WINS THE GAME! 🏆`;
+            alert(`🎉 CONGRATULATIONS ${player.name}!\nYou have completed your Spiritual Quest!`);
+        }
+
+        // --- CONFETTI ANIMATION ENGINE ---
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const particleCount = 150;
+            const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#9b59b6', '#3498db', '#2ecc71', '#1abc9c', '#ffffff'];
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 6,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speedY: Math.random() * 3 + 2,
+                    speedX: Math.random() * 4 - 2,
+                    rotation: Math.random() * 360,
+                    rotSpeed: Math.random() * 10 - 5,
+                    oscillationSpeed: Math.random() * 0.05 + 0.02
+                });
+            }
+
+            let animationFrame;
+
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let activeParticles = 0;
+
+                particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += Math.sin(p.y * p.oscillationSpeed) + p.speedX;
+                    p.rotation += p.rotSpeed;
+
+                    if (p.y < canvas.height) activeParticles++;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                    ctx.restore();
+                });
+
+                if (activeParticles > 0) {
+                    animationFrame = requestAnimationFrame(render);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    cancelAnimationFrame(animationFrame);
+                }
+            }
+
+            render();
+        }
     </script>
-  </body>
+</body>
 </html>
