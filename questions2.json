@@ -192,9 +192,6 @@
         { "q": "Final review Level 2: What does 'בַּ-' mean?", "opts": ["In the / At the", "To the", "From the", "And the"], "a": "In the / At the" },
         { "q": "Final review Level 2: What does 'לַ-' mean?", "opts": ["To the / For the", "In the", "From the", "With the"], "a": "To the / For the" },
         { "q": "Final review Level 2: What does 'מֵהַ-' mean?", "opts": ["From the", "In the", "To the", "And the"], "a": "From the" },
-
-{
-  "levels": [
     {
       "level": 3,
       "questions": [
