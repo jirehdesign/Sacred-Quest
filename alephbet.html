@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aleph-Bet Adventure 🎲</title>
+    <!-- Confetti Particle Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;700&display=swap');
+        
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: #87CEEB;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            color: #333;
+        }
+        h1 { font-family: 'Fredoka One', cursive; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-size: 2.5rem; margin-top: 5px; }
+        
+        #setup-screen, #game-screen {
+            background: white;
+            max-width: 850px;
+            margin: 0 auto;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        #game-screen { display: none; }
+        
+        .avatar-btn {
+            font-size: 3rem;
+            margin: 8px;
+            padding: 15px;
+            border: 4px solid #eee;
+            border-radius: 20px;
+            background: #fff;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .avatar-btn:hover { transform: scale(1.1); border-color: #FFD700; }
+        
+        /* HUD Header */
+        .hud {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+            gap: 10px;
+            border: 2px solid #e9ecef;
+        }
+        .hud-item { display: flex; align-items: center; gap: 4px; }
+        .hud-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Rubik', sans-serif;
+            transition: transform 0.15s;
+        }
+        .hud-btn:hover { transform: scale(1.05); }
+        
+        /* Board Grid */
+        #board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .space {
+            background: #e9ecef;
+            height: 65px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            position: relative;
+            border: 2px solid #dee2e6;
+            transition: background-color 0.3s;
+        }
+        .space.active { background: #d4edda; border-color: #28a745; }
+        .space.start { background: #ffeeba; }
+        .space.finish { background: #f5c6cb; }
+        .space.special { background: #fff3cd; border-color: #ffc107; }
+        .space.boss {
+            background: #ffe6e6 !important;
+            border: 3px solid #dc3545 !important;
+            animation: pulseBoss 1.5s infinite alternate;
+        }
+        @keyframes pulseBoss {
+            0% { box-shadow: 0 0 5px #dc3545; }
+            100% { box-shadow: 0 0 15px #dc3545; }
+        }
+        .tile-badge {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* Avatar Jump Animation */
+        @keyframes avatarJump {
+            0%   { transform: translateY(0) scale(1, 1); }
+            30%  { transform: translateY(-25px) scale(0.85, 1.15); }
+            70%  { transform: translateY(0) scale(1.1, 0.9); }
+            100% { transform: translateY(0) scale(1, 1); }
+        }
+        .avatar-jumping {
+            display: inline-block;
+            animation: avatarJump 0.35s ease-in-out;
+        }
+        
+        /* Controls */
+        #dice-btn {
+            background: #FF4500;
+            color: white;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            padding: 12px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #CC3700;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        #dice-btn:active { transform: translateY(5px); box-shadow: none; }
+        #dice-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+        /* Modal Overlays */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 90%;
+            font-size: 1.2rem;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            font-size: 1.3rem;
+            border: 2px solid #007BFF;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Rubik', sans-serif;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .option-btn:hover { background: #007BFF; color: white; }
+
+        /* Boss Card Styles */
+        .boss-card {
+            background: #fff0f0;
+            border: 2px solid #ff4d4d;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .boss-avatar { font-size: 3.5rem; animation: bossFloat 2s ease-in-out infinite alternate; }
+        @keyframes bossFloat { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
+        .boss-title { font-weight: bold; color: #d9534f; font-size: 1.3rem; margin: 5px 0; }
+        .boss-health { color: #dc3545; font-size: 1.2rem; margin: 5px 0; }
+        .boss-bubble {
+            background: #ffffff;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 1rem;
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        /* Bestiary / Trophy Grid */
+        .bestiary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .boss-trophy-card {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+        }
+        .boss-trophy-card.unlocked {
+            background: #fff8e1;
+            border-color: #ffc107;
+            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+        }
+        .boss-trophy-card.locked { opacity: 0.45; filter: grayscale(100%); background: #e9ecef; }
+        .trophy-avatar { font-size: 2.5rem; margin-bottom: 4px; }
+        .word-preview { font-size: 0.85rem; color: #007bff; font-weight: bold; margin-top: 4px; }
+        .bestiary-audio-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        /* Shop Grid */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .shop-card {
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Aleph-Bet Adventure 🎲</h1>
+
+    <!-- Avatar Selection Setup -->
+    <div id="setup-screen">
+        <h2>Choose Your Player!</h2>
+        <div id="avatar-picker-list">
+            <button class="avatar-btn" onclick="startGame('🐱')">🐱</button>
+            <button class="avatar-btn" onclick="startGame('🐶')">🐶</button>
+            <button class="avatar-btn" onclick="startGame('🦊')">🦊</button>
+            <button class="avatar-btn" onclick="startGame('🐸')">🐸</button>
+        </div>
+    </div>
+
+    <!-- Main Game Board HUD & Controls -->
+    <div id="game-screen">
+        <div class="hud">
+            <div class="hud-item">Level: <span id="level-display">1</span>/12</div>
+            <div class="hud-item">Tokens: <span id="token-display">0</span> ⭐</div>
+            <div class="hud-item">Streak: <span id="streak-display" style="color: #FF4500;">0</span>🔥</div>
+            <div class="hud-item">Login: <span id="login-streak-display" style="color: #ff4500;">0</span>⚡</div>
+            <div class="hud-item">Rolled: <span id="roll-display">-</span></div>
+            
+            <button id="daily-btn" class="hud-btn" onclick="openDailyChallenge()" style="background: #28a745; color: white;">
+                📅 Daily
+            </button>
+            <button class="hud-btn" onclick="openBestiary()" style="background: #ffc107; color: #333;">
+                🏆 Bestiary
+            </button>
+            <button class="hud-btn" onclick="openShop()" style="background: #17a2b8; color: white;">
+                🛍️ Shop
+            </button>
+            <button id="mute-btn" class="hud-btn" onclick="toggleMute()" style="background: #6c757d; color: white;">
+                🔊 Sound
+            </button>
+            <button class="hud-btn" onclick="resetGame()" style="background: #dc3545; color: white;">
+                🔄 Reset
+            </button>
+        </div>
+        
+        <div id="board"></div>
+        
+        <br>
+        <button id="dice-btn" onclick="rollDice()">Roll Dice 🎲</button>
+    </div>
+
+    <!-- Quiz & Boss Question Modal -->
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="question-text">Question goes here?</h3>
+            <div id="options-container"></div>
+        </div>
+    </div>
+
+    <!-- Trophy Room / Bestiary Modal -->
+    <div id="bestiary-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-top: 0;">🏆 Boss Bestiary & Trophy Room</h2>
+            <p style="font-size: 0.9rem; color: #666;">Defeat level bosses to unlock their cards and practice listening!</p>
+            <div id="bestiary-grid" class="bestiary-grid"></div>
+            <br>
+            <button class="option-btn" onclick="closeBestiary()">Back to Game</button>
+        </div>
+    </div>
+
+    <!-- Avatar Shop Modal -->
+    <div id="shop-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-top: 0;">🛍️ Avatar Shop</h2>
+            <p style="font-size: 0.9rem; color: #666;">Unlock new animals with your hard-earned tokens!</p>
+            <div id="shop-grid" class="shop-grid"></div>
+            <br>
+            <button class="option-btn" onclick="closeShop()">Back to Game</button>
+        </div>
+    </div>
+
+    <!-- Daily Challenge Modal -->
+    <div id="daily-modal" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 5px;">🌟</div>
+            <h2 style="margin: 0 0 10px 0;">Daily Hebrew Drill</h2>
+            <div id="daily-status" style="font-size: 1.05rem; color: #555; margin-bottom: 20px;"></div>
+            
+            <div id="daily-quiz-area" style="display: none;">
+                <div style="font-weight: bold; color: #007bff; margin-bottom: 15px;">
+                    Question <span id="daily-q-num">1</span> of 5
+                </div>
+                <h3 id="daily-q-text" style="font-size: 1.3rem; margin-bottom: 20px;">Question</h3>
+                <div id="daily-opts-container"></div>
+            </div>
+
+            <button id="daily-close-btn" class="option-btn" onclick="closeDailyModal()" style="margin-top: 15px;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== STATE VARIABLES ====================
+        let playerAvatar = '🐱';
+        let unlockedAvatars = ['🐱', '🐶', '🦊', '🐸'];
+        let currentLevel = 1;
+        let tokens = 0;
+        let position = 0;
+        let currentStreak = 0;
+        let loginStreak = 0;
+        let lastLoginDate = '';
+        let specialTiles = {};
+        let defeatedBosses = [];
+        let lastDailyTime = 0;
+        let isMuted = false;
+        
+        let bossHP = 3;
+        let maxBossHP = 3;
+        let inBossBattle = false;
+        let currentQuestion = null;
+        const totalSpaces = 20;
+
+        const shopCatalog = [
+            { icon: '🐱', cost: 0 }, { icon: '🐶', cost: 0 }, { icon: '🦊', cost: 0 }, { icon: '🐸', cost: 0 },
+            { icon: '🦁', cost: 50 }, { icon: '🦄', cost: 75 }, { icon: '🐼', cost: 100 },
+            { icon: '🤖', cost: 150 }, { icon: '🐉', cost: 200 }
+        ];
+
+        // 12 Level Bosses Configuration
+        const levelBosses = {
+            1:  { name: "Leo the Letter Lion", icon: "🦁", intro: "ROAR! Show me you know your basic Aleph-Bet!", taunt: "Grrr! Better practice your letters!", victory: "You tamed the Letter Lion!", sampleHebrew: "אָלֶף-בֵּית", phonetic: "Aleph-Bet", sampleEnglish: "Alphabet" },
+            2:  { name: "Slithering Samech", icon: "🐍", intro: "Sssss! You won't pass my middle letters!", taunt: "Hissss! Missed it!", victory: "The snake slithered away!", sampleHebrew: "מַיִם", phonetic: "Mayim", sampleEnglish: "Water" },
+            3:  { name: "Ollie the Sofit Owl", icon: "🦉", intro: "Hoot! Can you spot the Final Sofit Forms?", taunt: "Hoot hoot! Wrong form!", victory: "The owl flew off!", sampleHebrew: "שָׁלוֹם", phonetic: "Shalom", sampleEnglish: "Hello / Peace" },
+            4:  { name: "Patach the Fire Dragon", icon: "🐉", intro: "I breathe the 'AH' sound fire!", taunt: "Burned by the 'Ah' vowel!", victory: "The dragon's fire was extinguished!", sampleHebrew: "אַבָּא", phonetic: "Abba", sampleEnglish: "Dad" },
+            5:  { name: "Wizard Segol", icon: "🧙‍♂️", intro: "Alakazam! Master the 'EH' vowels to pass!", taunt: "My magic tricked you!", victory: "The wizard's spell was broken!", sampleHebrew: "כֶּלֶב", phonetic: "Kelev", sampleEnglish: "Dog" },
+            6:  { name: "Hirik-Bot 3000", icon: "🤖", intro: "BEEP BOOP! 'EE' VOWEL SOUND REQUIRED!", taunt: "ERROR 404: INCORRECT VOWEL!", victory: "ROBOT SHUTTING DOWN... MAZEL TOV!", sampleHebrew: "אִמָּא", phonetic: "Imma", sampleEnglish: "Mom" },
+            7:  { name: "Barnaby the Beast", icon: "🐻", intro: "Grrr! Do you know your animal names?", taunt: "Wild guess! Try again!", victory: "Barnaby became your friend!", sampleHebrew: "חָתוּל", phonetic: "Chatul", sampleEnglish: "Cat" },
+            8:  { name: "Octavia the Color Octopus", icon: "🐙", intro: "I have colorful questions for you!", taunt: "Ink splash! Wrong color!", victory: "Octavia swam back to the ocean!", sampleHebrew: "אָדוֹם", phonetic: "Adom", sampleEnglish: "Red" },
+            9:  { name: "King Eser the Number Monarch", icon: "👑", intro: "Count to 10 if you wish to pass my throne!", taunt: "Off to the dungeon with bad math!", victory: "The King bowed to your skills!", sampleHebrew: "שָׁלוֹשׁ", phonetic: "Shalosh", sampleEnglish: "Three (3)" },
+            10: { name: "Shalom the Friendly Unicorn", icon: "🦄", intro: "Greetings! Prove your polite greetings!", taunt: "Oh dear! Mind your manners!", victory: "Shalom granted you safe passage!", sampleHebrew: "תּוֹדָה", phonetic: "Toda", sampleEnglish: "Thank You" },
+            11: { name: "Verb Eagle the Sky Lord", icon: "🦅", intro: "Soar high and translate these actions!", taunt: "You plummeted! Keep flapping!", victory: "The eagle cleared the runway!", sampleHebrew: "אֲנִי אוֹהֵב", phonetic: "Ani Ohev", sampleEnglish: "I Love" },
+            12: { name: "Goliath the Grammar Giant", icon: "🌋", intro: "Hahaha! Full sentences are my specialty!", taunt: "FEE FI FO FUM!", victory: "YOU DEFEATED THE FINAL BOSS!", sampleHebrew: "אֲנִי קוֹרֵא עִבְרִית", phonetic: "Ani Koreh Ivrit", sampleEnglish: "I Read Hebrew" }
+        };
+
+        // ==================== AUDIO ENGINE ====================
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        function playInstantSFX(type) {
+            if (isMuted) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25);
+                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(250, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.3);
+                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'roll') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+            }
+        }
+
+        function speakHebrew(text) {
+            if (isMuted) return;
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'he-IL'; 
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.getElementById('mute-btn').innerText = isMuted ? '🔇 Muted' : '🔊 Sound';
+        }
+
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 65,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#FFD700', '#FF4500', '#007BFF', '#28a745', '#FF69B4']
+                });
+            }
+        }
+
+        // ==================== 1,200 QUESTIONS GENERATOR ====================
+        function generate1200Questions() {
+            const compiled = [];
+            const cons = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'];
+            
+            function makeOpts(correct, pool) {
+                const wrong = pool.filter(x => x !== correct).sort(() => 0.5 - Math.random()).slice(0, 3);
+                return [correct, ...wrong].sort(() => 0.5 - Math.random());
+            }
+
+            for (let lvl = 1; lvl <= 12; lvl++) {
+                const list = [];
+                for (let i = 0; i < 100; i++) {
+                    if (lvl <= 3) {
+                        const c = cons[i % cons.length];
+                        list.push({ q: `Identify the Hebrew letter: '${c}'`, opts: makeOpts(c, cons), a: c });
+                    } else if (lvl <= 6) {
+                        const c = cons[i % cons.length];
+                        const vowels = ['\u05B8', '\u05B6', '\u05B5'];
+                        const charWithVowel = c + vowels[(lvl - 4) % vowels.length];
+                        const answers = ['Ah', 'Eh', 'Ee'];
+                        const correct = answers[(lvl - 4) % answers.length];
+                        list.push({ q: `What vowel sound does ${charWithVowel} make?`, opts: makeOpts(correct, ['Ah','Eh','Ee','Oh','Oo']), a: correct });
+                    } else if (lvl === 7) {
+                        const items = [{h:'כלב',e:'Dog'},{h:'חתול',e:'Cat'},{h:'סוס',e:'Horse'},{h:'אריה',e:'Lion'},{h:'דב',e:'Bear'}];
+                        const item = items[i % items.length];
+                        list.push({ q: `What is '${item.h}' in English?`, opts: makeOpts(item.e, items.map(x=>x.e)), a: item.e });
+                    } else if (lvl === 8) {
+                        const items = [{h:'אדום',e:'Red'},{h:'כחול',e:'Blue'},{h:'ירוק',e:'Green'},{h:'צהוב',e:'Yellow'}];
+                        const item = items[i % items.length];
+                        list.push({ q: `Which color is '${item.h}'?`, opts: makeOpts(item.e, items.map(x=>x.e)), a: item.e });
+                    } else if (lvl === 9) {
+                        const items = [{h:'אחד',e:'1'},{h:'שתים',e:'2'},{h:'שלוש',e:'3'},{h:'ארבע',e:'4'},{h:'חמש',e:'5'}];
+                        const item = items[i % items.length];
+                        list.push({ q: `What number is '${item.h}'?`, opts: makeOpts(item.e, items.map(x=>x.e)), a: item.e });
+                    } else if (lvl === 10) {
+                        const items = [{h:'שלום',e:'Hello'},{h:'תודה',e:'Thank you'},{h:'בבקשה',e:'Please'},{h:'להתראות',e:'Goodbye'}];
+                        const item = items[i % items.length];
+                        list.push({ q: `How do you say '${item.e}'?`, opts: makeOpts(item.h, items.map(x=>x.h)), a: item.h });
+                    } else if (lvl === 11) {
+                        const items = [{h:'אני אוכל',e:'I am eating'},{h:'אני שותה',e:'I am drinking'},{h:'אני קורא',e:'I am reading'}];
+                        const item = items[i % items.length];
+                        list.push({ q: `Translate: '${item.h}'`, opts: makeOpts(item.e, items.map(x=>x.e)), a: item.e });
+                    } else {
+                        const items = [{h:'אני קורא עברית',e:'I read Hebrew'},{h:'בוקר טוב חבר',e:'Good morning friend'},{h:'הכלב גדול',e:'The dog is big'}];
+                        const item = items[i % items.length];
+                        list.push({ q: `Translate the sentence: '${item.h}'`, opts: makeOpts(item.e, items.map(x=>x.e)), a: item.e });
+                    }
+                }
+                compiled.push({ level: lvl, questions: list });
+            }
+            return { levels: compiled };
+        }
+
+        let gameData = generate1200Questions();
+
+        async function loadQuestions() {
+            try {
+                const response = await fetch('./questions.json');
+                if (response.ok) {
+                    gameData = await response.json();
+                    console.log("1,200 questions loaded from questions.json!");
+                }
+            } catch (e) {
+                console.log("Using dynamic generator fallback.");
+            }
+        }
+
+        // ==================== TILE & BOARD LOGIC ====================
+        function generateRandomSpecialTiles() {
+            const newTiles = {};
+            const available = [];
+            for (let i = 2; i < totalSpaces - 2; i++) available.push(i);
+            const shuffled = available.sort(() => 0.5 - Math.random());
+
+            // 2 Ladders / Boosts
+            for (let i = 0; i < 2; i++) {
+                const pos = shuffled.pop();
+                const target = Math.min(pos + Math.floor(Math.random() * 3) + 3, 18);
+                newTiles[pos] = { type: 'ladder', target: target, icon: i === 0 ? '🪜' : '🚀', message: `Ladder! Climb to space ${target}!` };
+            }
+            // 2 Traps
+            for (let i = 0; i < 2; i++) {
+                const pos = shuffled.pop();
+                const target = Math.max(1, pos - (Math.floor(Math.random() * 3) + 2));
+                newTiles[pos] = { type: 'trap', target: target, icon: i === 0 ? '🪤' : '🍌', message: `Trap! Slide back to space ${target}!` };
+            }
+            // 2 Bonus Chests
+            for (let i = 0; i < 2; i++) {
+                const pos = shuffled.pop();
+                const bonusVal = (Math.floor(Math.random() * 3) + 2) * 10;
+                newTiles[pos] = { type: 'bonus', tokens: bonusVal, icon: '⭐', message: `Treasure Chest! +${bonusVal} Bonus Tokens!` };
+            }
+            return newTiles;
+        }
+
+        function buildBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            for (let i = 0; i < totalSpaces; i++) {
+                const space = document.createElement('div');
+                space.className = 'space';
+                if (i === 0) space.classList.add('start');
+                if (i === totalSpaces - 1) space.classList.add('finish');
+                space.id = 'space-' + i;
+
+                if (i === 19) {
+                    space.classList.add('boss');
+                    const badge = document.createElement('span');
+                    badge.className = 'tile-badge';
+                    badge.innerText = '👾';
+                    space.appendChild(badge);
+                } else if (specialTiles[i]) {
+                    space.classList.add('special');
+                    const badge = document.createElement('span');
+                    badge.className = 'tile-badge';
+                    badge.innerText = specialTiles[i].icon;
+                    space.appendChild(badge);
+                }
+                board.appendChild(space);
+            }
+        }
+
+        function updateBoardUI() {
+            document.querySelectorAll('.space').forEach(el => {
+                const badge = el.querySelector('.tile-badge');
+                el.innerHTML = '';
+                if (badge) el.appendChild(badge);
+                el.classList.remove('active');
+            });
+
+            const activeSpace = document.getElementById('space-' + position);
+            if (activeSpace) {
+                const avatarSpan = document.createElement('span');
+                avatarSpan.innerText = playerAvatar;
+                activeSpace.appendChild(avatarSpan);
+                activeSpace.classList.add('active');
+            }
+            
+            document.getElementById('level-display').innerText = currentLevel;
+            document.getElementById('token-display').innerText = tokens;
+            document.getElementById('streak-display').innerText = currentStreak;
+            document.getElementById('login-streak-display').innerText = loginStreak;
+
+            saveProgress();
+        }
+
+        // ==================== MOVEMENT & GAMEPLAY ====================
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function moveAvatarStepByStep(steps) {
+            for (let i = 0; i < steps; i++) {
+                if (position < 19) {
+                    position++;
+                    updateBoardUI();
+                    
+                    const activeSpace = document.getElementById('space-' + position);
+                    activeSpace.classList.add('avatar-jumping');
+                    playInstantSFX('roll');
+                    await sleep(320);
+                    activeSpace.classList.remove('avatar-jumping');
+
+                    if (position === 19) break; // Stop at Boss space
+                }
+            }
+        }
+
+        async function handleSpecialTile() {
+            const tile = specialTiles[position];
+            if (!tile) return;
+
+            await sleep(250);
+
+            if (tile.type === 'ladder') {
+                playInstantSFX('correct');
+                alert(`🎉 ${tile.message}`);
+                await moveAvatarStepByStep(tile.target - position);
+            } else if (tile.type === 'trap') {
+                playInstantSFX('wrong');
+                alert(`😬 ${tile.message}`);
+                const stepsBack = position - tile.target;
+                for (let i = 0; i < stepsBack; i++) {
+                    position--;
+                    updateBoardUI();
+                    await sleep(180);
+                }
+            } else if (tile.type === 'bonus') {
+                triggerConfetti();
+                tokens += tile.tokens;
+                alert(`⭐ ${tile.message}`);
+                updateBoardUI();
+            }
+        }
+
+        async function rollDice() {
+            const diceBtn = document.getElementById('dice-btn');
+            diceBtn.disabled = true;
+
+            const roll = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('roll-display').innerText = roll;
+
+            await moveAvatarStepByStep(roll);
+
+            if (position === 19) {
+                diceBtn.disabled = false;
+                startBossBattle();
+                return;
+            }
+
+            await handleSpecialTile();
+            diceBtn.disabled = false;
+
+            if (position >= totalSpaces - 1) {
+                levelComplete();
+            } else {
+                setTimeout(askQuestion, 250);
+            }
+        }
+
+        // ==================== QUIZ & BOSS ENGINE ====================
+        function askQuestion() {
+            const levelData = gameData.levels.find(l => l.level === currentLevel);
+            const qs = levelData ? levelData.questions : gameData.levels[0].questions; 
+            currentQuestion = qs[Math.floor(Math.random() * qs.length)];
+            
+            document.getElementById('question-text').innerText = currentQuestion.q;
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+            
+            let options = [...currentQuestion.opts].sort(() => Math.random() - 0.5);
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt);
+                optsContainer.appendChild(btn);
+            });
+            
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function checkAnswer(selected) {
+            document.getElementById('modal').style.display = 'none';
+            
+            if (selected === currentQuestion.a) {
+                playInstantSFX('correct');
+                currentStreak++;
+                const multiplier = Math.min(currentStreak, 5);
+                const earned = 10 * multiplier;
+                tokens += earned;
+                
+                if (currentStreak > 1) {
+                    triggerConfetti();
+                }
+                speakHebrew(currentQuestion.a);
+            } else {
+                playInstantSFX('wrong');
+                currentStreak = 0;
+                position = Math.max(0, position - 2);
+                alert(`Oops! The correct answer was '${currentQuestion.a}'.`);
+            }
+            updateBoardUI();
+        }
+
+        function startBossBattle() {
+            inBossBattle = true;
+            bossHP = 3;
+            const boss = levelBosses[currentLevel] || levelBosses[1];
+            alert(`👾 BOSS WARNING! ${boss.name} has appeared!`);
+            askBossQuestion();
+        }
+
+        function askBossQuestion() {
+            const boss = levelBosses[currentLevel] || levelBosses[1];
+            const levelData = gameData.levels.find(l => l.level === currentLevel);
+            const qs = levelData ? levelData.questions : gameData.levels[0].questions; 
+            currentQuestion = qs[Math.floor(Math.random() * qs.length)];
+            
+            document.getElementById('question-text').innerHTML = `
+                <div class="boss-card">
+                    <div class="boss-avatar">${boss.icon}</div>
+                    <div class="boss-title">${boss.name}</div>
+                    <div class="boss-health">HP: ${'💖'.repeat(bossHP)}${'🖤'.repeat(maxBossHP - bossHP)}</div>
+                    <div class="boss-bubble">"${boss.intro}"</div>
+                </div>
+                ${currentQuestion.q}
+            `;
+            
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+            
+            let options = [...currentQuestion.opts].sort(() => Math.random() - 0.5);
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkBossAnswer(opt);
+                optsContainer.appendChild(btn);
+            });
+            
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function checkBossAnswer(selected) {
+            document.getElementById('modal').style.display = 'none';
+            const boss = levelBosses[currentLevel] || levelBosses[1];
+            
+            if (selected === currentQuestion.a) {
+                bossHP--;
+                playInstantSFX('correct');
+                triggerConfetti();
+                
+                if (bossHP <= 0) {
+                    inBossBattle = false;
+                    if (!defeatedBosses.includes(currentLevel)) {
+                        defeatedBosses.push(currentLevel);
+                    }
+                    alert(`🎉 ${boss.victory}\nYou beat ${boss.name}!`);
+                    position = 20;
+                    updateBoardUI();
+                    setTimeout(levelComplete, 400);
+                } else {
+                    alert(`💥 Direct Hit! ${boss.name} has ${bossHP} HP remaining!`);
+                    setTimeout(askBossQuestion, 350);
+                }
+            } else {
+                playInstantSFX('wrong');
+                alert(`😬 "${boss.taunt}"\n${boss.name} knocked you back 2 spaces!`);
+                inBossBattle = false;
+                position = 17;
+                updateBoardUI();
+            }
+        }
+
+        function levelComplete() {
+            playInstantSFX('correct');
+            triggerConfetti();
+            alert(`Level ${currentLevel} Complete! You earned a Mastery Token! 🏆`);
+            
+            if (currentLevel < 12) {
+                currentLevel++;
+                position = 0;
+                specialTiles = generateRandomSpecialTiles();
+                buildBoard();
+                updateBoardUI();
+            } else {
+                alert(`🎉 YOU BEAT THE GAME WITH ${tokens} TOKENS! MAZEL TOV! 🎉`);
+                localStorage.removeItem('alephBetSave');
+                location.reload();
+            }
+        }
+
+        // ==================== BESTIARY & TROPHY ROOM ====================
+        function renderBestiary() {
+            const grid = document.getElementById('bestiary-grid');
+            grid.innerHTML = '';
+            
+            for (let lvl = 1; lvl <= 12; lvl++) {
+                const boss = levelBosses[lvl] || { name: `Boss ${lvl}`, icon: "👾", victory: "Defeated!" };
+                const isDefeated = defeatedBosses.includes(lvl);
+                
+                const card = document.createElement('div');
+                card.className = `boss-trophy-card ${isDefeated ? 'unlocked' : 'locked'}`;
+                
+                card.innerHTML = `
+                    <div class="trophy-avatar">${isDefeated ? boss.icon : '🔒'}</div>
+                    <div style="font-size: 0.75rem; font-weight: bold; color: #888;">LVL ${lvl}</div>
+                    <div style="font-weight: bold; font-size: 0.85rem; margin: 3px 0;">${isDefeated ? boss.name : '???'}</div>
+                    ${isDefeated ? `
+                        <div class="word-preview">${boss.sampleHebrew}</div>
+                        <div style="font-size: 0.7rem; color: #666;">"${boss.phonetic}"</div>
+                        <button class="bestiary-audio-btn" onclick="speakHebrew('${boss.sampleHebrew}')">
+                            🔊 Listen
+                        </button>
+                    ` : `
+                        <div style="font-size: 0.7rem; font-style: italic; color: #888; margin-top: 6px;">Locked</div>
+                    `}
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        function openBestiary() { renderBestiary(); document.getElementById('bestiary-modal').style.display = 'flex'; }
+        function closeBestiary() { document.getElementById('bestiary-modal').style.display = 'none'; }
+
+        // ==================== AVATAR SHOP ENGINE ====================
+        function renderShop() {
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = '';
+            
+            shopCatalog.forEach(item => {
+                const isUnlocked = unlockedAvatars.includes(item.icon);
+                const isSelected = playerAvatar === item.icon;
+                
+                const card = document.createElement('div');
+                card.className = 'shop-card';
+                card.innerHTML = `
+                    <div style="font-size: 2.5rem;">${item.icon}</div>
+                    <div style="font-size: 0.85rem; margin: 5px 0;">${isUnlocked ? 'Unlocked' : item.cost + ' ⭐'}</div>
+                    <button class="hud-btn" style="width: 100%; background: ${isSelected ? '#28a745' : (isUnlocked ? '#007bff' : '#ffc107')}; color: white;" 
+                        onclick="${isUnlocked ? `selectAvatar('${item.icon}')` : `buyAvatar('${item.icon}',${item.cost})`}">
+                        ${isSelected ? 'Active' : (isUnlocked ? 'Use' : 'Buy')}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function buyAvatar(icon, cost) {
+            if (tokens >= cost) {
+                tokens -= cost;
+                unlockedAvatars.push(icon);
+                playerAvatar = icon;
+                playInstantSFX('correct');
+                triggerConfetti();
+                updateBoardUI();
+                renderShop();
+                updateSetupPicker();
+            } else {
+                playInstantSFX('wrong');
+                alert("Not enough tokens!");
+            }
+        }
+
+        function selectAvatar(icon) {
+            playerAvatar = icon;
+            updateBoardUI();
+            renderShop();
+        }
+
+        function openShop() { renderShop(); document.getElementById('shop-modal').style.display = 'flex'; }
+        function closeShop() { document.getElementById('shop-modal').style.display = 'none'; }
+
+        function updateSetupPicker() {
+            const list = document.getElementById('avatar-picker-list');
+            list.innerHTML = '';
+            unlockedAvatars.forEach(icon => {
+                const btn = document.createElement('button');
+                btn.className = 'avatar-btn';
+                btn.innerText = icon;
+                btn.onclick = () => startGame(icon);
+                list.appendChild(btn);
+            });
+        }
+
+        // ==================== DAILY CHALLENGE ENGINE ====================
+        const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+        function isDailyAvailable() {
+            return (Date.now() - lastDailyTime) >= TWENTY_FOUR_HOURS;
+        }
+
+        function updateDailyButtonUI() {
+            const btn = document.getElementById('daily-btn');
+            if (!btn) return;
+            btn.innerHTML = isDailyAvailable() ? `📅 Daily <span style="background:#ff4500; padding:2px 5px; border-radius:50%; font-size:0.7rem;">!</span>` : `📅 Daily (Done)`;
+        }
+
+        let dailyQuestions = [], dailyIndex = 0, dailyCorrect = 0;
+
+        function openDailyChallenge() {
+            const statusDiv = document.getElementById('daily-status');
+            const quizArea = document.getElementById('daily-quiz-area');
+            const closeBtn = document.getElementById('daily-close-btn');
+
+            document.getElementById('daily-modal').style.display = 'flex';
+
+            if (!isDailyAvailable()) {
+                const diff = TWENTY_FOUR_HOURS - (Date.now() - lastDailyTime);
+                const hrs = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                statusDiv.innerHTML = `<p>Next drill unlocks in: <strong>${hrs}h ${mins}m</strong></p>`;
+                quizArea.style.display = 'none';
+                closeBtn.style.display = 'block';
+                return;
+            }
+
+            statusDiv.innerText = "Answer 5 questions to earn 100 Bonus Tokens!";
+            closeBtn.style.display = 'none';
+            quizArea.style.display = 'block';
+
+            let pool = [];
+            for (let l = 1; l <= currentLevel; l++) {
+                const levelData = gameData.levels.find(item => item.level === l);
+                if (levelData) pool = pool.concat(levelData.questions);
+            }
+            if (pool.length === 0) pool = gameData.levels[0].questions;
+
+            dailyQuestions = [...pool].sort(() => 0.5 - Math.random()).slice(0, 5);
+            dailyIndex = 0;
+            dailyCorrect = 0;
+            askDailyQuestion();
+        }
+
+        function askDailyQuestion() {
+            const q = dailyQuestions[dailyIndex];
+            document.getElementById('daily-q-num').innerText = dailyIndex + 1;
+            document.getElementById('daily-q-text').innerText = q.q;
+
+            const container = document.getElementById('daily-opts-container');
+            container.innerHTML = '';
+            let options = [...q.opts].sort(() => Math.random() - 0.5);
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkDailyAnswer(opt);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkDailyAnswer(selected) {
+            const q = dailyQuestions[dailyIndex];
+            if (selected === q.a) {
+                dailyCorrect++;
+                playInstantSFX('correct');
+                speakHebrew(q.a);
+            } else {
+                playInstantSFX('wrong');
+            }
+            dailyIndex++;
+            if (dailyIndex < 5) {
+                askDailyQuestion();
+            } else {
+                lastDailyTime = Date.now();
+                const bonus = dailyCorrect * 20;
+                tokens += bonus;
+                triggerConfetti();
+                
+                document.getElementById('daily-quiz-area').style.display = 'none';
+                document.getElementById('daily-status').innerHTML = `
+                    <h3>🎉 Practice Complete!</h3>
+                    <p>Score: <strong>${dailyCorrect}/5</strong></p>
+                    <p style="font-size:1.2rem; color:#FFD700; font-weight:bold;">+${bonus} Bonus Tokens ⭐</p>
+                `;
+                document.getElementById('daily-close-btn').style.display = 'block';
+                updateBoardUI();
+                updateDailyButtonUI();
+            }
+        }
+
+        function closeDailyModal() { document.getElementById('daily-modal').style.display = 'none'; }
+
+        // ==================== DAILY LOGIN STREAK ENGINE ====================
+        function processDailyLoginStreak() {
+            const todayStr = new Date().toDateString();
+
+            if (!lastLoginDate) {
+                loginStreak = 1;
+                lastLoginDate = todayStr;
+                awardStreakReward(loginStreak, false);
+                return;
+            }
+
+            if (lastLoginDate === todayStr) return;
+
+            const diffTime = Math.abs(new Date(todayStr) - new Date(lastLoginDate));
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            let wasReset = false;
+            if (diffDays === 1) {
+                loginStreak++;
+            } else if (diffDays > 1) {
+                loginStreak = 1;
+                wasReset = true;
+            }
+
+            lastLoginDate = todayStr;
+            awardStreakReward(loginStreak, wasReset);
+        }
+
+        function awardStreakReward(streak, wasReset) {
+            const bonus = Math.min(streak * 20, 100);
+            tokens += bonus;
+            triggerConfetti();
+
+            setTimeout(() => {
+                if (wasReset) {
+                    alert(`⚡ Streak Reset! +${bonus} tokens earned today!`);
+                } else if (streak > 1) {
+                    alert(`🔥 ${streak}-DAY LOGIN STREAK!\nWelcome back! Earned +${bonus} Bonus Tokens ⭐!`);
+                } else {
+                    alert(`🌟 Welcome to Aleph-Bet Adventure!\nEarned +${bonus} Welcome Tokens ⭐!`);
+                }
+                updateBoardUI();
+            }, 500);
+        }
+
+        // ==================== LOCAL STORAGE & STARTUP ====================
+        function saveProgress() {
+            const gameState = {
+                avatar: playerAvatar,
+                unlockedAvatars: unlockedAvatars,
+                level: currentLevel,
+                tokens: tokens,
+                position: position,
+                streak: currentStreak,
+                tiles: specialTiles,
+                defeatedBosses: defeatedBosses,
+                lastDailyTime: lastDailyTime,
+                loginStreak: loginStreak,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem('alephBetSave', JSON.stringify(gameState));
+        }
+
+        function loadProgress() {
+            const savedData = localStorage.getItem('alephBetSave');
+            if (savedData) {
+                const state = JSON.parse(savedData);
+                playerAvatar = state.avatar || '🐱';
+                unlockedAvatars = state.unlockedAvatars || ['🐱', '🐶', '🦊', '🐸'];
+                currentLevel = state.level || 1;
+                tokens = state.tokens || 0;
+                position = state.position || 0;
+                currentStreak = state.streak || 0;
+                specialTiles = state.tiles || {};
+                defeatedBosses = state.defeatedBosses || [];
+                lastDailyTime = state.lastDailyTime || 0;
+                loginStreak = state.loginStreak || 0;
+                lastLoginDate = state.lastLoginDate || '';
+
+                document.getElementById('setup-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'block';
+                
+                buildBoard();
+                updateBoardUI();
+            }
+        }
+
+        function startGame(avatar) {
+            playerAvatar = avatar;
+            specialTiles = generateRandomSpecialTiles();
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            buildBoard();
+            updateBoardUI();
+        }
+
+        function resetGame() {
+            if (confirm("Are you sure you want to restart? Progress will be lost!")) {
+                localStorage.removeItem('alephBetSave');
+                location.reload();
+            }
+        }
+
+        window.onload = async function() {
+            await loadQuestions();
+            updateSetupPicker();
+            loadProgress();
+            processDailyLoginStreak();
+            updateDailyButtonUI();
+        };
+    </script>
+</body>
+</html>
