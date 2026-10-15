@@ -385,7 +385,81 @@
         { "q": "What is the Hebrew word for 'Hat'?", "opts": ["כּוֹבַע (Kova)", "מְעִיל (Me'il)", "שִׂמְלָה (Simla)", "נַעֲלַיִם (Na'alayim)"], "a": "כּוֹבַע (Kova)" },
         { "q": "Translate: 'יֵשׁ לִי נַעֲלַיִם חֲדָשׁוֹת'", "opts": ["I have new shoes", "I have new pants", "I have a new shirt", "I need new shoes"], "a": "I have new shoes" },
         { "q": "What is the infinitive verb 'To wear' in Hebrew?", "opts": ["לִלְבֹּשׁ (Lilbosh)", "לֶאֱכֹל (Le'echol)", "לִרְקֹד (Lirkod)", "לִישׁוֹן (Lishon)"], "a": "לִלְבֹּשׁ (Lilbosh)" },
-        { "q": "Translate: 'הוּא לוֹבֵשׁ חֻלְצָה כְּחֻלָּה'", "opts": ["He is wearing a blue shirt", "He is wearing black pants", "She is wearing a blue dress", "I am wearing a white shirt"], "a": "He is wearing a blue shirt" }
+        { "q": "Translate: 'הוּא לוֹבֵשׁ חֻלְצָה כְּחֻלָּה'", "opts": ["He is wearing a blue shirt", "He is wearing black pants", "She is wearing a blue dress", "I am wearing a white shirt"], "a": "He is wearing a blue shirt" },
+
+    {
+      "level": 10,
+      "questions": [
+        { "q": "Translate: 'Happy' (masculine singular)", "opts": ["שָׂמֵחַ (Sameach)", "עָצוּב (Atzuv)", "עָיֵף (Ayef)", "רָעֵב (Ra'ev)"], "a": "שָׂמֵחַ (Sameach)" },
+        { "q": "Translate: 'Happy' (feminine singular)", "opts": ["שְׂמֵחָה (Smecha)", "שָׂמֵחַ (Sameach)", "עֲצוּבָה (Atzuva)", "עֲיֵפָה (Ayefa)"], "a": "שְׂמֵחָה (Smecha)" },
+        { "q": "Translate: 'Sad' (masculine singular)", "opts": ["עָצוּב (Atzuv)", "שָׂמֵחַ (Sameach)", "כּוֹעֵס (Ko'es)", "חוֹלֶה (Choleh)"], "a": "עָצוּב (Atzuv)" },
+        { "q": "Translate: 'Tired' (masculine singular)", "opts": ["עָיֵף (Ayef)", "רָעֵב (Ra'ev)", "צָמֵא (Tzame)", "שָׂמֵחַ (Sameach)"], "a": "עָיֵף (Ayef)" },
+        { "q": "Translate: 'Hungry' (masculine singular)", "opts": ["רָעֵב (Ra'ev)", "עָיֵף (Ayef)", "צָמֵא (Tzame)", "שָׂמֵחַ (Sameach)"], "a": "רָעֵב (Ra'ev)" },
+        { "q": "Translate: 'Thirsty' (masculine singular)", "opts": ["צָמֵא (Tzame)", "רָעֵב (Ra'ev)", "עָיֵף (Ayef)", "כּוֹעֵס (Ko'es)"], "a": "צָמֵא (Tzame)" },
+        { "q": "Translate: 'Angry' (masculine singular)", "opts": ["כּוֹעֵס (Ko'es)", "שָׂמֵחַ (Sameach)", "עָצוּב (Atzuv)", "מְפַחֵד (Mefached)"], "a": "כּוֹעֵס (Ko'es)" },
+        { "q": "Translate: 'Sick' (masculine singular)", "opts": ["חוֹלֶה (Choleh)", "בָּרִיא (Bari)", "עָיֵף (Ayef)", "שָׂמֵחַ (Sameach)"], "a": "חוֹלֶה (Choleh)" },
+        { "q": "Translate: 'Healthy' (masculine singular)", "opts": ["בָּרִיא (Bari)", "חוֹלֶה (Choleh)", "עָצוּב (Atzuv)", "רָעֵב (Ra'ev)"], "a": "בָּרִיא (Bari)" },
+        { "q": "Translate: 'Scared / Afraid' (masculine singular)", "opts": ["מְפַחֵד (Mefached)", "כּוֹעֵס (Ko'es)", "שָׂמֵחַ (Sameach)", "עָיֵף (Ayef)"], "a": "מְפַחֵד (Mefached)" },
+        { "q": "How do you say 'I am hungry' (Male speaking)?", "opts": ["אֲנִי רָעֵב (Ani ra'ev)", "אֲנִי רְעֵבָה", "אֲנִי עָיֵף", "אֲנִי צָמֵא"], "a": "אֲנִי רָעֵב (Ani ra'ev)" },
+        { "q": "How do you say 'I am tired' (Female speaking)?", "opts": ["אֲנִי עֲיֵפָה (Ani ayefa)", "אֲנִי עָיֵף", "אֲנִי רְעֵבָה", "אֲנִי שְׂמֵחָה"], "a": "אֲנִי עֲיֵפָה (Ani ayefa)" },
+        { "q": "How do you say 'I am cold' (Literally: It is cold to me)?", "opts": ["קַר לִי (Kar li)", "חַם לִי (Cham li)", "טוֹב לִי (Tov li)", "רַע לִי (Ra li)"], "a": "קַר לִי (Kar li)" },
+        { "q": "How do you say 'I am hot' (Literally: It is hot to me)?", "opts": ["חַם לִי (Cham li)", "קַר לִי (Kar li)", "אֲנִי חַם", "אֲנִי קַר"], "a": "חַם לִי (Cham li)" },
+        { "q": "How do you ask 'How do you feel?' (To a male)?", "opts": ["אֵיךְ אַתָּה מַרְגִּישׁ?", "אֵיךְ אַתְּ מַרְגִּישָׁה?", "מָה נִשְׁמָע?", "אֵיפֹה אַתָּה?"], "a": "אֵיךְ אַתָּה מַרְגִּישׁ?" },
+        { "q": "How do you ask 'How do you feel?' (To a female)?", "opts": ["אֵיךְ אַתְּ מַרְגִּישָׁה?", "אֵיךְ אַתָּה מַרְגִּישׁ?", "מָה שְׁלוֹמְךָ?", "אֵיךְ אַתֶּם?"], "a": "אֵיךְ אַתְּ מַרְגִּישָׁה?" },
+        { "q": "Translate: 'Everything is okay / fine'", "opts": ["הַכֹּל בְּסֵדֶר (Hakol beseder)", "הַכֹּל טוֹב", "מְצֻיָּן", "לֹא טוֹב"], "a": "הַכֹּל בְּסֵדֶר (Hakol beseder)" },
+        { "q": "Translate: 'Excellent / Great'", "opts": ["מְצֻיָּן (Metzuyan)", "רַע מְאֹד", "בְּסֵדֶר", "כָּכָה כָּכָה"], "a": "מְצֻיָּן (Metzuyan)" },
+        { "q": "Translate: 'So-so' (Not good, not bad)", "opts": ["כָּכָה כָּכָה (Kacha kacha)", "מְצֻיָּן", "טוֹב מְאֹד", "בְּסֵדֶר"], "a": "כָּכָה כָּכָה (Kacha kacha)" },
+        { "q": "Translate: 'אֲנִי שָׂמֵחַ מְאֹד'", "opts": ["I am very happy (m)", "I am very sad (m)", "I am very tired (m)", "I am very sick (m)"], "a": "I am very happy (m)" }
+      ]
+    },
+    {
+      "level": 11,
+      "questions": [
+        { "q": "What is the Hebrew word for 'Car'?", "opts": ["מְכוֹנִית (Mechonit)", "אוֹטוֹבּוּס (Otobus)", "רַכֶּבֶת (Rakevet)", "מָטוֹס (Matos)"], "a": "מְכוֹנִית (Mechonit)" },
+        { "q": "What is the Hebrew word for 'Bus'?", "opts": ["אוֹטוֹבּוּס (Otobus)", "מְכוֹנִית (Mechonit)", "רַכֶּבֶת (Rakevet)", "אוֹפַנַּיִם (Ofanayim)"], "a": "אוֹטוֹבּוּס (Otobus)" },
+        { "q": "What is the Hebrew word for 'Train'?", "opts": ["רַכֶּבֶת (Rakevet)", "מָטוֹס (Matos)", "מְכוֹנִית (Mechonit)", "אוֹטוֹבּוּס (Otobus)"], "a": "רַכֶּבֶת (Rakevet)" },
+        { "q": "What is the Hebrew word for 'Airplane'?", "opts": ["מָטוֹס (Matos)", "רַכֶּבֶת (Rakevet)", "סִירָה (Sira)", "אוֹפַנַּיִם (Ofanayim)"], "a": "מָטוֹס (Matos)" },
+        { "q": "What is the Hebrew word for 'Bicycle'?", "opts": ["אוֹפַנַּיִם (Ofanayim)", "מְכוֹנִית (Mechonit)", "רַכֶּבֶת (Rakevet)", "מָטוֹס (Matos)"], "a": "אוֹפַנַּיִם (Ofanayim)" },
+        { "q": "What is the Hebrew word for 'Street'?", "opts": ["רְחוֹב (Rechov)", "חֲנוּת (Chanut)", "עִיר (Ir)", "שְׁבִיל (Shvil)"], "a": "רְחוֹב (Rechov)" },
+        { "q": "What is the Hebrew word for 'Store / Shop'?", "opts": ["חֲנוּת (Chanut)", "רְחוֹב (Rechov)", "קַנְיוֹן (Kanyon)", "שׁוּק (Shuk)"], "a": "חֲנוּת (Chanut)" },
+        { "q": "What is the Hebrew word for 'Market'?", "opts": ["שׁוּק (Shuk)", "חֲנוּת (Chanut)", "מִסְעָדָה (Mis'ada)", "קַנְיוֹן (Kanyon)"], "a": "שׁוּק (Shuk)" },
+        { "q": "How do you say 'Right' (Direction)?", "opts": ["יָמִינָה (Yamina)", "שְׂמֹאלָה (Smola)", "יָשָׁר (Yashar)", "אָחוֹרָה (Achora)"], "a": "יָמִינָה (Yamina)" },
+        { "q": "How do you say 'Left' (Direction)?", "opts": ["שְׂמֹאלָה (Smola)", "יָמִינָה (Yamina)", "יָשָׁר (Yashar)", "קָדִימָה (Kadima)"], "a": "שְׂמֹאלָה (Smola)" },
+        { "q": "How do you say 'Straight' (Direction)?", "opts": ["יָשָׁר (Yashar)", "יָמִינָה (Yamina)", "שְׂמֹאלָה (Smola)", "לְמַעְלָה (Lema'ala)"], "a": "יָשָׁר (Yashar)" },
+        { "q": "What is the Hebrew word for 'Station / Stop'?", "opts": ["תַּחֲנָה (Tachana)", "כַּרְטִיס (Kartis)", "רְחוֹב (Rechov)", "עִיר (Ir)"], "a": "תַּחֲנָה (Tachana)" },
+        { "q": "Translate: 'תַּחֲנַת רַכֶּבֶת' (Tachanat Rakevet)", "opts": ["Train station", "Bus stop", "Airport", "Police station"], "a": "Train station" },
+        { "q": "Translate: 'כַּרְטִיס' (Kartis)", "opts": ["Ticket", "Money", "Station", "Train"], "a": "Ticket" },
+        { "q": "How do you say 'Far'?", "opts": ["רָחוֹק (Rachok)", "קָרוֹב (Karov)", "יָשָׁר (Yashar)", "כָּאן (Kan)"], "a": "רָחוֹק (Rachok)" },
+        { "q": "How do you say 'Near / Close'?", "opts": ["קָרוֹב (Karov)", "רָחוֹק (Rachok)", "שָׁם (Sham)", "פֹּה (Poh)"], "a": "קָרוֹב (Karov)" },
+        { "q": "What is the verb for 'Traveling / Riding in a vehicle' (masculine singular)?", "opts": ["נוֹסֵעַ (Nose'a)", "הוֹלֵךְ (Holech)", "רָץ (Ratz)", "טָס (Tas)"], "a": "נוֹסֵעַ (Nose'a)" },
+        { "q": "Translate: 'אֵיפֹה תַּחֲנַת הָאוֹטוֹבּוּס?'", "opts": ["Where is the bus station?", "Where is the train station?", "Where is the car?", "How much is the ticket?"], "a": "Where is the bus station?" },
+        { "q": "Translate: 'אֲנִי נוֹסֵעַ לָעִיר'", "opts": ["I am traveling to the city", "I am walking to the city", "He is traveling to the city", "I am in the city"], "a": "I am traveling to the city" },
+        { "q": "Translate: 'הַחֲנוּת יָמִינָה'", "opts": ["The store is to the right", "The store is to the left", "The store is straight ahead", "The store is far"], "a": "The store is to the right" }
+      ]
+    },
+    {
+      "level": 12,
+      "questions": [
+        { "q": "Translate the question word: 'Who?'", "opts": ["מִי? (Mi)", "מָה? (Ma)", "מָתַי? (Matai)", "אֵיפֹה? (Eifo)"], "a": "מִי? (Mi)" },
+        { "q": "Translate the question word: 'What?'", "opts": ["מָה? (Ma)", "מִי? (Mi)", "אֵיךְ? (Eich)", "לָמָּה? (Lama)"], "a": "מָה? (Ma)" },
+        { "q": "Translate the question word: 'Where?'", "opts": ["אֵיפֹה? (Eifo)", "מָתַי? (Matai)", "אֵיךְ? (Eich)", "כַּמָּה? (Kama)"], "a": "אֵיפֹה? (Eifo)" },
+        { "q": "Translate the question word: 'When?'", "opts": ["מָתַי? (Matai)", "אֵיפֹה? (Eifo)", "מִי? (Mi)", "לָמָּה? (Lama)"], "a": "מָתַי? (Matai)" },
+        { "q": "Translate the question word: 'Why?'", "opts": ["לָמָּה? (Lama)", "אֵיךְ? (Eich)", "מִי? (Mi)", "כַּמָּה? (Kama)"], "a": "לָמָּה? (Lama)" },
+        { "q": "Translate the question word: 'How?'", "opts": ["אֵיךְ? (Eich)", "מָה? (Ma)", "אֵיפֹה? (Eifo)", "מָתַי? (Matai)"], "a": "אֵיךְ? (Eich)" },
+        { "q": "Translate the question word: 'How much / How many?'", "opts": ["כַּמָּה? (Kama)", "אֵיךְ? (Eich)", "לָמָּה? (Lama)", "מָתַי? (Matai)"], "a": "כַּמָּה? (Kama)" },
+        { "q": "Translate the question word: 'Which?'", "opts": ["אֵיזֶה? (Eizeh)", "מִי? (Mi)", "כַּמָּה? (Kama)", "מָה? (Ma)"], "a": "אֵיזֶה? (Eizeh)" },
+        { "q": "How do you ask 'What is your name?' to a male?", "opts": ["אֵיךְ קוֹרְאִים לְךָ?", "אֵיךְ קוֹרְאִים לָךְ?", "מָה הַשֵּׁם שֶׁלָּךְ?", "מִי אַתָּה?"], "a": "אֵיךְ קוֹרְאִים לְךָ?" },
+        { "q": "How do you say 'My name is...' (Literally: They call me)?", "opts": ["קוֹרְאִים לִי...", "הַשֵּׁם שֶׁלִּי הוּא...", "אֲנִי הוּא...", "שָׁלוֹם לִי..."], "a": "קוֹרְאִים לִי..." },
+        { "q": "How do you ask 'Where are you from?' to a male?", "opts": ["מֵאֵיפֹה אַתָּה?", "מֵאֵיפֹה אַתְּ?", "מִי אַתָּה?", "אֵיפֹה שָׁם?"], "a": "מֵאֵיפֹה אַתָּה?" },
+        { "q": "How do you ask 'How old are you?' to a male?", "opts": ["בֶּן כַּמָּה אַתָּה?", "בַּת כַּמָּה אַתְּ?", "אֵיךְ אַתָּה?", "כַּמָּה זֶה עוֹלֶה?"], "a": "בֶּן כַּמָּה אַתָּה?" },
+        { "q": "Translate: 'אֲנִי מֵבִין' (Ani mevin)", "opts": ["I understand (m)", "I don't know (m)", "I speak (m)", "I want (m)"], "a": "I understand (m)" },
+        { "q": "Translate: 'אֲנִי לֹא יוֹדֵעַ' (Ani lo yode'a)", "opts": ["I don't know (m)", "I don't understand (m)", "I don't want (m)", "I am not going (m)"], "a": "I don't know (m)" },
+        { "q": "Translate: 'נָעִים מְאֹד' (Naim me'od)", "opts": ["Nice to meet you", "Thank you very much", "Excuse me", "Good morning"], "a": "Nice to meet you" },
+        { "q": "Translate: 'סְלִיחָה' (Slicha)", "opts": ["Excuse me / Sorry", "Thank you", "Please", "Hello"], "a": "Excuse me / Sorry" },
+        { "q": "Translate: 'בְּהַצְלָחָה' (Behatzlacha)", "opts": ["Good luck / With success", "Congratulations", "Goodbye", "See you later"], "a": "Good luck / With success" },
+        { "q": "Translate: 'מַזָּל טוֹב' (Mazal Tov)", "opts": ["Congratulations / Good fortune", "Good luck", "Thank you", "Good night"], "a": "Congratulations / Good fortune" },
+        { "q": "Translate: 'לְהִתְרָאוֹת' (Lehitra'ot)", "opts": ["See you later / Goodbye", "Hello", "Excuse me", "Good evening"], "a": "See you later / Goodbye" },
+        { "q": "Capstone Phrase: 'אֲנִי מְדַבֵּר קְצָת עִבְרִית'", "opts": ["I speak a little Hebrew (m)", "I speak a lot of Hebrew (m)", "I learn Hebrew (m)", "I read Hebrew (m)"], "a": "I speak a little Hebrew (m)" }
 
       ]
     }
