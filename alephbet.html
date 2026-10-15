@@ -309,31 +309,50 @@
     }
     .option-btn:hover { border-color: var(--primary); background: #EBF8FF; }
 
-    /* Boss Battle Header Overlay */
+    /* Updated Boss Battle Header Overlay */
     .boss-header {
-      background: #FFF5F5;
-      border: 2px solid #FEB2B2;
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 15px;
+      background: linear-gradient(135deg, #FFF5F5, #FED7D7);
+      border: 3px solid #FEB2B2;
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 20px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      box-shadow: 0 6px 15px rgba(229, 62, 62, 0.2);
     }
-    .boss-avatar { font-size: 2.5rem; }
+    #boss-name {
+      font-size: 1.3rem;
+      color: #C53030;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .boss-avatar { 
+      font-size: 5rem;
+      line-height: 1;
+      margin: 5px 0;
+      animation: pulseBoss 1.5s infinite;
+    }
+    @keyframes pulseBoss {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
     .boss-hp-bar {
-      flex: 1;
-      height: 14px;
+      width: 100%;
+      max-width: 300px;
+      height: 16px;
       background: #EDF2F7;
-      border-radius: 7px;
+      border-radius: 8px;
       overflow: hidden;
-      border: 1px solid #CBD5E0;
+      border: 2px solid #CBD5E0;
     }
     .boss-hp-fill {
       height: 100%;
       background: var(--secondary);
       width: 100%;
-      transition: width 0.3s ease;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     /* Shop & Bestiary Grid */
@@ -425,14 +444,14 @@
   <!-- Question / Encounter Modal -->
   <div class="modal-overlay" id="question-modal">
     <div class="modal-card">
+      
+      <!-- Boss UI (Centered and animated) -->
       <div id="boss-overlay-header" style="display: none;">
         <div class="boss-header">
+          <strong id="boss-name">Level Boss</strong>
           <div class="boss-avatar" id="boss-avatar-icon">🐉</div>
-          <div style="flex:1; text-align: left;">
-            <strong id="boss-name">Level Boss</strong>
-            <div class="boss-hp-bar">
-              <div class="boss-hp-fill" id="boss-hp-fill"></div>
-            </div>
+          <div class="boss-hp-bar">
+            <div class="boss-hp-fill" id="boss-hp-fill"></div>
           </div>
         </div>
       </div>
@@ -503,6 +522,7 @@
     let gameQuestions = [];
     let activeQuestion = null;
     let bossHP = 3;
+    let inBossBattle = false;
 
     const AVATARS = [
       { icon: '🦁', price: 0 },
@@ -635,10 +655,37 @@
 
     function handleTileLanding(pos) {
       if (pos === 19) {
-        triggerBossBattle();
+        inBossBattle = true;
+        bossHP = 3;
+        updateBossHPDisplay();
+        
+        const boss = BOSSES.find(b => b.level === currentLevel) || BOSSES[0];
+        document.getElementById('boss-avatar-icon').textContent = boss.icon;
+        document.getElementById('boss-name').textContent = boss.name;
+        document.getElementById('boss-overlay-header').style.display = 'flex'; // Use flex for new centered layout
+
+        loadNextBossQuestion();
       } else {
+        inBossBattle = false;
+        document.getElementById('boss-overlay-header').style.display = 'none';
         triggerStandardQuestion();
       }
+    }
+
+    function loadNextBossQuestion() {
+      const lvlData = gameQuestions.find(l => l.level === currentLevel) || gameQuestions[0];
+      if (!lvlData || !lvlData.questions || lvlData.questions.length === 0) return;
+      
+      let newQuestion;
+      let attempts = 0;
+      // Guarantee the next question is different from the previous one
+      do {
+        newQuestion = lvlData.questions[Math.floor(Math.random() * lvlData.questions.length)];
+        attempts++;
+      } while (newQuestion === activeQuestion && lvlData.questions.length > 1 && attempts < 10);
+      
+      activeQuestion = newQuestion;
+      presentQuestion(activeQuestion);
     }
 
     function triggerStandardQuestion() {
@@ -647,21 +694,8 @@
         alert("No questions available for this level yet!");
         return;
       }
-      
       activeQuestion = lvlData.questions[Math.floor(Math.random() * lvlData.questions.length)];
-      document.getElementById('boss-overlay-header').style.display = 'none';
       presentQuestion(activeQuestion);
-    }
-
-    function triggerBossBattle() {
-      bossHP = 3;
-      updateBossHPDisplay();
-      const boss = BOSSES.find(b => b.level === currentLevel) || BOSSES[0];
-      document.getElementById('boss-avatar-icon').textContent = boss.icon;
-      document.getElementById('boss-name').textContent = boss.name;
-      document.getElementById('boss-overlay-header').style.display = 'block';
-
-      triggerStandardQuestion();
     }
 
     function presentQuestion(q) {
@@ -696,22 +730,29 @@
         coins += 10;
         localStorage.setItem('hebrew_coins', coins);
 
-        if (playerPosition === 19) {
+        if (inBossBattle) {
           bossHP--;
           updateBossHPDisplay();
+          
           if (bossHP <= 0) {
+            // Boss Defeated!
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             unlockBestiaryBoss(currentLevel);
             closeModal('question-modal');
-            alert(`🏆 Victory! You defeated the Level ${currentLevel} Boss!`);
+            alert(`🏆 Victory! You defeated the ${document.getElementById('boss-name').textContent}!`);
+            inBossBattle = false;
+            
             if (currentLevel < 12) {
               currentLevel++;
               localStorage.setItem('hebrew_game_level', currentLevel);
               initLevel(currentLevel);
+            } else {
+              playerPosition = 0;
+              positionPlayerToken();
             }
-            playerPosition = 0;
-            positionPlayerToken();
-            return;
+          } else {
+            // Boss hit, but still alive. Instantly load the next question!
+            loadNextBossQuestion();
           }
         } else {
           closeModal('question-modal');
@@ -719,7 +760,17 @@
       } else {
         sfx.wrong();
         alert(`Oops! The correct answer was: ${activeQuestion.a}`);
-        closeModal('question-modal');
+        
+        if (inBossBattle) {
+          // Boss Knockback penalty!
+          alert("💥 The Boss attacked! You were knocked back to space 17.");
+          inBossBattle = false;
+          closeModal('question-modal');
+          playerPosition = 17; // Push player back 2 spaces
+          positionPlayerToken(true);
+        } else {
+          closeModal('question-modal');
+        }
       }
       updateUI();
     }
