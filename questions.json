@@ -149,6 +149,84 @@
         { "q": "How do you say the number 3 (masculine) in Hebrew?", "opts": ["שְׁלֹשָׁה (Shlosha)", "אַרְבָּעָה (Arba'a)", "שִׁבְעָה (Shiv'a)", "שְׁמוֹנָה (Shmona)"], "a": "שְׁלֹשָׁה (Shlosha)" },
         { "q": "How do you say 'Shalom' to someone when leaving?", "opts": ["Shalom / Lehitra'ot (Goodbye / See you)", "Todah", "Bevakasha", "Boker Tov"], "a": "Shalom / Lehitra'ot (Goodbye / See you)" }
       ]
+    },
+
+
+    {
+      "level": 7,
+      "questions": [
+        { "q": "How do you say the number 4 (masculine) in Hebrew?", "opts": ["אַרְבָּעָה (Arba'a)", "חֲמִשָּׁה (Chamisha)", "שְׁלֹשָׁה (Shlosha)", "שִׁשָּׁה (Shisha)"], "a": "אַרְבָּעָה (Arba'a)" },
+        { "q": "How do you say the number 5 (masculine) in Hebrew?", "opts": ["חֲמִשָּׁה (Chamisha)", "שִׁבְעָה (Shiv'a)", "אַרְבָּעָה (Arba'a)", "עֲשָׂרָה (Asara)"], "a": "חֲמִשָּׁה (Chamisha)" },
+        { "q": "How do you say the number 6 (masculine) in Hebrew?", "opts": ["שִׁשָּׁה (Shisha)", "שְׁלֹשָׁה (Shlosha)", "תִּשְׁעָה (Tish'a)", "שְׁמוֹנָה (Shmona)"], "a": "שִׁשָּׁה (Shisha)" },
+        { "q": "How do you say the number 7 (masculine) in Hebrew?", "opts": ["שִׁבְעָה (Shiv'a)", "שְׁמוֹנָה (Shmona)", "חֲמִשָּׁה (Chamisha)", "שִׁשָּׁה (Shisha)"], "a": "שִׁבְעָה (Shiv'a)" },
+        { "q": "How do you say the number 8 (masculine) in Hebrew?", "opts": ["שְׁמוֹנָה (Shmona)", "שִׁבְעָה (Shiv'a)", "תִּשְׁעָה (Tish'a)", "עֲשָׂרָה (Asara)"], "a": "שְׁמוֹנָה (Shmona)" },
+        { "q": "How do you say the number 9 (masculine) in Hebrew?", "opts": ["תִּשְׁעָה (Tish'a)", "שְׁמוֹנָה (Shmona)", "שִׁשָּׁה (Shisha)", "שִׁבְעָה (Shiv'a)"], "a": "תִּשְׁעָה (Tish'a)" },
+        { "q": "How do you say the number 10 (masculine) in Hebrew?", "opts": ["עֲשָׂרָה (Asara)", "אַרְבָּעָה (Arba'a)", "תִּשְׁעָה (Tish'a)", "חֲמִשָּׁה (Chamisha)"], "a": "עֲשָׂרָה (Asara)" },
+        { "q": "What is the Hebrew word for 'I' or 'Me'?", "opts": ["אֲנִי (Ani)", "אַתָּה (Atah)", "הוּא (Hu)", "הִיא (Hi)"], "a": "אֲנִי (Ani)" },
+        { "q": "What is the Hebrew word for 'You' (to a male)?", "opts": ["אַתָּה (Atah)", "אַתְּ (At)", "הוּא (Hu)", "אֲנִי (Ani)"], "a": "אַתָּה (Atah)" },
+        { "q": "What is the Hebrew word for 'You' (to a female)?", "opts": ["אַתְּ (At)", "אַתָּה (Atah)", "הִיא (Hi)", "אֲנִי (Ani)"], "a": "אַתְּ (At)" },
+        { "q": "What is the Hebrew word for 'He'?", "opts": ["הוּא (Hu)", "הִיא (Hi)", "אַתָּה (Atah)", "אֲנִי (Ani)"], "a": "הוּא (Hu)" },
+        { "q": "What is the Hebrew word for 'She'?", "opts": ["הִיא (Hi)", "הוּא (Hu)", "אַתְּ (At)", "אֲנִי (Ani)"], "a": "הִיא (Hi)" },
+        { "q": "What is the Hebrew word for 'We'?", "opts": ["אֲנַחְנוּ (Anachnu)", "הֵם (Hem)", "אַתֶּם (Atem)", "אֲנִי (Ani)"], "a": "אֲנַחְנוּ (Anachnu)" },
+        { "q": "What is the Hebrew word for 'They' (masculine/mixed)?", "opts": ["הֵם (Hem)", "אֲנַחְנוּ (Anachnu)", "הֵן (Hen)", "אַתֶּם (Atem)"], "a": "הֵם (Hem)" },
+        { "q": "How do you read 'אֲנִי'?", "opts": ["Ani", "Atah", "Hu", "Hi"], "a": "Ani" },
+        { "q": "How do you read 'הוּא'?", "opts": ["Hu", "Hi", "Hem", "At"], "a": "Hu" },
+        { "q": "How do you read 'הִיא'?", "opts": ["Hi", "Hu", "Hem", "Hen"], "a": "Hi" },
+        { "q": "Translate: 'אֲנִי יֶלֶד'", "opts": ["I am a boy", "I am a girl", "He is a boy", "You are a boy"], "a": "I am a boy" },
+        { "q": "Translate: 'הִיא יַלְדָּה'", "opts": ["She is a girl", "He is a boy", "I am a girl", "You are a girl"], "a": "She is a girl" },
+        { "q": "Translate: 'הוּא אַבָּא'", "opts": ["He is a father", "She is a mother", "I am a father", "You are a father"], "a": "He is a father" }
+      ]
+    },
+    {
+      "level": 8,
+      "questions": [
+        { "q": "How do you say 'Who?' in Hebrew?", "opts": ["מִי (Mi)", "מָה (Ma)", "אֵיפֹה (Eifo)", "לֹא (Lo)"], "a": "מִי (Mi)" },
+        { "q": "How do you say 'What?' in Hebrew?", "opts": ["מָה (Ma)", "מִי (Mi)", "כֵּן (Ken)", "אֵיפֹה (Eifo)"], "a": "מָה (Ma)" },
+        { "q": "How do you say 'Where?' in Hebrew?", "opts": ["אֵיפֹה (Eifo)", "מָה (Ma)", "מִי (Mi)", "זֶה (Zeh)"], "a": "אֵיפֹה (Eifo)" },
+        { "q": "How do you read 'מִי אַתָּה?'?", "opts": ["Mi atah? (Who are you? - m)", "Ma zeh? (What is this?)", "Mi hi? (Who is she?)", "Eifo atah? (Where are you?)"], "a": "Mi atah? (Who are you? - m)" },
+        { "q": "How do you read 'מָה זֶה?'?", "opts": ["Ma zeh? (What is this?)", "Mi atah? (Who are you?)", "Mi zeh? (Who is this?)", "Ma atah? (What are you?)"], "a": "Ma zeh? (What is this?)" },
+        { "q": "What does 'זֶה' (Zeh) mean?", "opts": ["This (masculine)", "That (feminine)", "Who", "Where"], "a": "This (masculine)" },
+        { "q": "What does 'זֹאת' (Zot) mean?", "opts": ["This (feminine)", "This (masculine)", "What", "Here"], "a": "This (feminine)" },
+        { "q": "Read the sight word: 'שַׁבָּת'", "opts": ["Shabbat", "Shalom", "Shemesh", "Sefer"], "a": "Shabbat" },
+        { "q": "Read the sight word: 'תּוֹרָה'", "opts": ["Torah", "Todah", "Tzitzit", "Tevah"], "a": "Torah" },
+        { "q": "Read the sight word: 'מִצְוָה'", "opts": ["Mitzvah", "Matzah", "Menorah", "Mayim"], "a": "Mitzvah" },
+        { "q": "Read the sight word: 'יִשְׂרָאֵל'", "opts": ["Yisrael (Israel)", "Yerushalayim", "Yosef", "Ya'akov"], "a": "Yisrael (Israel)" },
+        { "q": "Read the sight word: 'כָּשֵׁר'", "opts": ["Kosher", "Kodesh", "Katan", "Kelev"], "a": "Kosher" },
+        { "q": "Read the sight word: 'חַלָּה'", "opts": ["Challah", "Chodesh", "Chalav", "Chanut"], "a": "Challah" },
+        { "q": "Read the sight word: 'סִדּוּר'", "opts": ["Siddur (Prayer book)", "Sefer (Book)", "Sukkah", "Salat"], "a": "Siddur (Prayer book)" },
+        { "q": "How do you say 'Here'?", "opts": ["פֹּה (Poh)", "שָׁם (Sham)", "זֶה (Zeh)", "מִי (Mi)"], "a": "פֹּה (Poh)" },
+        { "q": "How do you say 'There'?", "opts": ["שָׁם (Sham)", "פֹּה (Poh)", "מָה (Ma)", "כֵּן (Ken)"], "a": "שָׁם (Sham)" },
+        { "q": "What is the Hebrew word for 'Teacher' (Male)?", "opts": ["מוֹרֶה (Moreh)", "מוֹרָה (Morah)", "תַּלְמִיד (Talmid)", "יֶלֶד (Yeled)"], "a": "מוֹרֶה (Moreh)" },
+        { "q": "What is the Hebrew word for 'Teacher' (Female)?", "opts": ["מוֹרָה (Morah)", "מוֹרֶה (Moreh)", "תַּלְמִידָה (Talmidah)", "יַלְדָּה (Yalda)"], "a": "מוֹרָה (Morah)" },
+        { "q": "Translate: 'הַמּוֹרֶה פֹּה'", "opts": ["The teacher is here", "The teacher is there", "Where is the teacher?", "Who is the teacher?"], "a": "The teacher is here" },
+        { "q": "Translate: 'מִי שָׁם?'", "opts": ["Who is there?", "What is there?", "Who is here?", "Where is it?"], "a": "Who is there?" }
+      ]
+    },
+    {
+      "level": 9,
+      "questions": [
+        { "q": "What does the prefix 'בְּ' (Be / Ba) mean?", "opts": ["In / At", "To / For", "From", "And"], "a": "In / At" },
+        { "q": "What does the prefix 'לְ' (Le / La) mean?", "opts": ["To / For", "In / At", "The", "From"], "a": "To / For" },
+        { "q": "What does the prefix 'מִ' (Mi) mean?", "opts": ["From", "To / For", "In / At", "And"], "a": "From" },
+        { "q": "What does the prefix 'וְ' (Ve / U) mean?", "opts": ["And", "The", "In / At", "From"], "a": "And" },
+        { "q": "What does the prefix 'הַ' (Ha) mean?", "opts": ["The", "And", "To", "From"], "a": "The" },
+        { "q": "Read and translate: 'הַבַּיִת' (Ha-bayit)", "opts": ["The house", "In the house", "To the house", "A house"], "a": "The house" },
+        { "q": "Read and translate: 'בַּבַּיִת' (Ba-bayit)", "opts": ["In the house", "The house", "To the house", "From the house"], "a": "In the house" },
+        { "q": "Read and translate: 'לַמּוֹרֶה' (La-moreh)", "opts": ["To the teacher", "From the teacher", "The teacher", "In the teacher"], "a": "To the teacher" },
+        { "q": "Read and translate: 'מִיִּשְׂרָאֵל' (Mi-Yisrael)", "opts": ["From Israel", "To Israel", "In Israel", "The Israel"], "a": "From Israel" },
+        { "q": "Read and translate: 'אַבָּא וְאִמָּא' (Abba ve-Imma)", "opts": ["Dad and Mom", "Dad to Mom", "Dad from Mom", "The Dad and Mom"], "a": "Dad and Mom" },
+        { "q": "How do you say 'Very' in Hebrew?", "opts": ["מְאֹד (Me'od)", "טוֹב (Tov)", "קְצָת (Ktzat)", "הַרְבֵּה (Harbeh)"], "a": "מְאֹד (Me'od)" },
+        { "q": "What does 'טוֹב מְאֹד' (Tov me'od) mean?", "opts": ["Very good", "Not good", "A little good", "Big"], "a": "Very good" },
+        { "q": "Read the phrase: 'מַזָּל טוֹב'", "opts": ["Mazal Tov (Congratulations / Good Luck)", "Boker Tov (Good morning)", "Laila Tov (Good night)", "Shabbat Shalom"], "a": "Mazal Tov (Congratulations / Good Luck)" },
+        { "q": "Read the phrase: 'שָׁלוֹם עֲלֵיכֶם'", "opts": ["Shalom Aleichem (Peace be upon you)", "Shabbat Shalom", "Todah Rabah", "Baruch Hashem"], "a": "Shalom Aleichem (Peace be upon you)" },
+        { "q": "Read the sight word: 'אָמֵן'", "opts": ["Amen", "Avraham", "Aharon", "Adon"], "a": "Amen" },
+        { "q": "Read the sight word: 'בָּרוּךְ'", "opts": ["Baruch (Blessed)", "Boker (Morning)", "Bayit (House)", "Ben (Son)"], "a": "Baruch (Blessed)" },
+        { "q": "Review: What does the Dagesh (dot) inside the letter בּ do?", "opts": ["Changes the 'V' sound to a 'B' sound", "Makes the letter silent", "Changes the vowel sound to 'Oo'", "Makes it a 'P' sound"], "a": "Changes the 'V' sound to a 'B' sound" },
+        { "q": "Review: Which letter is Mem Sofit (Final Mem)?", "opts": ["ם", "ן", "ף", "ץ"], "a": "ם" },
+        { "q": "Review: Which letter is Nun Sofit (Final Nun)?", "opts": ["ן", "ך", "ם", "ץ"], "a": "ן" },
+        { "q": "Reading Capstone: 'אֲנִי בַּבַּיִת'", "opts": ["Ani ba-bayit (I am in the house)", "Hu ba-bayit (He is in the house)", "Ani ha-bayit (I am the house)", "Ani ba-sefer (I am in the book)"], "a": "Ani ba-bayit (I am in the house)" }
+      ]
     }
+
   ]
 }
