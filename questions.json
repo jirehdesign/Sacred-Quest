@@ -226,7 +226,84 @@
         { "q": "Review: Which letter is Nun Sofit (Final Nun)?", "opts": ["ן", "ך", "ם", "ץ"], "a": "ן" },
         { "q": "Reading Capstone: 'אֲנִי בַּבַּיִת'", "opts": ["Ani ba-bayit (I am in the house)", "Hu ba-bayit (He is in the house)", "Ani ha-bayit (I am the house)", "Ani ba-sefer (I am in the book)"], "a": "Ani ba-bayit (I am in the house)" }
       ]
+    },
+
+    {
+      "level": 10,
+      "questions": [
+        { "q": "What is the Hebrew word for 'Father / Dad'?", "opts": ["אַבָּא (Abba)", "אִמָּא (Imma)", "סַבָּא (Saba)", "בֵּן (Ben)"], "a": "אַבָּא (Abba)" },
+        { "q": "What is the Hebrew word for 'Mother / Mom'?", "opts": ["אִמָּא (Imma)", "אַבָּא (Abba)", "סָבְתָא (Savta)", "בַּת (Bat)"], "a": "אִמָּא (Imma)" },
+        { "q": "What is the Hebrew word for 'Grandfather'?", "opts": ["סַבָּא (Saba)", "אַבָּא (Abba)", "אָח (Ach)", "דּוֹד (Dod)"], "a": "סַבָּא (Saba)" },
+        { "q": "What is the Hebrew word for 'Grandmother'?", "opts": ["סָבְתָא (Savta)", "אִמָּא (Imma)", "אָחוֹת (Achot)", "דּוֹדָה (Doda)"], "a": "סָבְתָא (Savta)" },
+        { "q": "What is the Hebrew word for 'Son / Boy'?", "opts": ["בֵּן (Ben)", "בַּת (Bat)", "אָח (Ach)", "סַבָּא (Saba)"], "a": "בֵּן (Ben)" },
+        { "q": "What is the Hebrew word for 'Daughter / Girl'?", "opts": ["בַּת (Bat)", "בֵּן (Ben)", "אָחוֹת (Achot)", "אִמָּא (Imma)"], "a": "בַּת (Bat)" },
+        { "q": "What is the Hebrew word for 'Brother'?", "opts": ["אָח (Ach)", "בֵּן (Ben)", "אַבָּא (Abba)", "דּוֹד (Dod)"], "a": "אָח (Ach)" },
+        { "q": "What is the Hebrew word for 'Sister'?", "opts": ["אָחוֹת (Achot)", "בַּת (Bat)", "אִמָּא (Imma)", "סָבְתָא (Savta)"], "a": "אָחוֹת (Achot)" },
+        { "q": "What is the Hebrew word for 'Friend' (boy)?", "opts": ["חָבֵר (Chaver)", "אָח (Ach)", "בֵּן (Ben)", "אִישׁ (Ish)"], "a": "חָבֵר (Chaver)" },
+        { "q": "What is the Hebrew word for 'Friend' (girl)?", "opts": ["חֲבֵרָה (Chavera)", "אָחוֹת (Achot)", "בַּת (Bat)", "אִשָּׁה (Isha)"], "a": "חֲבֵרָה (Chavera)" },
+        { "q": "What is the Hebrew word for 'Family'?", "opts": ["מִשְׁפָּחָה (Mishpacha)", "שַׁבָּת (Shabbat)", "חֲבֵרִים (Chaverim)", "בַּיִת (Bayit)"], "a": "מִשְׁפָּחָה (Mishpacha)" },
+        { "q": "Translate: 'סַבָּא וְסָבְתָא'", "opts": ["Grandpa and Grandma", "Dad and Mom", "Brother and Sister", "Boy and Girl"], "a": "Grandpa and Grandma" },
+        { "q": "Translate: 'אָח וְאָחוֹת'", "opts": ["Brother and Sister", "Grandpa and Grandma", "Son and Daughter", "Father and Mother"], "a": "Brother and Sister" },
+        { "q": "Read the word: 'אִישׁ' (Ish)", "opts": ["Man", "Woman", "Boy", "Baby"], "a": "Man" },
+        { "q": "Read the word: 'אִשָּׁה' (Isha)", "opts": ["Woman", "Man", "Girl", "Mother"], "a": "Woman" },
+        { "q": "Read the word: 'תִּינוֹק' (Tinok)", "opts": ["Baby", "Boy", "Brother", "Man"], "a": "Baby" },
+        { "q": "What does 'שֶׁלִּי' (Sheli) mean?", "opts": ["My / Mine", "Your / Yours", "His", "Here"], "a": "My / Mine" },
+        { "q": "Translate: 'זֶה אַבָּא שֶׁלִּי'", "opts": ["This is my dad", "This is my brother", "He is a dad", "Where is my dad?"], "a": "This is my dad" },
+        { "q": "Translate: 'זֹאת אִמָּא שֶׁלִּי'", "opts": ["This is my mom", "This is my sister", "She is a mom", "Where is my mom?"], "a": "This is my mom" },
+        { "q": "Translate: 'הַמִּשְׁפָּחָה שֶׁלִּי'", "opts": ["My family", "A good family", "The big family", "His family"], "a": "My family" }
+      ]
+    },
+    {
+      "level": 11,
+      "questions": [
+        { "q": "Read the sight word verb: 'אוֹהֵב' (Ohev)", "opts": ["Love / Like (m)", "Want (m)", "Eat (m)", "Know (m)"], "a": "Love / Like (m)" },
+        { "q": "Read the sight word verb: 'אוֹהֶבֶת' (Ohevet)", "opts": ["Love / Like (f)", "Love / Like (m)", "Want (f)", "Eat (f)"], "a": "Love / Like (f)" },
+        { "q": "Read the sight word verb: 'רוֹצֶה' (Rotzeh)", "opts": ["Want (m)", "Love (m)", "Drink (m)", "Walk (m)"], "a": "Want (m)" },
+        { "q": "Read the sight word verb: 'רוֹצָה' (Rotza)", "opts": ["Want (f)", "Want (m)", "Love (f)", "Drink (f)"], "a": "Want (f)" },
+        { "q": "Read the sight word verb: 'אוֹכֵל' (Ochel)", "opts": ["Eat (m)", "Drink (m)", "Read (m)", "Sit (m)"], "a": "Eat (m)" },
+        { "q": "Read the sight word verb: 'שׁוֹתֶה' (Shoteh)", "opts": ["Drink (m)", "Eat (m)", "Want (m)", "Love (m)"], "a": "Drink (m)" },
+        { "q": "Read the sight word verb: 'הוֹלֵךְ' (Holech)", "opts": ["Walk / Go (m)", "Sit (m)", "Read (m)", "Learn (m)"], "a": "Walk / Go (m)" },
+        { "q": "Read the sight word verb: 'לוֹמֵד' (Lomed)", "opts": ["Learn / Study (m)", "Walk / Go (m)", "Drink (m)", "Love (m)"], "a": "Learn / Study (m)" },
+        { "q": "Translate: 'אֲנִי אוֹהֵב' (Ani ohev)", "opts": ["I love (boy speaking)", "I want (boy speaking)", "I eat (boy speaking)", "I learn (boy speaking)"], "a": "I love (boy speaking)" },
+        { "q": "Translate: 'הִיא אוֹכֶלֶת'", "opts": ["She is eating", "He is eating", "She is drinking", "She is walking"], "a": "She is eating" },
+        { "q": "Translate: 'הוּא שׁוֹתֶה מַיִם'", "opts": ["He drinks water", "He drinks milk", "He eats bread", "She drinks water"], "a": "He drinks water" },
+        { "q": "Translate: 'אֲנִי רוֹצֶה לֶחֶם'", "opts": ["I want bread (m)", "I eat bread (m)", "I love bread (m)", "I want water (m)"], "a": "I want bread (m)" },
+        { "q": "What does 'יֵשׁ' (Yesh) mean?", "opts": ["There is / I have", "There is not / I don't have", "Yes", "No"], "a": "There is / I have" },
+        { "q": "What does 'אֵין' (Ein) mean?", "opts": ["There is not / I don't have", "There is / I have", "Yes", "Where"], "a": "There is not / I don't have" },
+        { "q": "Translate: 'יֵשׁ לִי' (Yesh li)", "opts": ["I have...", "I don't have...", "I am...", "I want..."], "a": "I have..." },
+        { "q": "Translate: 'אֵין לִי' (Ein li)", "opts": ["I don't have...", "I have...", "I want...", "I am not..."], "a": "I don't have..." },
+        { "q": "Read the sight word: 'יוֹדֵעַ' (Yode'a)", "opts": ["Know (m)", "Love (m)", "Want (m)", "Go (m)"], "a": "Know (m)" },
+        { "q": "Translate: 'אֲנִי לֹא יוֹדֵעַ'", "opts": ["I don't know", "I don't want", "I don't eat", "I don't love"], "a": "I don't know" },
+        { "q": "Translate: 'אֲנִי לוֹמֵד עִבְרִית'", "opts": ["I learn Hebrew", "I read Hebrew", "I love Hebrew", "I want Hebrew"], "a": "I learn Hebrew" },
+        { "q": "Translate: 'הַיֶּלֶד יוֹשֵׁב' (Ha-yeled yoshev)", "opts": ["The boy sits", "The boy walks", "The boy eats", "The boy reads"], "a": "The boy sits" }
+      ]
+    },
+    {
+      "level": 12,
+      "questions": [
+        { "q": "Translate the sentence: 'אֲנִי אוֹהֵב אֶת אַבָּא'", "opts": ["I love Dad (m)", "I love Mom (m)", "He loves Dad", "I want Dad"], "a": "I love Dad (m)" },
+        { "q": "Translate the sentence: 'הוּא אוֹכֵל תַּפּוּחַ'", "opts": ["He eats an apple", "He eats an orange", "She eats an apple", "I eat an apple"], "a": "He eats an apple" },
+        { "q": "Read the greeting: 'מָה נִשְׁמָע?' (Ma nishma?)", "opts": ["How are you? / What's up?", "What time is it?", "Who is that?", "Where are you?"], "a": "How are you? / What's up?" },
+        { "q": "Read the response: 'הַכֹּל טוֹב' (Hakol tov)", "opts": ["Everything is good", "Not good", "Thank you", "Goodbye"], "a": "Everything is good" },
+        { "q": "Translate: 'שַׁבָּת שָׁלוֹם' (Shabbat Shalom)", "opts": ["Peaceful Sabbath", "Good morning", "Happy holiday", "Good evening"], "a": "Peaceful Sabbath" },
+        { "q": "Translate: 'בֹּקֶר טוֹב' (Boker Tov)", "opts": ["Good morning", "Good night", "Good afternoon", "Hello"], "a": "Good morning" },
+        { "q": "Translate: 'לַיְלָה טוֹב' (Laila Tov)", "opts": ["Good night", "Good morning", "Good evening", "Goodbye"], "a": "Good night" },
+        { "q": "Translate: 'הַיֶּלֶד בַּבַּיִת'", "opts": ["The boy is in the house", "The girl is in the house", "The boy is at school", "The dad is in the house"], "a": "The boy is in the house" },
+        { "q": "Review word: 'גָּדוֹל' (Gadol)", "opts": ["Big", "Small", "Good", "Bad"], "a": "Big" },
+        { "q": "Review word: 'קָטָן' (Katan)", "opts": ["Small", "Big", "New", "Old"], "a": "Small" },
+        { "q": "Read the sight word: 'שָׁלוֹם עֲלֵיכֶם' (Shalom Aleichem)", "opts": ["Peace be upon you", "Good luck", "Thank you", "Goodbye"], "a": "Peace be upon you" },
+        { "q": "Vowel Review: What sound does a Kamatz (ָ) under Aleph make?", "opts": ["'Ah' sound", "'Eh' sound", "'Ee' sound", "'Oo' sound"], "a": "'Ah' sound" },
+        { "q": "Vowel Review: What sound does a Chiriq (ִ) under Mem make?", "opts": ["'Mee' sound", "'Mah' sound", "'Moh' sound", "'Meh' sound"], "a": "'Mee' sound" },
+        { "q": "Letter Review: Which letter makes the 'Sh' sound?", "opts": ["שׁ (Shin)", "שׂ (Sin)", "ס (Samech)", "צ (Tzadi)"], "a": "שׁ (Shin)" },
+        { "q": "Letter Review: Which letter is completely silent?", "opts": ["א (Aleph)", "ב (Bet)", "ה (Hei)", "ו (Vav)"], "a": "א (Aleph)" },
+        { "q": "Number Review: 'אֶחָד' (Echad) means...", "opts": ["One", "Two", "Three", "Ten"], "a": "One" },
+        { "q": "Translate: 'אֲנִי מִיִּשְׂרָאֵל' (Ani mi-Yisrael)", "opts": ["I am from Israel", "I am going to Israel", "I love Israel", "He is from Israel"], "a": "I am from Israel" },
+        { "q": "Translate: 'תּוֹדָה רַבָּה' (Todah Rabah)", "opts": ["Thank you very much", "Please", "Excuse me", "Hello"], "a": "Thank you very much" },
+        { "q": "Translate: 'בְּבָקָשָׁה' (Bevakasha)", "opts": ["Please / You're welcome", "Thank you", "Sorry", "Yes"], "a": "Please / You're welcome" },
+        { "q": "Final Capstone Phrase: 'כָּל הַכָּבוֹד' (Kol Hakavod) means...", "opts": ["Well done / Good job!", "See you later!", "Good morning!", "Thank you!"], "a": "Well done / Good job!" }
+      ]
     }
+
 
   ]
 }
