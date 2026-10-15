@@ -303,7 +303,9 @@
         { "q": "Final review Level 6: What is 'Table' in Hebrew?", "opts": ["שֻׁלְחָן", "כִּסֵּא", "מִטָּה", "אָרוֹן"], "a": "שֻׁלְחָן" },
         { "q": "Final review Level 6: What is 'Chair' in Hebrew?", "opts": ["כִּסֵּא", "שֻׁלְחָן", "מִטָּה", "סַפָּה"], "a": "כִּסֵּא" },
         { "q": "Final review Level 6: What is 'Pencil' in Hebrew?", "opts": ["עֵפָרוֹן", "עֵט", "מַחְבֶּרֶת", "סַרְגֵּל"], "a": "עֵפָרוֹן" },
-        { "q": "Final review Level 6: What is 'Classroom' in Hebrew?", "opts": ["כִּתָּה", "בֵּית סֵפֶר", "חֶדֶר", "מִטְבָּח"], "a": "כִּתָּה" },
+        { "q": "Final review Level 6: What is 'Classroom' in Hebrew?", "opts": ["כִּתָּה", "בֵּית סֵפֶר", "חֶדֶר", "מִטְבָּח"], "a": "כִּתָּה" }
+]
+},
     {
       "level": 7,
       "questions": [
@@ -385,7 +387,9 @@
         { "q": "What is the Hebrew word for 'Hat'?", "opts": ["כּוֹבַע (Kova)", "מְעִיל (Me'il)", "שִׂמְלָה (Simla)", "נַעֲלַיִם (Na'alayim)"], "a": "כּוֹבַע (Kova)" },
         { "q": "Translate: 'יֵשׁ לִי נַעֲלַיִם חֲדָשׁוֹת'", "opts": ["I have new shoes", "I have new pants", "I have a new shirt", "I need new shoes"], "a": "I have new shoes" },
         { "q": "What is the infinitive verb 'To wear' in Hebrew?", "opts": ["לִלְבֹּשׁ (Lilbosh)", "לֶאֱכֹל (Le'echol)", "לִרְקֹד (Lirkod)", "לִישׁוֹן (Lishon)"], "a": "לִלְבֹּשׁ (Lilbosh)" },
-        { "q": "Translate: 'הוּא לוֹבֵשׁ חֻלְצָה כְּחֻלָּה'", "opts": ["He is wearing a blue shirt", "He is wearing black pants", "She is wearing a blue dress", "I am wearing a white shirt"], "a": "He is wearing a blue shirt" },
+        { "q": "Translate: 'הוּא לוֹבֵשׁ חֻלְצָה כְּחֻלָּה'", "opts": ["He is wearing a blue shirt", "He is wearing black pants", "She is wearing a blue dress", "I am wearing a white shirt"], "a": "He is wearing a blue shirt" }
+]
+},
 
     {
       "level": 10,
