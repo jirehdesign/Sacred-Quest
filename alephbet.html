@@ -55,6 +55,58 @@
     .stat-badge.coins { background: #FEFCBF; color: #744210; }
     .stat-badge.streak { background: #FEEBC8; color: #9C4221; }
 
+    /* --- HERO SHOWCASE BANNER --- */
+    .hero-showcase {
+      width: 100%;
+      max-width: 900px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--purple) 100%);
+      border-radius: 16px;
+      padding: 15px 25px;
+      margin-bottom: 15px;
+      display: none; /* Shown via JS when logged in */
+      align-items: center;
+      gap: 25px;
+      box-shadow: 0 6px 20px rgba(131, 56, 236, 0.25);
+      color: white;
+    }
+    .hero-avatar-container {
+      position: relative;
+      width: 85px;
+      height: 85px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      animation: floatHero 3s ease-in-out infinite;
+    }
+    @keyframes floatHero {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .hero-equip {
+      position: absolute;
+      font-size: 1.8rem;
+      background: white;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      border: 2px solid #E2E8F0;
+    }
+    .hero-equip.weapon { bottom: -5px; right: -12px; }
+    .hero-equip.armor { top: -5px; left: -12px; }
+    
+    .hero-details { display: flex; flex-direction: column; }
+    .hero-name { font-size: 1.6rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+    .hero-title { font-size: 1rem; opacity: 0.9; font-weight: 600; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-top: 4px;}
+
     /* Track Selection UI */
     .track-container {
       width: 100%;
@@ -297,7 +349,6 @@
     }
     #boss-name { font-size: 1.3rem; color: #C53030; text-transform: uppercase; letter-spacing: 1px; }
     .boss-avatar { font-size: 5rem; line-height: 1; margin: 5px 0; animation: pulseBoss 1.5s infinite; }
-    @keyframes pulseBoss { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
     .boss-hp-bar { width: 100%; max-width: 300px; height: 16px; background: #EDF2F7; border-radius: 8px; overflow: hidden; border: 2px solid #CBD5E0; }
     .boss-hp-fill { height: 100%; background: var(--secondary); width: 100%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -339,6 +390,17 @@
       <button class="nav-btn" onclick="openTrophyRoom()">🏆 Bestiary</button>
     </div>
   </header>
+
+  <!-- --- NEW: HERO SHOWCASE BANNER --- -->
+  <div class="hero-showcase" id="hero-showcase">
+    <div class="hero-avatar-container" id="hero-display-avatar">
+      <!-- Injected via JS -->
+    </div>
+    <div class="hero-details">
+      <div class="hero-name" id="hero-display-name">Player Name</div>
+      <div class="hero-title" id="hero-display-title">Level 1 Beginner Hero</div>
+    </div>
+  </div>
 
   <!-- Track Selector -->
   <div class="track-container">
@@ -592,7 +654,7 @@
         avatar: '🦁',
         unlockedAvatars: ['🦁'],
         bestiary: [],
-        inventory: [], // stores IDs from SHOP_ITEMS
+        inventory: [], 
         equippedWeapon: null,
         equippedArmor: null
       };
@@ -607,13 +669,14 @@
       document.getElementById('login-modal').classList.remove('active');
       
       playerPosition = 0;
-      loadQuestionBank(); // Updates track, UI, and fetches questions
+      loadQuestionBank(); 
     }
 
     function logout() {
       closeModal('profile-modal');
       currentUser = null;
       localStorage.removeItem('aleph_bet_active_user');
+      document.getElementById('hero-showcase').style.display = 'none';
       showLoginModal();
     }
 
@@ -667,12 +730,37 @@
     }
 
     function updateUI() {
-      if (!currentUser) return;
+      if (!currentUser) {
+        document.getElementById('hero-showcase').style.display = 'none';
+        return;
+      }
       
-      document.getElementById('profile-btn').innerHTML = `${currentUser.avatar} ${currentUser.name}`;
+      // Update Top Nav
+      document.getElementById('profile-btn').innerHTML = `${currentUser.avatar} Profile`;
       document.getElementById('coin-display').textContent = `🪙 ${currentUser.coins}`;
       document.getElementById('streak-display').textContent = `🔥 Track: ${currentUser.track.toUpperCase()}`;
       
+      // --- Update Hero Showcase Banner ---
+      document.getElementById('hero-showcase').style.display = 'flex';
+      
+      let showcaseAvatar = currentUser.avatar;
+      let weaponHTML = '';
+      let armorHTML = '';
+      
+      if (currentUser.equippedWeapon) {
+        const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon);
+        if (w) weaponHTML = `<span class="hero-equip weapon" title="${w.name}">${w.icon}</span>`;
+      }
+      if (currentUser.equippedArmor) {
+        const a = SHOP_ITEMS.armor.find(x => x.id === currentUser.equippedArmor);
+        if (a) armorHTML = `<span class="hero-equip armor" title="${a.name}">${a.icon}</span>`;
+      }
+      
+      document.getElementById('hero-display-avatar').innerHTML = showcaseAvatar + weaponHTML + armorHTML;
+      document.getElementById('hero-display-name').textContent = currentUser.name;
+      let trackCap = currentUser.track.charAt(0).toUpperCase() + currentUser.track.slice(1);
+      document.getElementById('hero-display-title').textContent = `Level ${currentUser.level} ${trackCap} Hero`;
+
       // Update Track Buttons
       ['beginner', 'intermediate', 'advanced'].forEach(t => {
         document.getElementById(`btn-${t}`).classList.toggle('active', currentUser.track === t);
@@ -927,7 +1015,6 @@
         grid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">Your inventory is empty. Visit the shop!</span>';
       } else {
         currentUser.inventory.forEach(itemId => {
-          // Find item in weapons or armor
           const isWeapon = SHOP_ITEMS.weapons.find(i => i.id === itemId);
           const isArmor = SHOP_ITEMS.armor.find(i => i.id === itemId);
           const item = isWeapon || isArmor;
@@ -948,7 +1035,8 @@
             }
             saveDB();
             positionPlayerToken(false);
-            openProfile(); // Refresh profile
+            updateUI(); // Refreshes the top banner instantly
+            openProfile(); // Refresh profile UI
           };
           grid.appendChild(card);
         });
@@ -1059,7 +1147,6 @@
     }
 
     function closeModal(id) {
-      // Don't allow closing login-modal unless there is a user
       if (id === 'login-modal' && !currentUser) return;
       document.getElementById(id).classList.remove('active');
     }
