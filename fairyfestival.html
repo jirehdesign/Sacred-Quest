@@ -19,9 +19,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .emoji-shadow {
-            text-shadow: 2px 4px 0px rgba(0,0,0,0.15);
-        }
+        .emoji-shadow { text-shadow: 2px 4px 0px rgba(0,0,0,0.15); }
 
         @keyframes spin-pop {
             0% { transform: scale(1) rotate(0deg); }
@@ -54,26 +52,16 @@
             50% { transform: scale(1.1); opacity: 1; }
             100% { transform: scale(1); opacity: 1; }
         }
-        .bounce-in {
-            animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
+        .bounce-in { animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
         #confetti-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 100;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 100;
         }
         
         .resource-pop {
-            position: absolute;
-            font-size: 2.5rem;
-            pointer-events: none;
-            animation: floatUp 1.5s ease-out forwards;
-            z-index: 50;
+            position: absolute; font-size: 2.5rem; pointer-events: none;
+            animation: floatUp 1.5s ease-out forwards; z-index: 50;
             text-shadow: 0px 0px 10px rgba(255,255,255,0.8);
         }
         @keyframes floatUp {
@@ -82,69 +70,44 @@
         }
 
         /* Screen Transitions */
-        .screen-container {
-            display: none;
-            animation: fadeIn 0.4s ease-in-out forwards;
-        }
-        .screen-container.active {
-            display: flex;
-        }
+        .screen-container { display: none; animation: fadeIn 0.4s ease-in-out forwards; }
+        .screen-container.active { display: flex; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* Trading Well Styles */
-        .trade-icon {
-            filter: grayscale(100%);
-            opacity: 0.4;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .trade-icon.available {
-            filter: grayscale(0%);
-            opacity: 1;
-        }
-        .trade-icon.selected {
-            transform: scale(1.3);
-            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 1));
-            opacity: 1;
-        }
+        .trade-icon { filter: grayscale(100%); opacity: 0.4; cursor: pointer; transition: all 0.2s; }
+        .trade-icon.available { filter: grayscale(0%); opacity: 1; }
+        .trade-icon.selected { transform: scale(1.3); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 1)); opacity: 1; }
 
         /* Toast Notification */
         #toast-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;
         }
         .toast {
-            background: linear-gradient(135deg, #a78bfa, #ec4899);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 9999px;
-            font-weight: 900;
+            background: linear-gradient(135deg, #a78bfa, #ec4899); color: white;
+            padding: 12px 24px; border-radius: 9999px; font-weight: 900;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             animation: bounce-in 0.3s ease-out forwards, slideOut 0.3s ease-in 3s forwards;
         }
-        @keyframes slideOut {
-            to { transform: translateY(-50px); opacity: 0; }
-        }
+        @keyframes slideOut { to { transform: translateY(-50px); opacity: 0; } }
+
+        /* Avatar Compositing */
+        .avatar-layer { position: absolute; left: 0; right: 0; text-align: center; pointer-events: none; }
+        .av-base { top: 50%; transform: translateY(-50%); font-size: 3.5rem; z-index: 10; }
+        .av-head { top: -10%; font-size: 2.5rem; z-index: 20; }
+        .av-body { bottom: -5%; font-size: 3.5rem; z-index: 20; }
+        .av-feet { bottom: -15%; font-size: 2rem; z-index: 5; }
 
         .math-wand-bg {
             background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-            background-size: 200% 200%;
-            animation: gradientShift 3s ease infinite;
+            background-size: 200% 200%; animation: gradientShift 3s ease infinite;
         }
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
         }
     </style>
 </head>
@@ -153,24 +116,36 @@
     <canvas id="confetti-canvas"></canvas>
     <div id="toast-container"></div>
 
-    <!-- Header -->
-    <header class="text-center mb-6 w-full max-w-5xl hidden" id="main-header">
-        <h1 class="text-4xl md:text-5xl font-black text-pink-500 mb-2 drop-shadow-md">
-            ✨ Fairy-Maid Festival ✨
-        </h1>
-        <div class="text-sm font-bold text-purple-600 bg-white/80 px-5 py-2 rounded-full inline-block backdrop-blur-sm shadow-sm border-2 border-pink-200">
-            Player: <span id="display-user-id" class="text-pink-600 text-lg uppercase tracking-wider">...</span>
+    <!-- HERO SHOWCASE BANNER -->
+    <header id="main-header" class="hidden w-full max-w-4xl bg-white/90 rounded-[2rem] p-4 mb-6 shadow-lg border-4 border-pink-300 flex items-center justify-between backdrop-blur-sm z-40">
+        <div class="flex items-center gap-4">
+            <div id="hero-avatar" class="w-20 h-20 bg-pink-100 rounded-full border-4 border-white shadow-inner relative flex items-center justify-center overflow-hidden shrink-0">
+                <!-- Layers injected by JS -->
+            </div>
+            <div>
+                <h1 id="hero-name" class="text-2xl md:text-3xl font-black text-purple-700 drop-shadow-sm leading-none">Player Name</h1>
+                <p id="hero-title" class="text-sm font-bold text-pink-500 uppercase tracking-widest mt-1">Festival Star</p>
+            </div>
         </div>
+        <button id="btn-header-home" class="hidden sm:flex text-gray-500 font-black bg-gray-100 px-5 py-2 rounded-full hover:bg-gray-200 border-2 border-gray-200 active:scale-95 transition-transform text-sm items-center gap-2">
+            🏠 Menu
+        </button>
     </header>
 
-    <!-- AUTH SCREEN (Local Storage based) -->
+    <!-- AUTH SCREEN -->
     <div id="screen-auth" class="screen-container active flex-col items-center w-full max-w-md mt-10">
         <div class="bg-white p-8 rounded-[3rem] shadow-xl border-4 border-pink-300 w-full text-center">
-            <div class="text-6xl mb-4 anim-spin-pop">🧚‍♀️</div>
-            <h2 class="text-3xl font-black text-purple-600 mb-2">Who is playing?</h2>
-            <p class="text-gray-500 mb-6 text-sm font-bold">Enter your magic name to save your prizes!</p>
+            <h2 class="text-3xl font-black text-purple-600 mb-2">Create a Hero!</h2>
+            <p class="text-gray-500 mb-4 text-sm font-bold">Pick your character & magic name</p>
             
-            <input type="text" id="auth-username" placeholder="Your Name" class="w-full bg-pink-50 border-4 border-pink-200 rounded-3xl p-4 mb-4 outline-none focus:border-pink-500 font-black text-xl text-center text-purple-700" maxlength="12">
+            <div class="flex justify-center gap-4 mb-6" id="avatar-selection">
+                <!-- Selection handled via JS classes -->
+                <div class="av-opt cursor-pointer p-2 rounded-3xl border-4 border-pink-400 bg-pink-100 transform scale-110 transition-all text-5xl emoji-shadow" data-av="kitty">🐱</div>
+                <div class="av-opt cursor-pointer p-2 rounded-3xl border-4 border-transparent hover:bg-pink-50 transition-all text-5xl emoji-shadow" data-av="bunny">🐰</div>
+                <div class="av-opt cursor-pointer p-2 rounded-3xl border-4 border-transparent hover:bg-pink-50 transition-all text-5xl emoji-shadow" data-av="puppy">🐶</div>
+            </div>
+
+            <input type="text" id="auth-username" placeholder="Your Name" class="w-full bg-pink-50 border-4 border-pink-200 rounded-3xl p-4 mb-6 outline-none focus:border-pink-500 font-black text-xl text-center text-purple-700" maxlength="12">
             
             <button id="btn-login" class="w-full bg-gradient-to-r from-pink-400 to-purple-500 text-white font-black text-2xl py-4 rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform">
                 Let's Play! 🎪
@@ -179,66 +154,64 @@
     </div>
 
     <!-- MENU SCREEN -->
-    <div id="screen-menu" class="screen-container flex-col items-center w-full max-w-lg mt-10 gap-6">
+    <div id="screen-menu" class="screen-container flex-col items-center w-full max-w-md gap-6">
         <button id="btn-start-game" class="w-full bg-gradient-to-r from-teal-400 to-blue-500 text-white rounded-[2.5rem] p-6 shadow-xl border-4 border-white hover:scale-105 transition-transform group relative overflow-hidden">
             <div class="absolute inset-0 bg-white opacity-20 group-hover:opacity-0 transition-opacity"></div>
             <div class="text-6xl mb-2 group-hover:anim-spin-pop">🎲</div>
             <h2 class="text-4xl font-black drop-shadow-md">Play Festival!</h2>
         </button>
 
-        <button id="btn-open-inventory" class="w-full bg-gradient-to-r from-amber-300 to-orange-400 text-white rounded-[2.5rem] p-6 shadow-xl border-4 border-white hover:scale-105 transition-transform group">
-            <div class="text-6xl mb-2 group-hover:bounce-in">🎁</div>
-            <h2 class="text-4xl font-black drop-shadow-md">My Prize Box</h2>
-            <p class="text-amber-100 font-bold mt-1 text-lg">See your badges!</p>
+        <button id="btn-open-inventory" class="w-full bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white rounded-[2.5rem] p-6 shadow-xl border-4 border-white hover:scale-105 transition-transform group">
+            <div class="text-6xl mb-2 group-hover:bounce-in">👗</div>
+            <h2 class="text-4xl font-black drop-shadow-md">Dress Up Room</h2>
+            <p class="text-pink-100 font-bold mt-1 text-lg">Wear your prizes!</p>
         </button>
         
-        <button id="btn-logout" class="bg-white/50 text-purple-500 font-bold px-6 py-2 rounded-full border-2 border-purple-200 hover:bg-white transition-colors mt-4">Switch Player</button>
+        <button id="btn-logout" class="bg-white/50 text-purple-500 font-bold px-6 py-2 rounded-full border-2 border-purple-200 hover:bg-white transition-colors mt-2">Switch Player</button>
     </div>
 
-    <!-- INVENTORY (PRIZE BOX) SCREEN -->
-    <div id="screen-inventory" class="screen-container flex-col items-center w-full max-w-4xl">
-        <h2 class="text-4xl md:text-5xl text-amber-500 font-black mb-8 drop-shadow-md">My Prize Box 🎁</h2>
+    <!-- DRESS UP / INVENTORY SCREEN -->
+    <div id="screen-inventory" class="screen-container flex-col items-center w-full max-w-4xl bg-white/60 p-6 rounded-[3rem] border-4 border-white shadow-lg">
+        <h2 class="text-4xl md:text-5xl text-pink-500 font-black mb-2 drop-shadow-md">Dress Up Room 👗</h2>
+        <p class="text-purple-600 font-bold mb-8">Tap an item to wear it! Win games to unlock more!</p>
         
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full" id="inventory-grid">
-            <!-- Badges injected via JS -->
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 w-full" id="inventory-grid">
+            <!-- Items injected via JS -->
         </div>
 
-        <button id="btn-inv-back" class="mt-10 bg-white border-4 border-purple-200 text-purple-600 font-black text-2xl py-3 px-10 rounded-full shadow-md hover:bg-purple-50 hover:scale-105 transition-all">
+        <button id="btn-inv-back" class="mt-8 bg-white border-4 border-purple-200 text-purple-600 font-black text-2xl py-3 px-10 rounded-full shadow-md hover:bg-purple-50 hover:scale-105 transition-all">
             ⬅️ Back to Menu
         </button>
     </div>
 
     <!-- GAME SCREEN -->
     <div id="screen-game" class="screen-container flex-col md:flex-row gap-6 w-full max-w-6xl items-start justify-center">
-        
         <!-- Left Column: Spinner, Chest, Math Wand, Well -->
         <div class="flex flex-col gap-6 w-full md:w-[45%]">
             
-            <!-- Shared Header inside game -->
             <div class="bg-white rounded-full flex justify-between items-center px-6 py-3 shadow-lg border-4 border-pink-300 w-full mb-2">
                 <span class="text-xl md:text-2xl text-purple-700 font-bold">
-                    Sunset in: <span id="clock-display" class="font-black text-pink-600 text-3xl">20</span> ☀️
+                    Sunset in: <span id="clock-display" class="font-black text-pink-600 text-3xl">25</span> ☀️
                 </span>
-                <button id="btn-game-back" class="text-gray-500 font-black bg-gray-100 px-5 py-2 rounded-full hover:bg-gray-200 border-2 border-gray-200 active:scale-95 transition-transform text-sm">Quit</button>
+                <button id="btn-game-back" class="text-gray-500 font-black bg-gray-100 px-5 py-2 rounded-full hover:bg-gray-200 border-2 border-gray-200 active:scale-95 transition-transform text-sm sm:hidden">Quit</button>
             </div>
 
             <!-- Magic Compass -->
             <div class="bg-white rounded-[3rem] p-6 shadow-xl border-4 border-purple-200 text-center flex flex-col items-center relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-purple-100 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
                 <h2 class="text-2xl text-purple-600 mb-4 z-10 font-black">Magic Compass</h2>
-                <button id="spin-btn" class="relative w-48 h-48 bg-gradient-to-br from-teal-200 to-purple-300 rounded-full shadow-[0_10px_20px_rgba(0,0,0,0.2)] border-8 border-white flex items-center justify-center transition-transform hover:scale-105 active:scale-95 z-10">
+                <button id="spin-btn" class="relative w-40 h-40 md:w-48 md:h-48 bg-gradient-to-br from-teal-200 to-purple-300 rounded-full shadow-[0_10px_20px_rgba(0,0,0,0.2)] border-8 border-white flex items-center justify-center transition-transform hover:scale-105 active:scale-95 z-10">
                     <div class="absolute inset-0 rounded-full border-4 border-dashed border-white opacity-50 m-2 pointer-events-none"></div>
-                    <span id="spinner-emoji" class="text-7xl emoji-shadow">🧭</span>
+                    <span id="spinner-emoji" class="text-6xl md:text-7xl emoji-shadow">🧭</span>
                 </button>
                 <p class="mt-4 text-xl text-gray-500 font-bold z-10">Tap to spin for items!</p>
             </div>
 
-            <!-- NEW: Magic Math Wand -->
+            <!-- Magic Math Wand (UPDATED WITH LIMITS) -->
             <button id="btn-math-wand" class="math-wand-bg w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-white flex items-center justify-center gap-4 hover:scale-105 active:scale-95 transition-transform group">
                 <div class="text-5xl group-hover:anim-spin-pop emoji-shadow">🪄</div>
                 <div class="text-left">
-                    <h2 class="text-2xl font-black text-purple-800 drop-shadow-sm">Magic Math Bonus!</h2>
-                    <p class="text-sm font-bold text-purple-600">Free items! No time used!</p>
+                    <h2 class="text-2xl font-black text-purple-800 drop-shadow-sm">Magic Math!</h2>
+                    <p class="text-sm font-black text-pink-600 bg-white/70 px-3 py-1 rounded-full inline-block mt-1 border-2 border-pink-200"><span id="math-charges-ui">4</span> Tries Left</p>
                 </div>
             </button>
 
@@ -270,42 +243,31 @@
                 <div class="absolute bottom-0 right-0 text-8xl opacity-10 pointer-events-none -mb-4 -mr-4">⛲</div>
                 <h2 class="text-xl text-blue-800 mb-1 text-center relative z-10 font-black">Wishing Well ⛲</h2>
                 <p class="text-xs text-blue-600 text-center mb-3 font-bold relative z-10">Toss 2 matching items to wish for 1!</p>
-                
                 <div class="flex justify-between items-center gap-2 mb-4 relative z-10">
-                    <!-- Toss In -->
                     <div class="flex-1 bg-white/80 p-2 rounded-2xl text-center shadow-inner w-full border-2 border-blue-100">
                         <span class="text-[10px] text-gray-500 block font-bold mb-1 uppercase">Toss In (2)</span>
                         <div class="flex justify-center gap-1 text-3xl" id="trade-give-btns">
-                            <div class="trade-icon" data-res="pixie">✨</div>
-                            <div class="trade-icon" data-res="pearl">🦪</div>
-                            <div class="trade-icon" data-res="strawberry">🍓</div>
-                            <div class="trade-icon" data-res="gem">💎</div>
+                            <div class="trade-icon" data-res="pixie">✨</div><div class="trade-icon" data-res="pearl">🦪</div>
+                            <div class="trade-icon" data-res="strawberry">🍓</div><div class="trade-icon" data-res="gem">💎</div>
                         </div>
                     </div>
-                    
                     <span class="text-xl text-blue-400">➡️</span>
-                    
-                    <!-- Wish For -->
                     <div class="flex-1 bg-white/80 p-2 rounded-2xl text-center shadow-inner w-full border-2 border-blue-100">
                         <span class="text-[10px] text-gray-500 block font-bold mb-1 uppercase">Wish For (1)</span>
                         <div class="flex justify-center gap-1 text-3xl" id="trade-get-btns">
-                            <div class="trade-icon available" data-res="pixie">✨</div>
-                            <div class="trade-icon available" data-res="pearl">🦪</div>
-                            <div class="trade-icon available" data-res="strawberry">🍓</div>
-                            <div class="trade-icon available" data-res="gem">💎</div>
+                            <div class="trade-icon available" data-res="pixie">✨</div><div class="trade-icon available" data-res="pearl">🦪</div>
+                            <div class="trade-icon available" data-res="strawberry">🍓</div><div class="trade-icon available" data-res="gem">💎</div>
                         </div>
                     </div>
                 </div>
                 <button id="btn-trade" class="w-full bg-blue-400 text-white font-black text-xl py-3 rounded-full shadow transition-all relative z-10 disabled-build uppercase tracking-wide">Make a Wish ✨</button>
             </div>
-
         </div>
 
         <!-- Right Column: Buildings -->
         <div class="flex flex-col gap-4 w-full md:w-[55%] pb-10">
             <h2 class="text-3xl text-purple-600 mb-2 text-center font-black drop-shadow-sm">Festival Sites To Build:</h2>
             
-            <!-- Mermaid Stage -->
             <div id="card-mermaid" class="bg-cyan-50 rounded-3xl p-5 shadow-lg border-4 border-cyan-200 flex flex-col sm:flex-row items-center gap-4 transition-all duration-300">
                 <div class="text-6xl emoji-shadow w-24 text-center">🧜‍♀️</div>
                 <div class="flex-grow text-center sm:text-left">
@@ -318,7 +280,6 @@
                 <button id="btn-mermaid" class="disabled-build w-full sm:w-auto px-8 py-4 rounded-full font-black text-xl shadow-md transition-all">Build!</button>
             </div>
 
-            <!-- Fairy Tent -->
             <div id="card-fairy" class="bg-fuchsia-50 rounded-3xl p-5 shadow-lg border-4 border-fuchsia-200 flex flex-col sm:flex-row items-center gap-4 transition-all duration-300">
                 <div class="text-6xl emoji-shadow w-24 text-center">🧚‍♀️</div>
                 <div class="flex-grow text-center sm:text-left">
@@ -331,7 +292,6 @@
                 <button id="btn-fairy" class="disabled-build w-full sm:w-auto px-8 py-4 rounded-full font-black text-xl shadow-md transition-all">Build!</button>
             </div>
 
-            <!-- Kitty Castle -->
             <div id="card-kitty" class="bg-pink-50 rounded-3xl p-5 shadow-lg border-4 border-pink-200 flex flex-col sm:flex-row items-center gap-4 transition-all duration-300">
                 <div class="text-6xl emoji-shadow w-24 text-center">🐱</div>
                 <div class="flex-grow text-center sm:text-left">
@@ -351,7 +311,15 @@
         <div id="modal-content" class="bg-white rounded-[3rem] p-8 max-w-lg w-full text-center shadow-2xl border-8 border-pink-400 bounce-in hidden flex flex-col items-center">
             <h2 id="modal-title" class="text-5xl font-black mb-4"></h2>
             <p id="modal-msg" class="text-2xl text-gray-600 mb-4 font-bold"></p>
-            <div id="modal-badges" class="flex flex-wrap justify-center gap-2 mb-4 empty:hidden"></div>
+            
+            <div id="modal-reward-area" class="w-full hidden flex-col items-center mb-6">
+                <p class="text-pink-500 font-black uppercase tracking-wide mb-2">New Item Unlocked!</p>
+                <div id="modal-reward-item" class="bg-pink-50 border-4 border-pink-300 rounded-3xl p-4 flex flex-col items-center justify-center anim-spin-pop w-32 h-32">
+                    <!-- Reward Injected Here -->
+                </div>
+                <p class="text-sm text-gray-500 font-bold mt-2">Go to the Dress Up Room to wear it!</p>
+            </div>
+
             <div id="modal-emoji" class="text-8xl mb-8 emoji-shadow anim-spin-pop"></div>
             
             <div class="flex gap-4 w-full">
@@ -368,21 +336,14 @@
     <!-- MATH QUESTION MODAL -->
     <div id="modal-math" class="fixed inset-0 bg-blue-900/60 backdrop-blur-md hidden items-center justify-center z-[60] p-4">
         <div id="math-content" class="bg-white rounded-[3rem] p-8 max-w-md w-full text-center shadow-2xl border-8 border-yellow-300 bounce-in flex flex-col items-center relative overflow-hidden">
-            <!-- decorative background -->
             <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#fbbf24 2px, transparent 2px); background-size: 20px 20px;"></div>
-            
             <button id="btn-close-math" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl font-black z-20">✖</button>
-
             <div class="text-7xl mb-2 emoji-shadow z-10">🦉</div>
             <h2 class="text-3xl font-black text-blue-600 mb-1 z-10">Magic Math!</h2>
-            <p class="text-lg text-gray-600 mb-6 font-bold z-10">Solve this to get free items!</p>
-            
+            <p class="text-lg text-gray-600 mb-6 font-bold z-10">Solve this for free items! Consumes 1 try.</p>
             <div class="bg-blue-50 border-4 border-blue-200 rounded-3xl p-6 mb-6 w-full z-10">
-                <div id="math-question" class="text-6xl font-black text-purple-700 tracking-widest drop-shadow-sm">
-                    5 + 3 = ?
-                </div>
+                <div id="math-question" class="text-6xl font-black text-purple-700 tracking-widest drop-shadow-sm">5 + 3 = ?</div>
             </div>
-
             <div id="math-answers" class="grid grid-cols-2 gap-4 w-full z-10">
                 <!-- Buttons injected by JS -->
             </div>
@@ -391,24 +352,37 @@
 
     <script>
         // ==========================================
-        // DATA & LOCAL STORAGE (Replaces Firebase)
+        // DATA MODELS
         // ==========================================
+        const AVATARS = {
+            kitty: { id: 'kitty', emoji: '🐱', name: 'Fairy Kitty' },
+            bunny: { id: 'bunny', emoji: '🐰', name: 'Mermaid Bunny' },
+            puppy: { id: 'puppy', emoji: '🐶', name: 'Puppy Princess' }
+        };
+
+        const ITEMS = {
+            // Heads
+            pearl_tiara: { id: 'pearl_tiara', type: 'head', emoji: '👑', name: 'Pearl Tiara' },
+            flower_crown: { id: 'flower_crown', type: 'head', emoji: '🌸', name: 'Flower Crown' },
+            ribbon_bow: { id: 'ribbon_bow', type: 'head', emoji: '🎀', name: 'Magic Bow' },
+            // Bodies
+            pink_dress: { id: 'pink_dress', type: 'body', emoji: '👗', name: 'Sparkle Dress' },
+            hero_cape: { id: 'hero_cape', type: 'body', emoji: '🦸‍♀️', name: 'Hero Cape' },
+            kimono: { id: 'kimono', type: 'body', emoji: '👘', name: 'Silk Kimono' },
+            // Feet
+            glass_slippers: { id: 'glass_slippers', type: 'feet', emoji: '👡', name: 'Glass Slippers' },
+            red_shoes: { id: 'red_shoes', type: 'feet', emoji: '👠', name: 'Ruby Heels' },
+            magic_boots: { id: 'magic_boots', type: 'feet', emoji: '👢', name: 'Magic Boots' }
+        };
+
         const STORAGE_KEY = 'fairy_maid_users';
         const CURRENT_USER_KEY = 'fairy_maid_current';
         
         let allUsers = {};
         let currentUser = null;
-        let userData = { wins: 0, trades: 0, math_solved: 0, badges: [] };
+        let userData = { avatar: 'kitty', wins: 0, inventory: [], equipped: { head: null, body: null, feet: null } };
 
-        // Define Achievements
-        const BADGE_DEFS = {
-            'first_win': { title: 'Mermaid Crown', emoji: '👑', req: 'Win 1 Festival' },
-            'two_wins': { title: 'Fairy Wings', emoji: '🧚‍♀️', req: 'Win 2 Festivals' },
-            'five_wins': { title: 'Kitty Bow', emoji: '🎀', req: 'Win 5 Festivals' },
-            'master_trader': { title: 'Master Trader', emoji: '🤝', req: 'Make 5 Wishes at the Well' },
-            'math_whiz': { title: 'Smart Owl', emoji: '🦉', req: 'Solve 5 Math Questions' },
-            'lucky_star': { title: 'Magic Wand', emoji: '🪄', req: 'Win with 5+ spins left' }
-        };
+        let selectedAuthAvatar = 'kitty';
 
         function loadData() {
             try {
@@ -419,8 +393,10 @@
                 if (lastUser && allUsers[lastUser]) {
                     currentUser = lastUser;
                     userData = allUsers[currentUser];
-                    // ensure backwards compatibility if new fields added
-                    if(userData.math_solved === undefined) userData.math_solved = 0;
+                    // Backwards compatibility for old saves
+                    if(!userData.avatar) userData.avatar = 'kitty';
+                    if(!userData.inventory) userData.inventory = [];
+                    if(!userData.equipped) userData.equipped = {head: null, body: null, feet: null};
                     return true;
                 }
             } catch(e) { console.error("Error loading local storage", e); }
@@ -438,10 +414,11 @@
 
         function logout() {
             currentUser = null;
-            userData = { wins: 0, trades: 0, math_solved: 0, badges: [] };
+            userData = { avatar: 'kitty', wins: 0, inventory: [], equipped: { head: null, body: null, feet: null } };
             localStorage.removeItem(CURRENT_USER_KEY);
             showScreen('auth');
             document.getElementById('auth-username').value = '';
+            document.getElementById('main-header').classList.add('hidden');
         }
 
         // ==========================================
@@ -463,9 +440,10 @@
                 mainHeader.classList.add('hidden');
             } else {
                 mainHeader.classList.remove('hidden');
+                updateHeroShowcase();
             }
 
-            if(screenName === 'inventory') renderInventory();
+            if(screenName === 'inventory') renderDressUp();
         }
 
         function showToast(message) {
@@ -475,94 +453,98 @@
             toast.innerText = message;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3500);
-            playSound('build'); // Magical little sound
+            playSound('build');
         }
 
         // ==========================================
-        // LOGIN LOGIC
+        // LOGIN / AVATAR SELECTION
         // ==========================================
-        const btnLogin = document.getElementById('btn-login');
-        const usernameInput = document.getElementById('auth-username');
+        const avOpts = document.querySelectorAll('.av-opt');
+        avOpts.forEach(opt => {
+            opt.addEventListener('click', () => {
+                avOpts.forEach(o => { o.classList.remove('border-pink-400', 'bg-pink-100', 'scale-110'); o.classList.add('border-transparent'); });
+                opt.classList.remove('border-transparent');
+                opt.classList.add('border-pink-400', 'bg-pink-100', 'scale-110');
+                selectedAuthAvatar = opt.getAttribute('data-av');
+                playSound('pop');
+            });
+        });
 
-        btnLogin.addEventListener('click', () => {
-            let name = usernameInput.value.trim().toUpperCase();
-            if(!name) {
-                alert("Please enter a magic name!");
-                return;
-            }
+        document.getElementById('btn-login').addEventListener('click', () => {
+            let name = document.getElementById('auth-username').value.trim();
+            if(!name) { alert("Please enter a magic name!"); return; }
             
             currentUser = name;
             if(!allUsers[currentUser]) {
-                // New User Creation
-                allUsers[currentUser] = { wins: 0, trades: 0, math_solved: 0, badges: [] };
+                allUsers[currentUser] = { avatar: selectedAuthAvatar, wins: 0, inventory: [], equipped: { head: null, body: null, feet: null } };
             }
             userData = allUsers[currentUser];
             saveData();
-            
-            document.getElementById('display-user-id').innerText = currentUser;
             initAudio();
             showScreen('menu');
         });
 
-        // Initialize App flow
-        if (loadData()) {
-            document.getElementById('display-user-id').innerText = currentUser;
-            showScreen('menu');
-        } else {
-            showScreen('auth');
-        }
+        if (loadData()) showScreen('menu');
+        else showScreen('auth');
 
         document.getElementById('btn-logout').addEventListener('click', logout);
-
+        document.getElementById('btn-header-home').addEventListener('click', () => { gameActive = false; showScreen('menu'); });
 
         // ==========================================
-        // BADGES & INVENTORY LOGIC
+        // HERO SHOWCASE / DRESS UP LOGIC
         // ==========================================
-        function checkBadges(spinsRemaining = 0) {
-            let newlyUnlocked = [];
+        function updateHeroShowcase() {
+            document.getElementById('hero-name').innerText = currentUser;
+            document.getElementById('hero-title').innerText = AVATARS[userData.avatar].name;
             
-            if (userData.wins >= 1 && !userData.badges.includes('first_win')) newlyUnlocked.push('first_win');
-            if (userData.wins >= 2 && !userData.badges.includes('two_wins')) newlyUnlocked.push('two_wins');
-            if (userData.wins >= 5 && !userData.badges.includes('five_wins')) newlyUnlocked.push('five_wins');
-            if (userData.trades >= 5 && !userData.badges.includes('master_trader')) newlyUnlocked.push('master_trader');
-            if (userData.math_solved >= 5 && !userData.badges.includes('math_whiz')) newlyUnlocked.push('math_whiz');
-            if (spinsRemaining >= 5 && !userData.badges.includes('lucky_star')) newlyUnlocked.push('lucky_star');
+            const cont = document.getElementById('hero-avatar');
+            const baseEmoji = AVATARS[userData.avatar].emoji;
+            const head = userData.equipped.head ? ITEMS[userData.equipped.head].emoji : '';
+            const body = userData.equipped.body ? ITEMS[userData.equipped.body].emoji : '';
+            const feet = userData.equipped.feet ? ITEMS[userData.equipped.feet].emoji : '';
 
-            if (newlyUnlocked.length > 0) {
-                userData.badges.push(...newlyUnlocked);
-                saveData();
-                
-                newlyUnlocked.forEach((bId, index) => {
-                    setTimeout(() => {
-                        showToast(`New Prize! ${BADGE_DEFS[bId].title} ${BADGE_DEFS[bId].emoji}`);
-                    }, index * 1000 + 500); 
-                });
-            }
-            return newlyUnlocked;
+            cont.innerHTML = `
+                <div class="avatar-layer av-base">${baseEmoji}</div>
+                ${head ? `<div class="avatar-layer av-head">${head}</div>` : ''}
+                ${body ? `<div class="avatar-layer av-body">${body}</div>` : ''}
+                ${feet ? `<div class="avatar-layer av-feet">${feet}</div>` : ''}
+            `;
         }
 
-        function renderInventory() {
+        function renderDressUp() {
             const grid = document.getElementById('inventory-grid');
             grid.innerHTML = '';
 
-            for(const [id, def] of Object.entries(BADGE_DEFS)) {
-                const unlocked = userData.badges.includes(id);
-                const div = document.createElement('div');
+            for (const id in ITEMS) {
+                const item = ITEMS[id];
+                const owned = userData.inventory.includes(id);
+                const isEquipped = userData.equipped[item.type] === id;
                 
-                if(unlocked) {
-                    div.className = "bg-gradient-to-br from-white to-amber-50 rounded-[2.5rem] p-4 text-center shadow-lg border-4 border-amber-300 transform transition-transform hover:scale-105";
-                    div.innerHTML = `
-                        <div class="text-6xl emoji-shadow mb-2 anim-spin-pop">${def.emoji}</div>
-                        <h3 class="text-lg font-black text-amber-800 leading-tight">${def.title}</h3>
-                        <p class="text-xs text-amber-600 font-bold mt-2 bg-amber-100 rounded-full py-1">Unlocked!</p>
-                    `;
-                } else {
-                    div.className = "bg-gray-100 rounded-[2.5rem] p-4 text-center shadow-inner border-4 border-gray-200 opacity-60";
-                    div.innerHTML = `
-                        <div class="text-6xl filter grayscale blur-[2px] mb-2">${def.emoji}</div>
-                        <h3 class="text-lg font-black text-gray-500 leading-tight">???</h3>
-                        <p class="text-[10px] text-gray-400 font-black mt-2 uppercase">${def.req}</p>
-                    `;
+                const div = document.createElement('div');
+                div.className = `rounded-[2rem] p-4 flex flex-col items-center text-center border-4 transition-all ${
+                    owned 
+                        ? (isEquipped ? 'bg-pink-100 border-pink-400 shadow-lg scale-105 cursor-pointer' : 'bg-white border-pink-200 hover:bg-pink-50 hover:border-pink-300 cursor-pointer shadow-sm')
+                        : 'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed filter grayscale'
+                }`;
+
+                div.innerHTML = `
+                    <div class="text-5xl mb-2 ${owned ? 'emoji-shadow' : ''}">${item.emoji}</div>
+                    <h3 class="text-sm font-black ${owned ? 'text-purple-700' : 'text-gray-500'} leading-tight">${item.name}</h3>
+                    <p class="text-[10px] font-bold mt-1 uppercase ${isEquipped ? 'text-pink-600 bg-white/60 px-2 rounded-full' : (owned ? 'text-gray-400' : 'text-gray-400')}">
+                        ${isEquipped ? 'Wearing' : (owned ? 'Tap to wear' : 'Locked')}
+                    </p>
+                `;
+
+                if (owned) {
+                    div.onclick = () => {
+                        initAudio(); playSound('pop');
+                        if (userData.equipped[item.type] === id) userData.equipped[item.type] = null; // unequip
+                        else userData.equipped[item.type] = id; // equip
+                        saveData();
+                        renderDressUp();
+                        updateHeroShowcase();
+                        createConfetti(window.innerWidth/2, window.innerHeight/2, 10);
+                    };
                 }
                 grid.appendChild(div);
             }
@@ -580,10 +562,8 @@
         function playSound(type) {
             if (!audioCtx) return;
             const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
 
             if (type === 'spin') {
                 osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
@@ -612,9 +592,7 @@
 
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
-        let particles = [];
-        let confettiAnimationId;
-        let isConfettiContinuous = false;
+        let particles = []; let confettiAnimationId; let isConfettiContinuous = false;
 
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
@@ -655,8 +633,9 @@
         // ==========================================
         // GAME LOGIC CORE
         // ==========================================
-        const INITIAL_SPINS = 25; // Slightly increased for balancing with kitty castle
+        const INITIAL_SPINS = 25; 
         let spinsLeft = INITIAL_SPINS;
+        let mathTriesLeft = 4;
         let isSpinning = false;
         let gameActive = false;
 
@@ -674,24 +653,19 @@
             kitty: { built: false, cost: { pixie: 2, pearl: 2, strawberry: 2, gem: 2 }, btnId: 'btn-kitty', cardId: 'card-kitty', costId: 'cost-kitty', emoji: '🐱' }
         };
 
-        let tradeGive = null;
-        let tradeGet = null;
+        let tradeGive = null; let tradeGet = null;
 
         function updateUI() {
-            // Update counters
             for (let key in resources) {
                 const el = document.getElementById(resources[key].elId);
                 if (el.innerText != resources[key].count) {
                     el.innerText = resources[key].count;
-                    el.classList.remove('bounce-in');
-                    void el.offsetWidth;
-                    el.classList.add('bounce-in');
+                    el.classList.remove('bounce-in'); void el.offsetWidth; el.classList.add('bounce-in');
                 }
             }
-
             document.getElementById('clock-display').innerText = spinsLeft;
+            updateMathWandUI();
 
-            // Update Buildings
             for (let key in buildings) {
                 const b = buildings[key];
                 const btn = document.getElementById(b.btnId);
@@ -717,7 +691,6 @@
                     btn.onclick = null;
                 }
             }
-
             updateTradingUI();
         }
 
@@ -725,24 +698,15 @@
             const giveBtns = document.querySelectorAll('#trade-give-btns .trade-icon');
             giveBtns.forEach(btn => {
                 const res = btn.getAttribute('data-res');
-                if(resources[res].count >= 2) {
-                    btn.classList.add('available');
-                } else {
-                    btn.classList.remove('available');
-                    if(tradeGive === res) tradeGive = null;
-                }
-                
-                if(tradeGive === res) btn.classList.add('selected');
-                else btn.classList.remove('selected');
+                if(resources[res].count >= 2) btn.classList.add('available');
+                else { btn.classList.remove('available'); if(tradeGive === res) tradeGive = null; }
+                if(tradeGive === res) btn.classList.add('selected'); else btn.classList.remove('selected');
             });
-
             const getBtns = document.querySelectorAll('#trade-get-btns .trade-icon');
             getBtns.forEach(btn => {
                 const res = btn.getAttribute('data-res');
-                if(tradeGet === res) btn.classList.add('selected');
-                else btn.classList.remove('selected');
+                if(tradeGet === res) btn.classList.add('selected'); else btn.classList.remove('selected');
             });
-
             const btnTrade = document.getElementById('btn-trade');
             if(tradeGive && tradeGet) {
                 btnTrade.className = "can-build w-full font-black text-xl py-3 rounded-full shadow transition-all relative z-10 uppercase tracking-wide border-b-4 border-pink-600 active:translate-y-1 active:border-b-0";
@@ -753,126 +717,83 @@
             }
         }
 
-        // Trading Listeners
         document.querySelectorAll('#trade-give-btns .trade-icon').forEach(btn => {
             btn.addEventListener('click', () => {
-                if(!gameActive) return;
-                initAudio();
+                if(!gameActive) return; initAudio();
                 const res = btn.getAttribute('data-res');
-                if(resources[res].count >= 2) {
-                    tradeGive = (tradeGive === res) ? null : res;
-                    playSound('pop');
-                    updateTradingUI();
-                }
+                if(resources[res].count >= 2) { tradeGive = (tradeGive === res) ? null : res; playSound('pop'); updateTradingUI(); }
             });
         });
-
         document.querySelectorAll('#trade-get-btns .trade-icon').forEach(btn => {
             btn.addEventListener('click', () => {
-                if(!gameActive) return;
-                initAudio();
-                const res = btn.getAttribute('data-res');
-                tradeGet = (tradeGet === res) ? null : res;
-                playSound('pop');
-                updateTradingUI();
+                if(!gameActive) return; initAudio();
+                const res = btn.getAttribute('data-res'); tradeGet = (tradeGet === res) ? null : res; playSound('pop'); updateTradingUI();
             });
         });
-
         document.getElementById('btn-trade').addEventListener('click', () => {
             if(!gameActive || !tradeGive || !tradeGet) return;
             initAudio();
-            
-            resources[tradeGive].count -= 2;
-            resources[tradeGet].count += 1;
-            
-            playSound('trade');
-            createConfetti(window.innerWidth/2, window.innerHeight/2, 20);
-            
-            tradeGive = null;
-            tradeGet = null;
-            updateUI();
-
-            userData.trades += 1;
-            saveData();
-            checkBadges();
+            resources[tradeGive].count -= 2; resources[tradeGet].count += 1;
+            playSound('trade'); createConfetti(window.innerWidth/2, window.innerHeight/2, 20);
+            tradeGive = null; tradeGet = null; updateUI();
         });
 
         function showFloatingResource(emoji, x, y) {
-            const el = document.createElement('div');
-            el.className = 'resource-pop';
-            el.innerText = emoji;
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            document.body.appendChild(el);
+            const el = document.createElement('div'); el.className = 'resource-pop'; el.innerText = emoji;
+            el.style.left = x + 'px'; el.style.top = y + 'px'; document.body.appendChild(el);
             setTimeout(() => el.remove(), 1500);
         }
 
         function spin() {
             if (!gameActive || isSpinning || spinsLeft <= 0) return;
-            initAudio();
-            isSpinning = true;
-            spinsLeft--;
-            document.getElementById('clock-display').innerText = spinsLeft;
-            playSound('spin');
-
-            const spinBtn = document.getElementById('spin-btn');
-            const spinnerEmoji = document.getElementById('spinner-emoji');
-            
-            spinBtn.classList.add('anim-spin-pop');
-            spinnerEmoji.innerText = '❓';
+            initAudio(); isSpinning = true; spinsLeft--; document.getElementById('clock-display').innerText = spinsLeft; playSound('spin');
+            const spinBtn = document.getElementById('spin-btn'); const spinnerEmoji = document.getElementById('spinner-emoji');
+            spinBtn.classList.add('anim-spin-pop'); spinnerEmoji.innerText = '❓';
 
             setTimeout(() => {
                 const randKey = resourceKeys[Math.floor(Math.random() * resourceKeys.length)];
                 const picked = resources[randKey];
-                
-                picked.count++;
-                spinnerEmoji.innerText = picked.emoji;
-                
-                playSound('pop');
-                spinBtn.classList.remove('anim-spin-pop');
+                picked.count++; spinnerEmoji.innerText = picked.emoji;
+                playSound('pop'); spinBtn.classList.remove('anim-spin-pop');
                 
                 const rect = spinBtn.getBoundingClientRect();
                 showFloatingResource(picked.emoji, rect.left + rect.width/2 - 20, rect.top + rect.height/2 - 20);
-
-                updateUI();
-                checkGameOver();
-                isSpinning = false;
+                updateUI(); checkGameOver(); isSpinning = false;
             }, 600);
         }
 
         function buildBuilding(key) {
-            initAudio();
-            const b = buildings[key];
+            initAudio(); const b = buildings[key];
             for (let res in b.cost) resources[res].count -= b.cost[res];
-            
-            b.built = true;
-            playSound('build');
+            b.built = true; playSound('build');
             
             const card = document.getElementById(b.cardId);
-            card.classList.add('bounce-in');
-            card.style.borderColor = '#4ade80'; // green
-            card.style.backgroundColor = '#dcfce7';
-            
-            const rect = card.getBoundingClientRect();
-            createConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2, 40);
-
-            updateUI();
-            checkGameOver();
+            card.classList.add('bounce-in'); card.style.borderColor = '#4ade80'; card.style.backgroundColor = '#dcfce7';
+            const rect = card.getBoundingClientRect(); createConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2, 40);
+            updateUI(); checkGameOver();
         }
 
         // ==========================================
-        // MAGIC MATH FEATURE
+        // MAGIC MATH WAND (4 Tries Limit)
         // ==========================================
         let currentMathAnswer = 0;
+
+        function updateMathWandUI() {
+            const btn = document.getElementById('btn-math-wand');
+            document.getElementById('math-charges-ui').innerText = mathTriesLeft;
+            if(mathTriesLeft <= 0) {
+                btn.className = "disabled-build w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-gray-300 flex items-center justify-center gap-4 transition-transform group";
+            } else {
+                btn.className = "math-wand-bg w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-white flex items-center justify-center gap-4 hover:scale-105 active:scale-95 transition-transform group cursor-pointer";
+            }
+        }
 
         document.getElementById('btn-math-wand').addEventListener('click', openMathModal);
         document.getElementById('btn-close-math').addEventListener('click', closeMathModal);
 
         function openMathModal() {
-            if(!gameActive) return;
-            initAudio();
-            playSound('pop');
-            generateMathQuestion();
+            if(!gameActive || mathTriesLeft <= 0) return;
+            initAudio(); playSound('pop'); generateMathQuestion();
             document.getElementById('modal-math').classList.remove('hidden');
             document.getElementById('modal-math').classList.add('flex');
         }
@@ -884,162 +805,115 @@
 
         function generateMathQuestion() {
             const isAddition = Math.random() > 0.5;
-            let a = Math.floor(Math.random() * 10) + 1; // 1 to 10
-            let b = Math.floor(Math.random() * 10) + 1;
-            
-            if (!isAddition && a < b) {
-                let temp = a; a = b; b = temp; // Avoid negative numbers for 6yr olds
-            }
-
-            const operator = isAddition ? '+' : '-';
+            let a = Math.floor(Math.random() * 10) + 1; let b = Math.floor(Math.random() * 10) + 1;
+            if (!isAddition && a < b) { let temp = a; a = b; b = temp; }
             currentMathAnswer = isAddition ? (a + b) : (a - b);
+            document.getElementById('math-question').innerText = `${a} ${isAddition?'+':'-'} ${b} = ?`;
 
-            document.getElementById('math-question').innerText = `${a} ${operator} ${b} = ?`;
-
-            // Generate answers
             let answers = [currentMathAnswer];
             while (answers.length < 4) {
-                // Generate a believable wrong answer (within +/- 3 of real answer)
-                let offset = Math.floor(Math.random() * 6) - 3;
-                if (offset === 0) offset = 1; 
-                let wrong = currentMathAnswer + offset;
-                if (wrong < 0) wrong = 0;
-                if (!answers.includes(wrong)) {
-                    answers.push(wrong);
-                }
+                let offset = Math.floor(Math.random() * 6) - 3; if (offset === 0) offset = 1; 
+                let wrong = currentMathAnswer + offset; if (wrong < 0) wrong = 0;
+                if (!answers.includes(wrong)) answers.push(wrong);
             }
-
-            // Shuffle
             answers.sort(() => Math.random() - 0.5);
 
-            const container = document.getElementById('math-answers');
-            container.innerHTML = '';
-            
+            const container = document.getElementById('math-answers'); container.innerHTML = '';
             answers.forEach(ans => {
                 const btn = document.createElement('button');
                 btn.className = "bg-white border-4 border-blue-200 text-blue-600 font-black text-4xl py-4 rounded-[2rem] shadow-md hover:bg-blue-50 active:scale-95 transition-all";
-                btn.innerText = ans;
-                btn.onclick = () => checkMathAnswer(ans);
-                container.appendChild(btn);
+                btn.innerText = ans; btn.onclick = () => checkMathAnswer(ans); container.appendChild(btn);
             });
         }
 
         function checkMathAnswer(selected) {
             initAudio();
-            if (selected === currentMathAnswer) {
-                // Correct! Give reward.
-                playSound('build');
-                closeMathModal();
-                
-                // Reward: 1 to 3 random items
-                let rewardCount = Math.floor(Math.random() * 3) + 1;
-                let rewardMsg = "";
-                let e = [];
+            mathTriesLeft--; // Consume try
+            updateMathWandUI();
 
+            if (selected === currentMathAnswer) {
+                playSound('build'); closeMathModal();
+                let rewardCount = Math.floor(Math.random() * 3) + 1; let e = [];
                 for(let i=0; i<rewardCount; i++) {
                     const randKey = resourceKeys[Math.floor(Math.random() * resourceKeys.length)];
-                    resources[randKey].count++;
-                    e.push(resources[randKey].emoji);
+                    resources[randKey].count++; e.push(resources[randKey].emoji);
                 }
-
-                userData.math_solved += 1;
-                saveData();
-                checkBadges();
-
                 showToast(`Smart Owl! + ${e.join(" ")}`);
                 createConfetti(window.innerWidth/2, window.innerHeight/2, 25);
-                updateUI();
-                checkGameOver();
+                updateUI(); checkGameOver();
             } else {
-                // Wrong answer
                 playSound('wrong');
                 const mathBox = document.getElementById('math-content');
                 mathBox.classList.remove('bounce-in');
-                
-                // Shake animation using element styling briefly
-                mathBox.style.transform = "translateX(-10px)";
-                setTimeout(() => mathBox.style.transform = "translateX(10px)", 50);
-                setTimeout(() => mathBox.style.transform = "translateX(-10px)", 100);
-                setTimeout(() => mathBox.style.transform = "translateX(10px)", 150);
-                setTimeout(() => {
-                    mathBox.style.transform = "translateX(0)";
-                    closeMathModal();
-                    showToast("Oops! The magic fizzled. Try again!");
-                }, 200);
+                mathBox.style.transform = "translateX(-10px)"; setTimeout(() => mathBox.style.transform = "translateX(10px)", 50);
+                setTimeout(() => mathBox.style.transform = "translateX(-10px)", 100); setTimeout(() => mathBox.style.transform = "translateX(10px)", 150);
+                setTimeout(() => { mathBox.style.transform = "translateX(0)"; closeMathModal(); showToast("Oops! Magic fizzled."); }, 200);
             }
         }
-
 
         // ==========================================
         // GAME OVER LOGIC
         // ==========================================
         function checkGameOver() {
             const allBuilt = Object.values(buildings).every(b => b.built);
-            
             if (allBuilt) {
-                gameActive = false;
-                userData.wins += 1;
+                gameActive = false; userData.wins += 1;
+                
+                // Roll for Dress Up Item Reward
+                const unownedIds = Object.keys(ITEMS).filter(id => !userData.inventory.includes(id));
+                let newReward = null;
+                if(unownedIds.length > 0) {
+                    newReward = unownedIds[Math.floor(Math.random() * unownedIds.length)];
+                    userData.inventory.push(newReward);
+                }
                 saveData();
-                const newBadges = checkBadges(spinsLeft);
-                setTimeout(() => showGameOverModal('win', newBadges), 800);
+                setTimeout(() => showGameOverModal('win', newReward), 800);
             } else if (spinsLeft <= 0) {
-                gameActive = false;
-                setTimeout(() => showGameOverModal('lose', []), 800);
+                gameActive = false; setTimeout(() => showGameOverModal('lose', null), 800);
             }
         }
 
-        function showGameOverModal(type, newBadges = []) {
+        function showGameOverModal(type, newRewardId) {
             const modalOverlay = document.getElementById('modal-overlay');
             const modalContent = document.getElementById('modal-content');
-            
-            modalOverlay.classList.remove('hidden');
-            modalOverlay.classList.add('flex');
+            modalOverlay.classList.remove('hidden'); modalOverlay.classList.add('flex');
             modalContent.classList.remove('hidden');
             
-            const badgeContainer = document.getElementById('modal-badges');
-            badgeContainer.innerHTML = '';
+            const rewardArea = document.getElementById('modal-reward-area');
+            rewardArea.classList.add('hidden'); rewardArea.classList.remove('flex');
 
             if (type === 'win') {
                 document.getElementById('modal-title').innerText = "Festival Ready! 🎪";
                 document.getElementById('modal-title').className = "text-5xl font-black mb-4 text-green-500 drop-shadow-sm";
                 document.getElementById('modal-msg').innerText = "You built everything before sunset! The friends are so happy!";
-                document.getElementById('modal-emoji').innerText = "🎉🧚‍♀️🧜‍♀️🐱";
-                modalContent.style.borderColor = "#4ade80"; // green-400
-                playSound('win');
-                isConfettiContinuous = true;
-                createConfetti(canvas.width/2, canvas.height/2, 80);
+                document.getElementById('modal-emoji').innerText = "🎉";
+                modalContent.style.borderColor = "#4ade80"; playSound('win');
+                isConfettiContinuous = true; createConfetti(canvas.width/2, canvas.height/2, 80);
 
-                if(newBadges.length > 0) {
-                    let badgeHTML = '<p class="w-full text-pink-600 font-bold text-lg mb-2 uppercase">New Prizes Unlocked!</p>';
-                    newBadges.forEach(b => {
-                        badgeHTML += `<div class="bg-amber-100 px-5 py-2 rounded-full border-4 border-amber-300 font-black text-amber-800 text-xl shadow-md anim-spin-pop">
-                            ${BADGE_DEFS[b].emoji} ${BADGE_DEFS[b].title}
-                        </div>`;
-                    });
-                    badgeContainer.innerHTML = badgeHTML;
+                if(newRewardId) {
+                    const item = ITEMS[newRewardId];
+                    rewardArea.classList.remove('hidden'); rewardArea.classList.add('flex');
+                    document.getElementById('modal-reward-item').innerHTML = `
+                        <div class="text-6xl emoji-shadow">${item.emoji}</div>
+                        <p class="text-lg font-black text-pink-600 mt-2 text-center leading-tight">${item.name}</p>
+                    `;
                 }
             } else {
                 document.getElementById('modal-title').innerText = "Sun has set! 🌙";
                 document.getElementById('modal-title').className = "text-5xl font-black mb-4 text-indigo-500";
-                document.getElementById('modal-msg').innerText = "We didn't finish in time, but we had fun trying. Let's play again tomorrow!";
+                document.getElementById('modal-msg').innerText = "We didn't finish in time. Let's play again tomorrow!";
                 document.getElementById('modal-emoji').innerText = "😴🌅";
-                modalContent.style.borderColor = "#818cf8";
-                playSound('lose');
+                modalContent.style.borderColor = "#818cf8"; playSound('lose');
             }
         }
 
         function resetGameState() {
-            isConfettiContinuous = false;
-            particles = []; 
-            spinsLeft = INITIAL_SPINS;
-            gameActive = true;
-            isSpinning = false;
+            isConfettiContinuous = false; particles = []; 
+            spinsLeft = INITIAL_SPINS; mathTriesLeft = 4;
+            gameActive = true; isSpinning = false;
             document.getElementById('spinner-emoji').innerText = '🧭';
-            tradeGive = null;
-            tradeGet = null;
-
+            tradeGive = null; tradeGet = null;
             for (let key in resources) resources[key].count = 0;
-            
             for (let key in buildings) {
                 buildings[key].built = false;
                 const card = document.getElementById(buildings[key].cardId);
@@ -1052,33 +926,22 @@
             updateUI();
         }
 
-        function startGameFlow() {
-            initAudio();
-            resetGameState();
-            showScreen('game');
-        }
+        function startGameFlow() { initAudio(); resetGameState(); showScreen('game'); }
 
-        // Setup Main UI Listeners
         document.getElementById('btn-start-game').addEventListener('click', startGameFlow);
         document.getElementById('btn-open-inventory').addEventListener('click', () => { initAudio(); showScreen('inventory'); });
         document.getElementById('btn-inv-back').addEventListener('click', () => { initAudio(); showScreen('menu'); });
         document.getElementById('btn-game-back').addEventListener('click', () => { gameActive = false; showScreen('menu'); });
-        
         document.getElementById('spin-btn').addEventListener('click', spin);
         
         document.getElementById('btn-restart').addEventListener('click', () => {
-            document.getElementById('modal-overlay').classList.add('hidden');
-            startGameFlow();
+            document.getElementById('modal-overlay').classList.add('hidden'); startGameFlow();
         });
         document.getElementById('btn-modal-menu').addEventListener('click', () => {
-            document.getElementById('modal-overlay').classList.add('hidden');
-            gameActive = false;
-            showScreen('menu');
+            document.getElementById('modal-overlay').classList.add('hidden'); gameActive = false; showScreen('menu');
         });
 
-        // Audio wake up
         document.body.addEventListener('pointerdown', initAudio, { once: true });
-
     </script>
 </body>
 </html>
