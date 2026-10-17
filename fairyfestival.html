@@ -10,7 +10,7 @@
     <style>
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #fce7f3; /* pink-100 */
+            background-color: #fce7f3;
             background-image: radial-gradient(#fbcfe8 20%, transparent 20%), radial-gradient(#fbcfe8 20%, transparent 20%);
             background-size: 40px 40px;
             background-position: 0 0, 20px 20px;
@@ -77,12 +77,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Trading Well Styles */
         .trade-icon { filter: grayscale(100%); opacity: 0.4; cursor: pointer; transition: all 0.2s; }
         .trade-icon.available { filter: grayscale(0%); opacity: 1; }
         .trade-icon.selected { transform: scale(1.3); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 1)); opacity: 1; }
 
-        /* Toast Notification */
         #toast-container {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;
@@ -95,13 +93,6 @@
         }
         @keyframes slideOut { to { transform: translateY(-50px); opacity: 0; } }
 
-        /* Avatar Compositing */
-        .avatar-layer { position: absolute; left: 0; right: 0; text-align: center; pointer-events: none; }
-        .av-base { top: 50%; transform: translateY(-50%); font-size: 3.5rem; z-index: 10; }
-        .av-head { top: -10%; font-size: 2.5rem; z-index: 20; }
-        .av-body { bottom: -5%; font-size: 3.5rem; z-index: 20; }
-        .av-feet { bottom: -15%; font-size: 2rem; z-index: 5; }
-
         .math-wand-bg {
             background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
             background-size: 200% 200%; animation: gradientShift 3s ease infinite;
@@ -109,6 +100,11 @@
         @keyframes gradientShift {
             0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
         }
+        
+        .svg-container svg { width: 100%; height: 100%; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15)); }
+
+        .rare-item { background: linear-gradient(135deg, #fef08a, #fde047); border-color: #facc15; }
+        .speed-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; text-shadow: 1px 1px 0 #b45309; }
     </style>
 </head>
 <body class="text-purple-900 min-h-screen flex flex-col items-center py-6 px-4">
@@ -119,12 +115,13 @@
     <!-- HERO SHOWCASE BANNER -->
     <header id="main-header" class="hidden w-full max-w-4xl bg-white/90 rounded-[2rem] p-4 mb-6 shadow-lg border-4 border-pink-300 flex items-center justify-between backdrop-blur-sm z-40">
         <div class="flex items-center gap-4">
-            <div id="hero-avatar" class="w-20 h-20 bg-pink-100 rounded-full border-4 border-white shadow-inner relative flex items-center justify-center overflow-hidden shrink-0">
-                <!-- Layers injected by JS -->
-            </div>
+            <div id="hero-avatar" class="w-16 h-24 sm:w-20 sm:h-28 bg-gradient-to-b from-pink-100 to-white rounded-2xl border-4 border-white shadow-inner flex items-center justify-center shrink-0 svg-container overflow-hidden pt-2"></div>
             <div>
-                <h1 id="hero-name" class="text-2xl md:text-3xl font-black text-purple-700 drop-shadow-sm leading-none">Player Name</h1>
-                <p id="hero-title" class="text-sm font-bold text-pink-500 uppercase tracking-widest mt-1">Festival Star</p>
+                <h1 id="hero-name" class="text-2xl md:text-3xl font-black text-purple-700 drop-shadow-sm leading-none">Player</h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <p id="hero-title" class="text-sm font-bold text-pink-500 uppercase tracking-widest">Festival Star</p>
+                    <div id="hero-badges" class="flex gap-1"></div>
+                </div>
             </div>
         </div>
         <button id="btn-header-home" class="hidden sm:flex text-gray-500 font-black bg-gray-100 px-5 py-2 rounded-full hover:bg-gray-200 border-2 border-gray-200 active:scale-95 transition-transform text-sm items-center gap-2">
@@ -133,20 +130,27 @@
     </header>
 
     <!-- AUTH SCREEN -->
-    <div id="screen-auth" class="screen-container active flex-col items-center w-full max-w-md mt-10">
-        <div class="bg-white p-8 rounded-[3rem] shadow-xl border-4 border-pink-300 w-full text-center">
+    <div id="screen-auth" class="screen-container active flex-col items-center w-full max-w-2xl mt-4 sm:mt-10">
+        <div class="bg-white p-6 sm:p-8 rounded-[3rem] shadow-xl border-4 border-pink-300 w-full text-center">
             <h2 class="text-3xl font-black text-purple-600 mb-2">Create a Hero!</h2>
-            <p class="text-gray-500 mb-4 text-sm font-bold">Pick your character & magic name</p>
+            <p class="text-gray-500 mb-6 text-sm font-bold">Pick your character & magic name</p>
             
-            <div class="flex justify-center gap-4 mb-6" id="avatar-selection">
-                <!-- Selection handled via JS classes -->
-                <div class="av-opt cursor-pointer p-2 rounded-3xl border-4 border-pink-400 bg-pink-100 transform scale-110 transition-all text-5xl emoji-shadow" data-av="kitty">🐱</div>
-                <div class="av-opt cursor-pointer p-2 rounded-3xl border-4 border-transparent hover:bg-pink-50 transition-all text-5xl emoji-shadow" data-av="bunny">🐰</div>
-                <div class="av-opt cursor-pointer p-2 rounded-3xl border-4 border-transparent hover:bg-pink-50 transition-all text-5xl emoji-shadow" data-av="puppy">🐶</div>
+            <div class="flex justify-center gap-4 mb-8" id="avatar-selection">
+                <div class="av-opt cursor-pointer p-2 rounded-3xl border-4 border-pink-400 bg-pink-100 transform scale-110 transition-all flex flex-col items-center" data-av="lily">
+                    <div class="w-20 h-28 svg-container" id="preview-lily"></div>
+                    <span class="font-black text-pink-500 mt-2">Lily</span>
+                </div>
+                <div class="av-opt cursor-pointer p-2 rounded-3xl border-4 border-transparent hover:bg-pink-50 transition-all flex flex-col items-center" data-av="mia">
+                    <div class="w-20 h-28 svg-container" id="preview-mia"></div>
+                    <span class="font-black text-pink-500 mt-2">Mia</span>
+                </div>
+                <div class="av-opt cursor-pointer p-2 rounded-3xl border-4 border-transparent hover:bg-pink-50 transition-all flex flex-col items-center" data-av="zoe">
+                    <div class="w-20 h-28 svg-container" id="preview-zoe"></div>
+                    <span class="font-black text-pink-500 mt-2">Zoe</span>
+                </div>
             </div>
 
             <input type="text" id="auth-username" placeholder="Your Name" class="w-full bg-pink-50 border-4 border-pink-200 rounded-3xl p-4 mb-6 outline-none focus:border-pink-500 font-black text-xl text-center text-purple-700" maxlength="12">
-            
             <button id="btn-login" class="w-full bg-gradient-to-r from-pink-400 to-purple-500 text-white font-black text-2xl py-4 rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform">
                 Let's Play! 🎪
             </button>
@@ -157,12 +161,12 @@
     <div id="screen-menu" class="screen-container flex-col items-center w-full max-w-md gap-6">
         <button id="btn-start-game" class="w-full bg-gradient-to-r from-teal-400 to-blue-500 text-white rounded-[2.5rem] p-6 shadow-xl border-4 border-white hover:scale-105 transition-transform group relative overflow-hidden">
             <div class="absolute inset-0 bg-white opacity-20 group-hover:opacity-0 transition-opacity"></div>
-            <div class="text-6xl mb-2 group-hover:anim-spin-pop">🎲</div>
+            <div class="text-6xl mb-2 group-hover:anim-spin-pop emoji-shadow">🎲</div>
             <h2 class="text-4xl font-black drop-shadow-md">Play Festival!</h2>
         </button>
 
         <button id="btn-open-inventory" class="w-full bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white rounded-[2.5rem] p-6 shadow-xl border-4 border-white hover:scale-105 transition-transform group">
-            <div class="text-6xl mb-2 group-hover:bounce-in">👗</div>
+            <div class="text-6xl mb-2 group-hover:bounce-in emoji-shadow">👗</div>
             <h2 class="text-4xl font-black drop-shadow-md">Dress Up Room</h2>
             <p class="text-pink-100 font-bold mt-1 text-lg">Wear your prizes!</p>
         </button>
@@ -171,27 +175,31 @@
     </div>
 
     <!-- DRESS UP / INVENTORY SCREEN -->
-    <div id="screen-inventory" class="screen-container flex-col items-center w-full max-w-4xl bg-white/60 p-6 rounded-[3rem] border-4 border-white shadow-lg">
-        <h2 class="text-4xl md:text-5xl text-pink-500 font-black mb-2 drop-shadow-md">Dress Up Room 👗</h2>
-        <p class="text-purple-600 font-bold mb-8">Tap an item to wear it! Win games to unlock more!</p>
+    <div id="screen-inventory" class="screen-container flex-col items-center w-full max-w-5xl bg-white/60 p-4 sm:p-8 rounded-[3rem] border-4 border-white shadow-lg">
+        <h2 class="text-4xl md:text-5xl text-pink-500 font-black mb-2 drop-shadow-md text-center">Dress Up Room 👗</h2>
+        <p class="text-purple-600 font-bold mb-6 text-center">Tap an item to wear it! Win games to unlock more!</p>
         
-        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 w-full" id="inventory-grid">
-            <!-- Items injected via JS -->
+        <div class="flex flex-col md:flex-row w-full gap-8 items-start">
+            <div class="w-full md:w-1/3 flex flex-col items-center">
+                <div class="bg-gradient-to-b from-pink-100 to-white rounded-[3rem] border-8 border-white shadow-xl w-48 h-72 sm:w-64 sm:h-96 flex items-center justify-center p-4 svg-container" id="inventory-preview"></div>
+            </div>
+
+            <div class="w-full md:w-2/3 grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 content-start" id="inventory-grid"></div>
         </div>
 
-        <button id="btn-inv-back" class="mt-8 bg-white border-4 border-purple-200 text-purple-600 font-black text-2xl py-3 px-10 rounded-full shadow-md hover:bg-purple-50 hover:scale-105 transition-all">
+        <button id="btn-inv-back" class="mt-10 bg-white border-4 border-purple-200 text-purple-600 font-black text-2xl py-3 px-10 rounded-full shadow-md hover:bg-purple-50 hover:scale-105 transition-all w-full sm:w-auto">
             ⬅️ Back to Menu
         </button>
     </div>
 
     <!-- GAME SCREEN -->
     <div id="screen-game" class="screen-container flex-col md:flex-row gap-6 w-full max-w-6xl items-start justify-center">
-        <!-- Left Column: Spinner, Chest, Math Wand, Well -->
+        <!-- Left Column -->
         <div class="flex flex-col gap-6 w-full md:w-[45%]">
             
             <div class="bg-white rounded-full flex justify-between items-center px-6 py-3 shadow-lg border-4 border-pink-300 w-full mb-2">
                 <span class="text-xl md:text-2xl text-purple-700 font-bold">
-                    Sunset in: <span id="clock-display" class="font-black text-pink-600 text-3xl">25</span> ☀️
+                    Sunset in: <span id="clock-display" class="font-black text-pink-600 text-3xl">20</span> ☀️
                 </span>
                 <button id="btn-game-back" class="text-gray-500 font-black bg-gray-100 px-5 py-2 rounded-full hover:bg-gray-200 border-2 border-gray-200 active:scale-95 transition-transform text-sm sm:hidden">Quit</button>
             </div>
@@ -206,7 +214,7 @@
                 <p class="mt-4 text-xl text-gray-500 font-bold z-10">Tap to spin for items!</p>
             </div>
 
-            <!-- Magic Math Wand (UPDATED WITH LIMITS) -->
+            <!-- Magic Math Wand -->
             <button id="btn-math-wand" class="math-wand-bg w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-white flex items-center justify-center gap-4 hover:scale-105 active:scale-95 transition-transform group">
                 <div class="text-5xl group-hover:anim-spin-pop emoji-shadow">🪄</div>
                 <div class="text-left">
@@ -264,63 +272,43 @@
             </div>
         </div>
 
-        <!-- Right Column: Buildings -->
-        <div class="flex flex-col gap-4 w-full md:w-[55%] pb-10">
-            <h2 class="text-3xl text-purple-600 mb-2 text-center font-black drop-shadow-sm">Festival Sites To Build:</h2>
-            
-            <div id="card-mermaid" class="bg-cyan-50 rounded-3xl p-5 shadow-lg border-4 border-cyan-200 flex flex-col sm:flex-row items-center gap-4 transition-all duration-300">
-                <div class="text-6xl emoji-shadow w-24 text-center">🧜‍♀️</div>
-                <div class="flex-grow text-center sm:text-left">
-                    <h3 class="text-2xl text-cyan-800 mb-1 font-black">Mermaid Stage</h3>
-                    <p class="text-sm text-cyan-600 font-bold mb-2 uppercase tracking-wide">Needs: 3 Pearls, 2 Gems</p>
-                    <div id="cost-mermaid" class="flex gap-2 justify-center sm:justify-start mb-2 opacity-80 text-2xl">
-                        <span>🦪🦪🦪</span> <span>💎💎</span>
-                    </div>
-                </div>
-                <button id="btn-mermaid" class="disabled-build w-full sm:w-auto px-8 py-4 rounded-full font-black text-xl shadow-md transition-all">Build!</button>
-            </div>
-
-            <div id="card-fairy" class="bg-fuchsia-50 rounded-3xl p-5 shadow-lg border-4 border-fuchsia-200 flex flex-col sm:flex-row items-center gap-4 transition-all duration-300">
-                <div class="text-6xl emoji-shadow w-24 text-center">🧚‍♀️</div>
-                <div class="flex-grow text-center sm:text-left">
-                    <h3 class="text-2xl text-fuchsia-800 mb-1 font-black">Fairy Tent</h3>
-                    <p class="text-sm text-fuchsia-600 font-bold mb-2 uppercase tracking-wide">Needs: 3 Pixie Dust, 2 Strawberries</p>
-                    <div id="cost-fairy" class="flex gap-2 justify-center sm:justify-start mb-2 opacity-80 text-2xl">
-                        <span>✨✨✨</span> <span>🍓🍓</span>
-                    </div>
-                </div>
-                <button id="btn-fairy" class="disabled-build w-full sm:w-auto px-8 py-4 rounded-full font-black text-xl shadow-md transition-all">Build!</button>
-            </div>
-
-            <div id="card-kitty" class="bg-pink-50 rounded-3xl p-5 shadow-lg border-4 border-pink-200 flex flex-col sm:flex-row items-center gap-4 transition-all duration-300">
-                <div class="text-6xl emoji-shadow w-24 text-center">🐱</div>
-                <div class="flex-grow text-center sm:text-left">
-                    <h3 class="text-2xl text-pink-800 mb-1 font-black">Kitty Castle</h3>
-                    <p class="text-sm text-pink-600 font-bold mb-2 uppercase tracking-wide">Needs: 2 of Everything</p>
-                    <div id="cost-kitty" class="flex flex-wrap gap-1 justify-center sm:justify-start mb-2 opacity-80 text-2xl">
-                        <span>✨✨</span><span>🦪🦪</span><span>🍓🍓</span><span>💎💎</span>
-                    </div>
-                </div>
-                <button id="btn-kitty" class="disabled-build w-full sm:w-auto px-8 py-4 rounded-full font-black text-xl shadow-md transition-all">Build!</button>
+        <!-- Right Column: Buildings (Dynamic) -->
+        <div class="flex flex-col w-full md:w-[55%] pb-10">
+            <h2 class="text-3xl text-purple-600 mb-4 text-center font-black drop-shadow-sm">Festival Sites To Build:</h2>
+            <div id="buildings-container" class="flex flex-col gap-4">
+                <!-- Injected via JS -->
             </div>
         </div>
     </div>
 
     <!-- MAIN GAME OVER MODAL -->
-    <div id="modal-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div id="modal-content" class="bg-white rounded-[3rem] p-8 max-w-lg w-full text-center shadow-2xl border-8 border-pink-400 bounce-in hidden flex flex-col items-center">
-            <h2 id="modal-title" class="text-5xl font-black mb-4"></h2>
-            <p id="modal-msg" class="text-2xl text-gray-600 mb-4 font-bold"></p>
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
+        <div id="modal-content" class="bg-white rounded-[3rem] p-6 max-w-lg w-full text-center shadow-2xl border-8 border-pink-400 bounce-in hidden flex-col items-center my-8">
+            <h2 id="modal-title" class="text-5xl font-black mb-2"></h2>
+            <p id="modal-msg" class="text-xl text-gray-600 mb-4 font-bold"></p>
             
             <div id="modal-reward-area" class="w-full hidden flex-col items-center mb-6">
-                <p class="text-pink-500 font-black uppercase tracking-wide mb-2">New Item Unlocked!</p>
-                <div id="modal-reward-item" class="bg-pink-50 border-4 border-pink-300 rounded-3xl p-4 flex flex-col items-center justify-center anim-spin-pop w-32 h-32">
-                    <!-- Reward Injected Here -->
+                <!-- Normal Reward -->
+                <div id="modal-normal-reward" class="hidden flex-col items-center">
+                    <p class="text-pink-500 font-black uppercase tracking-wide mb-2">New Item Unlocked!</p>
+                    <div id="modal-reward-item" class="bg-pink-50 border-4 border-pink-300 rounded-3xl p-4 flex flex-col items-center justify-center anim-spin-pop w-28 h-28 mb-2"></div>
                 </div>
-                <p class="text-sm text-gray-500 font-bold mt-2">Go to the Dress Up Room to wear it!</p>
+
+                <!-- Speed Bonus Reward -->
+                <div id="modal-speed-reward" class="hidden flex-col items-center bg-yellow-50 border-4 border-yellow-400 rounded-[2rem] p-4 mt-2 w-full">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <span class="text-3xl">⚡</span>
+                        <h3 class="text-2xl font-black text-yellow-600">SPEED BONUS!</h3>
+                        <span class="text-3xl">⚡</span>
+                    </div>
+                    <p class="text-sm text-yellow-700 font-bold mb-3">You won with >8 clocks left! You earned a RARE item!</p>
+                    <div id="modal-rare-item" class="bg-white border-4 border-yellow-300 rounded-3xl p-4 flex flex-col items-center justify-center anim-spin-pop w-28 h-28 shadow-inner"></div>
+                </div>
+
+                <p class="text-sm text-gray-500 font-bold mt-4">Go to the Dress Up Room to wear them!</p>
             </div>
 
-            <div id="modal-emoji" class="text-8xl mb-8 emoji-shadow anim-spin-pop"></div>
+            <div id="modal-emoji" class="text-8xl mb-6 emoji-shadow anim-spin-pop"></div>
             
             <div class="flex gap-4 w-full">
                 <button id="btn-modal-menu" class="flex-1 bg-gray-200 text-gray-700 text-xl font-black py-4 rounded-full shadow border-b-4 border-gray-300 hover:bg-gray-300 active:translate-y-1 active:border-b-0 transition-all">
@@ -344,45 +332,101 @@
             <div class="bg-blue-50 border-4 border-blue-200 rounded-3xl p-6 mb-6 w-full z-10">
                 <div id="math-question" class="text-6xl font-black text-purple-700 tracking-widest drop-shadow-sm">5 + 3 = ?</div>
             </div>
-            <div id="math-answers" class="grid grid-cols-2 gap-4 w-full z-10">
-                <!-- Buttons injected by JS -->
-            </div>
+            <div id="math-answers" class="grid grid-cols-2 gap-4 w-full z-10"></div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // DATA MODELS
+        // DATA MODELS & SVG ENGINE
         // ==========================================
         const AVATARS = {
-            kitty: { id: 'kitty', emoji: '🐱', name: 'Fairy Kitty' },
-            bunny: { id: 'bunny', emoji: '🐰', name: 'Mermaid Bunny' },
-            puppy: { id: 'puppy', emoji: '🐶', name: 'Puppy Princess' }
+            lily: { id: 'lily', name: 'Lily' },
+            mia: { id: 'mia', name: 'Mia' },
+            zoe: { id: 'zoe', name: 'Zoe' }
         };
 
         const ITEMS = {
-            // Heads
-            pearl_tiara: { id: 'pearl_tiara', type: 'head', emoji: '👑', name: 'Pearl Tiara' },
-            flower_crown: { id: 'flower_crown', type: 'head', emoji: '🌸', name: 'Flower Crown' },
-            ribbon_bow: { id: 'ribbon_bow', type: 'head', emoji: '🎀', name: 'Magic Bow' },
-            // Bodies
-            pink_dress: { id: 'pink_dress', type: 'body', emoji: '👗', name: 'Sparkle Dress' },
-            hero_cape: { id: 'hero_cape', type: 'body', emoji: '🦸‍♀️', name: 'Hero Cape' },
-            kimono: { id: 'kimono', type: 'body', emoji: '👘', name: 'Silk Kimono' },
-            // Feet
-            glass_slippers: { id: 'glass_slippers', type: 'feet', emoji: '👡', name: 'Glass Slippers' },
-            red_shoes: { id: 'red_shoes', type: 'feet', emoji: '👠', name: 'Ruby Heels' },
-            magic_boots: { id: 'magic_boots', type: 'feet', emoji: '👢', name: 'Magic Boots' }
+            // Standard Heads
+            pearl_tiara: { id: 'pearl_tiara', type: 'head', isRare: false, emoji: '👑', name: 'Pearl Tiara', svg: `<path d="M 38 15 L 42 5 L 50 10 L 58 5 L 62 15 Z" fill="#fbbf24"/><circle cx="42" cy="5" r="2" fill="#fff"/><circle cx="50" cy="10" r="2" fill="#fff"/><circle cx="58" cy="5" r="2" fill="#fff"/>` },
+            flower_crown: { id: 'flower_crown', type: 'head', isRare: false, emoji: '🌸', name: 'Flower Crown', svg: `<circle cx="35" cy="18" r="4" fill="#f472b6"/><circle cx="50" cy="14" r="4" fill="#f472b6"/><circle cx="65" cy="18" r="4" fill="#f472b6"/><path d="M 35 20 Q 50 12 65 20" stroke="#4ade80" fill="none" stroke-width="2"/>` },
+            ribbon_bow: { id: 'ribbon_bow', type: 'head', isRare: false, emoji: '🎀', name: 'Magic Bow', svg: `<path d="M 40 10 L 45 15 L 40 20 Z" fill="#ef4444"/><path d="M 60 10 L 55 15 L 60 20 Z" fill="#ef4444"/><circle cx="50" cy="15" r="5" fill="#ef4444"/>` },
+            // Rare Head
+            crystal_crown: { id: 'crystal_crown', type: 'head', isRare: true, emoji: '❄️', name: 'Crystal Crown', svg: `<path d="M 36 15 L 42 0 L 50 10 L 58 0 L 64 15 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1"/><circle cx="42" cy="0" r="2" fill="#bae6fd"/><circle cx="50" cy="10" r="2" fill="#bae6fd"/><circle cx="58" cy="0" r="2" fill="#bae6fd"/>` },
+            
+            // Standard Bodies
+            pink_dress: { id: 'pink_dress', type: 'body', isRare: false, emoji: '👗', name: 'Sparkle Dress', svg: `<path d="M 34 55 L 66 55 L 75 100 L 25 100 Z" fill="#ec4899"/><rect x="34" y="70" width="32" height="5" fill="#be185d"/>` },
+            mermaid_tail: { id: 'mermaid_tail', type: 'body', isRare: false, emoji: '🧜‍♀️', name: 'Ocean Tail', svg: `<path d="M 34 85 Q 50 140 30 150 Q 50 130 70 150 Q 50 140 66 85 Z" fill="#06b6d4"/><path d="M 34 55 L 66 55 L 66 70 L 34 70 Z" fill="#8b5cf6"/>` },
+            fairy_dress: { id: 'fairy_dress', type: 'body', isRare: false, emoji: '🧚‍♀️', name: 'Fairy Wings', svg: `<path d="M 20 40 Q -10 20 15 80 Z M 80 40 Q 110 20 85 80 Z" fill="#ddd6fe" opacity="0.8"/><path d="M 30 55 L 70 55 L 80 90 L 20 90 Z" fill="#a78bfa"/>` },
+            // Rare Body
+            starlight_gown: { id: 'starlight_gown', type: 'body', isRare: true, emoji: '✨', name: 'Starlight Gown', svg: `<path d="M 34 55 L 66 55 L 80 100 L 20 100 Z" fill="#1e1b4b"/><path d="M 40 70 L 42 75 L 47 75 L 43 78 L 45 83 L 40 80 L 35 83 L 37 78 L 33 75 L 38 75 Z" fill="#fef08a" transform="scale(0.5) translate(40, 50)"/><path d="M 40 70 L 42 75 L 47 75 L 43 78 L 45 83 L 40 80 L 35 83 L 37 78 L 33 75 L 38 75 Z" fill="#fef08a" transform="scale(0.6) translate(80, 80)"/>` },
+            
+            // Standard Feet
+            glass_slippers: { id: 'glass_slippers', type: 'feet', isRare: false, emoji: '👡', name: 'Glass Slippers', svg: `<path d="M 34 125 L 46 125 L 46 135 Q 40 138 34 135 Z M 54 125 L 66 125 L 66 135 Q 60 138 54 135 Z" fill="#67e8f9" opacity="0.8"/>` },
+            red_shoes: { id: 'red_shoes', type: 'feet', isRare: false, emoji: '👠', name: 'Ruby Heels', svg: `<path d="M 34 125 L 46 125 L 46 132 Q 40 135 34 132 Z M 54 125 L 66 125 L 66 132 Q 60 135 54 132 Z" fill="#ef4444"/>` },
+            // Rare Feet
+            golden_boots: { id: 'golden_boots', type: 'feet', isRare: true, emoji: '👢', name: 'Golden Boots', svg: `<path d="M 34 115 L 46 115 L 46 135 Q 40 138 34 135 Z M 54 115 L 66 115 L 66 135 Q 60 138 54 135 Z" fill="#facc15"/>` },
+
+            // Standard Hands
+            star_wand: { id: 'star_wand', type: 'hand', isRare: false, emoji: '🪄', name: 'Star Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#fcd34d" stroke-width="3"/><polygon points="95,40 98,48 106,48 100,53 102,61 95,56 88,61 90,53 84,48 92,48" fill="#fde047"/>` },
+            heart_wand: { id: 'heart_wand', type: 'hand', isRare: false, emoji: '💖', name: 'Heart Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#9ca3af" stroke-width="3"/><path d="M 95 45 Q 90 40 95 50 Q 100 40 95 45" fill="#f43f5e" transform="translate(0, -5) scale(1.5)"/>` },
+            // Rare Hand
+            rainbow_wand: { id: 'rainbow_wand', type: 'hand', isRare: true, emoji: '🌈', name: 'Rainbow Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#d8b4fe" stroke-width="3"/><path d="M 85 45 A 10 10 0 0 1 105 45" fill="none" stroke="#ef4444" stroke-width="2"/><path d="M 87 47 A 8 8 0 0 1 103 47" fill="none" stroke="#eab308" stroke-width="2"/><path d="M 89 49 A 6 6 0 0 1 101 49" fill="none" stroke="#3b82f6" stroke-width="2"/>` }
         };
 
-        const STORAGE_KEY = 'fairy_maid_users';
-        const CURRENT_USER_KEY = 'fairy_maid_current';
+        const BUILDING_POOL = [
+            { id: 'mermaid', name: 'Mermaid Stage', emoji: '🧜‍♀️', bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-800', light: 'text-cyan-600', cost: { pearl: 2, gem: 1 } },
+            { id: 'fairy', name: 'Fairy Tent', emoji: '🧚‍♀️', bg: 'bg-fuchsia-50', border: 'border-fuchsia-200', text: 'text-fuchsia-800', light: 'text-fuchsia-600', cost: { pixie: 1, strawberry: 1 } },
+            { id: 'kitty', name: 'Kitty Castle', emoji: '🏰', bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-800', light: 'text-pink-600', cost: { strawberry: 2, pixie: 1 } },
+            { id: 'glitter', name: 'Glitter Tower', emoji: '🗼', bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-800', light: 'text-purple-600', cost: { gem: 3 } },
+            { id: 'star', name: 'Star Observatory', emoji: '🔭', bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-800', light: 'text-indigo-600', cost: { pixie: 2, pearl: 1 } },
+            { id: 'shell', name: 'Shell Palace', emoji: '🐚', bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-800', light: 'text-teal-600', cost: { pearl: 3 } },
+            { id: 'rainbow', name: 'Rainbow Bridge', emoji: '🌈', bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-800', light: 'text-red-600', cost: { pixie: 1, pearl: 1, strawberry: 1, gem: 1 } },
+            { id: 'flower', name: 'Flower Garden', emoji: '🌷', bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', light: 'text-rose-600', cost: { strawberry: 3 } }
+        ];
+
+        function generateDollSVG(avatarId, equipped) {
+            let skin = '', hairBack = '', hairFront = '';
+            if(avatarId === 'lily') { skin = '#fee2e2'; hairBack = `<path d="M 30 30 L 30 80 L 70 80 L 70 30 Z" fill="#fde047"/>`; hairFront = `<path d="M 32 35 Q 50 20 68 35 Q 50 15 32 35" fill="#eab308"/>`; } 
+            else if(avatarId === 'mia') { skin = '#f5bba6'; hairBack = ``; hairFront = `<circle cx="25" cy="20" r="14" fill="#ec4899"/><circle cx="75" cy="20" r="14" fill="#ec4899"/><path d="M 32 35 Q 50 15 68 35 Q 50 10 32 35" fill="#ec4899"/>`; } 
+            else if(avatarId === 'zoe') { skin = '#8b5a2b'; hairBack = ``; hairFront = `<circle cx="22" cy="25" r="16" fill="#27272a"/><circle cx="78" cy="25" r="16" fill="#27272a"/><path d="M 30 30 Q 50 10 70 30 Z" fill="#27272a"/>`; }
+
+            let baseDress = `<rect x="34" y="55" width="32" height="35" rx="5" fill="#e5e7eb"/>`;
+            let baseShoes = `<path d="M 34 125 L 46 125 L 46 135 L 34 135 Z M 54 125 L 66 125 L 66 135 L 54 135 Z" fill="#9ca3af"/>`;
+
+            let headSvg = equipped.head ? ITEMS[equipped.head].svg : '';
+            let bodySvg = equipped.body ? ITEMS[equipped.body].svg : baseDress;
+            let feetSvg = equipped.feet ? ITEMS[equipped.feet].svg : baseShoes;
+            let handSvg = equipped.hand ? ITEMS[equipped.hand].svg : '';
+
+            return `
+            <svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                ${hairBack}
+                <line x1="40" y1="80" x2="40" y2="130" stroke="${skin}" stroke-width="12" stroke-linecap="round"/>
+                <line x1="60" y1="80" x2="60" y2="130" stroke="${skin}" stroke-width="12" stroke-linecap="round"/>
+                ${feetSvg}
+                <line x1="35" y1="65" x2="20" y2="95" stroke="${skin}" stroke-width="10" stroke-linecap="round"/>
+                <line x1="65" y1="65" x2="80" y2="95" stroke="${skin}" stroke-width="10" stroke-linecap="round"/>
+                ${handSvg}
+                <rect x="34" y="55" width="32" height="40" rx="8" fill="${skin}"/>
+                ${bodySvg}
+                <circle cx="50" cy="35" r="18" fill="${skin}"/>
+                <circle cx="43" cy="35" r="2.5" fill="#333"/><circle cx="57" cy="35" r="2.5" fill="#333"/>
+                <path d="M 46 41 Q 50 45 54 41" stroke="#333" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="39" cy="39" r="3" fill="#f43f5e" opacity="0.3"/>
+                <circle cx="61" cy="39" r="3" fill="#f43f5e" opacity="0.3"/>
+                ${hairFront}
+                ${headSvg}
+            </svg>`;
+        }
+
+        const STORAGE_KEY = 'fairy_maid_v3_users'; 
+        const CURRENT_USER_KEY = 'fairy_maid_v3_current';
         
         let allUsers = {};
         let currentUser = null;
-        let userData = { avatar: 'kitty', wins: 0, inventory: [], equipped: { head: null, body: null, feet: null } };
-
-        let selectedAuthAvatar = 'kitty';
+        let userData = { avatar: 'lily', wins: 0, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+        let selectedAuthAvatar = 'lily';
 
         function loadData() {
             try {
@@ -393,13 +437,11 @@
                 if (lastUser && allUsers[lastUser]) {
                     currentUser = lastUser;
                     userData = allUsers[currentUser];
-                    // Backwards compatibility for old saves
-                    if(!userData.avatar) userData.avatar = 'kitty';
-                    if(!userData.inventory) userData.inventory = [];
-                    if(!userData.equipped) userData.equipped = {head: null, body: null, feet: null};
+                    if(!userData.equipped.hand) userData.equipped.hand = null;
+                    if(!userData.badges) userData.badges = [];
                     return true;
                 }
-            } catch(e) { console.error("Error loading local storage", e); }
+            } catch(e) { console.error(e); }
             return false;
         }
 
@@ -409,20 +451,19 @@
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers));
                 localStorage.setItem(CURRENT_USER_KEY, currentUser);
-            } catch(e) { console.error("Error saving to local storage", e); }
+            } catch(e) { console.error(e); }
         }
 
         function logout() {
             currentUser = null;
-            userData = { avatar: 'kitty', wins: 0, inventory: [], equipped: { head: null, body: null, feet: null } };
+            userData = { avatar: 'lily', wins: 0, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
             localStorage.removeItem(CURRENT_USER_KEY);
-            showScreen('auth');
-            document.getElementById('auth-username').value = '';
+            showScreen('auth'); document.getElementById('auth-username').value = '';
             document.getElementById('main-header').classList.add('hidden');
         }
 
         // ==========================================
-        // APP NAVIGATION & UI STATE
+        // UI & NAVIGATION
         // ==========================================
         const screens = {
             auth: document.getElementById('screen-auth'),
@@ -435,115 +476,85 @@
         function showScreen(screenName) {
             Object.values(screens).forEach(s => s.classList.remove('active'));
             screens[screenName].classList.add('active');
-
-            if(screenName === 'auth') {
-                mainHeader.classList.add('hidden');
-            } else {
-                mainHeader.classList.remove('hidden');
-                updateHeroShowcase();
-            }
-
+            if(screenName === 'auth') mainHeader.classList.add('hidden');
+            else { mainHeader.classList.remove('hidden'); updateHeroShowcase(); }
             if(screenName === 'inventory') renderDressUp();
         }
 
         function showToast(message) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
+            toast.className = 'toast'; toast.innerText = message;
+            container.appendChild(toast); setTimeout(() => toast.remove(), 3500);
             playSound('build');
         }
 
-        // ==========================================
-        // LOGIN / AVATAR SELECTION
-        // ==========================================
+        document.getElementById('preview-lily').innerHTML = generateDollSVG('lily', {});
+        document.getElementById('preview-mia').innerHTML = generateDollSVG('mia', {});
+        document.getElementById('preview-zoe').innerHTML = generateDollSVG('zoe', {});
+
         const avOpts = document.querySelectorAll('.av-opt');
         avOpts.forEach(opt => {
             opt.addEventListener('click', () => {
                 avOpts.forEach(o => { o.classList.remove('border-pink-400', 'bg-pink-100', 'scale-110'); o.classList.add('border-transparent'); });
-                opt.classList.remove('border-transparent');
-                opt.classList.add('border-pink-400', 'bg-pink-100', 'scale-110');
-                selectedAuthAvatar = opt.getAttribute('data-av');
-                playSound('pop');
+                opt.classList.remove('border-transparent'); opt.classList.add('border-pink-400', 'bg-pink-100', 'scale-110');
+                selectedAuthAvatar = opt.getAttribute('data-av'); playSound('pop');
             });
         });
 
         document.getElementById('btn-login').addEventListener('click', () => {
             let name = document.getElementById('auth-username').value.trim();
             if(!name) { alert("Please enter a magic name!"); return; }
-            
             currentUser = name;
-            if(!allUsers[currentUser]) {
-                allUsers[currentUser] = { avatar: selectedAuthAvatar, wins: 0, inventory: [], equipped: { head: null, body: null, feet: null } };
-            }
-            userData = allUsers[currentUser];
-            saveData();
-            initAudio();
-            showScreen('menu');
+            if(!allUsers[currentUser]) allUsers[currentUser] = { avatar: selectedAuthAvatar, wins: 0, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+            userData = allUsers[currentUser]; saveData(); initAudio(); showScreen('menu');
         });
 
-        if (loadData()) showScreen('menu');
-        else showScreen('auth');
+        if (loadData()) showScreen('menu'); else showScreen('auth');
 
         document.getElementById('btn-logout').addEventListener('click', logout);
         document.getElementById('btn-header-home').addEventListener('click', () => { gameActive = false; showScreen('menu'); });
 
-        // ==========================================
-        // HERO SHOWCASE / DRESS UP LOGIC
-        // ==========================================
         function updateHeroShowcase() {
             document.getElementById('hero-name').innerText = currentUser;
             document.getElementById('hero-title').innerText = AVATARS[userData.avatar].name;
+            document.getElementById('hero-avatar').innerHTML = generateDollSVG(userData.avatar, userData.equipped);
             
-            const cont = document.getElementById('hero-avatar');
-            const baseEmoji = AVATARS[userData.avatar].emoji;
-            const head = userData.equipped.head ? ITEMS[userData.equipped.head].emoji : '';
-            const body = userData.equipped.body ? ITEMS[userData.equipped.body].emoji : '';
-            const feet = userData.equipped.feet ? ITEMS[userData.equipped.feet].emoji : '';
-
-            cont.innerHTML = `
-                <div class="avatar-layer av-base">${baseEmoji}</div>
-                ${head ? `<div class="avatar-layer av-head">${head}</div>` : ''}
-                ${body ? `<div class="avatar-layer av-body">${body}</div>` : ''}
-                ${feet ? `<div class="avatar-layer av-feet">${feet}</div>` : ''}
-            `;
+            const badgesContainer = document.getElementById('hero-badges');
+            badgesContainer.innerHTML = '';
+            if (userData.badges.includes('speed_star')) {
+                badgesContainer.innerHTML = `<span class="speed-badge text-[10px] font-black px-2 py-0.5 rounded-full ml-2 shadow-sm">🌟 Speed Star</span>`;
+            }
         }
 
         function renderDressUp() {
-            const grid = document.getElementById('inventory-grid');
-            grid.innerHTML = '';
+            document.getElementById('inventory-preview').innerHTML = generateDollSVG(userData.avatar, userData.equipped);
+            const grid = document.getElementById('inventory-grid'); grid.innerHTML = '';
 
             for (const id in ITEMS) {
-                const item = ITEMS[id];
-                const owned = userData.inventory.includes(id);
-                const isEquipped = userData.equipped[item.type] === id;
-                
+                const item = ITEMS[id]; const owned = userData.inventory.includes(id); const isEquipped = userData.equipped[item.type] === id;
                 const div = document.createElement('div');
-                div.className = `rounded-[2rem] p-4 flex flex-col items-center text-center border-4 transition-all ${
-                    owned 
-                        ? (isEquipped ? 'bg-pink-100 border-pink-400 shadow-lg scale-105 cursor-pointer' : 'bg-white border-pink-200 hover:bg-pink-50 hover:border-pink-300 cursor-pointer shadow-sm')
-                        : 'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed filter grayscale'
-                }`;
+                
+                let baseStyle = owned 
+                    ? (isEquipped ? 'bg-pink-100 border-pink-400 shadow-lg scale-105 cursor-pointer' : (item.isRare ? 'rare-item cursor-pointer shadow-sm hover:scale-105' : 'bg-white border-pink-200 hover:bg-pink-50 cursor-pointer shadow-sm'))
+                    : 'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed filter grayscale';
+
+                div.className = `rounded-[2rem] p-3 sm:p-4 flex flex-col items-center text-center border-4 transition-all relative ${baseStyle}`;
 
                 div.innerHTML = `
-                    <div class="text-5xl mb-2 ${owned ? 'emoji-shadow' : ''}">${item.emoji}</div>
-                    <h3 class="text-sm font-black ${owned ? 'text-purple-700' : 'text-gray-500'} leading-tight">${item.name}</h3>
-                    <p class="text-[10px] font-bold mt-1 uppercase ${isEquipped ? 'text-pink-600 bg-white/60 px-2 rounded-full' : (owned ? 'text-gray-400' : 'text-gray-400')}">
+                    ${item.isRare && owned ? '<span class="absolute -top-2 -right-2 text-xl emoji-shadow">✨</span>' : ''}
+                    <div class="text-4xl sm:text-5xl mb-2 ${owned ? 'emoji-shadow' : ''}">${item.emoji}</div>
+                    <h3 class="text-xs sm:text-sm font-black ${owned ? (item.isRare ? 'text-yellow-700' : 'text-purple-700') : 'text-gray-500'} leading-tight">${item.name}</h3>
+                    <p class="text-[9px] sm:text-[10px] font-bold mt-1 uppercase ${isEquipped ? 'text-pink-600 bg-white/60 px-2 rounded-full' : 'text-gray-400'}">
                         ${isEquipped ? 'Wearing' : (owned ? 'Tap to wear' : 'Locked')}
                     </p>
                 `;
-
                 if (owned) {
                     div.onclick = () => {
                         initAudio(); playSound('pop');
-                        if (userData.equipped[item.type] === id) userData.equipped[item.type] = null; // unequip
-                        else userData.equipped[item.type] = id; // equip
-                        saveData();
-                        renderDressUp();
-                        updateHeroShowcase();
-                        createConfetti(window.innerWidth/2, window.innerHeight/2, 10);
+                        if (userData.equipped[item.type] === id) userData.equipped[item.type] = null;
+                        else userData.equipped[item.type] = id;
+                        saveData(); renderDressUp(); updateHeroShowcase(); createConfetti(window.innerWidth/2, window.innerHeight/2, 10);
                     };
                 }
                 grid.appendChild(div);
@@ -551,7 +562,7 @@
         }
 
         // ==========================================
-        // AUDIO & CONFETTI ENGINE
+        // AUDIO & CONFETTI
         // ==========================================
         let audioCtx;
         function initAudio() {
@@ -561,121 +572,117 @@
 
         function playSound(type) {
             if (!audioCtx) return;
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
-
-            if (type === 'spin') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
-                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-                osc.start(now); osc.stop(now + 0.2);
-            } else if (type === 'pop') {
-                osc.type = 'triangle'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
-                gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                osc.start(now); osc.stop(now + 0.15);
-            } else if (type === 'build' || type === 'trade') {
-                playTone(440, now, 0.1); playTone(554, now + 0.1, 0.1); playTone(659, now + 0.2, 0.3);
-            } else if (type === 'win') {
-                playTone(523.25, now, 0.2); playTone(659.25, now + 0.2, 0.2); playTone(783.99, now + 0.4, 0.2); playTone(1046.50, now + 0.6, 0.6);
-            } else if (type === 'lose' || type === 'wrong') {
-                playTone(440, now, 0.2); playTone(415, now + 0.2, 0.3); 
-                if(type === 'lose') playTone(392, now + 0.5, 0.6);
-            }
+            if (type === 'spin') { osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1); gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(now); osc.stop(now + 0.2); } 
+            else if (type === 'pop') { osc.type = 'triangle'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1); gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(now); osc.stop(now + 0.15); } 
+            else if (type === 'build' || type === 'trade') { playTone(440, now, 0.1); playTone(554, now + 0.1, 0.1); playTone(659, now + 0.2, 0.3); } 
+            else if (type === 'win') { playTone(523.25, now, 0.2); playTone(659.25, now + 0.2, 0.2); playTone(783.99, now + 0.4, 0.2); playTone(1046.50, now + 0.6, 0.6); } 
+            else if (type === 'lose' || type === 'wrong') { playTone(440, now, 0.2); playTone(415, now + 0.2, 0.3); if(type === 'lose') playTone(392, now + 0.5, 0.6); }
         }
         function playTone(freq, time, duration) {
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sine'; osc.frequency.setValueAtTime(freq, time);
-            gain.gain.setValueAtTime(0.3, time); gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
-            osc.start(time); osc.stop(time + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(freq, time);
+            gain.gain.setValueAtTime(0.3, time); gain.gain.exponentialRampToValueAtTime(0.01, time + duration); osc.start(time); osc.stop(time + duration);
         }
 
-        const canvas = document.getElementById('confetti-canvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('confetti-canvas'); const ctx = canvas.getContext('2d');
         let particles = []; let confettiAnimationId; let isConfettiContinuous = false;
-
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
         function createConfetti(x, y, count) {
             const colors = ['#f472b6', '#38bdf8', '#fbbf24', '#a78bfa', '#34d399'];
             for (let i = 0; i < count; i++) {
-                particles.push({
-                    x: x, y: y, vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 1) * 20 - 5,
-                    size: Math.random() * 12 + 6, color: colors[Math.floor(Math.random() * colors.length)],
-                    rot: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 10, life: 1.0
-                });
+                particles.push({ x: x, y: y, vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 1) * 20 - 5, size: Math.random() * 12 + 6, color: colors[Math.floor(Math.random() * colors.length)], rot: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 10, life: 1.0 });
             }
             if (!confettiAnimationId) animateConfetti();
         }
 
         function animateConfetti() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            let activeParticles = false;
+            ctx.clearRect(0, 0, canvas.width, canvas.height); let activeParticles = false;
             if (isConfettiContinuous && Math.random() < 0.2) createConfetti(Math.random() * canvas.width, -20, 5);
             for (let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i];
-                p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.rot += p.rotSpeed;
-                if (!isConfettiContinuous) p.life -= 0.01;
+                let p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.rot += p.rotSpeed; if (!isConfettiContinuous) p.life -= 0.01;
                 if (p.life <= 0 || p.y > canvas.height) particles.splice(i, 1);
                 else {
                     activeParticles = true; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
                     ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, p.life);
-                    if (i % 2 === 0) ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
-                    else { ctx.beginPath(); ctx.arc(0, 0, p.size/2, 0, Math.PI * 2); ctx.fill(); }
+                    if (i % 2 === 0) ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size); else { ctx.beginPath(); ctx.arc(0, 0, p.size/2, 0, Math.PI * 2); ctx.fill(); }
                     ctx.restore();
                 }
             }
-            if (activeParticles || isConfettiContinuous) confettiAnimationId = requestAnimationFrame(animateConfetti);
-            else confettiAnimationId = null;
+            if (activeParticles || isConfettiContinuous) confettiAnimationId = requestAnimationFrame(animateConfetti); else confettiAnimationId = null;
         }
 
         // ==========================================
-        // GAME LOGIC CORE
+        // GAMEPLAY & DYNAMIC BUILDINGS
         // ==========================================
-        const INITIAL_SPINS = 25; 
-        let spinsLeft = INITIAL_SPINS;
-        let mathTriesLeft = 4;
-        let isSpinning = false;
-        let gameActive = false;
+        const INITIAL_SPINS = 20; 
+        let spinsLeft = INITIAL_SPINS; let mathTriesLeft = 4;
+        let isSpinning = false; let gameActive = false;
 
         const resources = {
-            pixie: { count: 0, emoji: '✨', elId: 'count-pixie' },
-            pearl: { count: 0, emoji: '🦪', elId: 'count-pearl' },
-            strawberry: { count: 0, emoji: '🍓', elId: 'count-strawberry' },
-            gem: { count: 0, emoji: '💎', elId: 'count-gem' }
+            pixie: { count: 0, emoji: '✨', elId: 'count-pixie' }, pearl: { count: 0, emoji: '🦪', elId: 'count-pearl' },
+            strawberry: { count: 0, emoji: '🍓', elId: 'count-strawberry' }, gem: { count: 0, emoji: '💎', elId: 'count-gem' }
         };
         const resourceKeys = Object.keys(resources);
-
-        const buildings = {
-            mermaid: { built: false, cost: { pearl: 3, gem: 2 }, btnId: 'btn-mermaid', cardId: 'card-mermaid', costId: 'cost-mermaid', emoji: '🧜‍♀️' },
-            fairy: { built: false, cost: { pixie: 3, strawberry: 2 }, btnId: 'btn-fairy', cardId: 'card-fairy', costId: 'cost-fairy', emoji: '🧚‍♀️' },
-            kitty: { built: false, cost: { pixie: 2, pearl: 2, strawberry: 2, gem: 2 }, btnId: 'btn-kitty', cardId: 'card-kitty', costId: 'cost-kitty', emoji: '🐱' }
-        };
-
+        let activeBuildings = [];
         let tradeGive = null; let tradeGet = null;
+
+        function getEmojiCostString(costObj) {
+            let html = '';
+            for(let key in costObj) {
+                html += `<span>${resources[key].emoji.repeat(costObj[key])}</span>`;
+            }
+            return html;
+        }
+
+        function generateBuildings() {
+            const shuffled = BUILDING_POOL.sort(() => 0.5 - Math.random());
+            activeBuildings = shuffled.slice(0, 3).map((b, i) => ({ ...b, built: false, index: i }));
+            
+            const container = document.getElementById('buildings-container');
+            container.innerHTML = '';
+            
+            activeBuildings.forEach((b) => {
+                const div = document.createElement('div');
+                div.id = `card-build-${b.index}`;
+                div.className = `${b.bg} rounded-3xl p-5 shadow-lg border-4 ${b.border} flex flex-col sm:flex-row items-center gap-4 transition-all duration-300`;
+                div.innerHTML = `
+                    <div class="text-6xl emoji-shadow w-24 text-center">${b.emoji}</div>
+                    <div class="flex-grow text-center sm:text-left">
+                        <h3 class="text-2xl ${b.text} mb-1 font-black">${b.name}</h3>
+                        <p class="text-sm ${b.light} font-bold mb-2 uppercase tracking-wide">Gather items to build</p>
+                        <div id="cost-build-${b.index}" class="flex flex-wrap gap-2 justify-center sm:justify-start mb-2 opacity-80 text-2xl">
+                            ${getEmojiCostString(b.cost)}
+                        </div>
+                    </div>
+                    <button id="btn-build-${b.index}" class="disabled-build w-full sm:w-auto px-8 py-4 rounded-full font-black text-xl shadow-md transition-all">Need Items</button>
+                `;
+                container.appendChild(div);
+            });
+        }
 
         function updateUI() {
             for (let key in resources) {
                 const el = document.getElementById(resources[key].elId);
                 if (el.innerText != resources[key].count) {
-                    el.innerText = resources[key].count;
-                    el.classList.remove('bounce-in'); void el.offsetWidth; el.classList.add('bounce-in');
+                    el.innerText = resources[key].count; el.classList.remove('bounce-in'); void el.offsetWidth; el.classList.add('bounce-in');
                 }
             }
             document.getElementById('clock-display').innerText = spinsLeft;
             updateMathWandUI();
 
-            for (let key in buildings) {
-                const b = buildings[key];
-                const btn = document.getElementById(b.btnId);
-                const costDiv = document.getElementById(b.costId);
+            activeBuildings.forEach((b) => {
+                const btn = document.getElementById(`btn-build-${b.index}`);
+                const costDiv = document.getElementById(`cost-build-${b.index}`);
                 
                 if (b.built) {
                     btn.className = "w-full sm:w-auto px-8 py-4 rounded-full font-black text-xl shadow-md transition-all bg-green-400 text-white cursor-default border-b-4 border-green-600";
                     btn.innerText = "YAY! ✅";
                     costDiv.innerHTML = `<span class="text-green-600 font-black text-xl bg-green-100 px-3 py-1 rounded-full">Completed!</span>`;
-                    continue;
+                    return;
                 }
 
                 let canAfford = true;
@@ -683,56 +690,45 @@
 
                 if (canAfford) {
                     btn.className = "can-build w-full sm:w-auto px-8 py-4 rounded-full font-black text-xl shadow-md transition-all border-b-4 border-pink-600 active:border-b-0 active:translate-y-1";
-                    btn.innerText = "Build It!";
-                    btn.onclick = () => buildBuilding(key);
+                    btn.innerText = "Build It!"; btn.onclick = () => buildBuilding(b.index);
                 } else {
                     btn.className = "disabled-build w-full sm:w-auto px-8 py-4 rounded-full font-black text-xl shadow-md transition-all border-b-4 border-gray-300";
-                    btn.innerText = "Need Items";
-                    btn.onclick = null;
+                    btn.innerText = "Need Items"; btn.onclick = null;
                 }
-            }
+            });
             updateTradingUI();
         }
 
+        function buildBuilding(index) {
+            initAudio(); const b = activeBuildings.find(x => x.index === index);
+            for (let res in b.cost) resources[res].count -= b.cost[res];
+            b.built = true; playSound('build');
+            
+            const card = document.getElementById(`card-build-${b.index}`);
+            card.classList.add('bounce-in'); card.style.borderColor = '#4ade80'; card.style.backgroundColor = '#dcfce7';
+            const rect = card.getBoundingClientRect(); createConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2, 40);
+            updateUI(); checkGameOver();
+        }
+
         function updateTradingUI() {
-            const giveBtns = document.querySelectorAll('#trade-give-btns .trade-icon');
-            giveBtns.forEach(btn => {
+            document.querySelectorAll('#trade-give-btns .trade-icon').forEach(btn => {
                 const res = btn.getAttribute('data-res');
                 if(resources[res].count >= 2) btn.classList.add('available');
                 else { btn.classList.remove('available'); if(tradeGive === res) tradeGive = null; }
                 if(tradeGive === res) btn.classList.add('selected'); else btn.classList.remove('selected');
             });
-            const getBtns = document.querySelectorAll('#trade-get-btns .trade-icon');
-            getBtns.forEach(btn => {
-                const res = btn.getAttribute('data-res');
-                if(tradeGet === res) btn.classList.add('selected'); else btn.classList.remove('selected');
+            document.querySelectorAll('#trade-get-btns .trade-icon').forEach(btn => {
+                const res = btn.getAttribute('data-res'); if(tradeGet === res) btn.classList.add('selected'); else btn.classList.remove('selected');
             });
             const btnTrade = document.getElementById('btn-trade');
-            if(tradeGive && tradeGet) {
-                btnTrade.className = "can-build w-full font-black text-xl py-3 rounded-full shadow transition-all relative z-10 uppercase tracking-wide border-b-4 border-pink-600 active:translate-y-1 active:border-b-0";
-                btnTrade.disabled = false;
-            } else {
-                btnTrade.className = "disabled-build w-full font-black text-xl py-3 rounded-full shadow transition-all relative z-10 uppercase tracking-wide border-b-4 border-gray-300";
-                btnTrade.disabled = true;
-            }
+            if(tradeGive && tradeGet) { btnTrade.className = "can-build w-full font-black text-xl py-3 rounded-full shadow transition-all relative z-10 uppercase tracking-wide border-b-4 border-pink-600 active:translate-y-1 active:border-b-0"; btnTrade.disabled = false; } 
+            else { btnTrade.className = "disabled-build w-full font-black text-xl py-3 rounded-full shadow transition-all relative z-10 uppercase tracking-wide border-b-4 border-gray-300"; btnTrade.disabled = true; }
         }
 
-        document.querySelectorAll('#trade-give-btns .trade-icon').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if(!gameActive) return; initAudio();
-                const res = btn.getAttribute('data-res');
-                if(resources[res].count >= 2) { tradeGive = (tradeGive === res) ? null : res; playSound('pop'); updateTradingUI(); }
-            });
-        });
-        document.querySelectorAll('#trade-get-btns .trade-icon').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if(!gameActive) return; initAudio();
-                const res = btn.getAttribute('data-res'); tradeGet = (tradeGet === res) ? null : res; playSound('pop'); updateTradingUI();
-            });
-        });
+        document.querySelectorAll('#trade-give-btns .trade-icon').forEach(btn => { btn.addEventListener('click', () => { if(!gameActive) return; initAudio(); const res = btn.getAttribute('data-res'); if(resources[res].count >= 2) { tradeGive = (tradeGive === res) ? null : res; playSound('pop'); updateTradingUI(); } }); });
+        document.querySelectorAll('#trade-get-btns .trade-icon').forEach(btn => { btn.addEventListener('click', () => { if(!gameActive) return; initAudio(); const res = btn.getAttribute('data-res'); tradeGet = (tradeGet === res) ? null : res; playSound('pop'); updateTradingUI(); }); });
         document.getElementById('btn-trade').addEventListener('click', () => {
-            if(!gameActive || !tradeGive || !tradeGet) return;
-            initAudio();
+            if(!gameActive || !tradeGive || !tradeGet) return; initAudio();
             resources[tradeGive].count -= 2; resources[tradeGet].count += 1;
             playSound('trade'); createConfetti(window.innerWidth/2, window.innerHeight/2, 20);
             tradeGive = null; tradeGet = null; updateUI();
@@ -752,151 +748,125 @@
 
             setTimeout(() => {
                 const randKey = resourceKeys[Math.floor(Math.random() * resourceKeys.length)];
-                const picked = resources[randKey];
-                picked.count++; spinnerEmoji.innerText = picked.emoji;
+                const picked = resources[randKey]; picked.count++; spinnerEmoji.innerText = picked.emoji;
                 playSound('pop'); spinBtn.classList.remove('anim-spin-pop');
-                
-                const rect = spinBtn.getBoundingClientRect();
-                showFloatingResource(picked.emoji, rect.left + rect.width/2 - 20, rect.top + rect.height/2 - 20);
+                const rect = spinBtn.getBoundingClientRect(); showFloatingResource(picked.emoji, rect.left + rect.width/2 - 20, rect.top + rect.height/2 - 20);
                 updateUI(); checkGameOver(); isSpinning = false;
             }, 600);
         }
 
-        function buildBuilding(key) {
-            initAudio(); const b = buildings[key];
-            for (let res in b.cost) resources[res].count -= b.cost[res];
-            b.built = true; playSound('build');
-            
-            const card = document.getElementById(b.cardId);
-            card.classList.add('bounce-in'); card.style.borderColor = '#4ade80'; card.style.backgroundColor = '#dcfce7';
-            const rect = card.getBoundingClientRect(); createConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2, 40);
-            updateUI(); checkGameOver();
-        }
-
         // ==========================================
-        // MAGIC MATH WAND (4 Tries Limit)
+        // MAGIC MATH
         // ==========================================
         let currentMathAnswer = 0;
-
         function updateMathWandUI() {
-            const btn = document.getElementById('btn-math-wand');
-            document.getElementById('math-charges-ui').innerText = mathTriesLeft;
-            if(mathTriesLeft <= 0) {
-                btn.className = "disabled-build w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-gray-300 flex items-center justify-center gap-4 transition-transform group";
-            } else {
-                btn.className = "math-wand-bg w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-white flex items-center justify-center gap-4 hover:scale-105 active:scale-95 transition-transform group cursor-pointer";
-            }
+            const btn = document.getElementById('btn-math-wand'); document.getElementById('math-charges-ui').innerText = mathTriesLeft;
+            if(mathTriesLeft <= 0) btn.className = "disabled-build w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-gray-300 flex items-center justify-center gap-4 transition-transform group";
+            else btn.className = "math-wand-bg w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-white flex items-center justify-center gap-4 hover:scale-105 active:scale-95 transition-transform group cursor-pointer";
         }
 
-        document.getElementById('btn-math-wand').addEventListener('click', openMathModal);
-        document.getElementById('btn-close-math').addEventListener('click', closeMathModal);
-
-        function openMathModal() {
-            if(!gameActive || mathTriesLeft <= 0) return;
-            initAudio(); playSound('pop'); generateMathQuestion();
-            document.getElementById('modal-math').classList.remove('hidden');
-            document.getElementById('modal-math').classList.add('flex');
-        }
-
-        function closeMathModal() {
-            document.getElementById('modal-math').classList.add('hidden');
-            document.getElementById('modal-math').classList.remove('flex');
-        }
+        document.getElementById('btn-math-wand').addEventListener('click', () => {
+            if(!gameActive || mathTriesLeft <= 0) return; initAudio(); playSound('pop'); generateMathQuestion();
+            document.getElementById('modal-math').classList.remove('hidden'); document.getElementById('modal-math').classList.add('flex');
+        });
+        document.getElementById('btn-close-math').addEventListener('click', () => { document.getElementById('modal-math').classList.add('hidden'); document.getElementById('modal-math').classList.remove('flex'); });
 
         function generateMathQuestion() {
-            const isAddition = Math.random() > 0.5;
-            let a = Math.floor(Math.random() * 10) + 1; let b = Math.floor(Math.random() * 10) + 1;
+            const isAddition = Math.random() > 0.5; let a = Math.floor(Math.random() * 10) + 1; let b = Math.floor(Math.random() * 10) + 1;
             if (!isAddition && a < b) { let temp = a; a = b; b = temp; }
             currentMathAnswer = isAddition ? (a + b) : (a - b);
             document.getElementById('math-question').innerText = `${a} ${isAddition?'+':'-'} ${b} = ?`;
 
             let answers = [currentMathAnswer];
-            while (answers.length < 4) {
-                let offset = Math.floor(Math.random() * 6) - 3; if (offset === 0) offset = 1; 
-                let wrong = currentMathAnswer + offset; if (wrong < 0) wrong = 0;
-                if (!answers.includes(wrong)) answers.push(wrong);
-            }
+            while (answers.length < 4) { let offset = Math.floor(Math.random() * 6) - 3; if (offset === 0) offset = 1; let wrong = currentMathAnswer + offset; if (wrong < 0) wrong = 0; if (!answers.includes(wrong)) answers.push(wrong); }
             answers.sort(() => Math.random() - 0.5);
 
             const container = document.getElementById('math-answers'); container.innerHTML = '';
             answers.forEach(ans => {
-                const btn = document.createElement('button');
-                btn.className = "bg-white border-4 border-blue-200 text-blue-600 font-black text-4xl py-4 rounded-[2rem] shadow-md hover:bg-blue-50 active:scale-95 transition-all";
+                const btn = document.createElement('button'); btn.className = "bg-white border-4 border-blue-200 text-blue-600 font-black text-4xl py-4 rounded-[2rem] shadow-md hover:bg-blue-50 active:scale-95 transition-all";
                 btn.innerText = ans; btn.onclick = () => checkMathAnswer(ans); container.appendChild(btn);
             });
         }
 
         function checkMathAnswer(selected) {
-            initAudio();
-            mathTriesLeft--; // Consume try
-            updateMathWandUI();
-
+            initAudio(); mathTriesLeft--; updateMathWandUI();
             if (selected === currentMathAnswer) {
-                playSound('build'); closeMathModal();
-                let rewardCount = Math.floor(Math.random() * 3) + 1; let e = [];
-                for(let i=0; i<rewardCount; i++) {
-                    const randKey = resourceKeys[Math.floor(Math.random() * resourceKeys.length)];
-                    resources[randKey].count++; e.push(resources[randKey].emoji);
-                }
-                showToast(`Smart Owl! + ${e.join(" ")}`);
-                createConfetti(window.innerWidth/2, window.innerHeight/2, 25);
-                updateUI(); checkGameOver();
+                playSound('build'); document.getElementById('modal-math').classList.add('hidden'); document.getElementById('modal-math').classList.remove('flex');
+                let rewardCount = Math.floor(Math.random() * 2) + 1; let e = [];
+                for(let i=0; i<rewardCount; i++) { const randKey = resourceKeys[Math.floor(Math.random() * resourceKeys.length)]; resources[randKey].count++; e.push(resources[randKey].emoji); }
+                showToast(`Smart Owl! + ${e.join(" ")}`); createConfetti(window.innerWidth/2, window.innerHeight/2, 25); updateUI(); checkGameOver();
             } else {
-                playSound('wrong');
-                const mathBox = document.getElementById('math-content');
-                mathBox.classList.remove('bounce-in');
-                mathBox.style.transform = "translateX(-10px)"; setTimeout(() => mathBox.style.transform = "translateX(10px)", 50);
-                setTimeout(() => mathBox.style.transform = "translateX(-10px)", 100); setTimeout(() => mathBox.style.transform = "translateX(10px)", 150);
-                setTimeout(() => { mathBox.style.transform = "translateX(0)"; closeMathModal(); showToast("Oops! Magic fizzled."); }, 200);
+                playSound('wrong'); const mathBox = document.getElementById('math-content'); mathBox.classList.remove('bounce-in');
+                mathBox.style.transform = "translateX(-10px)"; setTimeout(() => mathBox.style.transform = "translateX(10px)", 50); setTimeout(() => mathBox.style.transform = "translateX(-10px)", 100); setTimeout(() => mathBox.style.transform = "translateX(10px)", 150);
+                setTimeout(() => { mathBox.style.transform = "translateX(0)"; document.getElementById('modal-math').classList.add('hidden'); document.getElementById('modal-math').classList.remove('flex'); showToast("Oops! Magic fizzled."); }, 200);
             }
         }
 
         // ==========================================
-        // GAME OVER LOGIC
+        // GAME OVER & SPEED BONUS
         // ==========================================
         function checkGameOver() {
-            const allBuilt = Object.values(buildings).every(b => b.built);
+            const allBuilt = activeBuildings.every(b => b.built);
             if (allBuilt) {
                 gameActive = false; userData.wins += 1;
-                
-                // Roll for Dress Up Item Reward
-                const unownedIds = Object.keys(ITEMS).filter(id => !userData.inventory.includes(id));
-                let newReward = null;
-                if(unownedIds.length > 0) {
-                    newReward = unownedIds[Math.floor(Math.random() * unownedIds.length)];
-                    userData.inventory.push(newReward);
+                const isSpeedWin = spinsLeft > 8;
+
+                if (isSpeedWin && !userData.badges.includes('speed_star')) {
+                    userData.badges.push('speed_star');
                 }
+
+                let normalPool = Object.keys(ITEMS).filter(id => !ITEMS[id].isRare && !userData.inventory.includes(id));
+                let newNormalReward = normalPool.length ? normalPool[Math.floor(Math.random() * normalPool.length)] : null;
+                if(newNormalReward) userData.inventory.push(newNormalReward);
+
+                let newRareReward = null;
+                if (isSpeedWin) {
+                    let rarePool = Object.keys(ITEMS).filter(id => ITEMS[id].isRare && !userData.inventory.includes(id));
+                    if(rarePool.length) {
+                        newRareReward = rarePool[Math.floor(Math.random() * rarePool.length)];
+                        userData.inventory.push(newRareReward);
+                    }
+                }
+
                 saveData();
-                setTimeout(() => showGameOverModal('win', newReward), 800);
+                setTimeout(() => showGameOverModal('win', newNormalReward, newRareReward, isSpeedWin), 800);
             } else if (spinsLeft <= 0) {
-                gameActive = false; setTimeout(() => showGameOverModal('lose', null), 800);
+                gameActive = false; setTimeout(() => showGameOverModal('lose', null, null, false), 800);
             }
         }
 
-        function showGameOverModal(type, newRewardId) {
-            const modalOverlay = document.getElementById('modal-overlay');
-            const modalContent = document.getElementById('modal-content');
-            modalOverlay.classList.remove('hidden'); modalOverlay.classList.add('flex');
-            modalContent.classList.remove('hidden');
+        function showGameOverModal(type, normalRewardId, rareRewardId, isSpeedWin) {
+            const modalOverlay = document.getElementById('modal-overlay'); const modalContent = document.getElementById('modal-content');
+            modalOverlay.classList.remove('hidden'); modalOverlay.classList.add('flex'); modalContent.classList.remove('hidden');
             
             const rewardArea = document.getElementById('modal-reward-area');
+            const nRewardArea = document.getElementById('modal-normal-reward');
+            const sRewardArea = document.getElementById('modal-speed-reward');
+            
             rewardArea.classList.add('hidden'); rewardArea.classList.remove('flex');
+            nRewardArea.classList.add('hidden'); nRewardArea.classList.remove('flex');
+            sRewardArea.classList.add('hidden'); sRewardArea.classList.remove('flex');
 
             if (type === 'win') {
-                document.getElementById('modal-title').innerText = "Festival Ready! 🎪";
-                document.getElementById('modal-title').className = "text-5xl font-black mb-4 text-green-500 drop-shadow-sm";
-                document.getElementById('modal-msg').innerText = "You built everything before sunset! The friends are so happy!";
-                document.getElementById('modal-emoji').innerText = "🎉";
-                modalContent.style.borderColor = "#4ade80"; playSound('win');
+                document.getElementById('modal-title').innerText = isSpeedWin ? "SPEED STAR! ⚡" : "Festival Ready! 🎪";
+                document.getElementById('modal-title').className = `text-5xl font-black mb-4 ${isSpeedWin ? 'text-yellow-500' : 'text-green-500'} drop-shadow-sm`;
+                document.getElementById('modal-msg').innerText = isSpeedWin ? "Wow! You built everything super fast!" : "You built everything before sunset! The friends are so happy!";
+                document.getElementById('modal-emoji').innerText = isSpeedWin ? "🌟" : "🎉";
+                modalContent.style.borderColor = isSpeedWin ? "#facc15" : "#4ade80"; playSound('win');
                 isConfettiContinuous = true; createConfetti(canvas.width/2, canvas.height/2, 80);
 
-                if(newRewardId) {
-                    const item = ITEMS[newRewardId];
+                if(normalRewardId || rareRewardId) {
                     rewardArea.classList.remove('hidden'); rewardArea.classList.add('flex');
-                    document.getElementById('modal-reward-item').innerHTML = `
-                        <div class="text-6xl emoji-shadow">${item.emoji}</div>
-                        <p class="text-lg font-black text-pink-600 mt-2 text-center leading-tight">${item.name}</p>
-                    `;
+                    if (normalRewardId) {
+                        const item = ITEMS[normalRewardId];
+                        nRewardArea.classList.remove('hidden'); nRewardArea.classList.add('flex');
+                        document.getElementById('modal-reward-item').innerHTML = `<div class="text-6xl emoji-shadow">${item.emoji}</div><p class="text-sm font-black text-pink-600 mt-2 text-center leading-tight">${item.name}</p>`;
+                    }
+                    if (rareRewardId) {
+                        const rItem = ITEMS[rareRewardId];
+                        sRewardArea.classList.remove('hidden'); sRewardArea.classList.add('flex');
+                        document.getElementById('modal-rare-item').innerHTML = `<div class="text-6xl emoji-shadow">${rItem.emoji}</div><p class="text-sm font-black text-yellow-600 mt-2 text-center leading-tight">${rItem.name}</p>`;
+                    }
                 }
             } else {
                 document.getElementById('modal-title').innerText = "Sun has set! 🌙";
@@ -914,16 +884,7 @@
             document.getElementById('spinner-emoji').innerText = '🧭';
             tradeGive = null; tradeGet = null;
             for (let key in resources) resources[key].count = 0;
-            for (let key in buildings) {
-                buildings[key].built = false;
-                const card = document.getElementById(buildings[key].cardId);
-                card.style.borderColor = ''; card.style.backgroundColor = '';
-                const costDiv = document.getElementById(buildings[key].costId);
-                if(key === 'mermaid') costDiv.innerHTML = `<span>🦪🦪🦪</span> <span>💎💎</span>`;
-                if(key === 'fairy') costDiv.innerHTML = `<span>✨✨✨</span> <span>🍓🍓</span>`;
-                if(key === 'kitty') costDiv.innerHTML = `<span>✨✨</span><span>🦪🦪</span><span>🍓🍓</span><span>💎💎</span>`;
-            }
-            updateUI();
+            generateBuildings(); updateUI();
         }
 
         function startGameFlow() { initAudio(); resetGameState(); showScreen('game'); }
@@ -934,12 +895,8 @@
         document.getElementById('btn-game-back').addEventListener('click', () => { gameActive = false; showScreen('menu'); });
         document.getElementById('spin-btn').addEventListener('click', spin);
         
-        document.getElementById('btn-restart').addEventListener('click', () => {
-            document.getElementById('modal-overlay').classList.add('hidden'); startGameFlow();
-        });
-        document.getElementById('btn-modal-menu').addEventListener('click', () => {
-            document.getElementById('modal-overlay').classList.add('hidden'); gameActive = false; showScreen('menu');
-        });
+        document.getElementById('btn-restart').addEventListener('click', () => { document.getElementById('modal-overlay').classList.add('hidden'); startGameFlow(); });
+        document.getElementById('btn-modal-menu').addEventListener('click', () => { document.getElementById('modal-overlay').classList.add('hidden'); gameActive = false; showScreen('menu'); });
 
         document.body.addEventListener('pointerdown', initAudio, { once: true });
     </script>
