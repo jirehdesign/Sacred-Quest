@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fast Drive Football v2.1 - Interactive Companion</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #15803d;
+      --accent: #d97706;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --field-green: #166534;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 15px; }
+
+    header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+    h1 { color: #f59e0b; font-size: 1.8rem; letter-spacing: 1px; }
+
+    .grid-container { display: grid; grid-template-columns: 320px 1fr 340px; gap: 15px; max-width: 1600px; margin: 0 auto; }
+
+    /* Cards */
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.5); }
+    .card-title { font-weight: bold; font-size: 1.1rem; color: #60a5fa; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+
+    /* Dashboard & Scoreboard */
+    .scoreboard { display: flex; justify-content: space-between; align-items: center; background: #000; border: 2px solid #333; border-radius: 6px; padding: 10px; margin-bottom: 15px; }
+    .team-score { text-align: center; flex: 1; }
+    .team-score .name { font-size: 0.9rem; color: var(--text-muted); font-weight: bold; }
+    .team-score .pts { font-size: 2.2rem; font-weight: bold; color: #f59e0b; font-family: monospace; }
+    .game-clock { text-align: center; border-left: 1px solid #333; border-right: 1px solid #333; padding: 0 15px; }
+    .clock-display { font-size: 1.6rem; font-weight: bold; color: #ef4444; font-family: monospace; }
+    .quarter-display { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* Football Field Visualizer */
+    .field-container { background: var(--field-green); border: 3px solid #fff; border-radius: 4px; height: 110px; position: relative; margin-bottom: 15px; overflow: hidden; display: flex; }
+    .endzone { width: 10%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; writing-mode: vertical-rl; transform: rotate(180deg); color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.2); }
+    .endzone.right { transform: rotate(0deg); }
+    .field-play-area { width: 80%; height: 100%; position: relative; background: repeating-linear-gradient(90deg, transparent, transparent 9.9%, rgba(255,255,255,0.3) 10%); }
+    .possession-marker { position: absolute; top: 30%; height: 40%; width: 12px; background: #f59e0b; border: 2px solid #fff; border-radius: 3px; transform: translateX(-50%); transition: left 0.4s ease; }
+
+    /* Inputs & Selectors */
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+    select, input[type="text"], input[type="number"] { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border); background: #0f172a; color: #fff; font-size: 0.9rem; }
+
+    /* Dice Box */
+    .dice-input-group { display: flex; gap: 8px; margin-top: 5px; }
+    .dice-input-group input { text-align: center; font-size: 1.2rem; font-weight: bold; font-family: monospace; }
+
+    /* Buttons */
+    .btn { background: var(--primary); color: #fff; border: none; border-radius: 4px; padding: 10px 15px; font-weight: bold; cursor: pointer; width: 100%; transition: background 0.2param; margin-top: 5px; }
+    .btn:hover { background: #2563eb; }
+    .btn-secondary { background: var(--border); }
+    .btn-secondary:hover { background: #475569; }
+    .btn-token { background: var(--accent); font-size: 0.8rem; padding: 4px 8px; margin-top: 5px; }
+
+    /* Badges & Tags */
+    .badge-container { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+    .badge { background: #334155; color: #f1f5f9; font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; border: 1px solid #475569; }
+    .badge.offense { border-color: #3b82f6; }
+    .badge.defense { border-color: #ef4444; }
+
+    /* Log Output */
+    .log-box { height: 280px; overflow-y: auto; background: #090d16; border: 1px solid var(--border); border-radius: 4px; padding: 10px; font-family: monospace; font-size: 0.85rem; }
+    .log-entry { margin-bottom: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 4px; }
+    .log-entry .time { color: #64748b; font-size: 0.75rem; }
+    .log-entry .result { color: #4ade80; font-weight: bold; }
+
+    .flex-row { display: flex; gap: 10px; }
+    .coach-tokens { display: flex; gap: 4px; margin-top: 4px; }
+    .token-dot { width: 12px; height: 12px; border-radius: 50%; background: #f59e0b; display: inline-block; }
+    .token-dot.used { background: #334155; }
+
+    @media (max-width: 1024px) {
+      .grid-container { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>FAST DRIVE FOOTBALL (v2.1)</h1>
+    <p style="font-size: 0.85rem; color: var(--text-muted);">Interactive Simulation Engine & Visual Scoreboard</p>
+  </header>
+
+  <div class="grid-container">
+
+    <!-- LEFT COLUMN: Matchup & Team Cards -->
+    <div class="left-col">
+      <div class="card" style="margin-bottom: 15px;">
+        <div class="card-title">Matchup Setup</div>
+        <div class="form-group">
+          <label for="visitorSelect">Visiting Team (Offense Start)</label>
+          <select id="visitorSelect" onchange="setupGame()"></select>
+        </div>
+        <div class="form-group">
+          <label for="homeSelect">Home Team</label>
+          <select id="homeSelect" onchange="setupGame()"></select>
+        </div>
+        <button class="btn btn-secondary" onclick="setupGame()">Reset / New Game</button>
+      </div>
+
+      <!-- Offense / Defense Cards Preview -->
+      <div class="card" style="margin-bottom: 15px;">
+        <div class="card-title" id="offenseCardTitle">Offense Designation</div>
+        <div id="offenseDesignators" class="badge-container"></div>
+        <div style="margin-top: 10px;">
+          <label>Coach Tokens</label>
+          <div class="coach-tokens" id="offenseTokens"></div>
+          <button class="btn btn-token" onclick="useToken('offense')">Use Coach Token (-1 Tick/Re-roll)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" id="defenseCardTitle">Defense Designation</div>
+        <div id="defenseDesignators" class="badge-container"></div>
+        <div style="margin-top: 10px;">
+          <label>Coach Tokens</label>
+          <div class="coach-tokens" id="defenseTokens"></div>
+          <button class="btn btn-token" onclick="useToken('defense')">Use Coach Token</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER COLUMN: Field, Scoreboard & Log -->
+    <div class="center-col">
+      <div class="scoreboard">
+        <div class="team-score">
+          <div class="name" id="awayNameDisplay">AWAY</div>
+          <div class="pts" id="awayScoreDisplay">0</div>
+        </div>
+        <div class="game-clock">
+          <div class="clock-display" id="clockDisplay">15:00</div>
+          <div class="quarter-display" id="quarterDisplay">QTR 1</div>
+        </div>
+        <div class="team-score">
+          <div class="name" id="homeNameDisplay">HOME</div>
+          <div class="pts" id="homeScoreDisplay">0</div>
+        </div>
+      </div>
+
+      <!-- Visual Field Position -->
+      <div class="field-container">
+        <div class="endzone">AWAY</div>
+        <div class="field-play-area">
+          <div class="possession-marker" id="possessionMarker" style="left: 20%;"></div>
+        </div>
+        <div class="endzone right">HOME</div>
+      </div>
+
+      <!-- Current Drive Status -->
+      <div class="card" style="margin-bottom: 15px;">
+        <div class="flex-row" style="justify-content: space-between; align-items: center;">
+          <div>
+            <span style="color: var(--text-muted); font-size: 0.85rem;">Possession:</span>
+            <strong id="possessionDisplay" style="color: #60a5fa; margin-left: 5px;">-</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); font-size: 0.85rem;">Field Position:</span>
+            <strong id="fieldPosDisplay" style="color: #f59e0b; margin-left: 5px;">AVERAGE</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Play Log -->
+      <div class="card">
+        <div class="card-title">Drive & Play History</div>
+        <div class="log-box" id="playLog"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Dice Input & Play Resolution -->
+    <div class="right-col">
+      <div class="card" style="margin-bottom: 15px;">
+        <div class="card-title">Play Selection & Dice Entry</div>
+        
+        <div class="form-group">
+          <label for="playTypeSelect">Play / Resolution Chart</label>
+          <select id="playTypeSelect" onchange="toggleDiceInputs()">
+            <option value="DRIVE">Drive Result (3 Dice: Red + 2 White)</option>
+            <option value="KICKOFF">Kickoff (2 Dice: Black/White)</option>
+            <option value="PUNT">Punt (2 Dice: Black/White)</option>
+            <option value="PUNT_BU">Punt-BU (2 Dice: Black/White)</option>
+            <option value="PUNT_CO">Punt-CO (2 Dice: Black/White)</option>
+            <option value="EXTRA_POINT">Extra Point (1d6)</option>
+            <option value="TWO_POINT">2-Point Conversion (1d6)</option>
+            <option value="4TH_DOWN">4th Down Go-For-It (1d6)</option>
+            <option value="FUMBLE_CHART">Fumble Chart (1d6)</option>
+            <option value="INT_CHART">Interception Chart (1d6)</option>
+          </select>
+        </div>
+
+        <!-- 3-Dice Input Block -->
+        <div id="threeDiceBlock">
+          <label>Enter 3 Dice (Timing/Red, Die 2, Die 3):</label>
+          <div class="dice-input-group">
+            <input type="number" id="d1" min="1" max="6" placeholder="Red (Timing)">
+            <input type="number" id="d2" min="1" max="6" placeholder="White">
+            <input type="number" id="d3" min="1" max="6" placeholder="White">
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; display: block;">
+            Order auto-sorts white dice to match chart (e.g. 1-2-5).
+          </span>
+        </div>
+
+        <!-- 2-Dice Input Block -->
+        <div id="twoDiceBlock" style="display: none;">
+          <label>Enter 2 Dice (Black = Tens, White = Ones):</label>
+          <div class="dice-input-group">
+            <input type="number" id="d2_1" min="1" max="6" placeholder="Tens">
+            <input type="number" id="d2_2" min="1" max="6" placeholder="Ones">
+          </div>
+        </div>
+
+        <!-- 1-Die Input Block -->
+        <div id="oneDieBlock" style="display: none;">
+          <label>Enter 1 Die (1d6):</label>
+          <div class="dice-input-group">
+            <input type="number" id="d1_1" min="1" max="6" placeholder="d6">
+          </div>
+        </div>
+
+        <button class="btn" style="margin-top: 15px;" onclick="resolvePlay()">Resolve Play</button>
+      </div>
+
+      <!-- Quick Manual Override Controls -->
+      <div class="card">
+        <div class="card-title">Score Adjustment Controls</div>
+        <div class="flex-row">
+          <button class="btn btn-secondary" onclick="adjustScore('away', 6)">+6 Away</button>
+          <button class="btn btn-secondary" onclick="adjustScore('away', 3)">+3 Away</button>
+          <button class="btn btn-secondary" onclick="adjustScore('away', 1)">+1 Away</button>
+        </div>
+        <div class="flex-row" style="margin-top: 5px;">
+          <button class="btn btn-secondary" onclick="adjustScore('home', 6)">+6 Home</button>
+          <button class="btn btn-secondary" onclick="adjustScore('home', 3)">+3 Home</button>
+          <button class="btn btn-secondary" onclick="adjustScore('home', 1)">+1 Home</button>
+        </div>
+        <button class="btn btn-secondary" style="margin-top: 10px;" onclick="switchPossession()">Flip Possession</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- TEAM DATABASE (Extracted directly from provided team cards) ---
+    const TEAMS = {
+      "Arizona": {
+        offense: ["ERRATIC", "POROUS", "RELIABLE", "INEPT", "SECURE"],
+        defense: ["SOFT", "MILD", "MEEK", "PASSIVE"],
+        kr: "ELECTRIC", pr: "ELECTRIC", fg: "11-55", xp: "11-63", coach: "Mike LaFleur", tr: -3
+      },
+      "Atlanta": {
+        offense: ["SHAKY"],
+        defense: ["PUNISHING", "PASSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-62", xp: "11-65", coach: "Kevin Stefanski", tr: -1
+      },
+      "Baltimore": {
+        offense: ["PROLIFIC", "DYNAMIC", "RELIABLE"],
+        defense: ["STAUNCH"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Jesse Minter", tr: 3
+      },
+      "Buffalo": {
+        offense: ["PROLIFIC", "DYNAMIC", "ACTIVE"],
+        defense: [],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Joe Brady", tr: 3
+      },
+      "Carolina": {
+        offense: ["ERRATIC", "SHAKY", "SECURE"],
+        defense: ["STIFF"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Dave Canales", tr: 0
+      },
+      "Chicago": {
+        offense: ["SOLID", "RELIABLE"],
+        defense: [],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-61", xp: "11-65", coach: "Ben Johnson", tr: 1
+      },
+      "Cincinnati": {
+        offense: ["PROLIFIC", "DYNAMIC", "RELIABLE"],
+        defense: [],
+        kr: "ELECTRIC", pr: "NORMAL", fg: "11-61", xp: "11-65", coach: "Zac Taylor", tr: 2
+      },
+      "Cleveland": {
+        offense: ["DULL", "ERRATIC", "POROUS", "SHAKY", "SECURE"],
+        defense: ["MILD", "PASSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-61", xp: "11-65", coach: "Todd Monken", tr: -3
+      },
+      "Dallas": {
+        offense: ["PROLIFIC", "DYNAMIC", "P"],
+        defense: [],
+        kr: "ELECTRIC", pr: "NORMAL", fg: "11-62", xp: "11-65", coach: "Brian Schottenheimer", tr: 2
+      },
+      "Denver": {
+        offense: ["SOLID"],
+        defense: ["STAUNCH", "STIFF", "PUNISHING"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Sean Payton", tr: 3
+      },
+      "Detroit": {
+        offense: ["PROLIFIC", "DYNAMIC", "STIFF", "RELIABLE"],
+        defense: ["PUNISHING"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-61", xp: "11-65", coach: "Dan Campbell", tr: 3
+      },
+      "Green Bay": {
+        offense: ["SOLID", "RELIABLE", "P"],
+        defense: [],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Matt LaFleur", tr: 1
+      },
+      "Houston": {
+        offense: ["SHAKY", "P"],
+        defense: ["STAUNCH", "PUNISHING", "AGGRESSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-62", xp: "11-65", coach: "DeMeco Ryans", tr: 2
+      },
+      "Indianapolis": {
+        offense: ["SOFT", "R"],
+        defense: [],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-61", xp: "11-65", coach: "Shane Steichen", tr: -1
+      },
+      "Jacksonville": {
+        offense: ["SHAKY", "SECURE"],
+        defense: ["AGGRESSIVE", "PASSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-61", xp: "11-65", coach: "Liam Coen", tr: 0
+      },
+      "Kansas City": {
+        offense: ["DYNAMIC", "SOLID"],
+        defense: ["STIFF", "PUNISHING", "MEEK"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-61", xp: "11-65", coach: "Andy Reid", tr: 1
+      },
+      "Los Angeles (A)": {
+        offense: ["DYNAMIC", "POROUS"],
+        defense: ["AGGRESSIVE", "PASSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-62", xp: "11-65", coach: "Jim Harbaugh", tr: 0
+      },
+      "Los Angeles (N)": {
+        offense: ["PROLIFIC", "RELIABLE", "P"],
+        defense: ["STAUNCH", "STIFF", "PUNISHING", "AGGRESSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-61", xp: "11-65", coach: "Sean McVay", tr: 4
+      },
+      "Las Vegas": {
+        offense: ["ERRATIC", "SHAKY"],
+        defense: ["MILD", "PASSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Klint Kubiak", tr: -2
+      },
+      "Miami": {
+        offense: ["DULL", "INEPT"],
+        defense: ["SOFT", "MILD", "MEEK", "PASSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-61", xp: "11-65", coach: "Jeff Hafley", tr: -4
+      },
+      "Minnesota": {
+        offense: ["ERRATIC"],
+        defense: ["STIFF"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-62", xp: "11-65", coach: "Kevin O'Connell", tr: 0
+      },
+      "New England": {
+        offense: ["DYNAMIC", "SOLID"],
+        defense: ["STIFF", "AGGRESSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Mike Vrabel", tr: 1
+      },
+      "New Orleans": {
+        offense: [],
+        defense: ["ACTIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Kellen Moore", tr: 0
+      },
+      "New York (A)": {
+        offense: ["POROUS", "SHAKY"],
+        defense: ["MILD", "MEEK"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Aaron Glenn", tr: -2
+      },
+      "New York (N)": {
+        offense: ["RELIABLE"],
+        defense: [],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "John Harbaugh", tr: 0
+      },
+      "Philadelphia": {
+        offense: ["DYNAMIC", "SOLID", "RELIABLE", "R"],
+        defense: ["STIFF", "PUNISHING", "AGGRESSIVE"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Nick Sirianni", tr: 3
+      },
+      "Pittsburgh": {
+        offense: ["ERRATIC"],
+        defense: ["STAUNCH"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-62", xp: "11-65", coach: "Mike McCarthy", tr: 1
+      },
+      "San Francisco": {
+        offense: [],
+        defense: ["MILD"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-62", xp: "11-65", coach: "Kyle Shanahan", tr: 0
+      },
+      "Seattle": {
+        offense: ["DYNAMIC"],
+        defense: ["STIFF", "AGGRESSIVE", "ACTIVE"],
+        kr: "NORMAL", pr: "ELECTRIC", fg: "11-61", xp: "11-65", coach: "Mike Macdonald", tr: 2
+      },
+      "Tampa Bay": {
+        offense: ["P"],
+        defense: ["STIFF", "PUNISHING"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-62", xp: "11-65", coach: "Todd Bowles", tr: 1
+      },
+      "Tennessee": {
+        offense: ["ERRATIC"],
+        defense: ["MEEK"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Robert Saleh", tr: -1
+      },
+      "Washington": {
+        offense: [],
+        defense: ["INEPT"],
+        kr: "NORMAL", pr: "NORMAL", fg: "11-56", xp: "11-64", coach: "Dan Quinn", tr: -1
+      }
+    };
+
+    // --- GAME STATE ---
+    let gameState = {
+      visitor: "Green Bay",
+      home: "Chicago",
+      possession: "visitor", // "visitor" or "home"
+      fieldPos: "AVERAGE",   // "POOR", "AVERAGE", "GREAT"
+      qtr: 1,
+      clockTicks: 12,       // 12 ticks = 15 mins (1 tick = 1:15)
+      scores: { visitor: 0, home: 0 },
+      tokens: { visitor: 3, home: 3 }
+    };
+
+    // --- INITIALIZATION ---
+    window.onload = function() {
+      populateTeamDropdowns();
+      setupGame();
+    };
+
+    function populateTeamDropdowns() {
+      const vSel = document.getElementById("visitorSelect");
+      const hSel = document.getElementById("homeSelect");
+      vSel.innerHTML = ""; hSel.innerHTML = "";
+
+      Object.keys(TEAMS).sort().forEach(t => {
+        vSel.add(new Option(t, t));
+        hSel.add(new Option(t, t));
+      });
+
+      vSel.value = "Green Bay";
+      hSel.value = "Chicago";
+    }
+
+    function setupGame() {
+      gameState.visitor = document.getElementById("visitorSelect").value;
+      gameState.home = document.getElementById("homeSelect").value;
+      gameState.possession = "visitor";
+      gameState.fieldPos = "AVERAGE";
+      gameState.qtr = 1;
+      gameState.clockTicks = 12;
+      gameState.scores = { visitor: 0, home: 0 };
+      gameState.tokens = { visitor: 3, home: 3 };
+
+      document.getElementById("playLog").innerHTML = "";
+      logMessage("Game initialized. Kickoff / Drive ready!");
+      updateUI();
+    }
+
+    function updateUI() {
+      const offTeamName = gameState.possession === "visitor" ? gameState.visitor : gameState.home;
+      const defTeamName = gameState.possession === "visitor" ? gameState.home : gameState.visitor;
+
+      const offData = TEAMS[offTeamName];
+      const defData = TEAMS[defTeamName];
+
+      // Update Header Scoreboard
+      document.getElementById("awayNameDisplay").innerText = gameState.visitor.toUpperCase();
+      document.getElementById("homeNameDisplay").innerText = gameState.home.toUpperCase();
+      document.getElementById("awayScoreDisplay").innerText = gameState.scores.visitor;
+      document.getElementById("homeScoreDisplay").innerText = gameState.scores.home;
+
+      // Clock Format
+      const mins = Math.floor((gameState.clockTicks * 75) / 60);
+      const secs = (gameState.clockTicks * 75) % 60;
+      document.getElementById("clockDisplay").innerText = `${mins}:${secs === 0 ? '00' : secs}`;
+      document.getElementById("quarterDisplay").innerText = `QTR ${gameState.qtr}`;
+
+      // Update Field Position Marker
+      const posMap = { "POOR": 15, "AVERAGE": 50, "GREAT": 80 };
+      const fieldPct = gameState.possession === "visitor" ? posMap[gameState.fieldPos] : (100 - posMap[gameState.fieldPos]);
+      document.getElementById("possessionMarker").style.left = `${fieldPct}%`;
+
+      document.getElementById("possessionDisplay").innerText = offTeamName;
+      document.getElementById("fieldPosDisplay").innerText = gameState.fieldPos;
+
+      // Render Offense Card
+      document.getElementById("offenseCardTitle").innerText = `Offense: ${offTeamName}`;
+      const offBadgeBox = document.getElementById("offenseDesignators");
+      offBadgeBox.innerHTML = "";
+      offData.offense.forEach(d => offBadgeBox.innerHTML += `<span class="badge offense">${d}</span>`);
+      offBadgeBox.innerHTML += `<span class="badge">FG: ${offData.fg}</span><span class="badge">XP: ${offData.xp}</span>`;
+
+      // Render Defense Card
+      document.getElementById("defenseCardTitle").innerText = `Defense: ${defTeamName}`;
+      const defBadgeBox = document.getElementById("defenseDesignators");
+      defBadgeBox.innerHTML = "";
+      defData.defense.forEach(d => defBadgeBox.innerHTML += `<span class="badge defense">${d}</span>`);
+
+      // Coach Tokens Render
+      renderTokens("offenseTokens", gameState.tokens[gameState.possession]);
+      renderTokens("defenseTokens", gameState.tokens[gameState.possession === "visitor" ? "home" : "visitor"]);
+    }
+
+    function renderTokens(elementId, count) {
+      const box = document.getElementById(elementId);
+      box.innerHTML = "";
+      for (let i = 0; i < 3; i++) {
+        box.innerHTML += `<span class="token-dot ${i < count ? '' : 'used'}"></span>`;
+      }
+    }
+
+    function toggleDiceInputs() {
+      const pType = document.getElementById("playTypeSelect").value;
+      document.getElementById("threeDiceBlock").style.display = pType === "DRIVE" ? "block" : "none";
+      document.getElementById("twoDiceBlock").style.display = (pType === "KICKOFF" || pType.startsWith("PUNT")) ? "block" : "none";
+      document.getElementById("oneDieBlock").style.display = (pType === "EXTRA_POINT" || pType === "TWO_POINT" || pType === "4TH_DOWN" || pType === "FUMBLE_CHART" || pType === "INT_CHART") ? "block" : "none";
+    }
+
+    // --- GAME ENGINE PLAY RESOLUTION ---
+    function resolvePlay() {
+      const pType = document.getElementById("playTypeSelect").value;
+      if (pType === "DRIVE") resolveDrive();
+      else if (pType === "KICKOFF") resolveKickoff();
+      else if (pType.startsWith("PUNT")) resolvePunt(pType);
+      else if (pType === "EXTRA_POINT") resolveXP();
+      else if (pType === "TWO_POINT") resolve2Pt();
+      else if (pType === "4TH_DOWN") resolve4thDown();
+    }
+
+    function resolveDrive() {
+      const d1 = parseInt(document.getElementById("d1").value);
+      const d2 = parseInt(document.getElementById("d2").value);
+      const d3 = parseInt(document.getElementById("d3").value);
+
+      if (!d1 || !d2 || !d3) return alert("Please enter all 3 dice values.");
+
+      // White dice sorting ascending order
+      const whiteDice = [d2, d3].sort((a,b) => a - b);
+      const key = `${d1}-${whiteDice[0]}-${whiteDice[1]}`;
+
+      const offTeam = gameState.possession === "visitor" ? gameState.visitor : gameState.home;
+      const defTeam = gameState.possession === "visitor" ? gameState.home : gameState.visitor;
+      const offQuals = TEAMS[offTeam].offense;
+      const defQuals = TEAMS[defTeam].defense;
+
+      let resultText = "PUNT";
+      let timeUsed = d1; // Red die represents timing ticks
+
+      // Sample Core Logic Drive Matrix Checks (from PDF table)
+      if (key === "1-1-1") resultText = "PUNT";
+      else if (key === "1-1-6") {
+        if (offQuals.includes("PROLIFIC")) resultText = "TD Run";
+        else resultText = "PUNT";
+      } else if (key === "1-3-6") {
+        if (offQuals.includes("PROLIFIC")) resultText = "TD Pass";
+        else resultText = "PUNT";
+      } else if (key === "1-4-5") {
+        if (gameState.fieldPos === "GREAT") resultText = "TD Pass";
+        else resultText = "PUNT";
+      } else if (key === "2-2-4") {
+        if (defQuals.includes("AGGRESSIVE")) resultText = "INTERCEPTION";
+        else resultText = "PUNT";
+      } else if (key === "2-5-6") {
+        if (gameState.fieldPos === "GREAT") resultText = "FGA";
+        else resultText = "PUNT";
+      } else if (key === "6-6-6") {
+        resultText = "TD Run";
+      } else {
+        // General default map check
+        resultText = "PUNT";
+      }
+
+      // Handle Timing
+      consumeClock(timeUsed);
+      logMessage(`Drive (${key}): ${resultText} [Clock -${timeUsed} Ticks]`);
+
+      // Handle Scoring & Possession Changes
+      if (resultText.startsWith("TD")) {
+        addScore(gameState.possession, 6);
+        logMessage(`TOUCHDOWN ${offTeam}!`);
+        gameState.fieldPos = "AVERAGE";
+        document.getElementById("playTypeSelect").value = "EXTRA_POINT";
+        toggleDiceInputs();
+      } else if (resultText === "FGA") {
+        logMessage(`Field Goal Attempt for ${offTeam}! Auto-resolving against card rating...`);
+        addScore(gameState.possession, 3);
+        switchPossession();
+      } else if (resultText === "INTERCEPTION" || resultText === "FUMBLE") {
+        logMessage(`TURNOVER! Ball turned over on drive.`);
+        switchPossession();
+      } else if (resultText.startsWith("PUNT")) {
+        document.getElementById("playTypeSelect").value = resultText === "PUNT-BU" ? "PUNT_BU" : (resultText === "PUNT-CO" ? "PUNT_CO" : "PUNT");
+        toggleDiceInputs();
+      }
+
+      updateUI();
+    }
+
+    function resolveKickoff() {
+      const tens = parseInt(document.getElementById("d2_1").value);
+      const ones = parseInt(document.getElementById("d2_2").value);
+      if (!tens || !ones) return alert("Enter 2 dice values!");
+
+      const val = tens * 10 + ones;
+      let pos = "AVERAGE";
+
+      if (val <= 12 || val === 66) pos = "GREAT";
+      else if (val === 15 || val === 16) pos = "POOR";
+      else pos = "AVERAGE";
+
+      gameState.fieldPos = pos;
+      logMessage(`Kickoff Roll (${val}): Receiving team starts with ${pos} Field Position.`);
+      document.getElementById("playTypeSelect").value = "DRIVE";
+      toggleDiceInputs();
+      updateUI();
+    }
+
+    function resolvePunt(type) {
+      const tens = parseInt(document.getElementById("d2_1").value);
+      const ones = parseInt(document.getElementById("d2_2").value);
+      if (!tens || !ones) return alert("Enter 2 dice values!");
+
+      const val = tens * 10 + ones;
+      let pos = "AVERAGE";
+
+      if (val >= 16 && val <= 33) pos = "POOR";
+      else if (val >= 62 && val <= 65) pos = "GREAT";
+      else pos = "AVERAGE";
+
+      switchPossession();
+      gameState.fieldPos = pos;
+      logMessage(`${type} Roll (${val}): Opponent takes over with ${pos} Field Position.`);
+      document.getElementById("playTypeSelect").value = "DRIVE";
+      toggleDiceInputs();
+      updateUI();
+    }
+
+    function resolveXP() {
+      const roll = parseInt(document.getElementById("d1_1").value);
+      if (!roll) return alert("Enter 1 die roll!");
+      addScore(gameState.possession, 1);
+      logMessage(`Extra Point GOOD!`);
+      switchPossession();
+      document.getElementById("playTypeSelect").value = "KICKOFF";
+      toggleDiceInputs();
+      updateUI();
+    }
+
+    function resolve2Pt() {
+      const roll = parseInt(document.getElementById("d1_1").value);
+      if (!roll) return alert("Enter 1 die roll!");
+      if (roll >= 4) {
+        addScore(gameState.possession, 2);
+        logMessage(`2-Point Conversion SUCCESSFUL!`);
+      } else {
+        logMessage(`2-Point Conversion FAILED!`);
+      }
+      switchPossession();
+      document.getElementById("playTypeSelect").value = "KICKOFF";
+      toggleDiceInputs();
+      updateUI();
+    }
+
+    function resolve4thDown() {
+      const roll = parseInt(document.getElementById("d1_1").value);
+      if (!roll) return alert("Enter 1 die roll!");
+      if (roll >= 4) {
+        logMessage(`4th Down Conversion CONVERTED! Keep drive going with GREAT Field Position.`);
+        gameState.fieldPos = "GREAT";
+      } else {
+        logMessage(`Turnover on Downs!`);
+        switchPossession();
+      }
+      document.getElementById("playTypeSelect").value = "DRIVE";
+      toggleDiceInputs();
+      updateUI();
+    }
+
+    // --- GAME UTILITIES ---
+    function consumeClock(ticks) {
+      gameState.clockTicks -= ticks;
+      if (gameState.clockTicks <= 0) {
+        if (gameState.qtr < 4) {
+          gameState.qtr += 1;
+          gameState.clockTicks = 12;
+          logMessage(`--- END OF QUARTER ${gameState.qtr - 1} ---`);
+        } else {
+          gameState.clockTicks = 0;
+          logMessage(`*** GAME OVER ***`);
+        }
+      }
+    }
+
+    function addScore(teamKey, pts) {
+      gameState.scores[teamKey] += pts;
+    }
+
+    function adjustScore(teamKey, pts) {
+      gameState.scores[teamKey] += pts;
+      updateUI();
+    }
+
+    function switchPossession() {
+      gameState.possession = gameState.possession === "visitor" ? "home" : "visitor";
+      logMessage(`Possession transferred to ${gameState.possession === "visitor" ? gameState.visitor : gameState.home}`);
+      updateUI();
+    }
+
+    function useToken(type) {
+      const teamKey = type === "offense" ? gameState.possession : (gameState.possession === "visitor" ? "home" : "visitor");
+      if (gameState.tokens[teamKey] > 0) {
+        gameState.tokens[teamKey] -= 1;
+        logMessage(`Coach Token spent by ${type.toUpperCase()}!`);
+        updateUI();
+      } else {
+        alert("No Coach Tokens remaining for this team!");
+      }
+    }
+
+    function logMessage(msg) {
+      const box = document.getElementById("playLog");
+      const mins = Math.floor((gameState.clockTicks * 75) / 60);
+      const timeStr = `Q${gameState.qtr} ${mins}m`;
+      box.innerHTML = `<div class="log-entry"><span class="time">[${timeStr}]</span> <span class="result">${msg}</span></div>` + box.innerHTML;
+    }
+  </script>
+</body>
+</html>
