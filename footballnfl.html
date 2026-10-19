@@ -3,551 +3,1190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data-Driven Football (DDF)</title>
+    <title>NFL 2025 Pass & Play</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Graduate&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --turf: #2d5a27;
-            --endzone: #1a3616;
-            --line: #ffffff;
-            --text-light: #ffffff;
-            --text-dark: #333333;
-            --bg-panel: #f4f4f4;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #222;
-            color: var(--text-light);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #game-container {
-            width: 100%;
-            max-width: 900px;
-            background: #333;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .scoreboard {
-            display: flex;
-            justify-content: space-between;
-            background: #000;
-            padding: 15px;
-            border-radius: 5px;
-            border: 2px solid #555;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .team-score { font-size: 2em; font-weight: bold; }
-        .clock-info { font-size: 1.2em; color: #ffeb3b; }
-        .down-info { font-size: 1.2em; color: #4caf50; }
+        body { font-family: 'Inter', sans-serif; }
+        .score-font { font-family: 'Graduate', monospace; }
         
-        #field-container {
-            position: relative;
+        .field-container {
             width: 100%;
-            height: 120px;
-            background: var(--turf);
-            border: 3px solid var(--line);
-            margin-bottom: 20px;
+            height: 160px;
+            background-color: #2e7d32;
+            position: relative;
+            border: 4px solid #fff;
+            overflow: hidden;
             display: flex;
         }
+        
         .endzone {
-            width: 10%;
+            width: 8.333%;
             height: 100%;
-            background: var(--endzone);
-            border-right: 2px solid var(--line);
-            border-left: 2px solid var(--line);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.5);
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
             writing-mode: vertical-rl;
             text-orientation: upright;
-        }
-        .field-play {
-            width: 80%;
+            text-transform: uppercase;
+            border-right: 2px solid white;
+            border-left: 2px solid white;
+            box-sizing: border-box;
+            opacity: 0.9;
             position: relative;
-            background: repeating-linear-gradient(90deg, var(--turf), var(--turf) 9.8%, var(--line) 10%);
+            overflow: hidden;
         }
-        #los-marker {
+
+        .playing-field {
+            width: 83.333%;
+            height: 100%;
+            position: relative;
+            background: repeating-linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0.1),
+                rgba(255, 255, 255, 0.1) 4.9%,
+                rgba(255, 255, 255, 0.8) 4.9%,
+                rgba(255, 255, 255, 0.8) 5%,
+                transparent 5%,
+                transparent 9.9%,
+                rgba(255, 255, 255, 0.8) 9.9%,
+                rgba(255, 255, 255, 0.8) 10%
+            );
+        }
+
+        .yard-number {
             position: absolute;
-            top: 0;
-            bottom: 0;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5rem;
+            font-weight: 800;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Graduate', monospace;
+        }
+
+        .line-of-scrimmage {
+            position: absolute;
+            height: 100%;
             width: 4px;
-            background: blue;
+            background-color: #3b82f6; 
+            top: 0;
+            transform: translateX(-50%);
             z-index: 10;
-            transition: left 0.5s ease;
         }
-        #first-down-marker {
+
+        .first-down-line {
             position: absolute;
-            top: 0;
-            bottom: 0;
+            height: 100%;
             width: 4px;
-            background: yellow;
-            z-index: 9;
-            transition: left 0.5s ease;
+            background-color: #eab308; 
+            top: 0;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        #football-container {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            transition: left 1s linear; /* Linear Run Movement */
         }
         
-        .controls {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
+        .football-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.5));
         }
-        .panel {
-            flex: 1;
-            background: var(--bg-panel);
-            color: var(--text-dark);
-            padding: 15px;
-            border-radius: 5px;
+
+        @keyframes passArc {
+            0% { transform: translateY(0) scale(1) rotate(0deg); }
+            50% { transform: translateY(-70px) scale(1.5) rotate(180deg); }
+            100% { transform: translateY(0) scale(1) rotate(360deg); }
         }
-        select, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 1em;
-            border-radius: 4px;
-            border: 1px solid #ccc;
+        .anim-pass {
+            animation: passArc 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
-        button {
-            background-color: #1976d2;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
+
+        #cutscene-overlay {
+            background-color: rgba(0, 0, 0, 0.95);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.05) 50%, transparent 50%);
+            background-size: 100% 8px; /* Scanline effect */
         }
-        button:hover { background-color: #1565c0; }
-        .hidden-select { display: none; }
+        .retro-text {
+            font-family: 'Graduate', monospace;
+            text-shadow: 6px 6px 0px #000;
+            letter-spacing: 0.1em;
+        }
+        .retro-svg {
+            image-rendering: pixelated; /* Ensures crisp edges on blocky SVGs */
+        }
         
-        #log {
-            height: 200px;
-            overflow-y: auto;
-            background: #111;
-            padding: 10px;
-            border: 1px solid #555;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-        .log-entry { margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .log-highlight { color: #ffeb3b; }
+        .hide { display: none !important; }
     </style>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
 
-<div id="game-container">
-    <div style="text-align: center; margin-bottom: 10px;">
-        <h2>Data-Driven Football (DDF) Simulator</h2>
+    <!-- Setup Screen -->
+    <div id="setup-screen" class="flex-1 flex flex-col items-center justify-center p-6">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-2 text-center text-white drop-shadow-md">NFL 2025</h1>
+        <p class="text-slate-400 mb-8 text-center">Head-to-Head Pass & Play Strategy</p>
+
+        <div class="bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-2xl border border-slate-700">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <h2 class="text-xl font-bold text-blue-400 border-b border-slate-600 pb-2">Player 1 (Home)</h2>
+                    <div class="flex items-center gap-4">
+                        <div id="p1-logo-preview" class="w-12 h-12 flex-none"></div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-slate-400 mb-1">Select Team</label>
+                            <select id="p1-team" class="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white focus:ring-2 focus:ring-blue-500"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <h2 class="text-xl font-bold text-red-400 border-b border-slate-600 pb-2">Player 2 (Away)</h2>
+                    <div class="flex items-center gap-4">
+                        <div id="p2-logo-preview" class="w-12 h-12 flex-none"></div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-slate-400 mb-1">Select Team</label>
+                            <select id="p2-team" class="w-full bg-slate-700 border border-slate-600 rounded p-2 text-white focus:ring-2 focus:ring-red-500"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 flex justify-center">
+                <button id="start-game-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-bold text-lg transition transform hover:scale-105 shadow-lg">
+                    Coin Toss & Start Game
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Pre-game setup -->
-    <div id="setup-panel" class="controls">
-        <div class="panel">
-            <h3>Away Team</h3>
-            <select id="away-team">
-                <option value="2024 DET">2024 Detroit Lions</option>
-                <option value="2024 DAL">2024 Dallas Cowboys</option>
-                <option value="2017 PHI">2017 Philadelphia Eagles</option>
-            </select>
-        </div>
-        <div class="panel">
-            <h3>Home Team</h3>
-            <select id="home-team">
-                <option value="2017 NE">2017 New England Patriots</option>
-                <option value="2024 BAL">2024 Baltimore Ravens</option>
-                <option value="2024 BUF">2024 Buffalo Bills</option>
-            </select>
-        </div>
-    </div>
-    <button id="start-btn" onclick="startGame()">Start Game (Kickoff)</button>
+    <div id="game-screen" class="hide flex-1 flex flex-col p-2 md:p-4 max-w-6xl mx-auto w-full gap-4 relative">
+        
+        <!-- Scoreboard -->
+        <div class="bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700 flex flex-col md:flex-row">
+            <div id="p2-score-panel" class="flex-1 p-4 flex flex-col justify-center items-center text-center relative border-b md:border-b-0 md:border-r border-slate-700">
+                <div class="absolute top-2 left-2 flex gap-1" id="p2-timeouts"></div>
+                <div id="p2-logo" class="w-12 h-12 md:w-16 md:h-16 mb-2"></div>
+                <h3 id="p2-name" class="text-lg font-bold text-white uppercase tracking-wider">Away</h3>
+                <div id="p2-score" class="text-5xl font-black score-font mt-2">0</div>
+                <div id="p2-possession" class="mt-2 text-yellow-400 text-xl font-bold hide">🏈</div>
+            </div>
 
-    <!-- Game Board -->
-    <div id="game-board" style="display:none;">
-        <div class="scoreboard">
-            <div>
-                <div id="away-name">AWAY</div>
-                <div class="team-score" id="away-score">0</div>
+            <div class="flex-none w-full md:w-64 bg-slate-900 p-4 flex flex-col items-center justify-center border-b md:border-b-0 border-slate-700">
+                <div id="game-clock" class="text-4xl text-yellow-400 score-font font-bold">15:00</div>
+                <div id="game-quarter" class="text-slate-400 font-bold uppercase mt-1">1st Quarter</div>
+                <table class="text-xs text-slate-400 mt-3 w-full text-center">
+                    <thead><tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+                    <tbody>
+                        <tr id="p2-q-scores"><td class="text-left font-bold" id="p2-abbr">AWY</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                        <tr id="p1-q-scores"><td class="text-left font-bold" id="p1-abbr">HME</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                    </tbody>
+                </table>
             </div>
-            <div>
-                <div class="clock-info">QTR: <span id="qtr">1</span> | TIME: <span id="clock">15:00</span></div>
-                <div class="down-info"><span id="down-text">1st & 10</span> | Ball On: <span id="ball-on">50</span></div>
-                <div style="margin-top: 5px; color:#aaa;">Possession: <span id="possession-name" style="color:#fff; font-weight:bold;">-</span></div>
-            </div>
-            <div>
-                <div id="home-name">HOME</div>
-                <div class="team-score" id="home-score">0</div>
+
+            <div id="p1-score-panel" class="flex-1 p-4 flex flex-col justify-center items-center text-center relative md:border-l border-slate-700">
+                <div class="absolute top-2 right-2 flex gap-1" id="p1-timeouts"></div>
+                <div id="p1-logo" class="w-12 h-12 md:w-16 md:h-16 mb-2"></div>
+                <h3 id="p1-name" class="text-lg font-bold text-white uppercase tracking-wider">Home</h3>
+                <div id="p1-score" class="text-5xl font-black score-font mt-2">0</div>
+                <div id="p1-possession" class="mt-2 text-yellow-400 text-xl font-bold hide">🏈</div>
             </div>
         </div>
 
-        <div id="field-container">
-            <div class="endzone">AWAY</div>
-            <div class="field-play">
-                <div id="los-marker" style="left: 50%;"></div>
-                <div id="first-down-marker" style="left: 60%;"></div>
+        <!-- Field Area -->
+        <div class="bg-slate-800 rounded-xl p-4 border border-slate-700 shadow-xl">
+            <div class="flex justify-between items-end mb-2">
+                <div id="down-distance" class="text-xl font-bold text-white">1st & 10</div>
+                <div id="ball-on" class="text-md text-slate-300 font-semibold uppercase">Ball on: KC 25</div>
             </div>
-            <div class="endzone">HOME</div>
-        </div>
-
-        <div class="controls">
-            <div class="panel" id="offense-panel">
-                <h3>Offense: <span id="off-team-label"></span></h3>
-                <p>Secretly select play:</p>
-                <select id="off-play">
-                    <option value="1">1 - Line Plunge</option>
-                    <option value="2">2 - Off Tackle</option>
-                    <option value="3">3 - End Run</option>
-                    <option value="4">4 - Draw</option>
-                    <option value="5">5 - Screen Pass</option>
-                    <option value="6">6 - Short Pass</option>
-                    <option value="7">7 - Medium Pass</option>
-                    <option value="8">8 - Long Pass</option>
-                    <option value="9">9 - Sideline Pass</option>
-                    <option value="PUNT">Punt</option>
-                    <option value="FG">Field Goal</option>
-                </select>
-                <button id="lock-offense" onclick="lockOffense()">Lock Play</button>
-                <div id="off-locked-msg" class="hidden-select" style="color: green; font-weight:bold; margin-top:10px;">Play Locked!</div>
-            </div>
-
-            <div class="panel" id="defense-panel">
-                <h3>Defense: <span id="def-team-label"></span></h3>
-                <p>Secretly select formation:</p>
-                <select id="def-play">
-                    <option value="A">A - Standard (4-3-4)</option>
-                    <option value="B">B - Rush Middle (4-4-3)</option>
-                    <option value="C">C - Rush Wide (6-2-3)</option>
-                    <option value="D">D - Pass Nickel (3-3-5)</option>
-                    <option value="E">E - Pass Dime (3-2-6)</option>
-                    <option value="F">F - Blitz</option>
-                </select>
-                <button id="lock-defense" onclick="lockDefense()">Lock Defense</button>
-                <div id="def-locked-msg" class="hidden-select" style="color: green; font-weight:bold; margin-top:10px;">Defense Locked!</div>
-            </div>
-        </div>
-
-        <button id="resolve-btn" style="display:none; background-color:#d32f2f; padding: 15px; font-size:1.2em;" onclick="resolvePlay()">Roll Dice & Resolve Play</button>
-
-        <div id="log">
-            <div style="color: #4caf50;">Welcome to Data-Driven Football! Setup your teams and hit start.</div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // --- GAME STATE ---
-    let state = {
-        home: "", away: "",
-        score: { home: 0, away: 0 },
-        possession: "", // "home" or "away"
-        qtr: 1,
-        time: 900, // 15 mins * 60 secs
-        ballOn: 50, // 0 to 100 (0 = away endzone, 100 = home endzone)
-        down: 1,
-        toGo: 10,
-        lockedOff: null,
-        lockedDef: null
-    };
-
-    // --- DICE ENGINE ---
-    // Offense: Black(10,20,20,30,30,30) + White(1-5) + Yellow(0-4)
-    function rollOffense() {
-        const b = [10, 20, 20, 30, 30, 30][Math.floor(Math.random() * 6)];
-        const w = [1, 2, 3, 4, 5][Math.floor(Math.random() * 5)];
-        const y = [0, 0, 1, 2, 3, 4][Math.floor(Math.random() * 6)];
-        return b + w + y; // Returns 11 to 39
-    }
-    // Defense: Red(1-5) + Green(0) -> 1 to 5
-    function rollDefense() {
-        return Math.floor(Math.random() * 5) + 1;
-    }
-
-    // --- CHART OUTCOME GENERATOR (Algorithmic representation of DDF rules) ---
-    // Due to the enormous size of the PDF matrices, this engine parses standard outcomes algorithmically matching typical DDF frequency distributions.
-    function getOffensiveResult(team, playIndex, diceTotal) {
-        if (playIndex === "PUNT") return { type: 'punt', val: 40 + Math.floor(Math.random()*15) };
-        if (playIndex === "FG") return { type: 'fg', val: 30 + Math.floor(Math.random()*25) };
-
-        // 1-4 Rushing, 5-9 Passing
-        let isPass = playIndex >= 5;
-        if (diceTotal >= 37) return { type: 'F', val: 0 }; // Fumble freq on high rolls
-        if (diceTotal >= 34 && isPass) return { type: 'QT', val: 0 }; // QB Trapped
-        if (diceTotal === 18 && isPass) return { type: 'TD', val: 0 };
-        if (diceTotal <= 12) return { type: 'PEN', val: -5 }; // Penalty
-
-        // Yardage calculation
-        let baseYard = isPass ? (playIndex - 4) * 4 : (playIndex * 2);
-        let variance = Math.floor(Math.random() * 10) - 3; 
-        let yds = baseYard + variance;
-
-        // Incompletions on passing plays (roughly 35% chance)
-        if (isPass && Math.random() < 0.35) return { type: 'INC', val: 0 };
-        // Breakaway on rushing
-        if (!isPass && diceTotal === 25) return { type: 'B', val: 0 };
-        // Interceptions
-        if (isPass && diceTotal === 19) return { type: 'INT', val: 15 };
-        
-        return { type: '#', val: yds };
-    }
-
-    function getDefensiveResult(team, formation, playIndex, diceTotal) {
-        let isPass = playIndex >= 5;
-        // Dice 1-3 are standard stops, 4-5 are big defensive plays
-        if (diceTotal >= 4) {
-            if (isPass && Math.random() < 0.4) return { type: 'INT', val: 10 };
-            if (Math.random() < 0.3) return { type: 'F', val: -2 };
-            if (isPass) return { type: 'QT', val: 0 };
-            return { type: '(#)', val: -1 }; // Forced loss
-        }
-        let stopYds = isPass ? -2 : -1;
-        return { type: '#', val: stopYds }; // Negative yardage modifier
-    }
-
-    // --- PRIORITY CHART RESOLUTION ---
-    function resolvePriority(offRes, defRes) {
-        // Penalty overrides
-        if (offRes.type === 'PEN') return { msg: `Penalty on Offense (5 yds).`, yds: -5, type: 'pen' };
-        
-        // Fumbles
-        if (offRes.type === 'F' || defRes.type === 'F') {
-            let rec = Math.random() > 0.5 ? "Offense" : "Defense";
-            return { msg: `FUMBLE! Recovered by ${rec}.`, yds: 0, type: rec === 'Defense' ? 'turnover' : 'loss' };
-        }
-        // Interceptions
-        if (offRes.type === 'INT' || defRes.type === 'INT') return { msg: `INTERCEPTED!`, yds: 0, type: 'turnover' };
-        // QB Trapped
-        if (offRes.type === 'QT' || defRes.type === 'QT') return { msg: `QB TRAPPED! Sacked for 6 yard loss.`, yds: -6, type: 'loss' };
-        // Forced yardage
-        if (defRes.type === '(#)') return { msg: `Defense forces outcome! ${defRes.val} yards.`, yds: defRes.val, type: 'forced' };
-        // Breakaway
-        if (offRes.type === 'B') {
-            let bYds = 15 + Math.floor(Math.random()*30);
-            return { msg: `BREAKAWAY RUN! Offense bursts for ${bYds} yards!`, yds: bYds, type: 'gain' };
-        }
-        // Incomplete
-        if (offRes.type === 'INC') return { msg: `Pass Incomplete.`, yds: 0, type: 'inc' };
-        // Standard Add
-        if (offRes.type === '#' && defRes.type === '#') {
-            let totalYds = offRes.val + defRes.val;
-            return { msg: `Play gains ${totalYds} yards.`, yds: totalYds, type: 'gain' };
-        }
-        if (offRes.type === 'TD') return { msg: `TOUCHDOWN!`, yds: 100, type: 'td' };
-        
-        return { msg: `Play gains ${offRes.val} yards.`, yds: offRes.val, type: 'gain' };
-    }
-
-    // --- GAME UI & LOGIC ---
-    function logMsg(msg, isHighlight=false) {
-        const log = document.getElementById('log');
-        let div = document.createElement('div');
-        div.className = 'log-entry' + (isHighlight ? ' log-highlight' : '');
-        div.innerText = `[${formatClock(state.time)}] ` + msg;
-        log.prepend(div);
-    }
-
-    function formatClock(seconds) {
-        let m = Math.floor(seconds / 60);
-        let s = seconds % 60;
-        return m + ":" + (s < 10 ? "0"+s : s);
-    }
-
-    function startGame() {
-        state.away = document.getElementById('away-team').value;
-        state.home = document.getElementById('home-team').value;
-        document.getElementById('setup-panel').style.display = 'none';
-        document.getElementById('start-btn').style.display = 'none';
-        document.getElementById('game-board').style.display = 'block';
-        
-        document.getElementById('away-name').innerText = state.away;
-        document.getElementById('home-name').innerText = state.home;
-        
-        // Coin toss
-        state.possession = Math.random() > 0.5 ? "home" : "away";
-        state.ballOn = state.possession === "home" ? 25 : 75; // 25 yard line after touchback
-        state.down = 1;
-        state.toGo = 10;
-        
-        updateUI();
-        logMsg(`Coin toss won by ${state.possession.toUpperCase()}. Play begins!`, true);
-    }
-
-    function lockOffense() {
-        state.lockedOff = document.getElementById('off-play').value;
-        document.getElementById('off-play').style.display = 'none';
-        document.getElementById('lock-offense').style.display = 'none';
-        document.getElementById('off-locked-msg').style.display = 'block';
-        checkReady();
-    }
-
-    function lockDefense() {
-        state.lockedDef = document.getElementById('def-play').value;
-        document.getElementById('def-play').style.display = 'none';
-        document.getElementById('lock-defense').style.display = 'none';
-        document.getElementById('def-locked-msg').style.display = 'block';
-        checkReady();
-    }
-
-    function checkReady() {
-        if(state.lockedOff && state.lockedDef) {
-            document.getElementById('resolve-btn').style.display = 'block';
-        }
-    }
-
-    function resetPlaySelection() {
-        state.lockedOff = null;
-        state.lockedDef = null;
-        document.getElementById('off-play').style.display = 'block';
-        document.getElementById('lock-offense').style.display = 'block';
-        document.getElementById('off-locked-msg').style.display = 'none';
-        
-        document.getElementById('def-play').style.display = 'block';
-        document.getElementById('lock-defense').style.display = 'block';
-        document.getElementById('def-locked-msg').style.display = 'none';
-        
-        document.getElementById('resolve-btn').style.display = 'none';
-    }
-
-    function updateUI() {
-        document.getElementById('qtr').innerText = state.qtr;
-        document.getElementById('clock').innerText = formatClock(state.time);
-        document.getElementById('home-score').innerText = state.score.home;
-        document.getElementById('away-score').innerText = state.score.away;
-        
-        let teamStr = state.possession === "home" ? state.home : state.away;
-        document.getElementById('possession-name').innerText = teamStr;
-        document.getElementById('off-team-label').innerText = teamStr;
-        document.getElementById('def-team-label').innerText = state.possession === "home" ? state.away : state.home;
-        
-        // Field math (0 is away endzone, 100 is home endzone)
-        // If possession is home, they are driving towards 0. 
-        // If possession is away, they are driving towards 100.
-        let displayLine = state.possession === "home" ? state.ballOn : 100 - state.ballOn;
-        if(displayLine > 50) displayLine = 100 - displayLine;
-        
-        let side = state.ballOn > 50 ? "HOME" : "AWAY";
-        if (state.ballOn === 50) side = "50";
-        document.getElementById('ball-on').innerText = side !== "50" ? `${side} ${displayLine}` : `50`;
-        document.getElementById('down-text').innerText = `${state.down} & ${state.toGo}`;
-
-        // Move visual markers
-        document.getElementById('los-marker').style.left = `${state.ballOn}%`;
-        let firstDownLine = state.possession === "home" ? state.ballOn - state.toGo : state.ballOn + state.toGo;
-        document.getElementById('first-down-marker').style.left = `${firstDownLine}%`;
-    }
-
-    function scoreSequence(points) {
-        if(state.possession === "home") state.score.home += points;
-        else state.score.away += points;
-        
-        // Kickoff reset
-        state.possession = state.possession === "home" ? "away" : "home";
-        state.ballOn = state.possession === "home" ? 25 : 75; // Touchback logic
-        state.down = 1;
-        state.toGo = 10;
-    }
-
-    function resolvePlay() {
-        let oRoll = rollOffense();
-        let dRoll = rollDefense();
-        
-        let offTeam = state.possession === "home" ? state.home : state.away;
-        let defTeam = state.possession === "home" ? state.away : state.home;
-        
-        logMsg(`Offense selects Play: ${state.lockedOff}. Defense selects Formation: ${state.lockedDef}.`);
-        logMsg(`Dice Rolls - Offense: ${oRoll}, Defense: ${dRoll}`);
-
-        // Handle Kicks
-        if (state.lockedOff === "PUNT") {
-            let puntDist = 40 + Math.floor(Math.random()*15);
-            logMsg(`PUNT! Ball travels ${puntDist} yards.`, true);
-            let dir = state.possession === "home" ? -1 : 1;
-            state.ballOn += dir * puntDist;
-            state.time -= 10;
-            state.possession = state.possession === "home" ? "away" : "home";
-            state.down = 1; state.toGo = 10;
-            updateUI(); resetPlaySelection(); return;
-        }
-
-        if (state.lockedOff === "FG") {
-            let distFromGoal = state.possession === "home" ? state.ballOn : (100 - state.ballOn);
-            let kickDist = distFromGoal + 17; // Endzone + spot
-            let roll = oRoll;
-            logMsg(`Field Goal Attempt from ${kickDist} yards out...`);
-            if (kickDist <= 55 && roll > 15) {
-                logMsg(`KICK IS GOOD!`, true);
-                scoreSequence(3);
-            } else {
-                logMsg(`KICK IS NO GOOD!`);
-                state.possession = state.possession === "home" ? "away" : "home";
-                state.down = 1; state.toGo = 10;
-            }
-            state.time -= 10;
-            updateUI(); resetPlaySelection(); return;
-        }
-
-        // Standard Scrimmage Play
-        let offOutcome = getOffensiveResult(offTeam, state.lockedOff, oRoll);
-        let defOutcome = getDefensiveResult(defTeam, state.lockedDef, state.lockedOff, dRoll);
-        
-        let finalOutcome = resolvePriority(offOutcome, defOutcome);
-        logMsg(finalOutcome.msg, true);
-        
-        // Time usage
-        let timeConsumed = (finalOutcome.type === 'inc' || finalOutcome.type === 'pen') ? 10 : 40;
-        state.time -= timeConsumed;
-        if(state.time <= 0) {
-            state.qtr++;
-            state.time = 900;
-            logMsg(`END OF QUARTER ${state.qtr-1}`, true);
-        }
-
-        // Apply yardage
-        let dir = state.possession === "home" ? -1 : 1;
-        state.ballOn += (dir * finalOutcome.yds);
-        
-        // Check TD
-        if ((state.possession === "home" && state.ballOn <= 0) || (state.possession === "away" && state.ballOn >= 100)) {
-            logMsg(`TOUCHDOWN ${offTeam}!`, true);
             
-            // PAT automated
-            let patRoll = rollOffense();
-            if(patRoll > 15) {
-                logMsg(`PAT is GOOD.`, true);
-                scoreSequence(7);
-            } else {
-                logMsg(`PAT is MISSED.`, true);
-                scoreSequence(6);
-            }
-            updateUI(); resetPlaySelection(); return;
-        }
+            <div class="field-container rounded" id="football-field">
+                <div id="left-endzone" class="endzone" style="background-color: #c83803;">HOME</div>
+                <div class="playing-field" id="gridiron">
+                    <div id="los-line" class="line-of-scrimmage hide"></div>
+                    <div id="first-down-line" class="first-down-line hide"></div>
+                    <!-- Updated Football Wrapper for compound animations -->
+                    <div id="football-container" class="hide">
+                        <div id="football-icon" class="football-icon">🏈</div>
+                    </div>
+                </div>
+                <div id="right-endzone" class="endzone" style="background-color: #000000;">AWAY</div>
+            </div>
+            <div class="text-center text-xs text-slate-400 mt-2 font-semibold tracking-widest uppercase" id="drive-direction">Offense Drives Left to Right ➡</div>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4 h-full md:min-h-[250px]">
+            <div class="flex-1 bg-slate-800 rounded-xl p-4 border border-slate-700 shadow-xl flex flex-col">
+                <h2 class="text-lg font-bold text-white border-b border-slate-600 pb-2 mb-4" id="action-title">Action Setup</h2>
+                <div id="action-content" class="flex-1 flex flex-col justify-center items-center text-center gap-4"></div>
+            </div>
+            <div class="flex-1 bg-slate-800 rounded-xl p-4 border border-slate-700 shadow-xl flex flex-col">
+                <h2 class="text-lg font-bold text-white border-b border-slate-600 pb-2 mb-2">Play-by-Play</h2>
+                <div id="game-log" class="flex-1 overflow-y-auto space-y-2 text-sm text-slate-300 pr-2 max-h-48 md:max-h-full">
+                    <div class="italic text-slate-500">Awaiting kickoff...</div>
+                </div>
+            </div>
+        </div>
         
-        // Check turnover or Downs
-        if (finalOutcome.type === 'turnover') {
-            state.possession = state.possession === "home" ? "away" : "home";
-            state.down = 1; state.toGo = 10;
-        } else if (finalOutcome.type !== 'pen') {
-            state.toGo -= finalOutcome.yds;
-            if (state.toGo <= 0) {
-                state.down = 1;
-                state.toGo = 10;
-                logMsg(`FIRST DOWN!`);
-            } else {
-                state.down++;
-                if (state.down > 4) {
-                    logMsg(`TURNOVER ON DOWNS!`);
-                    state.possession = state.possession === "home" ? "away" : "home";
-                    state.down = 1; state.toGo = 10;
+        <div id="cutscene-overlay" class="absolute inset-0 z-50 rounded-xl flex flex-col justify-center items-center hide">
+            <h1 id="cutscene-text" class="text-5xl md:text-7xl font-black text-yellow-400 retro-text uppercase text-center mb-8 animate-pulse">TOUCHDOWN!</h1>
+            <div id="cutscene-graphic" class="retro-svg w-64 h-64 flex justify-center items-center">
+                <!-- SVG injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const teams = [
+            { id: 'ARI', name: 'Arizona Cardinals', color1: '#97233F', color2: '#000000', offRating: 80, defRating: 72, stRating: 78 },
+            { id: 'ATL', name: 'Atlanta Falcons', color1: '#A71930', color2: '#000000', offRating: 82, defRating: 75, stRating: 80 },
+            { id: 'BAL', name: 'Baltimore Ravens', color1: '#241773', color2: '#9E7C0C', offRating: 90, defRating: 92, stRating: 95 },
+            { id: 'BUF', name: 'Buffalo Bills', color1: '#00338D', color2: '#C60C30', offRating: 92, defRating: 85, stRating: 82 },
+            { id: 'CAR', name: 'Carolina Panthers', color1: '#0085CA', color2: '#101820', offRating: 72, defRating: 74, stRating: 75 },
+            { id: 'CHI', name: 'Chicago Bears', color1: '#0B162A', color2: '#C83803', offRating: 81, defRating: 86, stRating: 75 },
+            { id: 'CIN', name: 'Cincinnati Bengals', color1: '#FB4F14', color2: '#000000', offRating: 89, defRating: 80, stRating: 84 },
+            { id: 'CLE', name: 'Cleveland Browns', color1: '#311D00', color2: '#FF3C00', offRating: 78, defRating: 89, stRating: 82 },
+            { id: 'DAL', name: 'Dallas Cowboys', color1: '#003594', color2: '#869397', offRating: 85, defRating: 86, stRating: 85 },
+            { id: 'DEN', name: 'Denver Broncos', color1: '#FB4F14', color2: '#002244', offRating: 77, defRating: 81, stRating: 79 },
+            { id: 'DET', name: 'Detroit Lions', color1: '#0076B6', color2: '#B0B7BC', offRating: 93, defRating: 84, stRating: 86 },
+            { id: 'GB', name: 'Green Bay Packers', color1: '#203731', color2: '#FFB612', offRating: 88, defRating: 83, stRating: 80 },
+            { id: 'HOU', name: 'Houston Texans', color1: '#03202F', color2: '#A71930', offRating: 89, defRating: 85, stRating: 83 },
+            { id: 'IND', name: 'Indianapolis Colts', color1: '#002C5F', color2: '#A2AAAD', offRating: 82, defRating: 81, stRating: 81 },
+            { id: 'JAX', name: 'Jacksonville Jaguars', color1: '#006778', color2: '#D7A22A', offRating: 80, defRating: 78, stRating: 80 },
+            { id: 'KC', name: 'Kansas City Chiefs', color1: '#E31837', color2: '#FFB81C', offRating: 94, defRating: 92, stRating: 88 },
+            { id: 'LV', name: 'Las Vegas Raiders', color1: '#000000', color2: '#A5ACAF', offRating: 75, defRating: 84, stRating: 85 },
+            { id: 'LAC', name: 'Los Angeles Chargers', color1: '#0080C6', color2: '#FFC20E', offRating: 84, defRating: 83, stRating: 80 },
+            { id: 'LAR', name: 'Los Angeles Rams', color1: '#003594', color2: '#FFA300', offRating: 86, defRating: 78, stRating: 79 },
+            { id: 'MIA', name: 'Miami Dolphins', color1: '#008E97', color2: '#FC4C02', offRating: 88, defRating: 79, stRating: 80 },
+            { id: 'MIN', name: 'Minnesota Vikings', color1: '#4F2683', color2: '#FFC62F', offRating: 84, defRating: 85, stRating: 82 },
+            { id: 'NE', name: 'New England Patriots', color1: '#002244', color2: '#C60C30', offRating: 74, defRating: 82, stRating: 86 },
+            { id: 'NO', name: 'New Orleans Saints', color1: '#D3BC8D', color2: '#101820', offRating: 80, defRating: 82, stRating: 82 },
+            { id: 'NYG', name: 'New York Giants', color1: '#0B2265', color2: '#A71930', offRating: 73, defRating: 81, stRating: 79 },
+            { id: 'NYJ', name: 'New York Jets', color1: '#125740', color2: '#000000', offRating: 79, defRating: 88, stRating: 81 },
+            { id: 'PHI', name: 'Philadelphia Eagles', color1: '#004C54', color2: '#A5ACAF', offRating: 89, defRating: 85, stRating: 87 },
+            { id: 'PIT', name: 'Pittsburgh Steelers', color1: '#101820', color2: '#FFB612', offRating: 79, defRating: 90, stRating: 88 },
+            { id: 'SF', name: 'San Francisco 49ers', color1: '#AA0000', color2: '#B3995D', offRating: 91, defRating: 89, stRating: 85 },
+            { id: 'SEA', name: 'Seattle Seahawks', color1: '#002244', color2: '#69BE28', offRating: 83, defRating: 82, stRating: 84 },
+            { id: 'TB', name: 'Tampa Bay Buccaneers', color1: '#D50A0A', color2: '#FF7900', offRating: 85, defRating: 80, stRating: 81 },
+            { id: 'TEN', name: 'Tennessee Titans', color1: '#0C2340', color2: '#4B92DB', offRating: 77, defRating: 82, stRating: 80 },
+            { id: 'WAS', name: 'Washington Commanders', color1: '#5A1414', color2: '#FFB612', offRating: 86, defRating: 80, stRating: 79 }
+        ];
+
+        const playbooks = {
+            offense_normal: [
+                { id: 'run_inside', name: 'HB Dive (Inside Run)', desc: 'Safe run. Low risk, low reward.' },
+                { id: 'run_outside', name: 'Toss (Outside Run)', desc: 'Try the edge. Boom or bust run.' },
+                { id: 'pass_short', name: 'Slants (Short Pass)', desc: 'Quick pass. Good for short yardage.' },
+                { id: 'pass_med', name: 'Posts (Medium Pass)', desc: 'Standard passing play. Balanced risk.' },
+                { id: 'pass_deep', name: 'Four Verts (Deep Pass)', desc: 'Go deep. High sack/INT risk, huge reward.' }
+            ],
+            defense_normal: [
+                { id: 'def_run', name: 'Stack Box (Run Defense)', desc: 'Stuff the run. Vulnerable to passes.' },
+                { id: 'def_pass', name: 'Cover 2 (Pass Defense)', desc: 'Standard zone. Good vs short/med pass.' },
+                { id: 'blitz', name: 'Zero Blitz', desc: 'Heavy pressure. Forces sacks or gives up big plays.' },
+                { id: 'prevent', name: 'Cover 4 (Prevent)', desc: 'Don\'t get beat deep. Gives up short yards.' }
+            ],
+            offense_4th: [
+                { id: 'punt', name: 'Punt', desc: 'Kick the ball away.' },
+                { id: 'fg', name: 'Field Goal', desc: 'Try for 3 points.' }
+            ],
+            defense_special: [
+                { id: 'special_def', name: 'Special Teams Defense', desc: 'Field goal/Punt block unit.' }
+            ],
+            kickoff_offense: [
+                { id: 'kickoff', name: 'Standard Kickoff', desc: 'Kick it deep.' },
+                { id: 'onside', name: 'Onside Kick', desc: 'Try to recover it. Very low chance.' }
+            ],
+            kickoff_defense: [
+                { id: 'return_normal', name: 'Standard Return', desc: 'Catch and run.' }
+            ],
+            pat_offense: [
+                { id: 'xp', name: 'Extra Point (Kick)', desc: 'Safe 1 point (95%).' },
+                { id: '2pt', name: '2-Pt Conversion', desc: 'One play from the 2. (45%).' }
+            ],
+            pat_defense: [
+                { id: 'pat_def', name: 'PAT Defense', desc: 'Try to stop them.' }
+            ]
+        };
+
+        let state = {
+            p1: { team: null, score: 0, timeouts: 3, isP1: true, qScores: [0,0,0,0] },
+            p2: { team: null, score: 0, timeouts: 3, isP1: false, qScores: [0,0,0,0] },
+            quarter: 1,
+            clock: 900,
+            possession: 1,
+            ballOn: 35, 
+            down: 1,
+            distance: 10,
+            gamePhase: 'KICKOFF', 
+            turnPhase: 'OFFENSE_SELECT',
+            offensePlay: null,
+            defensePlay: null,
+            playLog: []
+        };
+
+        const SoundEngine = {
+            ready: false,
+            init: async function() {
+                await Tone.start();
+                this.ready = true;
+                
+                this.hitSynth = new Tone.MembraneSynth().toDestination();
+                this.noiseSynth = new Tone.NoiseSynth({ 
+                    noise: { type: 'white' }, 
+                    envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 } 
+                }).toDestination();
+
+                // NEW: Crunch effect for sacks and tackles for loss
+                this.crunchDistortion = new Tone.Distortion(0.6).toDestination();
+                this.crunchFilter = new Tone.Filter(300, "lowpass").connect(this.crunchDistortion);
+                this.crunchSynth = new Tone.NoiseSynth({
+                    noise: { type: 'brown' },
+                    envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.2 }
+                }).connect(this.crunchFilter);
+                
+                this.whistleSynth = new Tone.Synth({ 
+                    oscillator: { type: 'square' }, 
+                    envelope: { attack: 0.01, decay: 0.1, sustain: 0.5, release: 0.2 } 
+                }).toDestination();
+                
+                this.cheerSynth = new Tone.NoiseSynth({ 
+                    noise: { type: 'pink' }, 
+                    envelope: { attack: 1.5, decay: 1, sustain: 1, release: 3 } 
+                });
+                this.cheerFilter = new Tone.Filter(800, "bandpass").toDestination();
+                
+                // NEW: Modulated chorus to simulate thousands of people cheering
+                this.crowdChorus = new Tone.Chorus(4, 2.5, 0.5).toDestination().start();
+                this.cheerSynth.connect(this.cheerFilter);
+                this.cheerFilter.connect(this.crowdChorus);
+                
+                this.arcadeSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "square" }
+                }).toDestination();
+            },
+            playSnap: function() { 
+                if(this.ready) this.noiseSynth.triggerAttackRelease("32n"); 
+            },
+            playHit: function() { 
+                if(!this.ready) return; 
+                this.hitSynth.triggerAttackRelease("C1", "8n"); 
+                this.noiseSynth.triggerAttackRelease("16n"); 
+            },
+            playCrunch: function() {
+                if(!this.ready) return;
+                // Heavy, deep impact sound
+                this.crunchSynth.triggerAttackRelease("8n");
+                this.hitSynth.triggerAttackRelease("E0", "8n"); 
+            },
+            playKick: function() { 
+                if(!this.ready) return; 
+                this.hitSynth.triggerAttackRelease("G2", "8n"); 
+            },
+            playWhistle: function() { 
+                if(!this.ready) return; 
+                this.whistleSynth.triggerAttackRelease("C6", "16n"); 
+                setTimeout(() => { if(this.ready) this.whistleSynth.triggerAttackRelease("C6", "8n"); }, 150);
+            },
+            playCheer: function(duration = "1m") { 
+                if(!this.ready) return; 
+                this.cheerSynth.triggerAttackRelease(duration); 
+            },
+            playRetroJingle: function(type) {
+                if(!this.ready) return;
+                const now = Tone.now();
+                if(type === 'TD') {
+                    this.arcadeSynth.triggerAttackRelease(["C4", "E4", "G4"], "8n", now);
+                    this.arcadeSynth.triggerAttackRelease(["E4", "G4", "C5"], "8n", now + 0.2);
+                    this.arcadeSynth.triggerAttackRelease(["G4", "C5", "E5"], "2n", now + 0.4);
+                } else if(type === 'INT') {
+                    this.arcadeSynth.triggerAttackRelease(["C4", "Gb3"], "16n", now);
+                    this.arcadeSynth.triggerAttackRelease(["Bb3", "E3"], "16n", now + 0.1);
+                    this.arcadeSynth.triggerAttackRelease(["Ab3", "D3"], "4n", now + 0.2);
+                } else if(type === 'FG') {
+                    this.arcadeSynth.triggerAttackRelease("C5", "8n", now);
+                    this.arcadeSynth.triggerAttackRelease("G5", "4n", now + 0.2);
                 }
             }
+        };
+
+        const getOffense = () => state.possession === 1 ? state.p1 : state.p2;
+        const getDefense = () => state.possession === 1 ? state.p2 : state.p1;
+        const getTeamData = (teamId) => teams.find(t => t.id === teamId);
+        
+        function getTeamLogoSVG(team, extraClasses = '') {
+            if(!team) return '';
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="${extraClasses} drop-shadow-md">
+                <path d="M 50 5 L 90 20 L 90 60 C 90 85 50 95 50 95 C 50 95 10 85 10 60 L 10 20 Z" fill="${team.color1}" stroke="${team.color2}" stroke-width="5"/>
+                <path d="M 15 25 L 85 25 L 50 10 Z" fill="${team.color2}" opacity="0.6"/>
+                <text x="50" y="58" font-family="Graduate, monospace" font-size="32" font-weight="bold" fill="#ffffff" stroke="#000000" stroke-width="1.5" text-anchor="middle" dominant-baseline="middle">${team.id}</text>
+            </svg>`;
         }
 
-        updateUI();
-        resetPlaySelection();
-    }
+        function formatClock(seconds) {
+            if(seconds <= 0) return "0:00";
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
 
-</script>
+        function logPlay(message) {
+            state.playLog.unshift(message);
+            const logEl = document.getElementById('game-log');
+            logEl.innerHTML = state.playLog.map((msg, i) => 
+                `<div class="border-b border-slate-700 pb-1 mb-1 ${i===0 ? 'text-white font-semibold' : ''}">${msg}</div>`
+            ).join('');
+        }
+
+        function updateScoreboardUI() {
+            document.getElementById('game-clock').innerText = formatClock(state.clock);
+            document.getElementById('game-quarter').innerText = state.quarter > 4 ? 'Overtime' : `${state.quarter}${state.quarter === 1 ? 'st' : state.quarter === 2 ? 'nd' : state.quarter === 3 ? 'rd' : 'th'} Quarter`;
+            
+            document.getElementById('p1-score').innerText = state.p1.score;
+            document.getElementById('p2-score').innerText = state.p2.score;
+            
+            document.getElementById('p1-timeouts').innerHTML = Array(state.p1.timeouts).fill('<div class="w-2 h-6 bg-yellow-400 rounded-sm shadow"></div>').join('');
+            document.getElementById('p2-timeouts').innerHTML = Array(state.p2.timeouts).fill('<div class="w-2 h-6 bg-yellow-400 rounded-sm shadow"></div>').join('');
+
+            document.getElementById('p1-possession').classList.toggle('hide', state.possession !== 1);
+            document.getElementById('p2-possession').classList.toggle('hide', state.possession !== 2);
+
+            for(let i=0; i<4; i++) {
+                document.getElementById('p1-q-scores').cells[i+1].innerText = state.p1.qScores[i] !== undefined ? state.p1.qScores[i] : '-';
+                document.getElementById('p2-q-scores').cells[i+1].innerText = state.p2.qScores[i] !== undefined ? state.p2.qScores[i] : '-';
+            }
+        }
+
+        function getYardLineText() {
+            if (state.gamePhase === 'PAT') return 'Ball on: 2 Yd Line';
+            let teamName = state.ballOn <= 50 ? getOffense().team.id : getDefense().team.id;
+            let line = state.ballOn <= 50 ? state.ballOn : 100 - state.ballOn;
+            if (line === 50) return 'Ball on: 50';
+            if (line === 0) return 'Goal Line';
+            return `Ball on: ${teamName} ${line}`;
+        }
+
+        function getDownText() {
+            if (state.gamePhase === 'KICKOFF') return 'Kickoff';
+            if (state.gamePhase === 'PAT') return 'PAT Attempt';
+            let distText = state.distance >= (100 - state.ballOn) ? 'Goal' : state.distance;
+            let downStr = state.down === 1 ? '1st' : state.down === 2 ? '2nd' : state.down === 3 ? '3rd' : '4th';
+            return `${downStr} & ${distText}`;
+        }
+
+        function renderField() {
+            document.getElementById('down-distance').innerText = getDownText();
+            document.getElementById('ball-on').innerText = getYardLineText();
+
+            let drivingRight = false;
+            if (state.possession === 1) {
+                drivingRight = (state.quarter % 2 !== 0); 
+            } else {
+                drivingRight = (state.quarter % 2 === 0); 
+            }
+
+            const dirText = document.getElementById('drive-direction');
+            if (dirText) {
+                const offTeamName = getOffense().team.name;
+                dirText.innerText = drivingRight ? `${offTeamName} Drives Left to Right ➡` : `⬅ ${offTeamName} Drives Right to Left`;
+            }
+
+            const gridiron = document.getElementById('gridiron');
+            if(gridiron.querySelectorAll('.yard-number').length === 0) {
+                [10, 20, 30, 40, 50, 40, 30, 20, 10].forEach((num, i) => {
+                    const pct = (i + 1) * 10;
+                    const span = document.createElement('div');
+                    span.className = 'yard-number';
+                    span.style.left = `${pct}%`;
+                    span.innerText = num;
+                    gridiron.appendChild(span);
+                });
+            }
+
+            const los = document.getElementById('los-line');
+            const firstDown = document.getElementById('first-down-line');
+            const footballContainer = document.getElementById('football-container');
+
+            const p1TeamData = getTeamData(state.p1.team.id);
+            const p2TeamData = getTeamData(state.p2.team.id);
+            
+            const p1LogoBg = getTeamLogoSVG(p1TeamData, 'w-24 h-24 absolute opacity-25');
+            const p2LogoBg = getTeamLogoSVG(p2TeamData, 'w-24 h-24 absolute opacity-25');
+
+            document.getElementById('left-endzone').style.backgroundColor = p1TeamData.color1;
+            document.getElementById('left-endzone').innerHTML = `${p1LogoBg}<span class="relative z-10">${p1TeamData.id}</span>`;
+            
+            document.getElementById('right-endzone').style.backgroundColor = p2TeamData.color1;
+            document.getElementById('right-endzone').innerHTML = `${p2LogoBg}<span class="relative z-10">${p2TeamData.id}</span>`;
+
+            const absLos = drivingRight ? state.ballOn : 100 - state.ballOn;
+            const absFd = drivingRight ? state.ballOn + state.distance : 100 - (state.ballOn + state.distance);
+
+            // Turn off container transition to snap ball to place instantly during resets
+            footballContainer.style.transition = 'none';
+
+            if (state.gamePhase === 'KICKOFF') {
+                los.classList.remove('hide');
+                los.style.left = `${absLos}%`;
+                firstDown.classList.add('hide');
+                footballContainer.classList.remove('hide');
+                footballContainer.style.left = `${absLos}%`;
+            } else if (state.gamePhase === 'PAT') {
+                let patSpot = 98; 
+                let absPat = drivingRight ? patSpot : 100 - patSpot;
+                los.classList.remove('hide');
+                los.style.left = `${absPat}%`;
+                firstDown.classList.add('hide');
+                footballContainer.classList.remove('hide');
+                footballContainer.style.left = `${absPat}%`;
+            } else {
+                los.classList.remove('hide');
+                firstDown.classList.remove('hide');
+                footballContainer.classList.remove('hide');
+                
+                los.style.left = `${absLos}%`;
+                firstDown.style.left = `${absFd}%`;
+                if(state.ballOn + state.distance > 100) firstDown.classList.add('hide');
+                
+                footballContainer.style.left = `${absLos}%`;
+            }
+
+            // Force reflow to re-enable transitions
+            void footballContainer.offsetWidth; 
+        }
+
+        function renderActionPanel() {
+            const panel = document.getElementById('action-content');
+            const title = document.getElementById('action-title');
+            
+            if (state.gamePhase === 'GAME_OVER') {
+                title.innerText = "Game Over";
+                panel.innerHTML = `<h3 class="text-3xl font-bold text-emerald-400">Final Score</h3>
+                                   <p class="text-xl mt-2">${getOffense().team.name}: ${getOffense().score}</p>
+                                   <p class="text-xl">${getDefense().team.name}: ${getDefense().score}</p>`;
+                return;
+            }
+
+            if (state.turnPhase === 'OFFENSE_SELECT') {
+                let off = getOffense();
+                title.innerText = `Player ${off.isP1 ? '1' : '2'} (${off.team.id}) - Call Offense`;
+                
+                let pbs = [];
+                if (state.gamePhase === 'KICKOFF') pbs = playbooks.kickoff_offense;
+                else if (state.gamePhase === 'PAT') pbs = playbooks.pat_offense;
+                else if (state.down === 4) pbs = [...playbooks.offense_4th, ...playbooks.offense_normal];
+                else pbs = playbooks.offense_normal;
+
+                let options = pbs.map(p => `<option value="${p.id}">${p.name} - ${p.desc}</option>`).join('');
+                let timeoutBtn = off.timeouts > 0 ? `<button id="btn-timeout" class="text-xs bg-yellow-600 hover:bg-yellow-500 text-white py-1 px-3 rounded mt-2">Call Timeout (${off.timeouts} left)</button>` : '';
+
+                panel.innerHTML = `
+                    <div class="text-slate-300 mb-2 italic text-sm">Select your play and lock it in secretly.</div>
+                    <select id="play-select" class="w-full max-w-sm bg-slate-700 border border-slate-600 rounded p-3 text-white focus:ring-2 focus:ring-blue-500 text-lg">
+                        ${options}
+                    </select>
+                    <button id="btn-lock-play" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold text-lg mt-4 shadow-lg w-full max-w-sm">Lock In Play</button>
+                    ${timeoutBtn}
+                `;
+                
+                document.getElementById('btn-lock-play').onclick = () => {
+                    state.offensePlay = document.getElementById('play-select').value;
+                    state.turnPhase = 'PASS_TO_DEFENSE';
+                    renderActionPanel();
+                };
+                if(document.getElementById('btn-timeout')) {
+                    document.getElementById('btn-timeout').onclick = () => callTimeout(off);
+                }
+
+            } else if (state.turnPhase === 'PASS_TO_DEFENSE') {
+                title.innerText = "Play Locked!";
+                let def = getDefense();
+                panel.innerHTML = `
+                    <div class="text-2xl mb-4">🏈</div>
+                    <p class="text-lg text-yellow-400 font-bold mb-4">Pass the device to Player ${def.isP1 ? '1' : '2'} (${def.team.id})</p>
+                    <button id="btn-im-ready" class="bg-slate-600 hover:bg-slate-500 text-white px-6 py-2 rounded-lg font-bold text-lg shadow">I am ready - Call Defense</button>
+                `;
+                document.getElementById('btn-im-ready').onclick = () => {
+                    state.turnPhase = 'DEFENSE_SELECT';
+                    renderActionPanel();
+                };
+
+            } else if (state.turnPhase === 'DEFENSE_SELECT') {
+                let def = getDefense();
+                title.innerText = `Player ${def.isP1 ? '1' : '2'} (${def.team.id}) - Call Defense`;
+                
+                let pbs = [];
+                if (state.gamePhase === 'KICKOFF') pbs = playbooks.kickoff_defense;
+                else if (state.gamePhase === 'PAT') pbs = playbooks.pat_defense;
+                else if (['punt', 'fg'].includes(state.offensePlay)) pbs = playbooks.defense_special;
+                else pbs = playbooks.defense_normal;
+
+                let options = pbs.map(p => `<option value="${p.id}">${p.name} - ${p.desc}</option>`).join('');
+                let timeoutBtn = def.timeouts > 0 ? `<button id="btn-timeout" class="text-xs bg-yellow-600 hover:bg-yellow-500 text-white py-1 px-3 rounded mt-2">Call Timeout (${def.timeouts} left)</button>` : '';
+
+                panel.innerHTML = `
+                    <select id="play-select" class="w-full max-w-sm bg-slate-700 border border-slate-600 rounded p-3 text-white focus:ring-2 focus:ring-red-500 text-lg">
+                        ${options}
+                    </select>
+                    <button id="btn-lock-play" class="bg-red-600 hover:bg-red-500 text-white px-6 py-2 rounded-lg font-bold text-lg mt-4 shadow-lg w-full max-w-sm">Lock In Defense</button>
+                    ${timeoutBtn}
+                `;
+                document.getElementById('btn-lock-play').onclick = () => {
+                    state.defensePlay = document.getElementById('play-select').value;
+                    state.turnPhase = 'READY_TO_SNAP';
+                    renderActionPanel();
+                };
+                if(document.getElementById('btn-timeout')) {
+                    document.getElementById('btn-timeout').onclick = () => callTimeout(def);
+                }
+
+            } else if (state.turnPhase === 'READY_TO_SNAP') {
+                title.innerText = "Plays Locked In!";
+                panel.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-slate-300 mb-6">Both players are ready.</p>
+                        <button id="btn-snap" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-xl font-black text-2xl shadow-xl transform transition hover:scale-105 border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1 w-full max-w-xs uppercase tracking-widest">Snap Ball</button>
+                    </div>
+                `;
+                document.getElementById('btn-snap').onclick = () => {
+                    const snapBtn = document.getElementById('btn-snap');
+                    snapBtn.innerText = "Snapping...";
+                    snapBtn.disabled = true;
+                    
+                    SoundEngine.playSnap();
+                    setTimeout(() => { resolvePlay(); }, 400);
+                };
+            }
+        }
+
+        function callTimeout(teamState) {
+            if (teamState.timeouts <= 0) return;
+            teamState.timeouts--;
+            logPlay(`${teamState.team.name} calls a Timeout.`);
+            SoundEngine.playWhistle();
+            updateScoreboardUI();
+            renderActionPanel();
+        }
+
+        function resolvePlay() {
+            let oPlay = state.offensePlay;
+            let dPlay = state.defensePlay;
+            let off = getOffense();
+            let def = getDefense();
+            
+            // Build the result payload for the animator/applier
+            let result = { 
+                text: '', yards: 0, turnover: false, clockTicked: 15, 
+                points: 0, newPhase: null, animType: 'run', specialEvent: null, ballEndPos: null,
+                crunch: false, homeCheer: false
+            };
+
+            if (state.gamePhase === 'KICKOFF') {
+                result.animType = 'kick';
+                if (oPlay === 'kickoff') {
+                    let stBonus = (off.team.stRating - 80);
+                    let touchbackChance = 0.7 + (stBonus * 0.01);
+                    
+                    if(Math.random() < touchbackChance) {
+                        result.yards = 65;
+                        result.text = `${off.team.id} kicks off. Touchback.`;
+                        result.turnover = true;
+                        result.clockTicked = 5;
+                        result.newBallOn = 30; 
+                        result.ballEndPos = 100; // Ball travels deep
+                    } else {
+                        let returnSpot = 15 + Math.floor(Math.random() * 15) - Math.round(stBonus * 0.2); 
+                        result.text = `${off.team.id} kicks off... Returned to the ${returnSpot} yard line!`;
+                        result.turnover = true;
+                        result.clockTicked = 10;
+                        result.newBallOn = Math.max(1, returnSpot);
+                        result.ballEndPos = result.newBallOn;
+                    }
+                } else if (oPlay === 'onside') {
+                    let recover = Math.random() < 0.15;
+                    result.ballEndPos = 45; // Travels 10 yards (35+10)
+                    if(recover) {
+                        result.text = `ONSIDE KICK RECOVERED BY ${off.team.id}!`;
+                        result.turnover = false;
+                    } else {
+                        result.text = `Onside kick failed. ${def.team.id} recovers.`;
+                        result.newBallOn = 45; 
+                        result.turnover = true;
+                    }
+                    result.clockTicked = 3;
+                }
+                result.newPhase = 'NORMAL';
+            } 
+            else if (state.gamePhase === 'PAT') {
+                result.animType = 'kick';
+                if (oPlay === 'xp') {
+                    if (Math.random() < 0.95) { 
+                        result.text = "Extra Point is GOOD."; result.points = 1; result.specialEvent = 'FG_GOOD'; 
+                    } else { 
+                        result.text = "Extra Point MISSED."; 
+                    }
+                } else if (oPlay === '2pt') {
+                    result.animType = 'pass';
+                    if (Math.random() < 0.45) { 
+                        result.text = "2-Point Conversion is SUCCESSFUL!"; result.points = 2; result.specialEvent = 'TD';
+                    } else { 
+                        result.text = "2-Point Conversion FAILED."; 
+                    }
+                }
+                result.newPhase = 'KICKOFF'; 
+                result.turnover = true;
+                result.newBallOn = 35; 
+                result.clockTicked = 0;
+                result.ballEndPos = 100; // Into endzone
+            }
+            else if (oPlay === 'punt') {
+                result.animType = 'kick';
+                let stBonus = Math.round((off.team.stRating - 80) * 0.4);
+                let puntYards = Math.floor(Math.random() * 20) + 35 + stBonus; 
+                result.text = `${off.team.id} punts the ball ${puntYards} yards.`;
+                result.turnover = true;
+                result.clockTicked = 10;
+                
+                let receiveSpot = state.ballOn + puntYards;
+                result.ballEndPos = receiveSpot;
+                if(receiveSpot >= 100) {
+                    result.text += " Touchback.";
+                    result.newBallOn = 20; 
+                } else {
+                    result.newBallOn = 100 - receiveSpot;
+                }
+            }
+            else if (oPlay === 'fg') {
+                result.animType = 'kick';
+                let kickDist = (100 - state.ballOn) + 17; 
+                let chance = 1.0;
+                if(kickDist > 65) chance = 0.05;
+                else if(kickDist > 55) chance = 0.4;
+                else if(kickDist > 45) chance = 0.7;
+                else if(kickDist > 35) chance = 0.9;
+                
+                // Special Teams rating modifier
+                let stBonus = (off.team.stRating - 80) * 0.015;
+                chance += stBonus;
+                chance = Math.max(0.01, Math.min(0.99, chance));
+                
+                result.ballEndPos = 105; // Through uprights
+                if (Math.random() < chance) {
+                    result.text = `${kickDist}-yard Field Goal is GOOD!`;
+                    result.points = 3;
+                    result.newPhase = 'KICKOFF';
+                    result.turnover = true;
+                    result.newBallOn = 35;
+                    result.specialEvent = 'FG_GOOD';
+                } else {
+                    result.text = `${kickDist}-yard Field Goal MISSED.`;
+                    result.turnover = true;
+                    let kickSpotRelative = state.ballOn - 7;
+                    let newTeamSpot = 100 - kickSpotRelative;
+                    if (newTeamSpot < 20) newTeamSpot = 20;
+                    result.newBallOn = newTeamSpot;
+                }
+                result.clockTicked = 5;
+            }
+            else {
+                let chanceComplete = 1, minYds = 0, maxYds = 0, chanceTO = 0.01, chanceSack = 0.02;
+                result.animType = oPlay.includes('run') ? 'run' : 'pass';
+
+                let ratingDiff = off.team.offRating - def.team.defRating;
+
+                if (oPlay === 'run_inside') {
+                    if (dPlay === 'def_run') { minYds = -1; maxYds = 3; }
+                    else if (dPlay === 'blitz') { minYds = -3; maxYds = 5; chanceTO = 0.04; }
+                    else if (dPlay === 'def_pass') { minYds = 3; maxYds = 8; }
+                    else if (dPlay === 'prevent') { minYds = 5; maxYds = 12; }
+                } else if (oPlay === 'run_outside') {
+                    if (dPlay === 'def_run') { minYds = -3; maxYds = 2; }
+                    else if (dPlay === 'blitz') { minYds = -5; maxYds = 15; chanceTO = 0.05; }
+                    else if (dPlay === 'def_pass') { minYds = 2; maxYds = 12; }
+                    else if (dPlay === 'prevent') { minYds = 4; maxYds = 20; }
+                } else if (oPlay === 'pass_short') {
+                    if (dPlay === 'def_run') { chanceComplete = 0.8; minYds = 4; maxYds = 12; }
+                    else if (dPlay === 'blitz') { chanceComplete = 0.75; chanceSack = 0.1; minYds = 5; maxYds = 15; chanceTO = 0.04;}
+                    else if (dPlay === 'def_pass') { chanceComplete = 0.6; minYds = 2; maxYds = 8; chanceTO = 0.03; }
+                    else if (dPlay === 'prevent') { chanceComplete = 0.9; minYds = 3; maxYds = 7; }
+                } else if (oPlay === 'pass_med') {
+                    if (dPlay === 'def_run') { chanceComplete = 0.7; minYds = 10; maxYds = 25; chanceSack = 0.05; }
+                    else if (dPlay === 'blitz') { chanceComplete = 0.6; chanceSack = 0.15; minYds = 12; maxYds = 30; chanceTO = 0.06; }
+                    else if (dPlay === 'def_pass') { chanceComplete = 0.5; minYds = 8; maxYds = 18; chanceTO = 0.05; }
+                    else if (dPlay === 'prevent') { chanceComplete = 0.8; minYds = 5; maxYds = 12; }
+                } else if (oPlay === 'pass_deep') {
+                    if (dPlay === 'def_run') { chanceComplete = 0.5; minYds = 25; maxYds = 50; chanceSack = 0.05; }
+                    else if (dPlay === 'blitz') { chanceComplete = 0.35; chanceSack = 0.25; minYds = 30; maxYds = 60; chanceTO = 0.10; }
+                    else if (dPlay === 'def_pass') { chanceComplete = 0.4; minYds = 20; maxYds = 40; chanceTO = 0.08; }
+                    else if (dPlay === 'prevent') { chanceComplete = 0.2; minYds = 15; maxYds = 25; chanceTO = 0.02; chanceSack = 0.1; }
+                }
+
+                // Apply Team Rating Modifiers mathematically
+                let yardMod = Math.round(ratingDiff * 0.15); 
+                maxYds += Math.max(-8, yardMod);
+                minYds += Math.max(-3, Math.round(ratingDiff * 0.05));
+                chanceTO -= (ratingDiff * 0.001); 
+                chanceSack -= (ratingDiff * 0.0015);
+                if (!oPlay.includes('run')) chanceComplete += (ratingDiff * 0.005);
+
+                // Constrain values to realistic physical boundaries
+                chanceTO = Math.max(0.005, Math.min(0.25, chanceTO));
+                chanceSack = Math.max(0.01, Math.min(0.3, chanceSack));
+                chanceComplete = Math.max(0.1, Math.min(0.95, chanceComplete));
+
+                let rand = Math.random();
+                if (rand < chanceTO) {
+                    result.turnover = true;
+                    result.text = oPlay.includes('run') ? "FUMBLE! Defense recovers." : "INTERCEPTED!";
+                    let toSpot = state.ballOn + Math.floor(Math.random() * 10); 
+                    result.ballEndPos = toSpot;
+                    result.newBallOn = 100 - toSpot;
+                    if(result.newBallOn < 0) result.newBallOn = 20;
+                    result.clockTicked = 8;
+                    if(!oPlay.includes('run')) result.specialEvent = 'INT';
+                } else if (rand < chanceTO + chanceSack) {
+                    let sackYds = Math.floor(Math.random() * 6) + 3;
+                    result.yards = -sackYds;
+                    result.text = `SACKED! Loss of ${sackYds} yards.`;
+                    result.clockTicked = 25;
+                    result.animType = 'run'; // QB moves backwards linearly
+                    result.crunch = true;
+                } else if (rand < chanceTO + chanceSack + (1 - chanceComplete)) {
+                    result.text = "Incomplete pass.";
+                    result.clockTicked = 5;
+                    // Pass animates, but stops halfway or hits ground
+                    result.ballEndPos = state.ballOn + minYds + 5; 
+                } else {
+                    result.yards = Math.floor(Math.random() * (maxYds - minYds + 1)) + minYds;
+                    result.text = `Gain of ${result.yards} yards.`;
+                    if (result.yards >= 15) result.text = `BIG PLAY! ` + result.text;
+                    if (result.yards < 0) {
+                        result.text = `Tackled for a loss of ${Math.abs(result.yards)} yards.`;
+                        result.crunch = true;
+                    }
+                    result.clockTicked = Math.floor(Math.random() * 15) + 15;
+                    
+                    // Check for standard offensive Touchdown
+                    if (state.ballOn + result.yards >= 100) {
+                        result.specialEvent = 'TD';
+                    }
+                }
+            }
+
+            // Default ending position if not overwritten
+            if(result.ballEndPos === null) {
+                result.ballEndPos = state.ballOn + result.yards;
+            }
+
+            // Calculate context-based crowd cheers for Home Team (P1)
+            let isHomeOffense = off.isP1;
+            let isHomeDefense = def.isP1;
+            let isBigGain = result.yards >= 10;
+            let isFirstDown = result.yards >= state.distance && state.gamePhase === 'NORMAL';
+            let isTD = result.specialEvent === 'TD' || result.points > 0;
+            let isSackOrLoss = result.crunch;
+            let isTurnover = result.turnover;
+
+            if (isHomeOffense && (isBigGain || isFirstDown || isTD)) {
+                result.homeCheer = true;
+            } else if (isHomeDefense && (isSackOrLoss || isTurnover)) {
+                result.homeCheer = true;
+            }
+
+            // Route to visualization before logic application
+            executePlayAnimation(result, () => {
+                applyPlayResult(result);
+            });
+        }
+
+        function getRetroSVG(type) {
+            if (type === 'TD') {
+                return `<svg viewBox="0 0 16 16" class="w-full h-full" shape-rendering="crispEdges">
+                    <rect x="7" y="1" width="2" height="2" fill="#FCD34D" />
+                    <rect x="6" y="3" width="4" height="6" fill="#3B82F6" />
+                    <rect x="4" y="3" width="2" height="1" fill="#3B82F6" />
+                    <rect x="4" y="2" width="1" height="2" fill="#3B82F6" />
+                    <rect x="10" y="3" width="2" height="1" fill="#3B82F6" />
+                    <rect x="11" y="2" width="1" height="2" fill="#3B82F6" />
+                    <rect x="6" y="9" width="1" height="4" fill="#E5E7EB" />
+                    <rect x="9" y="9" width="1" height="4" fill="#E5E7EB" />
+                    <rect x="3" y="1" width="2" height="1" fill="#A16207" />
+                </svg>`;
+            } else if (type === 'INT') {
+                return `<svg viewBox="0 0 16 16" class="w-full h-full" shape-rendering="crispEdges">
+                    <rect x="7" y="0" width="2" height="2" fill="#FCD34D" />
+                    <rect x="6" y="2" width="4" height="5" fill="#EF4444" />
+                    <rect x="4" y="2" width="2" height="1" fill="#EF4444" />
+                    <rect x="4" y="1" width="1" height="2" fill="#EF4444" />
+                    <rect x="10" y="2" width="2" height="1" fill="#EF4444" />
+                    <rect x="11" y="1" width="1" height="2" fill="#EF4444" />
+                    <rect x="6" y="7" width="1" height="3" fill="#E5E7EB" />
+                    <rect x="9" y="7" width="1" height="3" fill="#E5E7EB" />
+                    <rect x="5" y="0" width="2" height="1" fill="#A16207" />
+                </svg>`;
+            } else if (type === 'FG_GOOD') {
+                return `<svg viewBox="0 0 16 16" class="w-full h-full" shape-rendering="crispEdges">
+                    <rect x="3" y="2" width="1" height="8" fill="#FBBF24" />
+                    <rect x="12" y="2" width="1" height="8" fill="#FBBF24" />
+                    <rect x="3" y="10" width="10" height="1" fill="#FBBF24" />
+                    <rect x="7" y="10" width="2" height="6" fill="#FBBF24" />
+                    <rect x="7" y="5" width="2" height="1" fill="#A16207" />
+                </svg>`;
+            }
+            return '';
+        }
+
+        function executePlayAnimation(result, callback) {
+            let drivingRight = (state.possession === 1 && state.quarter % 2 !== 0) || (state.possession === 2 && state.quarter % 2 === 0);
+            
+            let endAbs = drivingRight ? result.ballEndPos : 100 - result.ballEndPos;
+            endAbs = Math.max(0, Math.min(100, endAbs));
+
+            const fbContainer = document.getElementById('football-container');
+            const fbIcon = document.getElementById('football-icon');
+
+            // Play initial kick/throw sound
+            if (result.animType === 'kick') SoundEngine.playKick();
+
+            // Set up horizontal linear movement
+            fbContainer.style.transition = 'left 1s linear';
+            fbContainer.style.left = `${endAbs}%`;
+
+            // Apply parabolic arc for passes/kicks
+            if (result.animType === 'pass' || result.animType === 'kick') {
+                fbIcon.classList.add('anim-pass');
+            }
+
+            setTimeout(() => {
+                // Ball landed/arrived
+                fbIcon.classList.remove('anim-pass');
+                
+                // Play dynamic tackle/hit sounds
+                if (result.animType !== 'kick') {
+                    if (result.crunch) {
+                        SoundEngine.playCrunch();
+                    } else {
+                        SoundEngine.playHit();
+                    }
+                }
+
+                // Trigger Contextual Home Crowd Cheer
+                if (result.homeCheer && !result.specialEvent) {
+                    SoundEngine.playCheer("2m"); // Standard play cheer
+                }
+
+                if (result.specialEvent) {
+                    // Trigger Retro Cutscene
+                    const overlay = document.getElementById('cutscene-overlay');
+                    const textEl = document.getElementById('cutscene-text');
+                    const graphicEl = document.getElementById('cutscene-graphic');
+                    
+                    if (result.specialEvent === 'TD') {
+                        textEl.innerText = "TOUCHDOWN!";
+                        textEl.className = "text-5xl md:text-7xl font-black text-yellow-400 retro-text uppercase text-center mb-8 animate-pulse";
+                        graphicEl.innerHTML = getRetroSVG('TD');
+                    } else if (result.specialEvent === 'INT') {
+                        textEl.innerText = "INTERCEPTED!";
+                        textEl.className = "text-5xl md:text-7xl font-black text-red-500 retro-text uppercase text-center mb-8";
+                        graphicEl.innerHTML = getRetroSVG('INT');
+                    } else if (result.specialEvent === 'FG_GOOD') {
+                        textEl.innerText = "IT'S GOOD!";
+                        textEl.className = "text-5xl md:text-7xl font-black text-emerald-400 retro-text uppercase text-center mb-8";
+                        graphicEl.innerHTML = getRetroSVG('FG_GOOD');
+                    }
+
+                    overlay.classList.remove('hide');
+                    SoundEngine.playRetroJingle(result.specialEvent);
+
+                    setTimeout(() => {
+                        overlay.classList.add('hide');
+                        callback();
+                    }, 2800);
+
+                } else {
+                    // Standard resolution
+                    callback();
+                }
+            }, 1000); // 1 second animation duration
+        }
+
+        function applyPlayResult(result) {
+            let off = getOffense();
+            let def = getDefense();
+            let prevBallOn = state.ballOn;
+            
+            logPlay(`[${getDownText()}] ${result.text}`);
+
+            state.clock -= result.clockTicked;
+            if (state.clock <= 0) {
+                state.clock = 0;
+                logPlay(`END OF QUARTER ${state.quarter}`);
+            }
+
+            if (result.points > 0) {
+                off.score += result.points;
+                off.qScores[state.quarter - 1] += result.points;
+                setTimeout(() => SoundEngine.playCheer(), 400);
+            }
+
+            if (!result.turnover && state.gamePhase === 'NORMAL') {
+                state.ballOn += result.yards;
+                
+                if (state.ballOn >= 100) {
+                    logPlay(`TOUCHDOWN ${off.team.name}!`);
+                    if(result.points === 0) { // If normal TD and points weren't added directly yet
+                        off.score += 6;
+                        off.qScores[state.quarter - 1] += 6;
+                        setTimeout(() => SoundEngine.playCheer(), 400);
+                    }
+                    state.gamePhase = 'PAT';
+                } 
+                else if (state.ballOn <= 0) {
+                    logPlay(`SAFETY! Tackled in the endzone.`);
+                    def.score += 2;
+                    def.qScores[state.quarter - 1] += 2;
+                    setTimeout(() => SoundEngine.playWhistle(), 800);
+                    result.turnover = true;
+                    result.newBallOn = 30;
+                }
+                else {
+                    if (state.ballOn - prevBallOn >= state.distance) {
+                        logPlay("First Down!");
+                        state.down = 1;
+                        state.distance = 10;
+                    } else {
+                        state.down++;
+                        state.distance -= result.yards;
+                        if (state.down > 4) {
+                            logPlay("Turnover on downs!");
+                            result.turnover = true;
+                            result.newBallOn = 100 - state.ballOn;
+                        }
+                    }
+                }
+            }
+
+            if (result.newPhase) state.gamePhase = result.newPhase;
+            
+            if (result.turnover) {
+                state.possession = state.possession === 1 ? 2 : 1;
+                state.ballOn = result.newBallOn !== undefined ? result.newBallOn : 100 - state.ballOn;
+                state.down = 1;
+                state.distance = 10;
+            }
+
+            if (state.clock === 0) {
+                if (state.quarter === 2) {
+                    logPlay("HALFTIME");
+                    state.quarter++;
+                    state.clock = 900;
+                    state.p1.timeouts = 3; state.p2.timeouts = 3;
+                    state.gamePhase = 'KICKOFF'; 
+                    state.possession = 2; 
+                    state.ballOn = 35;
+                    state.down = 1; state.distance = 10;
+                } else if (state.quarter === 4) {
+                    if (state.p1.score === state.p2.score) {
+                        logPlay("OVERTIME");
+                        state.quarter++;
+                        state.clock = 600; 
+                        state.gamePhase = 'KICKOFF';
+                        state.possession = Math.random() < 0.5 ? 1 : 2; 
+                        state.ballOn = 35;
+                        state.down = 1; state.distance = 10;
+                    } else {
+                        state.gamePhase = 'GAME_OVER';
+                    }
+                } else {
+                    state.quarter++;
+                    state.clock = 900;
+                }
+                setTimeout(() => SoundEngine.playWhistle(), 1000);
+            }
+
+            if (state.ballOn + state.distance > 100) {
+                state.distance = 100 - state.ballOn;
+            }
+
+            state.offensePlay = null;
+            state.defensePlay = null;
+            state.turnPhase = 'OFFENSE_SELECT';
+
+            updateScoreboardUI();
+            renderField();
+            renderActionPanel();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const p1Select = document.getElementById('p1-team');
+            const p2Select = document.getElementById('p2-team');
+            
+            function updateSetupLogos() {
+                const t1 = getTeamData(p1Select.value);
+                const t2 = getTeamData(p2Select.value);
+                document.getElementById('p1-logo-preview').innerHTML = getTeamLogoSVG(t1, 'w-full h-full');
+                document.getElementById('p2-logo-preview').innerHTML = getTeamLogoSVG(t2, 'w-full h-full');
+            }
+
+            teams.forEach((t, index) => {
+                let text = `${t.name} (OFF: ${t.offRating} | DEF: ${t.defRating} | ST: ${t.stRating})`;
+                let opt1 = new Option(text, t.id);
+                let opt2 = new Option(text, t.id);
+                if(index === 0) opt1.selected = true;
+                if(index === 1) opt2.selected = true;
+                p1Select.add(opt1);
+                p2Select.add(opt2);
+            });
+            
+            p1Select.addEventListener('change', updateSetupLogos);
+            p2Select.addEventListener('change', updateSetupLogos);
+            updateSetupLogos();
+
+            document.getElementById('start-game-btn').addEventListener('click', async () => {
+                let t1Id = p1Select.value;
+                let t2Id = p2Select.value;
+
+                if(t1Id === t2Id) {
+                    alert("Please select different teams.");
+                    return;
+                }
+
+                await SoundEngine.init();
+                SoundEngine.playWhistle();
+
+                state.p1.team = getTeamData(t1Id);
+                state.p2.team = getTeamData(t2Id);
+                
+                document.getElementById('p1-name').innerText = state.p1.team.id;
+                document.getElementById('p2-name').innerText = state.p2.team.id;
+                document.getElementById('p1-abbr').innerText = state.p1.team.id;
+                document.getElementById('p2-abbr').innerText = state.p2.team.id;
+                
+                document.getElementById('p1-logo').innerHTML = getTeamLogoSVG(state.p1.team, 'w-full h-full');
+                document.getElementById('p2-logo').innerHTML = getTeamLogoSVG(state.p2.team, 'w-full h-full');
+
+                document.getElementById('p1-score-panel').style.borderBottomColor = state.p1.team.color1;
+                document.getElementById('p1-score-panel').style.borderBottomWidth = "4px";
+                document.getElementById('p2-score-panel').style.borderBottomColor = state.p2.team.color1;
+                document.getElementById('p2-score-panel').style.borderBottomWidth = "4px";
+
+                state.possession = Math.random() < 0.5 ? 1 : 2;
+                logPlay(`Coin toss won by ${getOffense().team.name}. They elect to kick.`);
+                
+                document.getElementById('setup-screen').classList.add('hide');
+                document.getElementById('game-screen').classList.remove('hide');
+
+                updateScoreboardUI();
+                renderField();
+                renderActionPanel();
+            });
+        });
+    </script>
 </body>
 </html>
