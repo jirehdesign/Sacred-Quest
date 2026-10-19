@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New File</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f2f2f2;
+        color: #666;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+      .hint {
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hint">
+      <strong>Start typing HTML, CSS, or JavaScript</strong>
+      <br />
+      Preview updates instantly ✨
+    </div>
+    <script>
+      // Write JavaScript here
+    </script>
+  </body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hebrew Trivial Pursuit</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React and ReactDOM for logic -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel to compile JSX directly in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background-color: #0f172a;
+      }
+      .rtl {
+        direction: rtl;
+      }
+      .avatar-select {
+        filter: grayscale(100%);
+        opacity: 0.5;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .avatar-select:hover {
+        filter: grayscale(50%);
+        opacity: 0.8;
+      }
+      .avatar-select.selected {
+        filter: grayscale(0%);
+        opacity: 1;
+        transform: scale(1.15);
+        border-bottom: 2px solid #fff;
+      }
+      /* Board Animations */
+      .node {
+        transition: all 0.3s ease;
+      }
+      .node.valid-move {
+        cursor: pointer;
+        filter: drop-shadow(0 0 4px white);
+        animation: pulse-glow 1.5s infinite;
+      }
+      .node.valid-move:hover {
+        transform: scale(1.5);
+      }
+      .node.dimmed {
+        opacity: 0.3;
+      }
+      .token {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+      @keyframes pulse-glow {
+        0% {
+          filter: drop-shadow(0 0 2px white) brightness(1);
+        }
+        50% {
+          filter: drop-shadow(0 0 8px white) brightness(1.5);
+        }
+        100% {
+          filter: drop-shadow(0 0 2px white) brightness(1);
+        }
+      }
+      @keyframes dice-roll {
+        0% {
+          transform: rotate(0deg) scale(1);
+        }
+        50% {
+          transform: rotate(180deg) scale(1.2);
+        }
+        100% {
+          transform: rotate(360deg) scale(1);
+        }
+      }
+      .rolling {
+        animation: dice-roll 0.4s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+        // --- GAME CONSTANTS & GRAPH GENERATION ---
+        const CATEGORIES = [
+            { id: 'meanings', name: 'Meanings', color: '#3b82f6' },   // Blue
+            { id: 'phonetics', name: 'Phonetics', color: '#ec4899' }, // Pink
+            { id: 'phrases', name: 'Phrases', color: '#eab308' },     // Yellow
+            { id: 'vocabulary', name: 'Vocabulary', color: '#22c55e' } // Green
+        ];
+        const CAT_COLORS = { meanings: '#3b82f6', phonetics: '#ec4899', phrases: '#eab308', vocabulary: '#22c55e', wild: '#a855f7' };
+        const AVATARS = ['🦁', '🦊', '🦉', '🐼', '🐯', '🐸', '🐨', '🐵'];
+        // Generate Board Graph Structure
+        const BOARD_NODES = {};
+        const GRAPH = {};
+        const addEdge = (a, b) => {
+            if(!GRAPH[a]) GRAPH[a] = [];
+            if(!GRAPH[b]) GRAPH[b] = [];
+            if(!GRAPH[a].includes(b)) GRAPH[a].push(b);
+            if(!GRAPH[b].includes(a)) GRAPH[b].push(a);
+        };
+        // Center Hub
+        BOARD_NODES['C'] = { id: 'C', cx: 50, cy: 50, category: 'wild', isHQ: false };
+        // Outer Ring (24 nodes)
+        const ringCats = ['meanings', 'phonetics', 'phrases', 'vocabulary'];
+        for(let i=0; i<24; i++) {
+            const angle = (i * 15 - 90) * (Math.PI / 180);
+            BOARD_NODES[i] = {
+                id: i,
+                cx: 50 + 42 * Math.cos(angle),
+                cy: 50 + 42 * Math.sin(angle),
+                category: ringCats[i % 4],
+                isHQ: i % 6 === 0
+            };
+            addEdge(i, (i + 1) % 24);
+        }
+        // Force exact HQ categories
+        BOARD_NODES[0].category = 'meanings';
+        BOARD_NODES[6].category = 'phonetics';
+        BOARD_NODES[12].category = 'phrases';
+        BOARD_NODES[18].category = 'vocabulary';
+        // Add 4 Spokes connecting Hub to HQs
+        const addSpoke = (targetRingNode, id1, id2, cat1, cat2) => {
+            const angle = (targetRingNode * 15 - 90) * (Math.PI / 180);
+            BOARD_NODES[id1] = { id: id1, cx: 50 + 14 * Math.cos(angle), cy: 50 + 14 * Math.sin(angle), category: cat1, isHQ: false };
+            BOARD_NODES[id2] = { id: id2, cx: 50 + 28 * Math.cos(angle), cy: 50 + 28 * Math.sin(angle), category: cat2, isHQ: false };
+            addEdge('C', id1);
+            addEdge(id1, id2);
+            addEdge(id2, targetRingNode);
+        };
+        addSpoke(0, 's0_1', 's0_2', 'phonetics', 'phrases');
+        addSpoke(6, 's6_1', 's6_2', 'phrases', 'vocabulary');
+        addSpoke(12, 's12_1', 's12_2', 'vocabulary', 'meanings');
+        addSpoke(18, 's18_1', 's18_2', 'meanings', 'phonetics');
+        // Pathfinding Algorithm for Dice Movement
+        const getValidMoves = (start, steps) => {
+            let paths = [[start]];
+            for (let i = 0; i < steps; i++) {
+                let nextPaths = [];
+                for (let path of paths) {
+                    let current = path[path.length - 1];
+                    let prev = path.length > 1 ? path[path.length - 2] : null;
+                    for (let neighbor of GRAPH[current]) {
+                        if (neighbor !== prev) {
+                            nextPaths.push([...path, neighbor]);
+                        }
+                    }
+                }
+                paths = nextPaths;
+            }
+            return [...new Set(paths.map(p => p[p.length - 1]))];
+        };
+        // --- MAIN APP COMPONENT ---
+        function App() {
+            const [gameState, setGameState] = useState('difficulty'); // loading, error, difficulty, players, playing, won
+            const [difficulty, setDifficulty] = useState(null);
+            const [questionBank, setQuestionBank] = useState(null);
+            const [error, setError] = useState(null);
+            const [players, setPlayers] = useState([{ id: 1, name: 'Player 1', avatar: '🦁', wedges: [], position: 'C' }]);
+            const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+            const [diceRoll, setDiceRoll] = useState(null);
+            const [isRolling, setIsRolling] = useState(false);
+            const [validMoves, setValidMoves] = useState([]);
+            const [currentCategory, setCurrentCategory] = useState(null);
+            const [currentQuestion, setCurrentQuestion] = useState(null);
+            const [showFeedback, setShowFeedback] = useState(null);
+            const [showWildPrompt, setShowWildPrompt] = useState(false);
+            // Fetch JSON
+            useEffect(() => {
+                setGameState('loading');
+                fetch('hebrew.json')
+                    .then(res => {
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        return res.json();
+                    })
+                    .then(data => {
+                        const bank = { beginner: {}, intermediate: {}, advanced: {} };
+                        ['beginner', 'intermediate', 'advanced'].forEach(d => {
+                            ['meanings', 'phonetics', 'phrases', 'vocabulary'].forEach(c => bank[d][c] = []);
+                        });
+                        data.forEach(q => {
+                            if (bank[q.difficulty] && bank[q.difficulty][q.category]) {
+                                bank[q.difficulty][q.category].push(q);
+                            }
+                        });
+                        setQuestionBank(bank);
+                        setGameState('difficulty');
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        setError('Failed to load hebrew.json. Make sure the file is hosted correctly.');
+                        setGameState('error');
+                    });
+            }, []);
+            // --- Handlers ---
+            const updatePlayer = (id, field, value) => setPlayers(players.map(p => p.id === id ? { ...p, [field]: value } : p));
+            const handleAddPlayer = () => players.length < 4 && setPlayers([...players, { id: Date.now(), name: `Player ${players.length + 1}`, avatar: AVATARS[players.length], wedges: [], position: 'C' }]);
+            const handleRemovePlayer = (id) => setPlayers(players.filter(p => p.id !== id));
+            const rollDice = () => {
+                if (diceRoll !== null || isRolling) return;
+                setIsRolling(true);
+                // Animate for a second
+                setTimeout(() => {
+                    const roll = Math.floor(Math.random() * 6) + 1;
+                    setDiceRoll(roll);
+                    setIsRolling(false);
+                    const currentPlayer = players[currentPlayerIndex];
+                    const moves = getValidMoves(currentPlayer.position, roll);
+                    setValidMoves(moves);
+                }, 800);
+            };
+            const handleNodeClick = (nodeId) => {
+                if (!validMoves.includes(nodeId)) return;
+                // Move player
+                const updatedPlayers = [...players];
+                updatedPlayers[currentPlayerIndex].position = nodeId;
+                setPlayers(updatedPlayers);
+                setValidMoves([]);
+                const nodeData = BOARD_NODES[nodeId];
+                // Win Condition Check (All 4 wedges + return to center)
+                if (nodeData.id === 'C' && updatedPlayers[currentPlayerIndex].wedges.length === 4) {
+                    setShowWildPrompt(true); // Let them pick their final winning category
+                    return;
+                }
+                if (nodeData.category === 'wild') {
+                    setShowWildPrompt(true);
+                } else {
+                    triggerQuestion(nodeData.category);
+                }
+            };
+            const triggerQuestion = (categoryId) => {
+                setShowWildPrompt(false);
+                const availableQuestions = questionBank[difficulty][categoryId];
+                const randomQ = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+                setCurrentCategory(categoryId);
+                setCurrentQuestion(randomQ);
+                setShowFeedback(null);
+            };
+            const handleAnswer = (selectedOption) => {
+                const isCorrect = selectedOption === currentQuestion.answer;
+                setShowFeedback(isCorrect ? 'correct' : 'incorrect');
+                const currentPlayer = players[currentPlayerIndex];
+                const nodeData = BOARD_NODES[currentPlayer.position];
+                setTimeout(() => 
+                    if (isCorrect) {
+                        // Check for final center win
+                        if (nodeData.id === 'C' && currentPlayer.wedges.length === 4) {
+                            setGameState('won');
+                            return;
+                        }
+                        // Grant wedge if on HQ
+                        if (nodeData.isHQ && !currentPlayer.wedges.includes(currentCategory)) {
+                            const updatedPlayers = [...players];
+                            updatedPlayers[currentPlayerIndex].wedges.push(currentCategory);
+                            setPlayers(updatedPlayers);
+                        }
+                        // Correct answer grants another roll
+                        setDiceRoll(null);
+                    } else {
+                        // Incorrect passes turn
+                        setCurrentPlayerIndex((prev) => (prev + 1) % players.length);
+                        setDiceRoll(null);
+                    }
+                    setCurrentQuestion(null);
+                    setCurrentCategory(null);
+                    setShowFeedback(null);
+                }, 2000);
+            };
+            const resetGame = () => {
+                setPlayers(players.map(p => ({ ...p, wedges: [], position: 'C' })));
+                setCurrentPlayerIndex(0);
+                setDiceRoll(null);
+                setValidMoves([]);
+                setCurrentQuestion(null);
+                setCurrentCategory(null);
+                setGameState('difficulty');
+            };
+            // --- Renders ---
+            if (gameState === 'loading') return <div className="min-h-screen flex items-center justify-center text-white"><div className="text-2xl font-bold animate-pulse">Loading Database...</div></div>;
+            if (gameState === 'error') return <div className="min-h-screen flex items-center justify-center p-8"><div className="text-lg text-red-400 bg-red-900/20 p-6 rounded-xl border">{error}</div></div>;
+            if (gameState === 'difficulty') {
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                        <h1 className="text-5xl md:text-6xl font-bold text-white mb-12 text-center tracking-tight">Hebrew Pursuit</h1>
+                        <div className="flex flex-col gap-5 w-full max-w-md">
+                            {['beginner', 'intermediate', 'advanced'].map(level => (
+                                <button key={level} onClick={() => { setDifficulty(level); setGameState('players'); }} className="py-5 px-6 text-2xl font-bold capitalize bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl shadow-xl transition transform hover:-translate-y-1">
+                                    {level}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )
+            }
+            if (gameState === 'players') {
+                return (
+                    <div className="min-h-screen flex flex-col items-center py-12 px-4 text-white">
+                        <h1 className="text-4xl font-bold mb-8">Setup Players</h1>
+                        <div className="w-full max-w-2xl space-y-4 mb-8">
+                            {players.map((player, index) => (
+                                <div key={player.id} className="bg-gray-800 p-4 rounded-xl flex flex-col sm:flex-row items-center gap-4 border border-gray-700">
+                                    <div className="text-3xl font-bold text-gray-500 w-8 text-center">{index + 1}</div>
+                                    <input type="text" value={player.name} onChange={(e) => updatePlayer(player.id, 'name', e.target.value)} className="flex-1 bg-gray-900 border border-gray-600 rounded-lg px-4 py-2 text-xl focus:outline-none focus:border-indigo-500" maxLength="15"/>
+                                    <div className="flex gap-2 bg-gray-900 p-2 rounded-lg overflow-x-auto">
+                                        {AVATARS.map(avatar => <span key={avatar} onClick={() => updatePlayer(player.id, 'avatar', avatar)} className={`text-2xl p-1 avatar-select ${player.avatar === avatar ? 'selected' : ''}`}>{avatar}</span>)}
+                                    </div>
+                                    {players.length > 1 && <button onClick={() => handleRemovePlayer(player.id)} className="text-red-400 hover:text-red-300 p-2 font-bold">✕</button>}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex gap-4">
+                            {players.length < 4 && <button onClick={handleAddPlayer} className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl font-bold text-lg">+ Add Player</button>}
+                            <button onClick={() => setGameState('playing')} className="px-10 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-xl shadow-lg">Start Game</button>
+                        </div>
+                    </div>
+                );
+            }
+            if (gameState === 'won') {
+                const winner = players[currentPlayerIndex];
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                        <div className="text-9xl mb-6 animate-bounce">{winner.avatar}</div>
+                        <h1 className="text-6xl font-bold text-yellow-400 mb-4 text-center drop-shadow-lg">מזל טוב!</h1>
+                        <h2 className="text-5xl font-semibold text-white mb-10 text-center">{winner.name} Wins!</h2>
+                        <button onClick={resetGame} className="py-4 px-10 text-2xl font-bold bg-white text-gray-900 rounded-full shadow-2xl hover:bg-gray-200 transition">Play Again</button>
+                    </div>
+                );
+            }
+            // PLAYING STATE
+            const currentPlayer = players[currentPlayerIndex];
+            return (
+                <div className="min-h-screen text-white flex flex-col lg:flex-row">
+                    {/* Sidebar / Scoreboard */}
+                    <div className="w-full lg:w-80 bg-gray-900 border-b lg:border-b-0 lg:border-r border-gray-800 p-6 flex flex-col h-auto lg:h-screen lg:sticky lg:top-0 shadow-2xl z-10">
+                        <h2 className="text-2xl font-bold text-gray-400 mb-6 uppercase tracking-widest hidden lg:block">Players</h2>
+                        <div className="flex lg:flex-col overflow-x-auto lg:overflow-visible gap-4 pb-4 lg:pb-0">
+                            {players.map((player, idx) => (
+                                <div key={player.id} className={`flex-shrink-0 flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${idx === currentPlayerIndex ? 'border-indigo-500 bg-indigo-900/40 shadow-[0_0_15px_rgba(99,102,241,0.5)] scale-105' : 'border-transparent bg-gray-800 opacity-60'}`}>
+                                    <div className="text-4xl">{player.avatar}</div>
+                                    <div className="flex-1">
+                                        <div className="font-bold text-lg truncate">{player.name}</div>
+                                        <div className="flex gap-1 mt-2">
+                                            {CATEGORIES.map(cat => (
+                                                <div key={cat.id} className="w-4 h-4 rounded-full border border-gray-900" style={{ backgroundColor: player.wedges.includes(cat.id) ? cat.color : '#334155' }}/>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        {/* Dice UI in Sidebar */}
+                        <div className="mt-8 mb-4 hidden lg:flex flex-col items-center bg-gray-800 p-6 rounded-2xl border border-gray-700">
+                            <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Action</div>
+                            {!diceRoll && !currentQuestion && !showWildPrompt ? (
+                                <button onClick={rollDice} disabled={isRolling} className={`w-full py-4 rounded-xl font-bold text-xl transition shadow-lg ${isRolling ? 'bg-indigo-800 text-indigo-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-500 text-white hover:scale-105'}`}>
+                                    {isRolling ? 'Rolling...' : 'ROLL DICE'}
+                                </button>
+                            ) : diceRoll ? (
+                                <div className="text-center">
+                                    <div className={`text-6xl font-bold text-indigo-400 mb-2 ${isRolling ? 'rolling' : ''}`}>{diceRoll}</div>
+                                    <div className="text-sm text-gray-400 font-medium">{validMoves.length > 0 ? 'Select a highlighted space.' : 'Calculating moves...'}</div>
+                                </div>
+                            ) : (
+                                <div className="text-gray-500 font-medium text-center">Answer the question!</div>
+                            )}
+                        </div>
+                        <div className="mt-auto hidden lg:block">
+                            <button onClick={resetGame} className="w-full py-3 bg-gray-800 hover:bg-gray-700 rounded-lg font-medium text-sm transition">Restart Setup</button>
+                        </div>
+                    </div>
+                    {/* Main Game Board Area */}
+                    <div className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                        {/* Mobile Dice Button */}
+                        <div className="lg:hidden w-full max-w-sm mb-6 flex items-center justify-center">
+                             {!diceRoll && !currentQuestion && !showWildPrompt ? (
+                                <button onClick={rollDice} disabled={isRolling} className="w-full py-4 bg-indigo-600 rounded-xl font-bold text-xl">
+                                    {isRolling ? 'Rolling...' : 'ROLL DICE'}
+                                </button>
+                            ) : diceRoll && !currentQuestion && !showWildPrompt ? (
+                                <div className="text-2xl font-bold text-indigo-400 bg-gray-800 px-8 py-3 rounded-xl border border-gray-700">
+                                    You rolled a {diceRoll}
+                                </div>
+                            ) : null}
+                        </div>
+                        {/* Trivial Pursuit SVG Graph Board */}
+                        <div className="relative w-[340px] h-[340px] sm:w-[500px] sm:h-[500px] sm:my-8 lg:my-0">
+                            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-2xl overflow-visible">
+                                {/* Draw Edges */}
+                                {Object.keys(GRAPH).map(nodeId => {
+                                    return GRAPH[nodeId].map(targetId => {
+                                        // Only draw once per pair
+                                        if (nodeId < targetId) {
+                                            const n1 = BOARD_NODES[nodeId];
+                                            const n2 = BOARD_NODES[targetId];
+                                            return <line key={`${nodeId}-${targetId}`} x1={n1.cx} y1={n1.cy} x2={n2.cx} y2={n2.cy} stroke="#1e293b" strokeWidth="3" opacity="0.6"/>
+                                        }
+                                        return null;
+                                    });
+                                })}
+                                {/* Draw Nodes */}
+                                {Object.values(BOARD_NODES).map(node => {
+                                    const isValidMove = validMoves.includes(node.id);
+                                    const isDimmed = validMoves.length > 0 && !isValidMove;
+                                    let r = node.id === 'C' ? 6 : (node.isHQ ? 5 : 3);
+                                    return (
+                                        <g key={node.id} 
+                                           className={`node ${isValidMove ? 'valid-move' : ''} ${isDimmed ? 'dimmed' : ''}`} 
+                                           onClick={() => handleNodeClick(node.id)}
+                                           style={{ transformOrigin: `${node.cx}px ${node.cy}px` }}>
+                                            {/* HQ Outer Ring Glow */}
+                                            {node.isHQ && <circle cx={node.cx} cy={node.cy} r={r + 1.5} fill="none" stroke="white" strokeWidth="0.8" opacity="0.3"/>}
+                                            <circle 
+                                                cx={node.cx} 
+                                                cy={node.cy} 
+                                                r={r} 
+                                                fill={CAT_COLORS[node.category]} 
+                                                stroke="#0f172a" 
+                                                strokeWidth="0.8" 
+                                            />
+                                            {node.id === 'C' && <text x={node.cx} y={node.cy + 1.5} fontSize="3" fill="white" textAnchor="middle" fontWeight="bold">HUB</text>}
+                                        </g>
+                                    );
+                                })}
+                                {/* Draw Player Tokens */}
+                                {players.map((player, idx) => {
+                                    const node = BOARD_NODES[player.position];
+                                    // Offset slightly if multiple players are on the same node
+                                    const playersOnNode = players.filter(p => p.position === player.position);
+                                    const pIndex = playersOnNode.findIndex(p => p.id === player.id);
+                                    let offsetX = 0, offsetY = 0;
+                                    if (playersOnNode.length > 1) {
+                                        const angle = (pIndex / playersOnNode.length) * Math.PI * 2;
+                                        offsetX = Math.cos(angle) * 3;
+                                        offsetY = Math.sin(angle) * 3;
+                                    }
+                                    return (
+                                        <text 
+                                            key={player.id} 
+                                            className="token"
+                                            x={node.cx + offsetX} 
+                                            y={node.cy + offsetY + 2} // +2 for vertical centering of emoji
+                                            fontSize="6" 
+                                            textAnchor="middle"
+                                            style={{ filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.8))' }}
+                                        >
+                                            {player.avatar}
+                                        </text>
+                                    );
+                                })}
+                            </svg>
+                        </div>
+                        {/* Wildcard / Center Prompt */}
+                        {showWildPrompt && (
+                            <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+                                <div className="bg-gray-800 p-8 rounded-3xl max-w-lg w-full text-center shadow-2xl border-t-4 border-purple-500">
+                                    <div className="text-6xl mb-4">✨</div>
+                                    <h3 className="text-3xl font-bold text-white mb-2">Center Hub!</h3>
+                                    <p className="text-gray-400 mb-8">
+                                        {currentPlayer.wedges.length === 4 
+                                            ? "You have all wedges! Answer correctly to WIN THE GAME!" 
+                                            : "You landed on the wild space. Choose your category:"}
+                                    </p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {CATEGORIES.map(cat => (
+                                            <button 
+                                                key={cat.id} 
+                                                onClick={() => triggerQuestion(cat.id)}
+                                                className="py-4 rounded-xl font-bold text-white transition hover:scale-105"
+                                                style={{ backgroundColor: cat.color }}
+                                            >
+                                                {cat.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {/* Question Modal Overlay */}
+                        {currentQuestion && (
+                            <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+                                <div className="bg-gray-800 p-8 sm:p-12 rounded-3xl max-w-3xl w-full text-center shadow-2xl border-t-8 flex flex-col max-h-[95vh]" 
+                                     style={{ borderColor: CAT_COLORS[currentCategory] }}>
+                                    <div className="flex justify-between items-center mb-8">
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-3xl">{currentPlayer.avatar}</span>
+                                            <span className="text-xl font-bold text-gray-300">{currentPlayer.name}</span>
+                                        </div>
+                                        <div className="text-gray-400 uppercase tracking-widest text-sm font-bold bg-gray-900 px-4 py-2 rounded-full">
+                                            {currentCategory}
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 overflow-y-auto mb-8 flex flex-col justify-center">
+                                        <h2 className="text-5xl sm:text-7xl font-bold text-white rtl leading-tight drop-shadow-md pb-4">
+                                            {currentQuestion.question}
+                                        </h2>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                                        {currentQuestion.options.map((opt, i) => {
+                                            let btnClass = "bg-gray-700 hover:bg-gray-600 text-white py-5 px-6 rounded-2xl text-xl font-medium transition-all duration-200 border border-gray-600";
+                                            if (showFeedback && opt === currentQuestion.answer) {
+                                                btnClass = "bg-green-600 text-white py-5 px-6 rounded-2xl text-xl font-bold scale-105 border border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.4)] z-10";
+                                            } else if (showFeedback && opt !== currentQuestion.answer) {
+                                                btnClass = "bg-red-900/40 text-gray-400 py-5 px-6 rounded-2xl text-xl font-medium opacity-50 border border-transparent";
+                                            }
+                                            return <button key={i} onClick={() => !showFeedback && handleAnswer(opt)} className={btnClass} disabled={!!showFeedback}>{opt}</button>;
+                                        })}
+                                    </div>
+                                    <div className="h-16 flex items-center justify-center mt-auto">
+                                        {showFeedback === null ? (
+                                            <button onClick={() => {
+                                                setCurrentPlayerIndex((prev) => (prev + 1) % players.length);
+                                                setDiceRoll(null);
+                                                setCurrentQuestion(null);
+                                            }} className="text-gray-400 hover:text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg> Skip
+                                            </button>
+                                        ) : (
+                                            <div className="w-full text-center">
+                                                {showFeedback === 'correct' ? <div className="text-3xl font-bold text-green-400 animate-bounce">Correct! Roll again!</div> : <div className="text-2xl font-semibold text-red-400">Incorrect. Turn passes.</div>}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+  </body>
+</html>
