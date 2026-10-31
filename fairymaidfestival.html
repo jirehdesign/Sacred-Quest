@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fairy-Maid Festival V7</title>
+    <title>Fairy-Maid Festival V9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -102,9 +102,14 @@
                 <div id="hero-badges" class="flex gap-1 mt-2"></div>
             </div>
         </div>
-        <button id="btn-header-home" class="w-full sm:w-auto text-gray-500 font-black bg-gray-100 px-5 py-3 rounded-full hover:bg-gray-200 border-2 border-gray-200 active:scale-95 transition-transform text-sm items-center gap-2">
-            🏠 Menu
-        </button>
+        <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+            <button id="btn-music" class="w-full sm:w-auto text-purple-600 font-black bg-purple-100 px-5 py-3 rounded-full hover:bg-purple-200 border-2 border-purple-300 active:scale-95 transition-transform text-sm flex items-center justify-center gap-2">
+                🎵 Music: OFF
+            </button>
+            <button id="btn-header-home" class="w-full sm:w-auto text-gray-500 font-black bg-gray-100 px-5 py-3 rounded-full hover:bg-gray-200 border-2 border-gray-200 active:scale-95 transition-transform text-sm items-center gap-2">
+                🏠 Menu
+            </button>
+        </div>
     </header>
 
     <!-- AUTH SCREEN -->
@@ -113,7 +118,28 @@
             <h2 class="text-3xl font-black text-purple-600 mb-2">Create a Hero!</h2>
             <p class="text-gray-500 mb-6 text-sm font-bold">Pick your character & magic name</p>
             
-            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4 mb-8" id="avatar-selection"></div>
+            <div class="flex flex-col md:flex-row gap-6 items-center justify-center mb-8">
+                <div id="customizer-preview" class="w-40 h-56 sm:w-48 sm:h-64 bg-gradient-to-b from-pink-100 to-white rounded-[2.5rem] border-8 border-pink-200 shadow-xl flex items-center justify-center p-2 svg-container pointer-events-none"></div>
+                
+                <div class="flex flex-col gap-4 w-full max-w-sm">
+                    <!-- Hair Style -->
+                    <div class="flex items-center justify-between bg-pink-50 p-2 rounded-2xl border-2 border-pink-200 shadow-inner">
+                        <button id="btn-hair-prev" class="text-3xl hover:scale-110 active:scale-95 px-2 drop-shadow-md">◀️</button>
+                        <span id="hair-style-label" class="font-black text-pink-500 uppercase tracking-widest text-sm sm:text-base">Long Hair</span>
+                        <button id="btn-hair-next" class="text-3xl hover:scale-110 active:scale-95 px-2 drop-shadow-md">▶️</button>
+                    </div>
+                    <!-- Hair Color -->
+                    <div class="bg-pink-50 p-3 rounded-2xl border-2 border-pink-200 shadow-inner">
+                        <div class="text-[10px] sm:text-xs font-black text-pink-400 mb-2 uppercase text-center tracking-widest">Hair Color</div>
+                        <div id="hair-color-swatches" class="flex justify-center gap-2 sm:gap-3 flex-wrap"></div>
+                    </div>
+                    <!-- Skin Tone -->
+                    <div class="bg-pink-50 p-3 rounded-2xl border-2 border-pink-200 shadow-inner">
+                        <div class="text-[10px] sm:text-xs font-black text-pink-400 mb-2 uppercase text-center tracking-widest">Skin Tone</div>
+                        <div id="skin-tone-swatches" class="flex justify-center gap-2 sm:gap-3 flex-wrap"></div>
+                    </div>
+                </div>
+            </div>
 
             <div class="max-w-md mx-auto">
                 <input type="text" id="auth-username" placeholder="Your Name" class="w-full bg-pink-50 border-4 border-pink-200 rounded-3xl p-4 mb-6 outline-none focus:border-pink-500 font-black text-xl text-center text-purple-700" maxlength="12">
@@ -195,14 +221,26 @@
                 </div>
             </div>
 
-            <!-- Magic Math Wand -->
-            <button id="btn-math-wand" class="math-wand-bg w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-white flex items-center justify-center gap-4 hover:scale-105 active:scale-95 transition-transform group">
-                <div class="text-5xl group-hover:anim-spin-pop emoji-shadow">🪄</div>
-                <div class="text-left">
-                    <h2 class="text-2xl font-black text-purple-800 drop-shadow-sm">Magic Math!</h2>
-                    <p class="text-sm font-black text-pink-600 bg-white/70 px-3 py-1 rounded-full inline-block mt-1 border-2 border-pink-200"><span id="math-charges-ui">4</span> Tries Left</p>
-                </div>
-            </button>
+            <!-- Mini Games Row: Math Wand & Spelling Scroll -->
+            <div class="grid grid-cols-2 gap-4 w-full">
+                <!-- Magic Math Wand -->
+                <button id="btn-math-wand" class="math-wand-bg w-full rounded-[2rem] p-3 shadow-lg border-4 border-white flex flex-col items-center justify-center gap-1 hover:scale-105 active:scale-95 transition-transform group">
+                    <div class="text-4xl group-hover:anim-spin-pop emoji-shadow">🪄</div>
+                    <div class="text-center">
+                        <h2 class="text-xl font-black text-purple-800 drop-shadow-sm leading-none">Math!</h2>
+                        <p class="text-[10px] sm:text-xs font-black text-pink-600 bg-white/70 px-2 py-0.5 rounded-full inline-block mt-1 border-2 border-pink-200"><span id="math-charges-ui">4</span> Tries</p>
+                    </div>
+                </button>
+
+                <!-- Spelling Scroll -->
+                <button id="btn-spell-scroll" class="bg-gradient-to-r from-emerald-300 to-teal-400 w-full rounded-[2rem] p-3 shadow-lg border-4 border-white flex flex-col items-center justify-center gap-1 hover:scale-105 active:scale-95 transition-transform group">
+                    <div class="text-4xl group-hover:anim-spin-pop emoji-shadow">📜</div>
+                    <div class="text-center">
+                        <h2 class="text-xl font-black text-teal-900 drop-shadow-sm leading-none">Spelling!</h2>
+                        <p class="text-[10px] sm:text-xs font-black text-teal-700 bg-white/70 px-2 py-0.5 rounded-full inline-block mt-1 border-2 border-teal-200"><span id="spell-charges-ui">4</span> Tries</p>
+                    </div>
+                </button>
+            </div>
 
             <!-- Shared Treasure Chest (5 Items) -->
             <div class="bg-amber-100 rounded-[2rem] p-5 shadow-xl border-4 border-amber-300">
@@ -321,18 +359,44 @@
         </div>
     </div>
 
+    <!-- SPELLING QUESTION MODAL -->
+    <div id="modal-spelling" class="fixed inset-0 bg-teal-900/60 backdrop-blur-md hidden items-center justify-center z-[60] p-4">
+        <div id="spell-content" class="bg-white rounded-[3rem] p-8 max-w-md w-full text-center shadow-2xl border-8 border-emerald-300 bounce-in flex flex-col items-center relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#10b981 2px, transparent 2px); background-size: 20px 20px;"></div>
+            <button id="btn-close-spell" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl font-black z-20">✖</button>
+            <div id="spell-emoji" class="text-7xl mb-2 emoji-shadow z-10">🐱</div>
+            <h2 class="text-3xl font-black text-teal-600 mb-1 z-10">Spelling Scroll!</h2>
+            <p class="text-sm text-gray-600 mb-4 font-bold z-10">Listen and spell! Wrong answer costs an EXTRA try!</p>
+            
+            <button id="btn-hear-word" class="bg-teal-100 border-4 border-teal-300 text-teal-700 font-black text-xl py-2 px-6 rounded-full mb-4 shadow hover:bg-teal-200 active:scale-95 transition-all z-10 flex items-center gap-2">
+                <span>🔊</span> Hear Word
+            </button>
+
+            <div class="w-full z-10 mb-6">
+                <input type="text" id="spell-input" spellcheck="false" autocorrect="off" autocomplete="off" class="w-full bg-emerald-50 border-4 border-emerald-200 rounded-2xl p-4 text-center text-4xl font-black text-teal-800 outline-none focus:border-teal-500 uppercase">
+            </div>
+            
+            <button id="btn-submit-spell" class="w-full bg-gradient-to-r from-teal-400 to-emerald-500 text-white font-black text-2xl py-3 rounded-[2rem] shadow-md hover:scale-105 active:scale-95 transition-transform z-10">
+                Check Spelling! ✨
+            </button>
+        </div>
+    </div>
+
     <script>
         // ==========================================
-        // DATA MODELS & SVG ENGINE (12 Chars + Huge Item DB)
+        // DATA MODELS & SVG ENGINE (Customizer + Huge Item DB)
         // ==========================================
-        const AVATARS = {
-            lily: { id: 'lily', name: 'Lily', emoji: '👱‍♀️' }, mia: { id: 'mia', name: 'Mia', emoji: '👧' },
-            zoe: { id: 'zoe', name: 'Zoe', emoji: '👩🏿' }, chloe: { id: 'chloe', name: 'Chloe', emoji: '👩🏽' },
-            emma: { id: 'emma', name: 'Emma', emoji: '👩🏻' }, maya: { id: 'maya', name: 'Maya', emoji: '👩🏾' },
-            ruby: { id: 'ruby', name: 'Ruby', emoji: '👩‍🦰' }, jade: { id: 'jade', name: 'Jade', emoji: '👩‍🎤' },
-            nia: { id: 'nia', name: 'Nia', emoji: '👩🏿‍🦱' }, luna: { id: 'luna', name: 'Luna', emoji: '👩‍🦳' },
-            stella: { id: 'stella', name: 'Stella', emoji: '👱🏽‍♀️' }, ivy: { id: 'ivy', name: 'Ivy', emoji: '🧑🏽' }
-        };
+        
+        const HAIR_STYLES = [
+            { id: 'long', name: 'Long Hair' },
+            { id: 'pigtails', name: 'Pigtails' },
+            { id: 'buns', name: 'Cute Buns' },
+            { id: 'bob', name: 'Short Bob' },
+            { id: 'braids', name: 'Braids' },
+            { id: 'afro', name: 'Afro Puff' }
+        ];
+        const HAIR_COLORS = ['#fde047', '#78350f', '#27272a', '#dc2626', '#ec4899', '#8b5cf6', '#06b6d4'];
+        const SKIN_TONES = ['#fee2e2', '#ffedd5', '#d4a373', '#8b5a2b', '#451a03'];
 
         const ITEMS = {
             // -- HEAD (9 items) --
@@ -402,23 +466,37 @@
             ]
         };
 
-        function generateDollSVG(avatarId, equipped) {
-            let skin = '', hairBack = '', hairFront = '';
+        function generateDollSVG(avatarDef, equipped) {
+            let skin = avatarDef.skin || '#fee2e2'; 
+            let hairColor = avatarDef.hairColor || '#fde047';
+            let hairBack = '', hairFront = '';
+            
             const baseFrontHair = (color) => `<path d="M 22 45 Q 22 -5 50 0 Q 78 -5 78 45 Q 65 20 50 20 Q 35 20 22 45 Z" fill="${color}"/>`;
+            hairFront = baseFrontHair(hairColor);
 
-            switch(avatarId) {
-                case 'lily': skin = '#fee2e2'; hairBack = `<path d="M 20 35 Q -5 60 15 80 Q 30 60 35 35 Z" fill="#fde047"/><path d="M 80 35 Q 105 60 85 80 Q 70 60 65 35 Z" fill="#fde047"/>`; hairFront = baseFrontHair('#fde047'); break;
-                case 'mia': skin = '#ffedd5'; hairBack = `<circle cx="20" cy="20" r="16" fill="#ec4899"/><circle cx="80" cy="20" r="16" fill="#ec4899"/>`; hairFront = baseFrontHair('#ec4899'); break;
-                case 'zoe': skin = '#8b5a2b'; hairBack = `<circle cx="20" cy="25" r="18" fill="#27272a"/><circle cx="80" cy="25" r="18" fill="#27272a"/><circle cx="50" cy="25" r="22" fill="#27272a"/>`; hairFront = `<path d="M 20 45 Q 20 -5 50 0 Q 80 -5 80 45 Q 65 25 50 22 Q 35 25 20 45 Z" fill="#27272a"/>`; break;
-                case 'chloe': skin = '#f5bba6'; hairBack = `<path d="M 28 35 Q 15 70 25 100 Q 50 105 75 100 Q 85 70 72 35 Z" fill="#78350f"/>`; hairFront = baseFrontHair('#78350f'); break;
-                case 'emma': skin = '#fef2f2'; hairBack = `<path d="M 20 35 L 20 65 Q 50 75 80 65 L 80 35 Z" fill="#dc2626"/>`; hairFront = baseFrontHair('#dc2626'); break;
-                case 'maya': skin = '#d4a373'; hairBack = `<path d="M 32 35 L 20 95 L 32 95 L 40 35 Z M 68 35 L 80 95 L 68 95 L 60 35 Z M 40 35 L 30 100 L 42 100 L 48 35 Z M 60 35 L 70 100 L 58 100 L 52 35 Z" fill="#6b21a8"/><circle cx="50" cy="25" r="20" fill="#7e22ce"/>`; hairFront = baseFrontHair('#7e22ce'); break;
-                case 'ruby': skin = '#b45309'; hairBack = `<path d="M 45 10 Q 70 -15 90 45 Q 75 30 55 15 Z" fill="#ea580c"/>`; hairFront = baseFrontHair('#ea580c') + `<rect x="46" y="2" width="8" height="6" fill="#fcd34d" rx="2"/>`; break;
-                case 'jade': skin = '#fef3c7'; hairBack = `<circle cx="75" cy="45" r="18" fill="#10b981"/><circle cx="80" cy="65" r="16" fill="#10b981"/><circle cx="70" cy="80" r="14" fill="#10b981"/>`; hairFront = `<path d="M 22 45 Q 22 -5 50 0 Q 85 10 85 60 Q 75 30 55 25 Q 35 25 22 45 Z" fill="#10b981"/>`; break;
-                case 'nia': skin = '#451a03'; hairBack = `<circle cx="35" cy="15" r="22" fill="#171717"/><circle cx="65" cy="15" r="22" fill="#171717"/><circle cx="50" cy="5" r="24" fill="#171717"/>`; hairFront = `<path d="M 20 42 Q 20 -8 50 0 Q 80 -8 80 42 Q 65 24 50 22 Q 35 24 20 42 Z" fill="#171717"/>`; break;
-                case 'luna': skin = '#faf5ff'; hairBack = `<circle cx="18" cy="20" r="15" fill="#e5e7eb"/><circle cx="82" cy="20" r="15" fill="#e5e7eb"/><path d="M 8 20 L 28 20 M 18 10 L 18 30 M 72 20 L 92 20 M 82 10 L 82 30" stroke="#d1d5db" stroke-width="2"/>`; hairFront = baseFrontHair('#e5e7eb'); break;
-                case 'stella': skin = '#fcd34d'; hairBack = `<path d="M 25 35 L 75 35 L 75 60 L 25 60 Z" fill="#3b82f6"/>`; hairFront = baseFrontHair('#3b82f6') + `<path d="M 26 40 Q 15 65 20 95 L 38 90 Q 35 65 42 40 Z" fill="#3b82f6"/><path d="M 20 50 L 40 45 M 18 65 L 38 60 M 18 80 L 35 75" stroke="#2563eb" stroke-width="2"/>`; break;
-                case 'ivy': skin = '#fed7aa'; hairBack = `<path d="M 22 35 Q 50 70 78 35 Z" fill="#450a0a"/>`; hairFront = baseFrontHair('#450a0a') + `<path d="M 24 22 Q 50 12 76 22" stroke="#f43f5e" stroke-width="4" fill="none"/>`; break;
+            switch(avatarDef.style) {
+                case 'long': 
+                    hairBack = `<path d="M 20 35 Q -5 60 15 80 Q 30 60 35 35 Z" fill="${hairColor}"/><path d="M 80 35 Q 105 60 85 80 Q 70 60 65 35 Z" fill="${hairColor}"/>`; 
+                    break;
+                case 'pigtails': 
+                    hairBack = `<path d="M 32 35 L 20 95 L 32 95 L 40 35 Z M 68 35 L 80 95 L 68 95 L 60 35 Z M 40 35 L 30 100 L 42 100 L 48 35 Z M 60 35 L 70 100 L 58 100 L 52 35 Z" fill="${hairColor}"/><circle cx="50" cy="25" r="20" fill="${hairColor}"/>`; 
+                    break;
+                case 'buns': 
+                    hairBack = `<circle cx="20" cy="20" r="16" fill="${hairColor}"/><circle cx="80" cy="20" r="16" fill="${hairColor}"/>`; 
+                    break;
+                case 'bob': 
+                    hairBack = `<path d="M 25 35 L 75 35 L 75 60 L 25 60 Z" fill="${hairColor}"/>`; 
+                    hairFront = baseFrontHair(hairColor) + `<path d="M 26 40 Q 15 65 20 95 L 38 90 Q 35 65 42 40 Z" fill="${hairColor}"/><path d="M 20 50 L 40 45 M 18 65 L 38 60 M 18 80 L 35 75" stroke="#000" stroke-opacity="0.2" stroke-width="2"/>`; 
+                    break;
+                case 'braids': 
+                    hairBack = `<circle cx="18" cy="20" r="15" fill="${hairColor}"/><circle cx="82" cy="20" r="15" fill="${hairColor}"/><path d="M 8 20 L 28 20 M 18 10 L 18 30 M 72 20 L 92 20 M 82 10 L 82 30" stroke="#000" stroke-opacity="0.2" stroke-width="2"/>`; 
+                    break;
+                case 'afro': 
+                    hairBack = `<circle cx="20" cy="25" r="18" fill="${hairColor}"/><circle cx="80" cy="25" r="18" fill="${hairColor}"/><circle cx="50" cy="25" r="22" fill="${hairColor}"/>`; 
+                    hairFront = `<path d="M 20 45 Q 20 -5 50 0 Q 80 -5 80 45 Q 65 25 50 22 Q 35 25 20 45 Z" fill="${hairColor}"/>`; 
+                    break;
+                default:
+                    hairBack = `<path d="M 20 35 Q -5 60 15 80 Q 30 60 35 35 Z" fill="${hairColor}"/><path d="M 80 35 Q 105 60 85 80 Q 70 60 65 35 Z" fill="${hairColor}"/>`; 
             }
 
             const faceDetails = `<path d="M 39 32 Q 42 29 45 32 M 39 32 L 37 30 M 45 32 L 46 30" stroke="#333" fill="none" stroke-width="1.5" stroke-linecap="round"/><circle cx="42" cy="35" r="3.5" fill="#333"/><circle cx="41" cy="34" r="1.5" fill="#fff"/><circle cx="43.5" cy="36.5" r="0.8" fill="#fff"/><path d="M 55 32 Q 58 29 61 32 M 61 32 L 63 30 M 55 32 L 54 30" stroke="#333" fill="none" stroke-width="1.5" stroke-linecap="round"/><circle cx="58" cy="35" r="3.5" fill="#333"/><circle cx="57" cy="34" r="1.5" fill="#fff"/><circle cx="59.5" cy="36.5" r="0.8" fill="#fff"/><path d="M 46 43 Q 50 48 54 43" stroke="#333" fill="none" stroke-width="1.5" stroke-linecap="round"/><path d="M 49 46 Q 50 49 51 46 Z" fill="#ef4444"/><ellipse cx="38" cy="41" rx="4.5" ry="2.5" fill="#f43f5e" opacity="0.4"/><ellipse cx="62" cy="41" rx="4.5" ry="2.5" fill="#f43f5e" opacity="0.4"/>`;
@@ -446,10 +524,11 @@
             </svg>`;
         }
 
-        const STORAGE_KEY = 'fairy_maid_v7_users'; const CURRENT_USER_KEY = 'fairy_maid_v7_current';
+        const STORAGE_KEY = 'fairy_maid_v9_users'; const CURRENT_USER_KEY = 'fairy_maid_v9_current';
         let allUsers = {}; let currentUser = null;
-        let userData = { avatar: 'lily', wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
-        let selectedAuthAvatar = 'lily';
+        let userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#fee2e2' }, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+        
+        let customizerState = { styleIdx: 0, hairColor: '#fde047', skin: '#fee2e2' };
 
         function loadData() {
             try {
@@ -458,6 +537,7 @@
                 if (lastUser && allUsers[lastUser]) {
                     currentUser = lastUser; userData = allUsers[currentUser];
                     if(!userData.level) userData.level = 1;
+                    if(typeof userData.avatar === 'string') userData.avatar = { style: 'long', hairColor: '#fde047', skin: '#fee2e2' }; // Migrate old
                     return true;
                 }
             } catch(e) {}
@@ -468,8 +548,9 @@
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers)); localStorage.setItem(CURRENT_USER_KEY, currentUser); } catch(e) {}
         }
         function logout() {
-            currentUser = null; userData = { avatar: 'lily', wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+            currentUser = null; userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#fee2e2' }, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
             localStorage.removeItem(CURRENT_USER_KEY); showScreen('auth'); document.getElementById('auth-username').value = '';
+            updateCustomizerPreview();
         }
 
         // ==========================================
@@ -494,27 +575,63 @@
             toast.className = 'toast'; toast.innerText = message; container.appendChild(toast); setTimeout(() => toast.remove(), 3500); playSound('build');
         }
 
-        const avatarSelectionContainer = document.getElementById('avatar-selection');
-        Object.keys(AVATARS).forEach(id => {
-            const div = document.createElement('div');
-            div.className = `av-opt cursor-pointer p-2 rounded-3xl border-4 ${id==='lily'?'border-pink-400 bg-pink-100 scale-110':'border-transparent hover:bg-pink-50'} transition-all flex flex-col items-center`;
-            div.setAttribute('data-av', id);
-            div.innerHTML = `<div class="w-16 h-24 sm:w-20 sm:h-28 svg-container pointer-events-none">${generateDollSVG(id, {})}</div><span class="font-black text-pink-500 mt-2 text-sm sm:text-base">${AVATARS[id].name}</span>`;
-            avatarSelectionContainer.appendChild(div);
+        function updateCustomizerPreview() {
+            const def = { style: HAIR_STYLES[customizerState.styleIdx].id, hairColor: customizerState.hairColor, skin: customizerState.skin };
+            document.getElementById('customizer-preview').innerHTML = generateDollSVG(def, {});
+            document.getElementById('hair-style-label').innerText = HAIR_STYLES[customizerState.styleIdx].name;
+        }
+
+        document.getElementById('btn-hair-prev').addEventListener('click', () => {
+            initAudio(); playSound('pop');
+            customizerState.styleIdx = (customizerState.styleIdx - 1 + HAIR_STYLES.length) % HAIR_STYLES.length;
+            updateCustomizerPreview();
         });
-        const avOpts = document.querySelectorAll('.av-opt');
-        avOpts.forEach(opt => {
-            opt.addEventListener('click', () => {
-                avOpts.forEach(o => { o.classList.remove('border-pink-400', 'bg-pink-100', 'scale-110'); o.classList.add('border-transparent'); });
-                opt.classList.remove('border-transparent'); opt.classList.add('border-pink-400', 'bg-pink-100', 'scale-110');
-                selectedAuthAvatar = opt.getAttribute('data-av'); playSound('pop');
-            });
+        document.getElementById('btn-hair-next').addEventListener('click', () => {
+            initAudio(); playSound('pop');
+            customizerState.styleIdx = (customizerState.styleIdx + 1) % HAIR_STYLES.length;
+            updateCustomizerPreview();
         });
+
+        const hairColorContainer = document.getElementById('hair-color-swatches');
+        HAIR_COLORS.forEach(color => {
+            const btn = document.createElement('button');
+            btn.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-full border-4 shadow-sm transition-transform hover:scale-110 active:scale-95 ${color === customizerState.hairColor ? 'border-pink-500 scale-110' : 'border-white'}`;
+            btn.style.backgroundColor = color;
+            btn.onclick = () => {
+                initAudio(); playSound('pop');
+                customizerState.hairColor = color;
+                Array.from(hairColorContainer.children).forEach(c => { c.classList.remove('border-pink-500', 'scale-110'); c.classList.add('border-white'); });
+                btn.classList.remove('border-white'); btn.classList.add('border-pink-500', 'scale-110');
+                updateCustomizerPreview();
+            };
+            hairColorContainer.appendChild(btn);
+        });
+
+        const skinToneContainer = document.getElementById('skin-tone-swatches');
+        SKIN_TONES.forEach(color => {
+            const btn = document.createElement('button');
+            btn.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-full border-4 shadow-sm transition-transform hover:scale-110 active:scale-95 ${color === customizerState.skin ? 'border-pink-500 scale-110' : 'border-white'}`;
+            btn.style.backgroundColor = color;
+            btn.onclick = () => {
+                initAudio(); playSound('pop');
+                customizerState.skin = color;
+                Array.from(skinToneContainer.children).forEach(c => { c.classList.remove('border-pink-500', 'scale-110'); c.classList.add('border-white'); });
+                btn.classList.remove('border-white'); btn.classList.add('border-pink-500', 'scale-110');
+                updateCustomizerPreview();
+            };
+            skinToneContainer.appendChild(btn);
+        });
+        
+        updateCustomizerPreview();
 
         document.getElementById('btn-login').addEventListener('click', () => {
             let name = document.getElementById('auth-username').value.trim(); if(!name) { alert("Please enter a magic name!"); return; }
             currentUser = name;
-            if(!allUsers[currentUser]) allUsers[currentUser] = { avatar: selectedAuthAvatar, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+            const chosenAvatar = { style: HAIR_STYLES[customizerState.styleIdx].id, hairColor: customizerState.hairColor, skin: customizerState.skin };
+            
+            if(!allUsers[currentUser]) allUsers[currentUser] = { avatar: chosenAvatar, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+            else allUsers[currentUser].avatar = chosenAvatar; 
+            
             userData = allUsers[currentUser]; saveData(); initAudio(); showScreen('menu');
         });
 
@@ -524,7 +641,7 @@
 
         function updateHeroShowcase() {
             document.getElementById('hero-name').innerText = currentUser;
-            document.getElementById('hero-title').innerText = AVATARS[userData.avatar].name;
+            document.getElementById('hero-title').innerText = "Fairy Hero";
             document.getElementById('hero-level-badge').innerText = `Lvl ${userData.level}`;
             document.getElementById('hero-avatar').innerHTML = generateDollSVG(userData.avatar, userData.equipped);
             const badgesContainer = document.getElementById('hero-badges'); badgesContainer.innerHTML = '';
@@ -558,7 +675,52 @@
         // AUDIO & CONFETTI
         // ==========================================
         let audioCtx;
+        let musicPlaying = false;
+        let musicTimeoutId = null;
+        let musicNoteIndex = 0;
+        
+        // Pentatonic scale (C4, D4, E4, G4, A4, C5) - music box feel
+        const melody = [523.25, 392.00, 440.00, 329.63, 392.00, 261.63, 293.66, 329.63]; 
+        
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
+        
+        function toggleMusic() {
+            initAudio();
+            musicPlaying = !musicPlaying;
+            const btn = document.getElementById('btn-music');
+            if (musicPlaying) {
+                btn.innerHTML = '🎵 Music: ON';
+                btn.classList.add('bg-pink-100', 'border-pink-300', 'text-pink-600');
+                btn.classList.remove('bg-purple-100', 'border-purple-300', 'text-purple-600');
+                playMusicLoop();
+            } else {
+                btn.innerHTML = '🎵 Music: OFF';
+                btn.classList.remove('bg-pink-100', 'border-pink-300', 'text-pink-600');
+                btn.classList.add('bg-purple-100', 'border-purple-300', 'text-purple-600');
+                clearTimeout(musicTimeoutId);
+            }
+        }
+        
+        function playMusicLoop() {
+            if (!musicPlaying || !audioCtx) return;
+            const now = audioCtx.currentTime;
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(melody[musicNoteIndex], now);
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.08, now + 0.05); // Soft attack
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6); // Long release
+            osc.start(now); osc.stop(now + 0.6);
+
+            musicNoteIndex = (musicNoteIndex + 1) % melody.length;
+            musicTimeoutId = setTimeout(playMusicLoop, 500);
+        }
+
+        document.getElementById('btn-music').addEventListener('click', toggleMusic);
+
         function playSound(type) {
             if (!audioCtx) return; const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
@@ -597,9 +759,9 @@
         }
 
         // ==========================================
-        // GAMEPLAY ENGINE (V7 logic)
+        // GAMEPLAY ENGINE (V8 logic)
         // ==========================================
-        let maxSpins = 20; let spinsLeft = 20; let mathTriesLeft = 4;
+        let maxSpins = 20; let spinsLeft = 20; let mathTriesLeft = 4; let spellTriesLeft = 4;
         let isSpinning = false; let gameActive = false;
         let cloudActive = false;
 
@@ -790,9 +952,13 @@
         // ==========================================
         let currentMathAnswer = 0;
         function updateMathWandUI() {
-            const btn = document.getElementById('btn-math-wand'); document.getElementById('math-charges-ui').innerText = mathTriesLeft;
-            if(mathTriesLeft <= 0) btn.className = "disabled-build w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-gray-300 flex items-center justify-center gap-4 transition-transform group";
-            else btn.className = "math-wand-bg w-full rounded-[2.5rem] p-4 shadow-lg border-4 border-white flex items-center justify-center gap-4 hover:scale-105 active:scale-95 transition-transform group cursor-pointer";
+            const btnMath = document.getElementById('btn-math-wand'); document.getElementById('math-charges-ui').innerText = mathTriesLeft;
+            if(mathTriesLeft <= 0) btnMath.className = "disabled-build w-full rounded-[2rem] p-3 shadow-lg border-4 border-gray-300 flex flex-col items-center justify-center gap-1 transition-transform group";
+            else btnMath.className = "math-wand-bg w-full rounded-[2rem] p-3 shadow-lg border-4 border-white flex flex-col items-center justify-center gap-1 hover:scale-105 active:scale-95 transition-transform group cursor-pointer";
+            
+            const btnSpell = document.getElementById('btn-spell-scroll'); document.getElementById('spell-charges-ui').innerText = spellTriesLeft;
+            if(spellTriesLeft <= 0) btnSpell.className = "disabled-build w-full rounded-[2rem] p-3 shadow-lg border-4 border-gray-300 flex flex-col items-center justify-center gap-1 transition-transform group";
+            else btnSpell.className = "bg-gradient-to-r from-emerald-300 to-teal-400 w-full rounded-[2rem] p-3 shadow-lg border-4 border-white flex flex-col items-center justify-center gap-1 hover:scale-105 active:scale-95 transition-transform group cursor-pointer";
         }
 
         document.getElementById('btn-math-wand').addEventListener('click', () => {
@@ -850,6 +1016,62 @@
                 const mathBox = document.getElementById('math-content'); mathBox.classList.remove('bounce-in');
                 mathBox.style.transform = "translateX(-10px)"; setTimeout(() => mathBox.style.transform = "translateX(10px)", 50); setTimeout(() => mathBox.style.transform = "translateX(-10px)", 100); setTimeout(() => mathBox.style.transform = "translateX(10px)", 150);
                 setTimeout(() => { mathBox.style.transform = "translateX(0)"; document.getElementById('modal-math').classList.add('hidden'); document.getElementById('modal-math').classList.remove('flex'); showToast("Oops! Lost an extra try!"); }, 300);
+            }
+        }
+
+        // ==========================================
+        // MAGIC SPELLING
+        // ==========================================
+        let currentSpellWord = '';
+        const SPELL_EASY = [{w:'cat', e:'🐱'}, {w:'dog', e:'🐶'}, {w:'sun', e:'☀️'}, {w:'bug', e:'🐛'}, {w:'pig', e:'🐷'}, {w:'bat', e:'🦇'}, {w:'red', e:'🔴'}];
+        const SPELL_HARD = [{w:'star', e:'⭐'}, {w:'fish', e:'🐟'}, {w:'moon', e:'🌙'}, {w:'tree', e:'🌳'}, {w:'pink', e:'🎀'}, {w:'wand', e:'🪄'}, {w:'book', e:'📖'}];
+
+        document.getElementById('btn-spell-scroll').addEventListener('click', () => {
+            if(!gameActive || spellTriesLeft <= 0) return; initAudio(); playSound('pop'); generateSpellQuestion();
+            document.getElementById('modal-spelling').classList.remove('hidden'); document.getElementById('modal-spelling').classList.add('flex');
+            setTimeout(() => document.getElementById('spell-input').focus(), 100);
+        });
+        document.getElementById('btn-close-spell').addEventListener('click', () => { document.getElementById('modal-spelling').classList.add('hidden'); document.getElementById('modal-spelling').classList.remove('flex'); });
+        document.getElementById('btn-hear-word').addEventListener('click', () => { playSpellWord(); });
+        document.getElementById('btn-submit-spell').addEventListener('click', () => { checkSpellAnswer(); });
+        document.getElementById('spell-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkSpellAnswer(); });
+
+        function generateSpellQuestion() {
+            const isHard = userData.level >= 3;
+            const pool = isHard ? SPELL_HARD : SPELL_EASY;
+            const item = pickRandom(pool);
+            currentSpellWord = item.w;
+            document.getElementById('spell-emoji').innerText = item.e;
+            document.getElementById('spell-input').value = '';
+            playSpellWord();
+        }
+        
+        function playSpellWord() {
+            if (!window.speechSynthesis) return;
+            const utterance = new SpeechSynthesisUtterance("Spell the word: " + currentSpellWord);
+            utterance.rate = 0.85; 
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function checkSpellAnswer() {
+            const input = document.getElementById('spell-input').value.trim().toLowerCase();
+            if (!input) return;
+            initAudio();
+            if (input === currentSpellWord) {
+                spellTriesLeft -= 1; updateMathWandUI(); playSound('build');
+                document.getElementById('modal-spelling').classList.add('hidden'); document.getElementById('modal-spelling').classList.remove('flex');
+                
+                resources['stardust'].count++;
+                let rewardKey = pickRandom(standardKeys);
+                resources[rewardKey].count++;
+                
+                showToast(`Perfect! +1 💫 +1 ${resources[rewardKey].emoji}`);
+                createConfetti(window.innerWidth/2, window.innerHeight/2, 25); updateUI(); checkGameOver();
+            } else {
+                spellTriesLeft -= 2; if(spellTriesLeft < 0) spellTriesLeft = 0; updateMathWandUI(); playSound('wrong');
+                const spellBox = document.getElementById('spell-content'); spellBox.classList.remove('bounce-in');
+                spellBox.style.transform = "translateX(-10px)"; setTimeout(() => spellBox.style.transform = "translateX(10px)", 50); setTimeout(() => spellBox.style.transform = "translateX(-10px)", 100); setTimeout(() => spellBox.style.transform = "translateX(10px)", 150);
+                setTimeout(() => { spellBox.style.transform = "translateX(0)"; document.getElementById('modal-spelling').classList.add('hidden'); document.getElementById('modal-spelling').classList.remove('flex'); showToast("Oops! Lost an extra try!"); }, 300);
             }
         }
 
@@ -921,7 +1143,7 @@
         function resetGameState() {
             isConfettiContinuous = false; particles = []; 
             maxSpins = userData.level === 4 ? 15 : 20;
-            spinsLeft = maxSpins; mathTriesLeft = 4; cloudActive = false;
+            spinsLeft = maxSpins; mathTriesLeft = 4; spellTriesLeft = 4; cloudActive = false;
             gameActive = true; isSpinning = false; document.getElementById('spinner-emoji').innerText = '🧭';
             tradeGive = null; tradeGet = null;
             document.getElementById('game-level-label').innerText = `Level ${userData.level}`;
