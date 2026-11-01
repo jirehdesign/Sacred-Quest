@@ -177,8 +177,8 @@
     .heal-text { color: #68D391; }
 
     /* Shop & Inventory Grid */
-    .shop-tabs { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
-    .shop-tab-btn { padding: 8px 16px; font-weight: 700; border-radius: 10px; border: 2px solid #CBD5E0; background: white; cursor: pointer; }
+    .shop-tabs { display: flex; justify-content: center; gap: 5px; margin: 15px 0; flex-wrap: wrap; }
+    .shop-tab-btn { padding: 8px 12px; font-weight: 700; border-radius: 10px; border: 2px solid #CBD5E0; background: white; cursor: pointer; }
     .shop-tab-btn.active { background: var(--primary); color: white; border-color: var(--primary-dark); }
     
     .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; padding: 10px; margin-bottom: 15px; }
@@ -279,16 +279,18 @@
         <span style="font-size:0.8rem; color:#718096;">(Weapons reduce enemy HP faster. Armor reduces damage taken.)</span>
       </div>
       
-      <h3 style="color:#2D3748;">Currently Equipped</h3>
+      <h3 style="color:#2D3748;">My Equipment</h3>
       <div class="equip-slots">
         <div class="slot" id="equip-slot-weapon"><div class="slot-icon">🗡️</div><div>None</div></div>
         <div class="slot" id="equip-slot-armor"><div class="slot-icon">🛡️</div><div>None</div></div>
       </div>
+      <div class="grid-container" id="inventory-grid" style="max-height: 120px; overflow-y: auto;"></div>
 
-      <h3 style="margin-top: 15px; color:#2D3748;">My Inventory</h3>
-      <div class="grid-container" id="inventory-grid" style="max-height: 180px;"></div>
+      <h3 style="margin-top: 20px; color:#2D3748;">My Backpack</h3>
+      <p style="font-size:0.8rem; color:#718096; margin-bottom:5px;">Click an item to use it!</p>
+      <div class="grid-container" id="consumables-grid" style="max-height: 120px; overflow-y: auto;"></div>
 
-      <div style="display:flex; justify-content: center; gap: 10px; margin-top:15px;">
+      <div style="display:flex; justify-content: center; gap: 10px; margin-top:20px;">
         <button class="nav-btn" onclick="logout()">🚪 Switch User</button>
         <button class="nav-btn" onclick="closeModal('profile-modal')">Close</button>
       </div>
@@ -299,16 +301,17 @@
   <div class="modal-overlay" id="shop-modal">
     <div class="modal-card">
       <h2>🏪 The Grand Shop</h2>
-      <p style="font-size:0.9rem; color:#718096; margin-top:4px;">Gear up for the journey to the Castle!</p>
+      <p style="font-size:0.9rem; color:#718096; margin-top:4px;">Gear up and buy medicine for the journey!</p>
       
       <div class="shop-tabs">
         <button class="shop-tab-btn active" id="tab-avatars" onclick="renderShop('avatars')">Avatars</button>
         <button class="shop-tab-btn" id="tab-weapons" onclick="renderShop('weapons')">Weapons</button>
         <button class="shop-tab-btn" id="tab-armor" onclick="renderShop('armor')">Armor</button>
+        <button class="shop-tab-btn" id="tab-items" onclick="renderShop('items')">Items</button>
       </div>
 
-      <div class="grid-container" id="shop-items-container" style="max-height: 250px;"></div>
-      <button class="nav-btn" style="margin: 0 auto;" onclick="closeModal('shop-modal')">Close</button>
+      <div class="grid-container" id="shop-items-container" style="max-height: 300px; overflow-y: auto;"></div>
+      <button class="nav-btn" style="margin: 15px auto 0;" onclick="closeModal('shop-modal')">Close</button>
     </div>
   </div>
 
@@ -385,7 +388,7 @@
           if (inBattle) {
             // Battle track plays every tick (fast)
             const note = battleNotes[this.tick % battleNotes.length];
-            this.playTone(note, 'square', 0.15, 0.03); // Low volume so it doesn't mask SFX
+            this.playTone(note, 'square', 0.15, 0.03); 
           } else {
             // Map track plays every 2 ticks (slower)
             if (this.tick % 2 === 0) {
@@ -403,7 +406,6 @@
     }
     const sfx = new SoundFX();
 
-    // UI Music Toggle
     function toggleMusic() {
       const btn = document.getElementById('music-btn');
       const isPlaying = sfx.toggleMusic();
@@ -455,6 +457,11 @@
         { id: 'a3', name: 'Chainmail', icon: '⛓️', price: 400, def: 4, desc: "Def: 4" },
         { id: 'a4', name: 'Steel Plate', icon: '🛡️', price: 800, def: 6, desc: "Def: 6" },
         { id: 'a5', name: 'Wisdom Crown', icon: '👑', price: 1500, def: 10, desc: "Def: 10" }
+      ],
+      items: [
+        { id: 'i1', name: 'Medicine', icon: '🧪', price: 30, heal: 20, desc: "Heals 20 HP" },
+        { id: 'i2', name: 'Hi-Potion', icon: '💊', price: 80, heal: 50, desc: "Heals 50 HP" },
+        { id: 'i3', name: 'Elixir', icon: '🏺', price: 200, heal: 999, desc: "Full Heal" }
       ]
     };
 
@@ -517,7 +524,7 @@
         hp: 50, maxHp: 50,
         x: 0, y: 11, // Start bottom left
         avatar: '🦁', unlockedAvatars: ['🦁'],
-        inventory: [], equippedWeapon: null, equippedArmor: null
+        inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null
       };
       saveDB();
       input.value = '';
@@ -526,10 +533,12 @@
 
     function loginUser(name) {
       currentUser = usersDB[name];
+      // Migration for older accounts without consumables object
+      if (!currentUser.consumables) currentUser.consumables = {};
+      
       localStorage.setItem('aleph_rpg_active_user', name);
       document.getElementById('login-modal').classList.remove('active');
       
-      // Heal player on login if dead
       if (currentUser.hp <= 0) currentUser.hp = currentUser.maxHp;
       
       loadQuestionBank(); 
@@ -590,11 +599,9 @@
       if (!currentUser) return;
       document.getElementById('hero-showcase').style.display = 'flex';
       
-      // Update top bar stats
       document.getElementById('top-hp-display').textContent = `❤️ ${currentUser.hp}/${currentUser.maxHp}`;
       document.getElementById('top-coin-display').textContent = `🪙 ${currentUser.coins}`;
       
-      // Build Hero Avatar
       let tokenHTML = currentUser.avatar;
       if (currentUser.equippedWeapon) {
         const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon);
@@ -609,7 +616,6 @@
       document.getElementById('hero-display-name').textContent = currentUser.name;
       document.getElementById('hero-display-title').innerHTML = `${currentUser.track.charAt(0).toUpperCase() + currentUser.track.slice(1)} Track`;
       
-      // HP Bar fill
       const hpPct = Math.max(0, (currentUser.hp / currentUser.maxHp) * 100);
       let hpHTML = `<div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${hpPct}%; background:${hpPct>25?'#68D391':'#FC8181'}"></div></div>`;
       document.getElementById('hero-display-title').innerHTML += hpHTML;
@@ -634,7 +640,6 @@
             tile.classList.add('mountain');
             tile.innerHTML = '<span class="env-icon">⛰️</span>';
           } else {
-            // Walkable Path
             const dist = (x - 0) + (11 - y);
             const level = Math.min(12, Math.floor(dist / 2) + 1);
             tile.classList.add(`terrain-${level}`);
@@ -682,7 +687,6 @@
       if (nx >= 0 && nx < 12 && ny >= 0 && ny < 12) {
         const tileType = MAP_LAYOUT[ny][nx];
         
-        // Impassable tiles
         if (tileType === 'W' || tileType === 'M') {
           sfx.bump();
           const token = document.getElementById('player-map-token');
@@ -699,17 +703,14 @@
         positionPlayerOnMap();
         saveDB();
         
-        // Castle triggers Boss 12 instantly
         if (tileType === '#') {
           triggerEncounter(true);
         } else if ((currentUser.x !== 0 || currentUser.y !== 11) && Math.random() < 0.35) {
-          // 35% Encounter chance on standard walking tiles
           triggerEncounter(false);
         }
       }
     }
 
-    // Keyboard bindings
     window.addEventListener('keydown', (e) => {
       if (inBattle || document.querySelector('.modal-overlay.active')) return;
       if (e.key === 'ArrowUp') { movePlayer(0, -1); e.preventDefault(); }
@@ -731,7 +732,6 @@
       
       const enemyDef = ENEMY_TYPES[currentEnemyLevel] || ENEMY_TYPES[1];
       
-      // HP scaling: Lvl 1-3 (1HP), Lvl 4-6 (2HP), Lvl 7-9 (3HP), Lvl 10-12 (4HP)
       currentEnemyMaxHP = Math.ceil(currentEnemyLevel / 3);
       currentEnemyHP = currentEnemyMaxHP;
       
@@ -796,16 +796,14 @@
             const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5);
             currentUser.coins += goldEarned;
             
-            // 25% chance to find medicine and heal 15 HP
-            if (Math.random() < 0.25 && currentUser.hp < currentUser.maxHp) {
-              sfx.heal();
-              currentUser.hp = Math.min(currentUser.maxHp, currentUser.hp + 15);
-              alert(`🎉 Victory! +${goldEarned} coins.\n🧪 The enemy dropped medicine! Recovered 15 HP.`);
+            // 25% chance enemy drops basic medicine (id: i1)
+            if (Math.random() < 0.25) {
+              currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1;
+              alert(`🎉 Victory! +${goldEarned} coins.\n🧪 The enemy dropped Medicine! Check your Backpack.`);
             } else {
               alert(`🎉 Victory! Earned ${goldEarned} coins.`);
             }
             
-            // If it was the castle boss, teleport back to start!
             if (currentEnemyLevel === 12 && MAP_LAYOUT[currentUser.y][currentUser.x] === '#') {
               confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
               alert("👑 CONGRATULATIONS! You have defeated the Demon Lord and saved the realm! Returning to village...");
@@ -821,7 +819,7 @@
         sfx.takeDamage();
         const eDmg = currentEnemyLevel * 2;
         const pDef = getPlayerDefense();
-        const dmgTaken = Math.max(1, eDmg - pDef); // minimum 1 damage
+        const dmgTaken = Math.max(1, eDmg - pDef); 
         
         currentUser.hp -= dmgTaken;
         updateUI();
@@ -879,6 +877,7 @@
         `❤️ HP: ${currentUser.hp}/${currentUser.maxHp} &nbsp;|&nbsp; ⚔️ Attack: ${pDmg} &nbsp;|&nbsp; 🛡️ Defense: ${pDef}<br>
         <span style="font-size:0.8rem; color:#718096; font-weight:normal;">Weapons deal more damage per correct answer. Armor reduces damage taken on mistakes.</span>`;
       
+      // Render Equipment
       const wSlot = document.getElementById('equip-slot-weapon');
       const aSlot = document.getElementById('equip-slot-armor');
       if (currentUser.equippedWeapon) {
@@ -894,7 +893,7 @@
       const grid = document.getElementById('inventory-grid');
       grid.innerHTML = '';
       if (!currentUser.inventory || currentUser.inventory.length === 0) {
-        grid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">Your inventory is empty. Visit the shop!</span>';
+        grid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">Your inventory is empty.</span>';
       } else {
         currentUser.inventory.forEach(itemId => {
           const isWeapon = SHOP_ITEMS.weapons.find(i => i.id === itemId);
@@ -920,18 +919,55 @@
           grid.appendChild(card);
         });
       }
+
+      // Render Consumables (Backpack)
+      const consGrid = document.getElementById('consumables-grid');
+      consGrid.innerHTML = '';
+      
+      let hasItems = false;
+      Object.keys(currentUser.consumables).forEach(itemId => {
+        const count = currentUser.consumables[itemId];
+        if (count > 0) {
+          hasItems = true;
+          const item = SHOP_ITEMS.items.find(i => i.id === itemId);
+          const card = document.createElement('div');
+          card.className = 'item-card';
+          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span>
+                            <span style="font-size:0.8rem; font-weight:700; text-align:center;">${item.name}</span>
+                            <span style="font-size:0.7rem; font-weight:bold; color:var(--primary);">x${count}</span>
+                            <span style="font-size:0.7rem; color:var(--success);">USE</span>`;
+          
+          card.onclick = () => {
+            if (currentUser.hp >= currentUser.maxHp) {
+              alert("Your HP is already full!"); return;
+            }
+            currentUser.hp = Math.min(currentUser.maxHp, currentUser.hp + item.heal);
+            currentUser.consumables[itemId]--;
+            sfx.heal();
+            saveDB();
+            updateUI();
+            openProfile();
+          };
+          consGrid.appendChild(card);
+        }
+      });
+
+      if (!hasItems) {
+        consGrid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">No items. Buy medicine in the shop!</span>';
+      }
+
       document.getElementById('profile-modal').classList.add('active');
     }
 
     // --- Shop UI ---
     function openShop() {
       if(!currentUser) return;
-      renderShop('weapons');
+      renderShop('items'); // Default to items tab
       document.getElementById('shop-modal').classList.add('active');
     }
 
     function renderShop(category) {
-      ['avatars', 'weapons', 'armor'].forEach(t => document.getElementById(`tab-${t}`).classList.toggle('active', t === category));
+      ['avatars', 'weapons', 'armor', 'items'].forEach(t => document.getElementById(`tab-${t}`).classList.toggle('active', t === category));
       const container = document.getElementById('shop-items-container');
       container.innerHTML = '';
 
@@ -947,10 +983,25 @@
         });
       } else {
         SHOP_ITEMS[category].forEach(item => {
-          const isOwned = currentUser.inventory.includes(item.id);
+          let isOwned = false;
+          let countText = '';
+          let actionText = `🪙 ${item.price}`;
+
+          if (category === 'items') {
+             const count = currentUser.consumables[item.id] || 0;
+             if (count > 0) countText = `<span style="color:var(--success); font-weight:bold;">Owned: ${count}</span>`;
+          } else {
+             isOwned = currentUser.inventory.includes(item.id);
+             if (isOwned) actionText = 'Owned';
+          }
+
           const card = document.createElement('div');
           card.className = `item-card ${isOwned ? 'owned' : ''}`;
-          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span><strong style="font-size:0.8rem; text-align:center;">${item.name}</strong><span style="font-size:0.7rem; color:#718096;">${item.desc}</span><span style="font-size:0.85rem; font-weight:700; margin-top:4px;">${isOwned ? 'Owned' : `🪙 ${item.price}`}</span>`;
+          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span>
+                            <strong style="font-size:0.8rem; text-align:center;">${item.name}</strong>
+                            <span style="font-size:0.7rem; color:#718096;">${item.desc}</span>
+                            <span style="font-size:0.85rem; font-weight:700; margin-top:4px;">${actionText}</span>
+                            ${countText}`;
           card.onclick = () => handleBuyItem(item, category);
           container.appendChild(card);
         });
@@ -967,11 +1018,22 @@
     }
 
     function handleBuyItem(item, category) {
-      if (currentUser.inventory.includes(item.id)) alert("Already owned! Check Profile to equip.");
-      else if (currentUser.coins >= item.price) {
-        currentUser.coins -= item.price; currentUser.inventory.push(item.id);
-        saveDB(); updateUI(); renderShop(category); alert(`Purchased ${item.name}!`);
-      } else alert('Not enough coins!');
+      if (category === 'items') {
+        if (currentUser.coins >= item.price) {
+          currentUser.coins -= item.price;
+          currentUser.consumables[item.id] = (currentUser.consumables[item.id] || 0) + 1;
+          sfx.heal(); // little audio cue
+          saveDB(); updateUI(); renderShop(category);
+        } else {
+          alert('Not enough coins!');
+        }
+      } else {
+        if (currentUser.inventory.includes(item.id)) alert("Already owned! Check Profile to equip.");
+        else if (currentUser.coins >= item.price) {
+          currentUser.coins -= item.price; currentUser.inventory.push(item.id);
+          saveDB(); updateUI(); renderShop(category); alert(`Purchased ${item.name}!`);
+        } else alert('Not enough coins!');
+      }
     }
 
     function closeModal(id) {
