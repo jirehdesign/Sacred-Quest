@@ -344,30 +344,35 @@
       return arr;
     }
 
-    // --- Audio System (with BGM) ---
+    // --- Audio System (Sensory Friendly Envelopes) ---
     class SoundFX {
       constructor() { this.ctx = null; this.musicOn = false; this.bgmTimer = null; this.tick = 0; }
       init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
       
-      playTone(freq, type, duration, vol = 0.15) {
+      playTone(freq, type, duration, vol = 0.05) {
         this.init();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        
+        // Sensory-friendly envelope: Gentle fade-in and fade-out to remove harsh clicks
+        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.05); // Attack
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration); // Release
+        
         osc.connect(gain); gain.connect(this.ctx.destination);
         osc.start(); osc.stop(this.ctx.currentTime + duration);
       }
       
-      step() { this.playTone(150, 'triangle', 0.1, 0.05); }
-      bump() { this.playTone(90, 'sawtooth', 0.15, 0.2); }
-      encounter() { this.playTone(400, 'square', 0.1); setTimeout(() => this.playTone(300, 'square', 0.3), 100); }
-      hitEnemy() { this.playTone(600, 'sawtooth', 0.1); setTimeout(() => this.playTone(800, 'sawtooth', 0.1), 100); }
-      takeDamage() { this.playTone(150, 'sawtooth', 0.3); setTimeout(() => this.playTone(100, 'sawtooth', 0.4), 150); }
-      win() { this.playTone(523.25, 'sine', 0.2); setTimeout(() => this.playTone(659.25, 'sine', 0.2), 200); setTimeout(() => this.playTone(783.99, 'sine', 0.4), 400); }
-      heal() { this.playTone(600, 'sine', 0.1); setTimeout(() => this.playTone(800, 'sine', 0.3), 150); }
+      // Softer, gentler sounds using sine/triangle waves at lower volumes
+      step() { this.playTone(200, 'sine', 0.15, 0.02); }
+      bump() { this.playTone(100, 'triangle', 0.2, 0.04); }
+      encounter() { this.playTone(350, 'sine', 0.2, 0.04); setTimeout(() => this.playTone(450, 'sine', 0.3, 0.04), 150); }
+      hitEnemy() { this.playTone(500, 'triangle', 0.15, 0.04); setTimeout(() => this.playTone(650, 'triangle', 0.2, 0.04), 100); }
+      takeDamage() { this.playTone(200, 'sine', 0.3, 0.05); setTimeout(() => this.playTone(150, 'sine', 0.4, 0.05), 200); }
+      win() { this.playTone(400, 'sine', 0.2, 0.04); setTimeout(() => this.playTone(500, 'sine', 0.2, 0.04), 200); setTimeout(() => this.playTone(600, 'sine', 0.4, 0.04), 400); }
+      heal() { this.playTone(500, 'sine', 0.2, 0.03); setTimeout(() => this.playTone(700, 'sine', 0.4, 0.03), 150); }
 
       toggleMusic() {
         this.musicOn = !this.musicOn;
@@ -379,24 +384,23 @@
         this.stopBGM();
         if(!this.musicOn) return;
         
-        // 8-bit style pentatonic mapping
         const mapNotes = [261.63, 329.63, 392.00, 329.63, 440.00, 392.00, 329.63, 293.66]; // Relaxed Journey
         const battleNotes = [130.81, 146.83, 155.56, 146.83]; // Tense Encounter
         
         this.bgmTimer = setInterval(() => {
           this.tick++;
           if (inBattle) {
-            // Battle track plays every tick (fast)
+            // Very soft triangle for battle to be less jarring
             const note = battleNotes[this.tick % battleNotes.length];
-            this.playTone(note, 'square', 0.15, 0.03); 
+            this.playTone(note, 'triangle', 0.2, 0.015); 
           } else {
-            // Map track plays every 2 ticks (slower)
+            // Gentle sine waves for exploring
             if (this.tick % 2 === 0) {
               const note = mapNotes[(this.tick / 2) % mapNotes.length];
-              this.playTone(note, 'triangle', 0.2, 0.02);
+              this.playTone(note, 'sine', 0.3, 0.015);
             }
           }
-        }, 180);
+        }, 220); // slightly slower tempo for calmness
       }
 
       stopBGM() {
@@ -418,22 +422,52 @@
       }
     }
 
-    // --- MAP LAYOUT & DATA ---
+    // --- MAP LAYOUTS PER TRACK ---
     // W = Water, M = Mountain, . = Walkable Path, @ = Start(0,11), # = Castle(11,0)
-    const MAP_LAYOUT = [
-      "...MMM...WW#",
-      ".M..MM.M.WW.",
-      ".MM..M.M....",
-      "..MM...MM.W.",
-      "W..MMMM...W.",
-      "WW......M.W.",
-      "WWWW.WWWW.W.",
-      ".....M....W.",
-      ".MMM.M.MMMM.",
-      "...M.M......",
-      "MM.....MMMM.",
-      "@..M......M."
-    ];
+    const MAPS = {
+      beginner: [
+        "......M..WW#",
+        ".........WW.",
+        "..MM........",
+        "......MM....",
+        "W..MM.....W.",
+        "WW........W.",
+        "W......M..W.",
+        "..........W.",
+        ".MMM...M....",
+        ".......M....",
+        "M.......M...",
+        "@..M........"
+      ],
+      intermediate: [
+        "...MMM...WW#",
+        ".M..MM.M.WW.",
+        ".MM..M.M....",
+        "..MM...MM.W.",
+        "W..MMMM...W.",
+        "WW......M.W.",
+        "WWWW.WWWW.W.",
+        ".....M....W.",
+        ".MMM.M.MMMM.",
+        "...M.M......",
+        "MM.....MMMM.",
+        "@..M......M."
+      ],
+      advanced: [
+        "M.MMMMM..MW#",
+        "M...M....MW.",
+        "M.M.M.MMMM..",
+        "..M...M...W.",
+        "WM.MMMM.M.W.",
+        "WW......M.W.",
+        "WWWW.WWWW.W.",
+        ".....M....W.",
+        ".MMMMM.MMMM.",
+        "...M.M......",
+        "MM.M...MMMM.",
+        "@..M.M....M."
+      ]
+    };
 
     const AVATARS = [
       { icon: '🦁', price: 0 }, { icon: '🐶', price: 50 }, { icon: '🐱', price: 50 }, { icon: '🦊', price: 50 }, 
@@ -533,7 +567,6 @@
 
     function loginUser(name) {
       currentUser = usersDB[name];
-      // Migration for older accounts without consumables object
       if (!currentUser.consumables) currentUser.consumables = {};
       
       localStorage.setItem('aleph_rpg_active_user', name);
@@ -578,9 +611,12 @@
     function switchTrack(track) {
       if (!currentUser) return;
       currentUser.track = track;
+      // Reset position to safe start so they don't get stuck in a new map's wall
+      currentUser.x = 0;
+      currentUser.y = 11; 
       saveDB();
       closeModal('track-modal');
-      loadQuestionBank();
+      loadQuestionBank(); // will re-render map automatically
     }
 
     // --- Player Stats Calc ---
@@ -627,9 +663,11 @@
       const map = document.getElementById('rpg-map');
       map.innerHTML = '';
       
+      const currentLayout = MAPS[currentUser.track];
+
       for (let y = 0; y < 12; y++) {
         for (let x = 0; x < 12; x++) {
-          const tileType = MAP_LAYOUT[y][x];
+          const tileType = currentLayout[y][x];
           const tile = document.createElement('div');
           tile.className = 'tile';
           
@@ -685,7 +723,8 @@
       let ny = currentUser.y + dy;
       
       if (nx >= 0 && nx < 12 && ny >= 0 && ny < 12) {
-        const tileType = MAP_LAYOUT[ny][nx];
+        const currentLayout = MAPS[currentUser.track];
+        const tileType = currentLayout[ny][nx];
         
         if (tileType === 'W' || tileType === 'M') {
           sfx.bump();
@@ -804,7 +843,8 @@
               alert(`🎉 Victory! Earned ${goldEarned} coins.`);
             }
             
-            if (currentEnemyLevel === 12 && MAP_LAYOUT[currentUser.y][currentUser.x] === '#') {
+            const currentLayout = MAPS[currentUser.track];
+            if (currentEnemyLevel === 12 && currentLayout[currentUser.y][currentUser.x] === '#') {
               confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
               alert("👑 CONGRATULATIONS! You have defeated the Demon Lord and saved the realm! Returning to village...");
               currentUser.x = 0; currentUser.y = 11;
@@ -1022,7 +1062,7 @@
         if (currentUser.coins >= item.price) {
           currentUser.coins -= item.price;
           currentUser.consumables[item.id] = (currentUser.consumables[item.id] || 0) + 1;
-          sfx.heal(); // little audio cue
+          sfx.heal(); 
           saveDB(); updateUI(); renderShop(category);
         } else {
           alert('Not enough coins!');
