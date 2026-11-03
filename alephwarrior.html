@@ -198,6 +198,14 @@
     .user-row:hover { background: #E2E8F0; }
     .action-btn { padding: 12px 24px; font-size: 1.1rem; font-weight: 700; background: var(--primary); color: white; border: none; border-radius: 14px; cursor: pointer;}
     input[type="text"] { padding: 8px 12px; border-radius: 10px; border: 2px solid #CBD5E0; font-size: 1rem; outline: none; }
+
+    /* Training Module UI */
+    .training-header { background: #EBF8FF; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #90CDF4; }
+    .training-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px;}
+    .training-card { background: #F7FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px;}
+    .training-hebrew { font-family: 'Rubik', sans-serif; font-size: 3rem; color: var(--primary-dark); font-weight: bold;}
+    .training-name { font-weight: bold; font-size: 1.1rem; color: #2D3748;}
+    .training-desc { font-size: 0.85rem; color: #718096; text-align: center;}
   </style>
 </head>
 <body>
@@ -209,7 +217,8 @@
       <button class="nav-btn" onclick="openProfile()" id="profile-btn">👤 Profile</button>
       <button class="nav-btn" onclick="openShop()">🏪 Shop</button>
       <button class="nav-btn" onclick="openTrackSelector()">🗺️ Track</button>
-      <button class="nav-btn" onclick="toggleMusic()" id="music-btn">🎵 Music: OFF</button>
+      <button class="nav-btn" onclick="openTrainingManual()">📖 Train</button>
+      <button class="nav-btn" onclick="toggleMusic()" id="music-btn">🎵 OFF</button>
     </div>
   </header>
 
@@ -246,6 +255,24 @@
     <div class="modal-card" style="max-width: 400px; padding: 30px;">
       <p id="custom-alert-text" style="font-size: 1.15rem; font-weight: 600; margin-bottom: 25px; white-space: pre-wrap; color: #2D3748; line-height: 1.4;"></p>
       <button class="action-btn" id="custom-alert-btn" style="margin: 0 auto; width: 100px; justify-content: center;">OK</button>
+    </div>
+  </div>
+
+  <!-- Training Academy Modal -->
+  <div class="modal-overlay" id="training-modal" style="z-index: 500;">
+    <div class="modal-card" style="max-width: 600px;">
+      <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 5px;">📜 Training Academy</h2>
+      
+      <div class="training-header">
+        <strong id="train-level-title" style="font-size:1.2rem; color:#2B6CB0;">Level 1: The Basics</strong>
+        <p id="train-level-desc" style="font-size:0.95rem; color:#4A5568; margin-top:5px;">Study these concepts before continuing your journey.</p>
+      </div>
+
+      <div class="training-grid" id="training-grid-container">
+        <!-- Rendered via JS -->
+      </div>
+
+      <button class="action-btn" id="training-ready-btn" style="margin: 0 auto;">I'm Ready!</button>
     </div>
   </div>
 
@@ -431,58 +458,30 @@
       const btn = document.getElementById('music-btn');
       const isPlaying = sfx.toggleMusic();
       if (isPlaying) {
-        btn.textContent = "🎵 Music: ON";
+        btn.textContent = "🎵 ON";
         btn.classList.add('active');
       } else {
-        btn.textContent = "🎵 Music: OFF";
+        btn.textContent = "🎵 OFF";
         btn.classList.remove('active');
       }
     }
 
     // --- MAP LAYOUTS PER TRACK ---
-    // W = Water, M = Mountain, . = Walkable Path, @ = Start(0,11), # = Castle(11,0)
     const MAPS = {
       beginner: [
-        "......M..WW#",
-        ".........WW.",
-        "..MM........",
-        "......MM....",
-        "W..MM.....W.",
-        "WW........W.",
-        "W......M..W.",
-        "..........W.",
-        ".MMM...M....",
-        ".......M....",
-        "M.......M...",
-        "@..M........"
+        "......M..WW#", ".........WW.", "..MM........", "......MM....",
+        "W..MM.....W.", "WW........W.", "W......M..W.", "..........W.",
+        ".MMM...M....", ".......M....", "M.......M...", "@..M........"
       ],
       intermediate: [
-        "...MMM...WW#",
-        ".M..MM.M.WW.",
-        ".MM..M.M....",
-        "..MM...MM.W.",
-        "W..MMMM...W.",
-        "WW......M.W.",
-        "WWWW.WWWW.W.",
-        ".....M....W.",
-        ".MMM.M.MMMM.",
-        "...M.M......",
-        "MM.....MMMM.",
-        "@..M......M."
+        "...MMM...WW#", ".M..MM.M.WW.", ".MM..M.M....", "..MM...MM.W.",
+        "W..MMMM...W.", "WW......M.W.", "WWWW.WWWW.W.", ".....M....W.",
+        ".MMM.M.MMMM.", "...M.M......", "MM.....MMMM.", "@..M......M."
       ],
       advanced: [
-        "M.MMMMM..MW#",
-        "M...M....MW.",
-        "M.M.M.MMMM..",
-        "..M...M...W.",
-        "WM.MMMM.M.W.",
-        "WW......M.W.",
-        "WWWW.WWWW.W.",
-        ".....M....W.",
-        ".MMMMM.MMMM.",
-        "...M.M......",
-        "MM.M...MMMM.",
-        "@..M.M....M."
+        "M.MMMMM..MW#", "M...M....MW.", "M.M.M.MMMM..", "..M...M...W.",
+        "WM.MMMM.M.W.", "WW......M.W.", "WWWW.WWWW.W.", ".....M....W.",
+        ".MMMMM.MMMM.", "...M.M......", "MM.M...MMMM.", "@..M.M....M."
       ]
     };
 
@@ -522,6 +521,51 @@
       7: { name: 'Rock Golem', icon: '🪨' }, 8: { name: 'Mountain Troll', icon: '🧌' }, 9: { name: 'Gargoyle', icon: '🦇' },
       10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Demon Lord', icon: '👿' }
     };
+
+    // --- TRAINING ACADEMY DATA (The Curriculum) ---
+    const TRAINING_DATA = {
+      beginner: {
+        1: { title: "Aleph, Bet, Vet", desc: "Hebrew is read Right to Left. Let's learn the first letters!", items: [["א", "Aleph", "Silent"], ["בּ", "Bet", "Makes 'B' sound (has dot)"], ["ב", "Vet", "Makes 'V' sound (no dot)"]] },
+        2: { title: "Gimmel, Dalet, Hey", desc: "Three new important letters.", items: [["ג", "Gimmel", "'G' as in Good"], ["ד", "Dalet", "'D' sound"], ["ה", "Hey", "'H' sound"]] },
+        3: { title: "Vav, Zayin, Chet, Tet", desc: "Moving further into the alphabet.", items: [["ו", "Vav", "'V' sound"], ["ז", "Zayin", "'Z' sound"], ["ח", "Chet", "Throaty 'Ch' sound"], ["ט", "Tet", "'T' sound"]] },
+        4: { title: "Yod, Kaf, Khaf", desc: "Pay attention to the dot (Dagesh)!", items: [["י", "Yod", "'Y' sound"], ["כּ", "Kaf", "'K' sound (has dot)"], ["כ", "Khaf", "Throaty 'Ch' sound (no dot)"]] },
+        5: { title: "Lamed, Mem, Nun", desc: "Common middle letters.", items: [["ל", "Lamed", "'L' sound"], ["מ", "Mem", "'M' sound"], ["נ", "Nun", "'N' sound"]] },
+        6: { title: "Samekh, Ayin, Pey", desc: "Ayin is silent, just like Aleph.", items: [["ס", "Samekh", "'S' sound"], ["ע", "Ayin", "Silent"], ["פּ", "Pey", "'P' sound (has dot)"]] },
+        7: { title: "Fey, Tsadi, Qof", desc: "Almost finished with the letters!", items: [["פ", "Fey", "'F' sound (no dot)"], ["צ", "Tsadi", "'Ts' sound like in Cats"], ["ק", "Qof", "'K' sound"]] },
+        8: { title: "Resh, Shin, Sin, Tav", desc: "The final letters of the Aleph-Bet.", items: [["ר", "Resh", "'R' sound"], ["שׁ", "Shin", "'Sh' sound (dot on right)"], ["שׂ", "Sin", "'S' sound (dot on left)"], ["ת", "Tav", "'T' sound"]] },
+        9: { title: "Sofit (Final) Letters 1", desc: "Some letters change shape at the END of a word.", items: [["ך", "Khaf Sofit", "End of word 'Ch'"], ["ם", "Mem Sofit", "End of word 'M'"]] },
+        10: { title: "Sofit (Final) Letters 2", desc: "More shape-changers at the end of words.", items: [["ן", "Nun Sofit", "End of word 'N'"], ["ף", "Fey Sofit", "End of word 'F'"], ["ץ", "Tsadi Sofit", "End of word 'Ts'"]] },
+        11: { title: "The 'Ah' Vowels", desc: "Vowels sit under the letters. These make an 'Ah' sound.", items: [["אַ", "Patach", "Short 'Ah' sound"], ["אָ", "Kamatz", "Long 'Ah' sound"]] },
+        12: { title: "The 'Eh' & 'Ee' Vowels", desc: "Mastering the basic vowel sounds.", items: [["אֶ", "Segol", "'Eh' sound"], ["אֵ", "Tzere", "'Ey' sound"], ["אִ", "Chirik", "'Ee' sound"]] }
+      },
+      intermediate: {
+        1: { title: "Greetings", desc: "Saying hello in Hebrew.", items: [["שָׁלוֹם", "Shalom", "Hello / Peace"], ["בֹּקֶר טוֹב", "Boker Tov", "Good Morning"]] },
+        2: { title: "Family (Mishpacha)", desc: "Words for family members.", items: [["אַבָּא", "Abba", "Father"], ["אִמָּא", "Ima", "Mother"], ["בֵּן", "Ben", "Son"]] },
+        3: { title: "Colors (Tzvaim)", desc: "Identifying common colors.", items: [["אָדוֹם", "Adom", "Red"], ["כָּחוֹל", "Kachol", "Blue"], ["יָרוֹק", "Yarok", "Green"]] },
+        4: { title: "Animals (Chayot)", desc: "Basic pets and animals.", items: [["כֶּלֶב", "Kelev", "Dog"], ["חָתוּל", "Chatul", "Cat"], ["סוּס", "Sus", "Horse"]] },
+        5: { title: "Numbers 1-3", desc: "Counting basics.", items: [["אַחַת", "Achat", "One"], ["שְׁתַּיִם", "Shtayim", "Two"], ["שָׁלוֹשׁ", "Shalosh", "Three"]] },
+        6: { title: "Food (Ochel)", desc: "Things we eat and drink.", items: [["לֶחֶם", "Lechem", "Bread"], ["מַיִם", "Mayim", "Water"], ["חָלָב", "Chalav", "Milk"]] },
+        7: { title: "Body Parts", desc: "Identifying parts of the body.", items: [["רֹאשׁ", "Rosh", "Head"], ["עַיִן", "Ayin", "Eye"], ["יָד", "Yad", "Hand"]] },
+        8: { title: "Nature", desc: "The world outside.", items: [["שֶׁמֶשׁ", "Shemesh", "Sun"], ["עֵץ", "Etz", "Tree"], ["יָם", "Yam", "Sea"]] },
+        9: { title: "Clothing (Begadim)", desc: "What we wear.", items: [["בֶּגֶד", "Beged", "Garment"], ["נַעֲלַיִם", "Na'alayim", "Shoes"], ["כּוֹבַע", "Kova", "Hat"]] },
+        10: { title: "Home (Bayit)", desc: "Around the house.", items: [["בַּיִת", "Bayit", "House"], ["דֶּלֶת", "Delet", "Door"], ["חַלּוֹן", "Chalon", "Window"]] },
+        11: { title: "Time (Zman)", desc: "Telling time.", items: [["יוֹם", "Yom", "Day"], ["לַיְלָה", "Laila", "Night"], ["שָׁעָה", "Sha'a", "Hour"]] },
+        12: { title: "Common Nouns", desc: "Essential everyday words.", items: [["סֵפֶר", "Sefer", "Book"], ["יֶלֶד", "Yeled", "Boy"], ["יַלְדָּה", "Yalda", "Girl"]] }
+      },
+      advanced: {
+        1: { title: "Pronouns", desc: "Who is doing the action?", items: [["אֲנִי", "Ani", "I"], ["אַתָּה", "Ata", "You (M)"], ["הוּא", "Hu", "He"]] },
+        2: { title: "Basic Verbs 1", desc: "Action words.", items: [["אוֹכֵל", "Ochel", "Eating"], ["שׁוֹתֶה", "Shoteh", "Drinking"]] },
+        3: { title: "Question Words", desc: "Asking for information.", items: [["מִי", "Mi", "Who?"], ["מָה", "Ma", "What?"], ["אֵיפֹה", "Eifo", "Where?"]] },
+        4: { title: "Adjectives", desc: "Describing things.", items: [["גָּדוֹל", "Gadol", "Big"], ["קָטָן", "Katan", "Small"], ["טוֹב", "Tov", "Good"]] },
+        5: { title: "Prepositions", desc: "Connecting words.", items: [["בְּ", "Be-", "In / At"], ["לְ", "Le-", "To / For"], ["שֶׁל", "Shel", "Of / Belonging to"]] },
+        6: { title: "Polite Phrases", desc: "Manners matter.", items: [["בְּבַקָּשָׁה", "Bevakasha", "Please"], ["תּוֹדָה", "Toda", "Thank You"]] },
+        // Fallback for 7-12
+        7: { title: "Advanced Grammar", desc: "Preparing for the Castle.", items: [["אֲנִי רוֹצֶה", "Ani Rotzeh", "I want (M)"], ["אֲנִי רוֹצָה", "Ani Rotza", "I want (F)"]] }
+      }
+    };
+    
+    // Generic fallback if missing
+    const DEFAULT_TRAINING = { title: "Combat Ready!", desc: "You have learned the basics. Rely on your wits!", items: [["⚔️", "Prepare", "Get ready for battle!"]] };
 
     // --- State Management ---
     const DB_KEY = 'aleph_rpg_users_db';
@@ -573,9 +617,10 @@
       usersDB[name] = {
         name: name, coins: 0, track: 'beginner',
         hp: 50, maxHp: 50,
-        x: 0, y: 11, // Start bottom left
+        x: 0, y: 11, 
         avatar: '🦁', unlockedAvatars: ['🦁'],
-        inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null
+        inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null,
+        trainedLevels: { beginner: [], intermediate: [], advanced: [] } // NEW: Training tracker
       };
       saveDB();
       input.value = '';
@@ -584,7 +629,10 @@
 
     function loginUser(name) {
       currentUser = usersDB[name];
+      
+      // Migrations for old accounts
       if (!currentUser.consumables) currentUser.consumables = {};
+      if (!currentUser.trainedLevels) currentUser.trainedLevels = { beginner: [], intermediate: [], advanced: [] };
       
       localStorage.setItem('aleph_rpg_active_user', name);
       document.getElementById('login-modal').classList.remove('active');
@@ -620,6 +668,7 @@
       } finally {
         updateUI();
         renderMap();
+        checkInitialTraining(); // Check if they need training for spawn zone
       }
     }
 
@@ -732,9 +781,69 @@
       tile.appendChild(token);
     }
 
+    // --- TRAINING ACADEMY LOGIC ---
+    function getCurrentZoneLevel() {
+      const dist = (currentUser.x - 0) + (11 - currentUser.y);
+      return Math.min(12, Math.floor(dist / 2) + 1);
+    }
+
+    function checkInitialTraining() {
+      if(!currentUser) return;
+      const startZone = getCurrentZoneLevel();
+      if (!currentUser.trainedLevels[currentUser.track].includes(startZone)) {
+        showTraining(startZone);
+      }
+    }
+
+    function openTrainingManual() {
+      if(!currentUser) return;
+      const currentZone = getCurrentZoneLevel();
+      showTraining(currentZone, true); // true = opened manually, don't trigger battle after
+    }
+
+    function showTraining(level, isManual = false) {
+      const trackData = TRAINING_DATA[currentUser.track] || {};
+      const lesson = trackData[level] || trackData[7] || DEFAULT_TRAINING; 
+      
+      document.getElementById('train-level-title').textContent = `Zone Level ${level}: ${lesson.title}`;
+      document.getElementById('train-level-desc').textContent = lesson.desc;
+
+      const grid = document.getElementById('training-grid-container');
+      grid.innerHTML = '';
+      
+      lesson.items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'training-card';
+        card.innerHTML = `
+          <div class="training-hebrew">${item[0]}</div>
+          <div class="training-name">${item[1]}</div>
+          <div class="training-desc">${item[2]}</div>
+        `;
+        grid.appendChild(card);
+      });
+
+      const modal = document.getElementById('training-modal');
+      const readyBtn = document.getElementById('training-ready-btn');
+      
+      modal.classList.add('active');
+      
+      readyBtn.onclick = () => {
+        modal.classList.remove('active');
+        sfx.win(); // Happy sound for finishing training
+        
+        if (!currentUser.trainedLevels[currentUser.track].includes(level)) {
+          currentUser.trainedLevels[currentUser.track].push(level);
+          saveDB();
+        }
+      };
+    }
+
+
     // --- MOVEMENT & ENCOUNTERS ---
     function movePlayer(dx, dy) {
-      if (inBattle || !currentUser) return;
+      if (inBattle || document.querySelector('.modal-overlay.active')) return;
+      if (!currentUser) return;
+
       let nx = currentUser.x + dx;
       let ny = currentUser.y + dy;
       
@@ -758,6 +867,17 @@
         positionPlayerOnMap();
         saveDB();
         
+        // Calculate new zone
+        const dist = (currentUser.x - 0) + (11 - currentUser.y);
+        const newLevel = Math.min(12, Math.floor(dist / 2) + 1);
+
+        // Check if Training is needed BEFORE triggering a battle
+        if (!currentUser.trainedLevels[currentUser.track].includes(newLevel)) {
+          showTraining(newLevel);
+          return; // Skip random encounter on the exact step training opens
+        }
+        
+        // Normal Encounters
         if (tileType === '#') {
           triggerEncounter(true);
         } else if ((currentUser.x !== 0 || currentUser.y !== 11) && Math.random() < 0.35) {
@@ -778,13 +898,7 @@
       inBattle = true;
       sfx.encounter();
       
-      if (isCastleBoss) {
-        currentEnemyLevel = 12;
-      } else {
-        const dist = (currentUser.x - 0) + (11 - currentUser.y);
-        currentEnemyLevel = Math.min(12, Math.floor(dist / 2) + 1);
-      }
-      
+      currentEnemyLevel = isCastleBoss ? 12 : getCurrentZoneLevel();
       const enemyDef = ENEMY_TYPES[currentEnemyLevel] || ENEMY_TYPES[1];
       
       currentEnemyMaxHP = Math.ceil(currentEnemyLevel / 3);
@@ -940,7 +1054,6 @@
         `❤️ HP: ${currentUser.hp}/${currentUser.maxHp} &nbsp;|&nbsp; ⚔️ Attack: ${pDmg} &nbsp;|&nbsp; 🛡️ Defense: ${pDef}<br>
         <span style="font-size:0.8rem; color:#718096; font-weight:normal;">Weapons deal more damage per correct answer. Armor reduces damage taken on mistakes.</span>`;
       
-      // Render Equipment
       const wSlot = document.getElementById('equip-slot-weapon');
       const aSlot = document.getElementById('equip-slot-armor');
       if (currentUser.equippedWeapon) {
@@ -1025,7 +1138,7 @@
     // --- Shop UI ---
     function openShop() {
       if(!currentUser) return;
-      renderShop('items'); // Default to items tab
+      renderShop('items');
       document.getElementById('shop-modal').classList.add('active');
     }
 
