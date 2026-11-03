@@ -200,6 +200,14 @@
     input[type="text"] { padding: 8px 12px; border-radius: 10px; border: 2px solid #CBD5E0; font-size: 1rem; outline: none; }
 
     /* Training Module UI */
+    .lesson-btn {
+      background: #F7FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 12px 15px;
+      text-align: left; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 4px; font-family: 'Fredoka', sans-serif;
+    }
+    .lesson-btn:hover { background: #EBF8FF; border-color: #90CDF4; transform: translateY(-2px); }
+    .lesson-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); }
+    .lesson-desc { font-size: 0.85rem; color: #718096; }
+
     .training-header { background: #EBF8FF; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #90CDF4; }
     .training-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px;}
     .training-card { background: #F7FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px;}
@@ -217,7 +225,7 @@
       <button class="nav-btn" onclick="openProfile()" id="profile-btn">👤 Profile</button>
       <button class="nav-btn" onclick="openShop()">🏪 Shop</button>
       <button class="nav-btn" onclick="openTrackSelector()">🗺️ Track</button>
-      <button class="nav-btn" onclick="openTrainingManual()">📖 Train</button>
+      <button class="nav-btn" onclick="openTrainingManual()" style="border-color:#90CDF4; color:#2B6CB0; background:#EBF8FF;">📖 Train</button>
       <button class="nav-btn" onclick="toggleMusic()" id="music-btn">🎵 OFF</button>
     </div>
   </header>
@@ -258,21 +266,32 @@
     </div>
   </div>
 
-  <!-- Training Academy Modal -->
+  <!-- Training Academy Modal (Lesson Selector & Content) -->
   <div class="modal-overlay" id="training-modal" style="z-index: 500;">
-    <div class="modal-card" style="max-width: 600px;">
-      <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 5px;">📜 Training Academy</h2>
+    <div class="modal-card" style="max-width: 600px; max-height: 85vh;">
+      <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">📜 Training Academy</h2>
       
-      <div class="training-header">
-        <strong id="train-level-title" style="font-size:1.2rem; color:#2B6CB0;">Level 1: The Basics</strong>
-        <p id="train-level-desc" style="font-size:0.95rem; color:#4A5568; margin-top:5px;">Study these concepts before continuing your journey.</p>
+      <!-- View 1: Lesson List -->
+      <div id="training-view-list">
+        <p style="color:#718096; margin-bottom: 15px;">Select a lesson to study before heading into the danger zones.</p>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-right: 5px;" id="lesson-list-container">
+          <!-- Rendered via JS -->
+        </div>
+        <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('training-modal')">Close</button>
       </div>
 
-      <div class="training-grid" id="training-grid-container">
-        <!-- Rendered via JS -->
+      <!-- View 2: Lesson Content -->
+      <div id="training-view-content" style="display: none;">
+        <div class="training-header">
+          <strong id="train-level-title" style="font-size:1.2rem; color:#2B6CB0;"></strong>
+          <p id="train-level-desc" style="font-size:0.95rem; color:#4A5568; margin-top:5px;"></p>
+        </div>
+        <div class="training-grid" id="training-grid-container" style="max-height: 40vh; overflow-y: auto; padding: 5px;">
+          <!-- Rendered via JS -->
+        </div>
+        <button class="action-btn" style="margin: 15px auto 0; font-size: 1rem; padding: 10px 20px;" onclick="backToLessonList()">🔙 Back to Lessons</button>
       </div>
 
-      <button class="action-btn" id="training-ready-btn" style="margin: 0 auto;">I'm Ready!</button>
     </div>
   </div>
 
@@ -559,7 +578,6 @@
         4: { title: "Adjectives", desc: "Describing things.", items: [["גָּדוֹל", "Gadol", "Big"], ["קָטָן", "Katan", "Small"], ["טוֹב", "Tov", "Good"]] },
         5: { title: "Prepositions", desc: "Connecting words.", items: [["בְּ", "Be-", "In / At"], ["לְ", "Le-", "To / For"], ["שֶׁל", "Shel", "Of / Belonging to"]] },
         6: { title: "Polite Phrases", desc: "Manners matter.", items: [["בְּבַקָּשָׁה", "Bevakasha", "Please"], ["תּוֹדָה", "Toda", "Thank You"]] },
-        // Fallback for 7-12
         7: { title: "Advanced Grammar", desc: "Preparing for the Castle.", items: [["אֲנִי רוֹצֶה", "Ani Rotzeh", "I want (M)"], ["אֲנִי רוֹצָה", "Ani Rotza", "I want (F)"]] }
       }
     };
@@ -619,8 +637,7 @@
         hp: 50, maxHp: 50,
         x: 0, y: 11, 
         avatar: '🦁', unlockedAvatars: ['🦁'],
-        inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null,
-        trainedLevels: { beginner: [], intermediate: [], advanced: [] } // NEW: Training tracker
+        inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null
       };
       saveDB();
       input.value = '';
@@ -630,9 +647,7 @@
     function loginUser(name) {
       currentUser = usersDB[name];
       
-      // Migrations for old accounts
       if (!currentUser.consumables) currentUser.consumables = {};
-      if (!currentUser.trainedLevels) currentUser.trainedLevels = { beginner: [], intermediate: [], advanced: [] };
       
       localStorage.setItem('aleph_rpg_active_user', name);
       document.getElementById('login-modal').classList.remove('active');
@@ -668,7 +683,6 @@
       } finally {
         updateUI();
         renderMap();
-        checkInitialTraining(); // Check if they need training for spawn zone
       }
     }
 
@@ -781,29 +795,40 @@
       tile.appendChild(token);
     }
 
-    // --- TRAINING ACADEMY LOGIC ---
-    function getCurrentZoneLevel() {
-      const dist = (currentUser.x - 0) + (11 - currentUser.y);
-      return Math.min(12, Math.floor(dist / 2) + 1);
+    // --- TRAINING ACADEMY UI (Manual Selection) ---
+    function openTrainingManual() {
+      if(!currentUser) return;
+      renderLessonList();
+      document.getElementById('training-modal').classList.add('active');
     }
 
-    function checkInitialTraining() {
-      if(!currentUser) return;
-      const startZone = getCurrentZoneLevel();
-      if (!currentUser.trainedLevels[currentUser.track].includes(startZone)) {
-        showTraining(startZone);
+    function renderLessonList() {
+      document.getElementById('training-view-list').style.display = 'block';
+      document.getElementById('training-view-content').style.display = 'none';
+      
+      const container = document.getElementById('lesson-list-container');
+      container.innerHTML = '';
+      const trackData = TRAINING_DATA[currentUser.track] || {};
+      
+      for(let i = 1; i <= 12; i++) {
+        const lesson = trackData[i] || DEFAULT_TRAINING;
+        const btn = document.createElement('button');
+        btn.className = 'lesson-btn';
+        btn.innerHTML = `
+          <span class="lesson-title">Zone Level ${i}: ${lesson.title}</span>
+          <span class="lesson-desc">${lesson.desc}</span>
+        `;
+        btn.onclick = () => openLesson(i);
+        container.appendChild(btn);
       }
     }
 
-    function openTrainingManual() {
-      if(!currentUser) return;
-      const currentZone = getCurrentZoneLevel();
-      showTraining(currentZone, true); // true = opened manually, don't trigger battle after
-    }
-
-    function showTraining(level, isManual = false) {
+    function openLesson(level) {
+      document.getElementById('training-view-list').style.display = 'none';
+      document.getElementById('training-view-content').style.display = 'block';
+      
       const trackData = TRAINING_DATA[currentUser.track] || {};
-      const lesson = trackData[level] || trackData[7] || DEFAULT_TRAINING; 
+      const lesson = trackData[level] || DEFAULT_TRAINING; 
       
       document.getElementById('train-level-title').textContent = `Zone Level ${level}: ${lesson.title}`;
       document.getElementById('train-level-desc').textContent = lesson.desc;
@@ -821,23 +846,11 @@
         `;
         grid.appendChild(card);
       });
-
-      const modal = document.getElementById('training-modal');
-      const readyBtn = document.getElementById('training-ready-btn');
-      
-      modal.classList.add('active');
-      
-      readyBtn.onclick = () => {
-        modal.classList.remove('active');
-        sfx.win(); // Happy sound for finishing training
-        
-        if (!currentUser.trainedLevels[currentUser.track].includes(level)) {
-          currentUser.trainedLevels[currentUser.track].push(level);
-          saveDB();
-        }
-      };
     }
 
+    function backToLessonList() {
+      renderLessonList();
+    }
 
     // --- MOVEMENT & ENCOUNTERS ---
     function movePlayer(dx, dy) {
@@ -867,16 +880,6 @@
         positionPlayerOnMap();
         saveDB();
         
-        // Calculate new zone
-        const dist = (currentUser.x - 0) + (11 - currentUser.y);
-        const newLevel = Math.min(12, Math.floor(dist / 2) + 1);
-
-        // Check if Training is needed BEFORE triggering a battle
-        if (!currentUser.trainedLevels[currentUser.track].includes(newLevel)) {
-          showTraining(newLevel);
-          return; // Skip random encounter on the exact step training opens
-        }
-        
         // Normal Encounters
         if (tileType === '#') {
           triggerEncounter(true);
@@ -898,7 +901,9 @@
       inBattle = true;
       sfx.encounter();
       
-      currentEnemyLevel = isCastleBoss ? 12 : getCurrentZoneLevel();
+      const dist = (currentUser.x - 0) + (11 - currentUser.y);
+      currentEnemyLevel = isCastleBoss ? 12 : Math.min(12, Math.floor(dist / 2) + 1);
+      
       const enemyDef = ENEMY_TYPES[currentEnemyLevel] || ENEMY_TYPES[1];
       
       currentEnemyMaxHP = Math.ceil(currentEnemyLevel / 3);
