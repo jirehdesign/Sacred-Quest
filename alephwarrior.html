@@ -241,6 +241,14 @@
     </div>
   </main>
 
+  <!-- Custom Alert System -->
+  <div class="modal-overlay" id="custom-alert-overlay" style="z-index: 1000;">
+    <div class="modal-card" style="max-width: 400px; padding: 30px;">
+      <p id="custom-alert-text" style="font-size: 1.15rem; font-weight: 600; margin-bottom: 25px; white-space: pre-wrap; color: #2D3748; line-height: 1.4;"></p>
+      <button class="action-btn" id="custom-alert-btn" style="margin: 0 auto; width: 100px; justify-content: center;">OK</button>
+    </div>
+  </div>
+
   <!-- Login/Account Modal -->
   <div class="modal-overlay active" id="login-modal" style="background: rgba(0,0,0,0.9);">
     <div class="modal-card">
@@ -344,6 +352,19 @@
       return arr;
     }
 
+    // --- Custom Alert System ---
+    function showAlert(message, callback) {
+      const overlay = document.getElementById('custom-alert-overlay');
+      document.getElementById('custom-alert-text').textContent = message;
+      overlay.classList.add('active');
+      
+      const btn = document.getElementById('custom-alert-btn');
+      btn.onclick = () => {
+        overlay.classList.remove('active');
+        if (callback) callback();
+      };
+    }
+
     // --- Audio System (Sensory Friendly Envelopes) ---
     class SoundFX {
       constructor() { this.ctx = null; this.musicOn = false; this.bgmTimer = null; this.tick = 0; }
@@ -356,16 +377,14 @@
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
         
-        // Sensory-friendly envelope: Gentle fade-in and fade-out to remove harsh clicks
         gain.gain.setValueAtTime(0, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.05); // Attack
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration); // Release
+        gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.05); 
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration); 
         
         osc.connect(gain); gain.connect(this.ctx.destination);
         osc.start(); osc.stop(this.ctx.currentTime + duration);
       }
       
-      // Softer, gentler sounds using sine/triangle waves at lower volumes
       step() { this.playTone(200, 'sine', 0.15, 0.02); }
       bump() { this.playTone(100, 'triangle', 0.2, 0.04); }
       encounter() { this.playTone(350, 'sine', 0.2, 0.04); setTimeout(() => this.playTone(450, 'sine', 0.3, 0.04), 150); }
@@ -384,23 +403,21 @@
         this.stopBGM();
         if(!this.musicOn) return;
         
-        const mapNotes = [261.63, 329.63, 392.00, 329.63, 440.00, 392.00, 329.63, 293.66]; // Relaxed Journey
-        const battleNotes = [130.81, 146.83, 155.56, 146.83]; // Tense Encounter
+        const mapNotes = [261.63, 329.63, 392.00, 329.63, 440.00, 392.00, 329.63, 293.66]; 
+        const battleNotes = [130.81, 146.83, 155.56, 146.83]; 
         
         this.bgmTimer = setInterval(() => {
           this.tick++;
           if (inBattle) {
-            // Very soft triangle for battle to be less jarring
             const note = battleNotes[this.tick % battleNotes.length];
             this.playTone(note, 'triangle', 0.2, 0.015); 
           } else {
-            // Gentle sine waves for exploring
             if (this.tick % 2 === 0) {
               const note = mapNotes[(this.tick / 2) % mapNotes.length];
               this.playTone(note, 'sine', 0.3, 0.015);
             }
           }
-        }, 220); // slightly slower tempo for calmness
+        }, 220); 
       }
 
       stopBGM() {
@@ -550,8 +567,8 @@
     function createNewUser() {
       const input = document.getElementById('new-username');
       const name = input.value.trim();
-      if (!name) return alert("Please enter a username.");
-      if (usersDB[name]) return alert("Username already exists!");
+      if (!name) return showAlert("Please enter a username.");
+      if (usersDB[name]) return showAlert("Username already exists!");
 
       usersDB[name] = {
         name: name, coins: 0, track: 'beginner',
@@ -611,12 +628,11 @@
     function switchTrack(track) {
       if (!currentUser) return;
       currentUser.track = track;
-      // Reset position to safe start so they don't get stuck in a new map's wall
       currentUser.x = 0;
       currentUser.y = 11; 
       saveDB();
       closeModal('track-modal');
-      loadQuestionBank(); // will re-render map automatically
+      loadQuestionBank(); 
     }
 
     // --- Player Stats Calc ---
@@ -788,7 +804,8 @@
       if (!lvlData) lvlData = gameQuestions[gameQuestions.length - 1]; 
       
       if (!lvlData || !lvlData.questions || lvlData.questions.length === 0) {
-        alert("Error loading questions!"); endBattle(); return;
+        showAlert("Error loading questions!", () => { endBattle(); }); 
+        return;
       }
       
       let newQuestion;
@@ -835,22 +852,27 @@
             const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5);
             currentUser.coins += goldEarned;
             
-            // 25% chance enemy drops basic medicine (id: i1)
+            let victoryMsg = `🎉 Victory! Earned ${goldEarned} coins.`;
             if (Math.random() < 0.25) {
               currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1;
-              alert(`🎉 Victory! +${goldEarned} coins.\n🧪 The enemy dropped Medicine! Check your Backpack.`);
-            } else {
-              alert(`🎉 Victory! Earned ${goldEarned} coins.`);
+              victoryMsg = `🎉 Victory! +${goldEarned} coins.\n\n🧪 The enemy dropped Medicine! Check your Backpack.`;
             }
             
             const currentLayout = MAPS[currentUser.track];
-            if (currentEnemyLevel === 12 && currentLayout[currentUser.y][currentUser.x] === '#') {
-              confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
-              alert("👑 CONGRATULATIONS! You have defeated the Demon Lord and saved the realm! Returning to village...");
-              currentUser.x = 0; currentUser.y = 11;
-              positionPlayerOnMap();
-            }
-            endBattle();
+            
+            showAlert(victoryMsg, () => {
+              if (currentEnemyLevel === 12 && currentLayout[currentUser.y][currentUser.x] === '#') {
+                confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+                showAlert("👑 CONGRATULATIONS! You have defeated the Demon Lord and saved the realm! Returning to village...", () => {
+                  currentUser.x = 0; currentUser.y = 11;
+                  positionPlayerOnMap();
+                  endBattle();
+                });
+              } else {
+                endBattle();
+              }
+            });
+            
           }, 300);
         } else {
           setTimeout(loadNextBattleQuestion, 500);
@@ -865,17 +887,18 @@
         updateUI();
         showFloatText(`-${dmgTaken}`, 'dmg-text');
         
-        alert(`❌ Incorrect! The enemy strikes back for ${dmgTaken} damage.\n(The right answer was: ${activeQuestion.a})`);
-        
-        if (currentUser.hp <= 0) {
-          alert("💀 YOU HAVE FALLEN IN BATTLE.\nYour journey restarts at the village.");
-          currentUser.hp = currentUser.maxHp;
-          currentUser.x = 0; currentUser.y = 11;
-          endBattle();
-          positionPlayerOnMap();
-        } else {
-          loadNextBattleQuestion();
-        }
+        showAlert(`❌ Incorrect! The enemy strikes back for ${dmgTaken} damage.\n\n(The right answer was: ${activeQuestion.a})`, () => {
+          if (currentUser.hp <= 0) {
+            showAlert("💀 YOU HAVE FALLEN IN BATTLE.\nYour journey restarts at the village.", () => {
+              currentUser.hp = currentUser.maxHp;
+              currentUser.x = 0; currentUser.y = 11;
+              endBattle();
+              positionPlayerOnMap();
+            });
+          } else {
+            loadNextBattleQuestion();
+          }
+        });
       }
     }
 
@@ -979,7 +1002,7 @@
           
           card.onclick = () => {
             if (currentUser.hp >= currentUser.maxHp) {
-              alert("Your HP is already full!"); return;
+              showAlert("Your HP is already full!"); return;
             }
             currentUser.hp = Math.min(currentUser.maxHp, currentUser.hp + item.heal);
             currentUser.consumables[itemId]--;
@@ -1054,7 +1077,7 @@
       } else if (currentUser.coins >= av.price) {
         currentUser.coins -= av.price; currentUser.unlockedAvatars.push(av.icon); currentUser.avatar = av.icon;
         saveDB(); positionPlayerOnMap(); updateUI(); renderShop('avatars');
-      } else alert('Not enough coins!');
+      } else showAlert('Not enough coins!');
     }
 
     function handleBuyItem(item, category) {
@@ -1065,14 +1088,14 @@
           sfx.heal(); 
           saveDB(); updateUI(); renderShop(category);
         } else {
-          alert('Not enough coins!');
+          showAlert('Not enough coins!');
         }
       } else {
-        if (currentUser.inventory.includes(item.id)) alert("Already owned! Check Profile to equip.");
+        if (currentUser.inventory.includes(item.id)) showAlert("Already owned! Check Profile to equip.");
         else if (currentUser.coins >= item.price) {
           currentUser.coins -= item.price; currentUser.inventory.push(item.id);
-          saveDB(); updateUI(); renderShop(category); alert(`Purchased ${item.name}!`);
-        } else alert('Not enough coins!');
+          saveDB(); updateUI(); renderShop(category); showAlert(`Purchased ${item.name}!`);
+        } else showAlert('Not enough coins!');
       }
     }
 
