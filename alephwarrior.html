@@ -21,7 +21,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Fredoka', cursive, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 15px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden;}
 
     /* Header & Top Bar */
     header {
@@ -93,9 +93,11 @@
     .terrain-9 { background: #718096; } .terrain-10 { background: #F6AD55; }
     .terrain-11 { background: #DD6B20; } .terrain-12 { background: #1A202C; border: 1px solid #718096; }
     
-    /* Obstacles */
+    /* Town & Obstacles */
     .tile.water { background: #3182CE; box-shadow: inset 0 0 8px rgba(0,0,0,0.3); }
     .tile.mountain { background: #4A5568; box-shadow: inset 0 0 8px rgba(0,0,0,0.5); }
+    .tile.town-wall { background: #718096; box-shadow: inset 0 0 5px rgba(0,0,0,0.4); }
+    .tile.town-exit { background: #CBD5E0; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
     
     .castle-icon { font-size: 1.8rem; position: absolute; }
     .env-icon { font-size: 1.2rem; opacity: 0.8; }
@@ -112,6 +114,23 @@
       0%, 100% { transform: translate(-50%, -50%); }
       25% { transform: translate(-65%, -50%); }
       75% { transform: translate(-35%, -50%); }
+    }
+
+    /* Map Navigation Arrows */
+    .map-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; cursor: pointer; z-index: 20;
+      background: rgba(255,255,255,0.9); border-radius: 50%;
+      border: 3px solid var(--success);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      animation: pulseArrow 1.5s infinite;
+    }
+    .map-arrow.left { left: -18px; }
+    .map-arrow.right { right: -18px; }
+    @keyframes pulseArrow {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.15); border-color: var(--primary); }
     }
 
     /* D-PAD Controls */
@@ -223,7 +242,6 @@
     <div class="brand"><span>⚔️</span> Aleph-Bet Quest</div>
     <div class="stats-bar">
       <button class="nav-btn" onclick="openProfile()" id="profile-btn">👤 Profile</button>
-      <button class="nav-btn" onclick="openShop()">🏪 Shop</button>
       <button class="nav-btn" onclick="openTrackSelector()">🗺️ Track</button>
       <button class="nav-btn" onclick="openTrainingManual()" style="border-color:#90CDF4; color:#2B6CB0; background:#EBF8FF;">📖 Train</button>
       <button class="nav-btn" onclick="toggleMusic()" id="music-btn">🎵 OFF</button>
@@ -246,7 +264,7 @@
   <!-- Main RPG Container -->
   <main>
     <div class="game-map" id="rpg-map">
-      <!-- 144 Tiles rendered by JS -->
+      <!-- Tiles and navigation arrows are injected dynamically via JavaScript -->
     </div>
 
     <!-- D-Pad for Mobile Movement -->
@@ -258,7 +276,7 @@
     </div>
   </main>
 
-  <!-- Custom Alert System -->
+  <!-- Custom Alert System (NPC Dialogue & Messages) -->
   <div class="modal-overlay" id="custom-alert-overlay" style="z-index: 1000;">
     <div class="modal-card" style="max-width: 400px; padding: 30px;">
       <p id="custom-alert-text" style="font-size: 1.15rem; font-weight: 600; margin-bottom: 25px; white-space: pre-wrap; color: #2D3748; line-height: 1.4;"></p>
@@ -266,7 +284,7 @@
     </div>
   </div>
 
-  <!-- Training Academy Modal (Lesson Selector & Content) -->
+  <!-- Training Academy Modal (Manual Selection) -->
   <div class="modal-overlay" id="training-modal" style="z-index: 500;">
     <div class="modal-card" style="max-width: 600px; max-height: 85vh;">
       <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">📜 Training Academy</h2>
@@ -274,9 +292,7 @@
       <!-- View 1: Lesson List -->
       <div id="training-view-list">
         <p style="color:#718096; margin-bottom: 15px;">Select a lesson to study before heading into the danger zones.</p>
-        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-right: 5px;" id="lesson-list-container">
-          <!-- Rendered via JS -->
-        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-right: 5px;" id="lesson-list-container"></div>
         <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('training-modal')">Close</button>
       </div>
 
@@ -286,12 +302,9 @@
           <strong id="train-level-title" style="font-size:1.2rem; color:#2B6CB0;"></strong>
           <p id="train-level-desc" style="font-size:0.95rem; color:#4A5568; margin-top:5px;"></p>
         </div>
-        <div class="training-grid" id="training-grid-container" style="max-height: 40vh; overflow-y: auto; padding: 5px;">
-          <!-- Rendered via JS -->
-        </div>
+        <div class="training-grid" id="training-grid-container" style="max-height: 40vh; overflow-y: auto; padding: 5px;"></div>
         <button class="action-btn" style="margin: 15px auto 0; font-size: 1rem; padding: 10px 20px;" onclick="backToLessonList()">🔙 Back to Lessons</button>
       </div>
-
     </div>
   </div>
 
@@ -328,10 +341,7 @@
     <div class="modal-card">
       <h2 style="color:var(--primary-dark);" id="profile-name-display-modal">Player Name</h2>
       
-      <div class="stat-details" id="profile-stats-detailed">
-        Attack Power: 1 | Defense: 0<br>
-        <span style="font-size:0.8rem; color:#718096;">(Weapons reduce enemy HP faster. Armor reduces damage taken.)</span>
-      </div>
+      <div class="stat-details" id="profile-stats-detailed"></div>
       
       <h3 style="color:#2D3748;">My Equipment</h3>
       <div class="equip-slots">
@@ -351,10 +361,10 @@
     </div>
   </div>
 
-  <!-- Shop Modal -->
+  <!-- Town Shop Modal -->
   <div class="modal-overlay" id="shop-modal">
     <div class="modal-card">
-      <h2>🏪 The Grand Shop</h2>
+      <h2>🏪 Local Town Shop</h2>
       <p style="font-size:0.9rem; color:#718096; margin-top:4px;">Gear up and buy medicine for the journey!</p>
       
       <div class="shop-tabs">
@@ -365,7 +375,7 @@
       </div>
 
       <div class="grid-container" id="shop-items-container" style="max-height: 300px; overflow-y: auto;"></div>
-      <button class="nav-btn" style="margin: 15px auto 0;" onclick="closeModal('shop-modal')">Close</button>
+      <button class="nav-btn" style="margin: 15px auto 0;" onclick="closeModal('shop-modal')">Leave Shop</button>
     </div>
   </div>
 
@@ -403,34 +413,25 @@
       const overlay = document.getElementById('custom-alert-overlay');
       document.getElementById('custom-alert-text').textContent = message;
       overlay.classList.add('active');
-      
       const btn = document.getElementById('custom-alert-btn');
-      btn.onclick = () => {
-        overlay.classList.remove('active');
-        if (callback) callback();
-      };
+      btn.onclick = () => { overlay.classList.remove('active'); if (callback) callback(); };
     }
 
     // --- Audio System (Sensory Friendly Envelopes) ---
     class SoundFX {
       constructor() { this.ctx = null; this.musicOn = false; this.bgmTimer = null; this.tick = 0; }
       init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
-      
       playTone(freq, type, duration, vol = 0.05) {
         this.init();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        
+        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
         gain.gain.setValueAtTime(0, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.05); 
         gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration); 
-        
         osc.connect(gain); gain.connect(this.ctx.destination);
         osc.start(); osc.stop(this.ctx.currentTime + duration);
       }
-      
       step() { this.playTone(200, 'sine', 0.15, 0.02); }
       bump() { this.playTone(100, 'triangle', 0.2, 0.04); }
       encounter() { this.playTone(350, 'sine', 0.2, 0.04); setTimeout(() => this.playTone(450, 'sine', 0.3, 0.04), 150); }
@@ -438,20 +439,16 @@
       takeDamage() { this.playTone(200, 'sine', 0.3, 0.05); setTimeout(() => this.playTone(150, 'sine', 0.4, 0.05), 200); }
       win() { this.playTone(400, 'sine', 0.2, 0.04); setTimeout(() => this.playTone(500, 'sine', 0.2, 0.04), 200); setTimeout(() => this.playTone(600, 'sine', 0.4, 0.04), 400); }
       heal() { this.playTone(500, 'sine', 0.2, 0.03); setTimeout(() => this.playTone(700, 'sine', 0.4, 0.03), 150); }
-
       toggleMusic() {
         this.musicOn = !this.musicOn;
         if(this.musicOn) { this.startBGM(); } else { this.stopBGM(); }
         return this.musicOn;
       }
-
       startBGM() {
         this.stopBGM();
         if(!this.musicOn) return;
-        
         const mapNotes = [261.63, 329.63, 392.00, 329.63, 440.00, 392.00, 329.63, 293.66]; 
         const battleNotes = [130.81, 146.83, 155.56, 146.83]; 
-        
         this.bgmTimer = setInterval(() => {
           this.tick++;
           if (inBattle) {
@@ -465,44 +462,78 @@
           }
         }, 220); 
       }
-
-      stopBGM() {
-        if(this.bgmTimer) clearInterval(this.bgmTimer);
-        this.bgmTimer = null;
-      }
+      stopBGM() { if(this.bgmTimer) clearInterval(this.bgmTimer); this.bgmTimer = null; }
     }
     const sfx = new SoundFX();
 
     function toggleMusic() {
       const btn = document.getElementById('music-btn');
-      const isPlaying = sfx.toggleMusic();
-      if (isPlaying) {
-        btn.textContent = "🎵 ON";
-        btn.classList.add('active');
-      } else {
-        btn.textContent = "🎵 OFF";
-        btn.classList.remove('active');
-      }
+      if (sfx.toggleMusic()) { btn.textContent = "🎵 ON"; btn.classList.add('active'); } 
+      else { btn.textContent = "🎵 OFF"; btn.classList.remove('active'); }
     }
 
-    // --- MAP LAYOUTS PER TRACK ---
+    // --- GAME MAP DATA (36 x 12 Grids) ---
     const MAPS = {
       beginner: [
-        "......M..WW#", ".........WW.", "..MM........", "......MM....",
-        "W..MM.....W.", "WW........W.", "W......M..W.", "..........W.",
-        ".MMM...M....", ".......M....", "M.......M...", "@..M........"
+        "......M..WW.....MMM............WWWW#",
+        ".........WW.....M..............WW...",
+        "..MM...........M....................",
+        "......MM...........M.........M......",
+        "W..MM.....W......MM.................",
+        "WW........W....WW..T...........T....",
+        "W...T..M..W..W.W........M........M..",
+        "..........W...W.....................",
+        ".MMM...M.......M.............MMM....",
+        ".......M.........M..................",
+        "M.......M...M.......M.......M.......",
+        "@..M................................"
       ],
       intermediate: [
-        "...MMM...WW#", ".M..MM.M.WW.", ".MM..M.M....", "..MM...MM.W.",
-        "W..MMMM...W.", "WW......M.W.", "WWWW.WWWW.W.", ".....M....W.",
-        ".MMM.M.MMMM.", "...M.M......", "MM.....MMMM.", "@..M......M."
+        "...MMM...WW.....MMM..W.........WWWW#",
+        ".M..MM.M.WW...M..M...W.........WW...",
+        ".MM..M.M......M..M...W...T..........",
+        "..MM...MM.W...MM...M.W.......M......",
+        "W..MMMM...W......MM..W..............",
+        "WW..T...M.W..WW......W.....M...T....",
+        "WWWW.WWWW.W..W.W...M...MM........M..",
+        ".....M....W...W.................M...",
+        ".MMM.M.MMMM....MMM...M.......MMM....",
+        "...M.M...........M...M..............",
+        "MM.....MMMM.M..M...M.M......M.......",
+        "@..M......M........................."
       ],
       advanced: [
-        "M.MMMMM..MW#", "M...M....MW.", "M.M.M.MMMM..", "..M...M...W.",
-        "WM.MMMM.M.W.", "WW......M.W.", "WWWW.WWWW.W.", ".....M....W.",
-        ".MMMMM.MMMM.", "...M.M......", "MM.M...MMMM.", "@..M.M....M."
+        "M.MMMMM..MW.M.MM.MM..M.......MMMWWW#",
+        "M...M....MW.M.M...M..M.......MWWW...",
+        "M.M.M.MMMM..M...M.M..M...T...M......",
+        "..M...M...W...M...M..M.......M......",
+        "WM.MMMM.M.W.W.MMMM...M..............",
+        "WW......M.W.W......M.M.MM..M...T....",
+        "WWWW.WWWW.W.W.WWWW...M...MM......M..",
+        "..T..M....W..T..M....M..M.......M...",
+        ".MMMMM.MMMM..MMM.MM.MM.......MMM....",
+        "...M.M.........M..M..M..............",
+        "MM.M...MMMM.MM...M...M......M.......",
+        "@..M.M....M..M..M....M.............."
       ]
     };
+
+    // --- TOWN LAYOUT (12x12) ---
+    // T = Tree, B = Building, $ = Shopkeeper, S = Shop Sign, N = NPC, E = Exit
+    const TOWN_LAYOUT = [
+      "TTTTTTTTTTTT",
+      "TTBBBBBBBBTT",
+      "TB..$.$..SBT",
+      "TB........BT",
+      "T.N..N..N..T",
+      "T...N..N...T",
+      "T.N..N..N..T",
+      "T...N..N...T",
+      "T.N......N.T",
+      "T..........T",
+      "T..........T",
+      "TTTT.EE.TTTT"
+    ];
 
     const AVATARS = [
       { icon: '🦁', price: 0 }, { icon: '🐶', price: 50 }, { icon: '🐱', price: 50 }, { icon: '🦊', price: 50 }, 
@@ -541,10 +572,10 @@
       10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Demon Lord', icon: '👿' }
     };
 
-    // --- TRAINING ACADEMY DATA (The Curriculum) ---
+    // --- TRAINING ACADEMY DATA ---
     const TRAINING_DATA = {
       beginner: {
-        1: { title: "Aleph, Bet, Vet", desc: "Hebrew is read Right to Left. Let's learn the first letters!", items: [["א", "Aleph", "Silent"], ["בּ", "Bet", "Makes 'B' sound (has dot)"], ["ב", "Vet", "Makes 'V' sound (no dot)"]] },
+        1: { title: "Aleph, Bet, Vet", desc: "Hebrew is read Right to Left.", items: [["א", "Aleph", "Silent"], ["בּ", "Bet", "Makes 'B' sound"], ["ב", "Vet", "Makes 'V' sound"]] },
         2: { title: "Gimmel, Dalet, Hey", desc: "Three new important letters.", items: [["ג", "Gimmel", "'G' as in Good"], ["ד", "Dalet", "'D' sound"], ["ה", "Hey", "'H' sound"]] },
         3: { title: "Vav, Zayin, Chet, Tet", desc: "Moving further into the alphabet.", items: [["ו", "Vav", "'V' sound"], ["ז", "Zayin", "'Z' sound"], ["ח", "Chet", "Throaty 'Ch' sound"], ["ט", "Tet", "'T' sound"]] },
         4: { title: "Yod, Kaf, Khaf", desc: "Pay attention to the dot (Dagesh)!", items: [["י", "Yod", "'Y' sound"], ["כּ", "Kaf", "'K' sound (has dot)"], ["כ", "Khaf", "Throaty 'Ch' sound (no dot)"]] },
@@ -554,7 +585,7 @@
         8: { title: "Resh, Shin, Sin, Tav", desc: "The final letters of the Aleph-Bet.", items: [["ר", "Resh", "'R' sound"], ["שׁ", "Shin", "'Sh' sound (dot on right)"], ["שׂ", "Sin", "'S' sound (dot on left)"], ["ת", "Tav", "'T' sound"]] },
         9: { title: "Sofit (Final) Letters 1", desc: "Some letters change shape at the END of a word.", items: [["ך", "Khaf Sofit", "End of word 'Ch'"], ["ם", "Mem Sofit", "End of word 'M'"]] },
         10: { title: "Sofit (Final) Letters 2", desc: "More shape-changers at the end of words.", items: [["ן", "Nun Sofit", "End of word 'N'"], ["ף", "Fey Sofit", "End of word 'F'"], ["ץ", "Tsadi Sofit", "End of word 'Ts'"]] },
-        11: { title: "The 'Ah' Vowels", desc: "Vowels sit under the letters. These make an 'Ah' sound.", items: [["אַ", "Patach", "Short 'Ah' sound"], ["אָ", "Kamatz", "Long 'Ah' sound"]] },
+        11: { title: "The 'Ah' Vowels", desc: "Vowels sit under the letters.", items: [["אַ", "Patach", "Short 'Ah' sound"], ["אָ", "Kamatz", "Long 'Ah' sound"]] },
         12: { title: "The 'Eh' & 'Ee' Vowels", desc: "Mastering the basic vowel sounds.", items: [["אֶ", "Segol", "'Eh' sound"], ["אֵ", "Tzere", "'Ey' sound"], ["אִ", "Chirik", "'Ee' sound"]] }
       },
       intermediate: {
@@ -581,8 +612,6 @@
         7: { title: "Advanced Grammar", desc: "Preparing for the Castle.", items: [["אֲנִי רוֹצֶה", "Ani Rotzeh", "I want (M)"], ["אֲנִי רוֹצָה", "Ani Rotza", "I want (F)"]] }
       }
     };
-    
-    // Generic fallback if missing
     const DEFAULT_TRAINING = { title: "Combat Ready!", desc: "You have learned the basics. Rely on your wits!", items: [["⚔️", "Prepare", "Get ready for battle!"]] };
 
     // --- State Management ---
@@ -591,12 +620,14 @@
     let currentUser = null;
     let gameQuestions = [];
     
-    // Battle State
+    // Engine State
     let activeQuestion = null;
     let currentEnemyLevel = 1;
     let currentEnemyMaxHP = 1;
     let currentEnemyHP = 1;
     let inBattle = false;
+    let inTown = false;
+    let townNPCs = {};
 
     function saveDB() {
       if (currentUser) usersDB[currentUser.name] = currentUser;
@@ -635,7 +666,7 @@
       usersDB[name] = {
         name: name, coins: 0, track: 'beginner',
         hp: 50, maxHp: 50,
-        x: 0, y: 11, 
+        x: 0, y: 11, townX: 5, townY: 10,
         avatar: '🦁', unlockedAvatars: ['🦁'],
         inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null
       };
@@ -646,13 +677,14 @@
 
     function loginUser(name) {
       currentUser = usersDB[name];
-      
       if (!currentUser.consumables) currentUser.consumables = {};
+      if (currentUser.townX === undefined) { currentUser.townX = 5; currentUser.townY = 10; }
       
       localStorage.setItem('aleph_rpg_active_user', name);
       document.getElementById('login-modal').classList.remove('active');
       
       if (currentUser.hp <= 0) currentUser.hp = currentUser.maxHp;
+      inTown = false;
       
       loadQuestionBank(); 
     }
@@ -681,8 +713,8 @@
           return;
         }
       } finally {
+        renderCurrentScreen();
         updateUI();
-        renderMap();
       }
     }
 
@@ -693,6 +725,7 @@
       currentUser.track = track;
       currentUser.x = 0;
       currentUser.y = 11; 
+      inTown = false;
       saveDB();
       closeModal('track-modal');
       loadQuestionBank(); 
@@ -709,11 +742,15 @@
       const a = SHOP_ITEMS.armor.find(x => x.id === currentUser.equippedArmor);
       return a ? a.def : 0;
     }
+    
+    function getCurrentZoneLevel() {
+      const dist = (currentUser.x - 0) + (11 - currentUser.y);
+      return Math.min(12, Math.floor(dist / 4) + 1);
+    }
 
     function updateUI() {
       if (!currentUser) return;
       document.getElementById('hero-showcase').style.display = 'flex';
-      
       document.getElementById('top-hp-display').textContent = `❤️ ${currentUser.hp}/${currentUser.maxHp}`;
       document.getElementById('top-coin-display').textContent = `🪙 ${currentUser.coins}`;
       
@@ -734,19 +771,75 @@
       const hpPct = Math.max(0, (currentUser.hp / currentUser.maxHp) * 100);
       let hpHTML = `<div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${hpPct}%; background:${hpPct>25?'#68D391':'#FC8181'}"></div></div>`;
       document.getElementById('hero-display-title').innerHTML += hpHTML;
+
+      if (!inTown) { updateMapArrows(); }
     }
 
-    // --- RPG MAP GENERATION (12x12) ---
-    function renderMap() {
-      if (!currentUser) return;
+    // --- DYNAMIC NPC GENERATOR ---
+    function setupTownNPCs(zoneLevel) {
+      townNPCs = {};
+      const trackData = TRAINING_DATA[currentUser.track] || {};
+      let concepts = [];
+      
+      const l1 = trackData[zoneLevel] || DEFAULT_TRAINING;
+      const l2 = trackData[zoneLevel + 1] || trackData[zoneLevel] || DEFAULT_TRAINING;
+      
+      l1.items.forEach(i => concepts.push(`I study ${l1.title}.\n\nDid you know '${i[0]}' (${i[1]}) means:\n${i[2]}?`));
+      if(l1.title !== l2.title) {
+         l2.items.forEach(i => concepts.push(`Prepare yourself for the eastern zones!\n\nRemember '${i[0]}' (${i[1]}) means:\n${i[2]}.`));
+      }
+      
+      let genericTips = [
+        "Welcome to our town! The shop here sells medicine. Stock up before you leave!",
+        "The monsters get much stronger the further east you travel.",
+        "Armor reduces the damage you take when you make a mistake.",
+        "A better weapon helps you defeat enemies in fewer turns!",
+        "Don't forget to check your Backpack in the Profile menu to use your medicine.",
+        "The Demon Lord awaits in the dark castle at the far east.",
+        "Hebrew is read from right to left! Keep that in mind.",
+        "Always look for the green arrows at the edge of the world map to travel to the next region.",
+        "We are safe in this town, no monsters will attack you here."
+      ];
+      shuffleArray(genericTips);
+      
+      while(concepts.length < 12) {
+        concepts.push(genericTips.pop() || "Blessings on your journey, hero!");
+      }
+      shuffleArray(concepts);
+      
+      const emojis = ['🧔', '👩', '👴', '👵', '🧙', '💂', '🕵️', '👩‍🌾', '👨‍🍳', '🧝', '🥷', '🤴'];
+      shuffleArray(emojis);
+      
+      let index = 0;
+      for (let y = 0; y < 12; y++) {
+        for (let x = 0; x < 12; x++) {
+          if (TOWN_LAYOUT[y][x] === 'N') {
+            townNPCs[`${x},${y}`] = { emoji: emojis[index], text: concepts[index] };
+            index++;
+          }
+        }
+      }
+    }
+
+    // --- MAP RENDERING ---
+    function renderCurrentScreen() {
+      if (inTown) renderTownMap();
+      else renderWorldMap();
+    }
+
+    function renderWorldMap() {
       const map = document.getElementById('rpg-map');
       map.innerHTML = '';
       
       const currentLayout = MAPS[currentUser.track];
+      const mapSection = Math.floor(currentUser.x / 12);
+      const startX = mapSection * 12;
 
       for (let y = 0; y < 12; y++) {
-        for (let x = 0; x < 12; x++) {
-          const tileType = currentLayout[y][x];
+        for (let localX = 0; localX < 12; localX++) {
+          const globalX = startX + localX;
+          const tileType = currentLayout[y][globalX];
+          
           const tile = document.createElement('div');
           tile.className = 'tile';
           
@@ -757,14 +850,63 @@
             tile.classList.add('mountain');
             tile.innerHTML = '<span class="env-icon">⛰️</span>';
           } else {
-            const dist = (x - 0) + (11 - y);
-            const level = Math.min(12, Math.floor(dist / 2) + 1);
+            const dist = (globalX - 0) + (11 - y);
+            const level = Math.min(12, Math.floor(dist / 4) + 1);
             tile.classList.add(`terrain-${level}`);
             
-            if (tileType === '#') tile.innerHTML = '<span class="castle-icon">🏰</span>';
+            if (tileType === '#') {
+              tile.innerHTML = '<span class="castle-icon">🏰</span>';
+            } else if (tileType === 'T') {
+              tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem; opacity: 1;">🏘️</span>';
+            }
           }
           
-          tile.id = `cell-${x}-${y}`;
+          tile.id = `world-cell-${globalX}-${y}`;
+          map.appendChild(tile);
+        }
+      }
+
+      let leftArrow = document.createElement('div');
+      leftArrow.id = 'map-arrow-left'; leftArrow.className = 'map-arrow left';
+      leftArrow.innerHTML = '⬅️'; leftArrow.onclick = () => movePlayer(-1, 0);
+      map.appendChild(leftArrow);
+
+      let rightArrow = document.createElement('div');
+      rightArrow.id = 'map-arrow-right'; rightArrow.className = 'map-arrow right';
+      rightArrow.innerHTML = '➡️'; rightArrow.onclick = () => movePlayer(1, 0);
+      map.appendChild(rightArrow);
+
+      positionPlayerOnMap();
+    }
+
+    function renderTownMap() {
+      const map = document.getElementById('rpg-map');
+      map.innerHTML = '';
+      
+      for (let y = 0; y < 12; y++) {
+        for (let x = 0; x < 12; x++) {
+          const tileType = TOWN_LAYOUT[y][x];
+          const tile = document.createElement('div');
+          tile.className = 'tile';
+          tile.id = `town-cell-${x}-${y}`;
+          
+          if (tileType === 'T') {
+            tile.classList.add('terrain-4'); tile.innerHTML = '<span class="env-icon">🌲</span>';
+          } else if (tileType === 'B') {
+            tile.classList.add('town-wall'); tile.innerHTML = '<span class="env-icon">🧱</span>';
+          } else if (tileType === '$' || tileType === 'S') {
+            tile.classList.add('terrain-2'); 
+            tile.innerHTML = tileType === '$' ? '<span class="env-icon" style="font-size:1.6rem;">🧑‍💼</span>' : '<span class="env-icon">🛒</span>';
+          } else if (tileType === 'E') {
+            tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>';
+          } else if (tileType === 'N') {
+            tile.classList.add('terrain-1');
+            const npc = townNPCs[`${x},${y}`];
+            tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1;">${npc ? npc.emoji : '🧍'}</span>`;
+          } else {
+            tile.classList.add('terrain-1');
+          }
+          
           map.appendChild(tile);
         }
       }
@@ -775,7 +917,11 @@
       const oldToken = document.getElementById('player-map-token');
       if (oldToken) oldToken.remove();
 
-      const tile = document.getElementById(`cell-${currentUser.x}-${currentUser.y}`);
+      const px = inTown ? currentUser.townX : currentUser.x;
+      const py = inTown ? currentUser.townY : currentUser.y;
+      const prefix = inTown ? 'town' : 'world';
+
+      const tile = document.getElementById(`${prefix}-cell-${px}-${py}`);
       if (!tile) return;
 
       const token = document.createElement('div');
@@ -794,6 +940,29 @@
       token.innerHTML = tokenHTML;
       tile.appendChild(token);
     }
+
+    function updateMapArrows() {
+      const leftArrow = document.getElementById('map-arrow-left');
+      const rightArrow = document.getElementById('map-arrow-right');
+      if (!leftArrow || !rightArrow) return;
+      
+      const currentLayout = MAPS[currentUser.track];
+      let showLeft = false;
+      let showRight = false;
+      
+      if (currentUser.x % 12 === 0 && currentUser.x > 0) {
+        const leftTile = currentLayout[currentUser.y][currentUser.x - 1];
+        if (leftTile !== 'W' && leftTile !== 'M') showLeft = true;
+      }
+      if (currentUser.x % 12 === 11 && currentUser.x < 35) {
+        const rightTile = currentLayout[currentUser.y][currentUser.x + 1];
+        if (rightTile !== 'W' && rightTile !== 'M') showRight = true;
+      }
+      
+      leftArrow.style.display = showLeft ? 'flex' : 'none';
+      rightArrow.style.display = showRight ? 'flex' : 'none';
+    }
+
 
     // --- TRAINING ACADEMY UI (Manual Selection) ---
     function openTrainingManual() {
@@ -857,30 +1026,81 @@
       if (inBattle || document.querySelector('.modal-overlay.active')) return;
       if (!currentUser) return;
 
+      if (inTown) {
+        let nx = currentUser.townX + dx;
+        let ny = currentUser.townY + dy;
+        
+        if (nx >= 0 && nx < 12 && ny >= 0 && ny < 12) {
+          const tile = TOWN_LAYOUT[ny][nx];
+          
+          if (tile === 'T' || tile === 'B' || tile === 'S') {
+            sfx.bump();
+            const token = document.getElementById('player-map-token');
+            if (token) { token.classList.add('bump-anim'); setTimeout(() => token.classList.remove('bump-anim'), 200); }
+            return;
+          }
+          if (tile === '$') { sfx.step(); openShop(); return; }
+          if (tile === 'N') {
+            sfx.encounter(); 
+            const npc = townNPCs[`${nx},${ny}`];
+            if(npc) showAlert(`${npc.emoji} says:\n\n"${npc.text}"`);
+            return;
+          }
+          if (tile === 'E') {
+            sfx.step();
+            inTown = false;
+            renderCurrentScreen();
+            updateUI();
+            return;
+          }
+          
+          currentUser.townX = nx;
+          currentUser.townY = ny;
+          sfx.step();
+          positionPlayerOnMap();
+        }
+        return;
+      }
+
+      // World Map Movement
       let nx = currentUser.x + dx;
       let ny = currentUser.y + dy;
       
-      if (nx >= 0 && nx < 12 && ny >= 0 && ny < 12) {
+      if (nx >= 0 && nx < 36 && ny >= 0 && ny < 12) {
         const currentLayout = MAPS[currentUser.track];
         const tileType = currentLayout[ny][nx];
         
         if (tileType === 'W' || tileType === 'M') {
           sfx.bump();
           const token = document.getElementById('player-map-token');
-          if (token) {
-            token.classList.add('bump-anim');
-            setTimeout(() => token.classList.remove('bump-anim'), 200);
-          }
+          if (token) { token.classList.add('bump-anim'); setTimeout(() => token.classList.remove('bump-anim'), 200); }
           return; 
         }
 
+        const oldSection = Math.floor(currentUser.x / 12);
+        
         currentUser.x = nx;
         currentUser.y = ny;
         sfx.step();
-        positionPlayerOnMap();
         saveDB();
         
-        // Normal Encounters
+        const newSection = Math.floor(currentUser.x / 12);
+        
+        if (oldSection !== newSection) renderCurrentScreen(); 
+        else positionPlayerOnMap();
+        
+        updateUI();
+        
+        if (tileType === 'T') {
+          sfx.heal();
+          inTown = true;
+          currentUser.townX = 5; 
+          currentUser.townY = 10;
+          setupTownNPCs(getCurrentZoneLevel());
+          renderCurrentScreen();
+          return; 
+        }
+        
         if (tileType === '#') {
           triggerEncounter(true);
         } else if ((currentUser.x !== 0 || currentUser.y !== 11) && Math.random() < 0.35) {
@@ -901,9 +1121,7 @@
       inBattle = true;
       sfx.encounter();
       
-      const dist = (currentUser.x - 0) + (11 - currentUser.y);
-      currentEnemyLevel = isCastleBoss ? 12 : Math.min(12, Math.floor(dist / 2) + 1);
-      
+      currentEnemyLevel = isCastleBoss ? 12 : getCurrentZoneLevel();
       const enemyDef = ENEMY_TYPES[currentEnemyLevel] || ENEMY_TYPES[1];
       
       currentEnemyMaxHP = Math.ceil(currentEnemyLevel / 3);
@@ -984,7 +1202,8 @@
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
                 showAlert("👑 CONGRATULATIONS! You have defeated the Demon Lord and saved the realm! Returning to village...", () => {
                   currentUser.x = 0; currentUser.y = 11;
-                  positionPlayerOnMap();
+                  renderCurrentScreen();
+                  updateUI();
                   endBattle();
                 });
               } else {
@@ -1011,8 +1230,9 @@
             showAlert("💀 YOU HAVE FALLEN IN BATTLE.\nYour journey restarts at the village.", () => {
               currentUser.hp = currentUser.maxHp;
               currentUser.x = 0; currentUser.y = 11;
+              renderCurrentScreen();
+              updateUI();
               endBattle();
-              positionPlayerOnMap();
             });
           } else {
             loadNextBattleQuestion();
@@ -1101,7 +1321,6 @@
         });
       }
 
-      // Render Consumables (Backpack)
       const consGrid = document.getElementById('consumables-grid');
       consGrid.innerHTML = '';
       
@@ -1134,15 +1353,15 @@
       });
 
       if (!hasItems) {
-        consGrid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">No items. Buy medicine in the shop!</span>';
+        consGrid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">No items. Buy medicine in a Town shop!</span>';
       }
 
       document.getElementById('profile-modal').classList.add('active');
     }
 
-    // --- Shop UI ---
+    // --- Town Shop UI ---
     function openShop() {
-      if(!currentUser) return;
+      if(!currentUser || !inTown) return;
       renderShop('items');
       document.getElementById('shop-modal').classList.add('active');
     }
