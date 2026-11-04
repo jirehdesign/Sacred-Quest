@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fairy-Maid Festival V9</title>
+    <title>Fairy-Maid Festival V10</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -115,25 +116,22 @@
     <!-- AUTH SCREEN -->
     <div id="screen-auth" class="screen-container active flex-col items-center w-full max-w-4xl mt-4 sm:mt-10">
         <div class="bg-white p-6 sm:p-8 rounded-[3rem] shadow-xl border-4 border-pink-300 w-full text-center">
-            <h2 class="text-3xl font-black text-purple-600 mb-2">Create a Hero!</h2>
+            <h2 class="text-4xl font-black text-purple-600 mb-2">Create a Hero!</h2>
             <p class="text-gray-500 mb-6 text-sm font-bold">Pick your character & magic name</p>
             
             <div class="flex flex-col md:flex-row gap-6 items-center justify-center mb-8">
                 <div id="customizer-preview" class="w-40 h-56 sm:w-48 sm:h-64 bg-gradient-to-b from-pink-100 to-white rounded-[2.5rem] border-8 border-pink-200 shadow-xl flex items-center justify-center p-2 svg-container pointer-events-none"></div>
                 
                 <div class="flex flex-col gap-4 w-full max-w-sm">
-                    <!-- Hair Style -->
                     <div class="flex items-center justify-between bg-pink-50 p-2 rounded-2xl border-2 border-pink-200 shadow-inner">
                         <button id="btn-hair-prev" class="text-3xl hover:scale-110 active:scale-95 px-2 drop-shadow-md">◀️</button>
                         <span id="hair-style-label" class="font-black text-pink-500 uppercase tracking-widest text-sm sm:text-base">Long Hair</span>
                         <button id="btn-hair-next" class="text-3xl hover:scale-110 active:scale-95 px-2 drop-shadow-md">▶️</button>
                     </div>
-                    <!-- Hair Color -->
                     <div class="bg-pink-50 p-3 rounded-2xl border-2 border-pink-200 shadow-inner">
                         <div class="text-[10px] sm:text-xs font-black text-pink-400 mb-2 uppercase text-center tracking-widest">Hair Color</div>
                         <div id="hair-color-swatches" class="flex justify-center gap-2 sm:gap-3 flex-wrap"></div>
                     </div>
-                    <!-- Skin Tone -->
                     <div class="bg-pink-50 p-3 rounded-2xl border-2 border-pink-200 shadow-inner">
                         <div class="text-[10px] sm:text-xs font-black text-pink-400 mb-2 uppercase text-center tracking-widest">Skin Tone</div>
                         <div id="skin-tone-swatches" class="flex justify-center gap-2 sm:gap-3 flex-wrap"></div>
@@ -221,7 +219,7 @@
                 </div>
             </div>
 
-            <!-- Mini Games Row: Math Wand & Spelling Scroll -->
+            <!-- Mini Games Row -->
             <div class="grid grid-cols-2 gap-4 w-full">
                 <!-- Magic Math Wand -->
                 <button id="btn-math-wand" class="math-wand-bg w-full rounded-[2rem] p-3 shadow-lg border-4 border-white flex flex-col items-center justify-center gap-1 hover:scale-105 active:scale-95 transition-transform group">
@@ -301,9 +299,7 @@
         <div class="flex flex-col w-full md:w-[55%] pb-10">
             <h2 class="text-3xl text-purple-600 mb-2 text-center font-black drop-shadow-sm">Build In Order:</h2>
             <p class="text-center text-gray-500 font-bold mb-4">Complete the top building to unlock the next!</p>
-            <div id="buildings-container" class="flex flex-col gap-4">
-                <!-- Injected via JS -->
-            </div>
+            <div id="buildings-container" class="flex flex-col gap-4"></div>
         </div>
     </div>
 
@@ -384,7 +380,7 @@
 
     <script>
         // ==========================================
-        // DATA MODELS & SVG ENGINE (Customizer + Huge Item DB)
+        // DATA MODELS & HIGH-DETAIL SVG ENGINE
         // ==========================================
         
         const HAIR_STYLES = [
@@ -471,7 +467,9 @@
             let hairColor = avatarDef.hairColor || '#fde047';
             let hairBack = '', hairFront = '';
             
-            const baseFrontHair = (color) => `<path d="M 22 45 Q 22 -5 50 0 Q 78 -5 78 45 Q 65 20 50 20 Q 35 20 22 45 Z" fill="${color}"/>`;
+            // Add subtle hair highlights using opacity stroke
+            const hl = `<path d="M 22 45 Q 22 -5 50 0 Q 78 -5 78 45" fill="none" stroke="#ffffff" stroke-width="3" stroke-opacity="0.25" stroke-linecap="round"/>`;
+            const baseFrontHair = (color) => `<path d="M 22 45 Q 22 -5 50 0 Q 78 -5 78 45 Q 65 20 50 20 Q 35 20 22 45 Z" fill="${color}"/>${hl}`;
             hairFront = baseFrontHair(hairColor);
 
             switch(avatarDef.style) {
@@ -499,9 +497,40 @@
                     hairBack = `<path d="M 20 35 Q -5 60 15 80 Q 30 60 35 35 Z" fill="${hairColor}"/><path d="M 80 35 Q 105 60 85 80 Q 70 60 65 35 Z" fill="${hairColor}"/>`; 
             }
 
-            const faceDetails = `<path d="M 39 32 Q 42 29 45 32 M 39 32 L 37 30 M 45 32 L 46 30" stroke="#333" fill="none" stroke-width="1.5" stroke-linecap="round"/><circle cx="42" cy="35" r="3.5" fill="#333"/><circle cx="41" cy="34" r="1.5" fill="#fff"/><circle cx="43.5" cy="36.5" r="0.8" fill="#fff"/><path d="M 55 32 Q 58 29 61 32 M 61 32 L 63 30 M 55 32 L 54 30" stroke="#333" fill="none" stroke-width="1.5" stroke-linecap="round"/><circle cx="58" cy="35" r="3.5" fill="#333"/><circle cx="57" cy="34" r="1.5" fill="#fff"/><circle cx="59.5" cy="36.5" r="0.8" fill="#fff"/><path d="M 46 43 Q 50 48 54 43" stroke="#333" fill="none" stroke-width="1.5" stroke-linecap="round"/><path d="M 49 46 Q 50 49 51 46 Z" fill="#ef4444"/><ellipse cx="38" cy="41" rx="4.5" ry="2.5" fill="#f43f5e" opacity="0.4"/><ellipse cx="62" cy="41" rx="4.5" ry="2.5" fill="#f43f5e" opacity="0.4"/>`;
-            let baseDress = `<rect x="34" y="55" width="32" height="40" rx="8" fill="#e5e7eb"/>`;
-            let baseShoes = `<path d="M 34 125 L 46 125 L 46 135 L 34 135 Z M 54 125 L 66 125 L 66 135 L 54 135 Z" fill="#9ca3af"/>`;
+            // Anime-style face details
+            const faceDetails = `
+                <!-- Eye whites and irises -->
+                <ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/>
+                <ellipse cx="62" cy="35" rx="5" ry="6" fill="#fff"/>
+                <ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
+                <ellipse cx="62" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
+                <ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/>
+                <ellipse cx="62" cy="35" rx="2.5" ry="3.5" fill="#000"/>
+                <!-- Eye Highlights -->
+                <circle cx="36" cy="33" r="1.5" fill="#fff"/><circle cx="39" cy="37" r="0.8" fill="#fff"/>
+                <circle cx="60" cy="33" r="1.5" fill="#fff"/><circle cx="63" cy="37" r="0.8" fill="#fff"/>
+                <!-- Eyelashes -->
+                <path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 33 30 L 30 28 M 43 30 L 46 28" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 56 33 Q 62 28 68 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 57 30 L 54 28 M 67 30 L 70 28" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+                <!-- Blush -->
+                <ellipse cx="33" cy="41" rx="4" ry="2" fill="#f43f5e" opacity="0.4"/>
+                <ellipse cx="67" cy="41" rx="4" ry="2" fill="#f43f5e" opacity="0.4"/>
+                <!-- Nose -->
+                <path d="M 49 40 Q 50 42 51 40" fill="none" stroke="#ca8a04" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                <!-- Lips -->
+                <path d="M 46 45 Q 50 47 54 45" fill="none" stroke="#e11d48" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 47 45 Q 50 48 53 45 Z" fill="#fb7185"/>
+            `;
+
+            // Cute pastel swimsuit base (instead of gray box)
+            let baseDress = `
+                <rect x="34" y="55" width="32" height="35" rx="10" fill="#fbcfe8"/>
+                <rect x="34" y="65" width="32" height="5" fill="#f472b6"/>
+                <rect x="34" y="75" width="32" height="5" fill="#f472b6"/>
+            `;
+            let baseShoes = `<path d="M 34 125 L 46 125 L 46 135 L 34 135 Z M 54 125 L 66 125 L 66 135 L 54 135 Z" fill="#fbcfe8"/>`;
 
             let headSvg = equipped.head ? ITEMS[equipped.head].svg : ''; let bodySvg = equipped.body ? ITEMS[equipped.body].svg : baseDress;
             let feetSvg = equipped.feet ? ITEMS[equipped.feet].svg : baseShoes; let handSvg = equipped.hand ? ITEMS[equipped.hand].svg : '';
@@ -524,7 +553,7 @@
             </svg>`;
         }
 
-        const STORAGE_KEY = 'fairy_maid_v9_users'; const CURRENT_USER_KEY = 'fairy_maid_v9_current';
+        const STORAGE_KEY = 'fairy_maid_v10_users'; const CURRENT_USER_KEY = 'fairy_maid_v10_current';
         let allUsers = {}; let currentUser = null;
         let userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#fee2e2' }, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
         
@@ -537,7 +566,7 @@
                 if (lastUser && allUsers[lastUser]) {
                     currentUser = lastUser; userData = allUsers[currentUser];
                     if(!userData.level) userData.level = 1;
-                    if(typeof userData.avatar === 'string') userData.avatar = { style: 'long', hairColor: '#fde047', skin: '#fee2e2' }; // Migrate old
+                    if(typeof userData.avatar === 'string') userData.avatar = { style: 'long', hairColor: '#fde047', skin: '#fee2e2' };
                     return true;
                 }
             } catch(e) {}
@@ -672,15 +701,44 @@
         }
 
         // ==========================================
-        // AUDIO & CONFETTI
+        // LENGTHY PROCEDURAL MUSIC ENGINE (Web Audio API)
         // ==========================================
         let audioCtx;
         let musicPlaying = false;
         let musicTimeoutId = null;
+        let nextNoteTime = 0;
         let musicNoteIndex = 0;
+        let beatDuration = 60 / 130; // 130 BPM
         
-        // Pentatonic scale (C4, D4, E4, G4, A4, C5) - music box feel
-        const melody = [523.25, 392.00, 440.00, 329.63, 392.00, 261.63, 293.66, 329.63]; 
+        // Procedurally generating a 32-measure waltz (96 beats total)
+        // 8-bar chord progression repeated 4 times with variations
+        const chordProg = [
+            [261.63, 329.63, 392.00], // C Maj
+            [261.63, 329.63, 392.00], // C Maj
+            [349.23, 440.00, 523.25], // F Maj
+            [261.63, 329.63, 392.00], // C Maj
+            [392.00, 493.88, 587.33], // G Maj
+            [349.23, 440.00, 523.25], // F Maj
+            [261.63, 329.63, 392.00], // C Maj
+            [392.00, 493.88, 587.33], // G Maj
+        ];
+        
+        const waltzNotes = [];
+        const waltzBass = [];
+        
+        for (let rep = 0; rep < 4; rep++) {
+            chordProg.forEach((chord, barIndex) => {
+                // Bass notes (1 octave down)
+                waltzBass.push(chord[0] / 2, chord[1] / 2, chord[2] / 2);
+                
+                // Melody variations per repetition
+                let m1 = chord[2], m2 = chord[1], m3 = chord[0];
+                if (rep % 2 === 1) { m1 = chord[0]*2; m2 = chord[2]; m3 = chord[1]; } // higher inversion
+                if (rep === 3 && barIndex % 2 === 0) { m1 = chord[1]*2; m2 = chord[2]; m3 = chord[0]; } // sweeping run
+                if (barIndex === 7) { m1 = chord[0]; m2 = chord[0]; m3 = chord[0]; } // dramatic resolution rest
+                waltzNotes.push(m1, m2, m3);
+            });
+        }
         
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
         
@@ -692,6 +750,7 @@
                 btn.innerHTML = '🎵 Music: ON';
                 btn.classList.add('bg-pink-100', 'border-pink-300', 'text-pink-600');
                 btn.classList.remove('bg-purple-100', 'border-purple-300', 'text-purple-600');
+                nextNoteTime = audioCtx.currentTime + 0.1;
                 playMusicLoop();
             } else {
                 btn.innerHTML = '🎵 Music: OFF';
@@ -703,20 +762,45 @@
         
         function playMusicLoop() {
             if (!musicPlaying || !audioCtx) return;
-            const now = audioCtx.currentTime;
             
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(melody[musicNoteIndex], now);
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.08, now + 0.05); // Soft attack
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6); // Long release
-            osc.start(now); osc.stop(now + 0.6);
+            // Scheduling lookahead
+            while (nextNoteTime < audioCtx.currentTime + 0.15) {
+                scheduleNote(musicNoteIndex, nextNoteTime);
+                nextNoteTime += beatDuration;
+                musicNoteIndex = (musicNoteIndex + 1) % 96; // 96 beats = 32 measures
+            }
+            musicTimeoutId = setTimeout(playMusicLoop, 25);
+        }
 
-            musicNoteIndex = (musicNoteIndex + 1) % melody.length;
-            musicTimeoutId = setTimeout(playMusicLoop, 500);
+        function scheduleNote(beatIndex, time) {
+            // Melody Oscillator (Triangle wave for music box feel)
+            let melodyOsc = audioCtx.createOscillator();
+            let melodyGain = audioCtx.createGain();
+            melodyOsc.type = 'triangle';
+            melodyOsc.frequency.value = waltzNotes[beatIndex];
+            melodyOsc.connect(melodyGain); melodyGain.connect(audioCtx.destination);
+            
+            melodyGain.gain.setValueAtTime(0, time);
+            melodyGain.gain.linearRampToValueAtTime(0.06, time + 0.05);
+            melodyGain.gain.exponentialRampToValueAtTime(0.001, time + beatDuration * 0.9);
+            melodyOsc.start(time); melodyOsc.stop(time + beatDuration);
+            
+            // Harmony Oscillator (Sine wave for warm bass/chords)
+            let harmonyOsc = audioCtx.createOscillator();
+            let harmonyGain = audioCtx.createGain();
+            harmonyOsc.type = 'sine';
+            harmonyOsc.frequency.value = waltzBass[beatIndex];
+            harmonyOsc.connect(harmonyGain); harmonyGain.connect(audioCtx.destination);
+            
+            // Emphasize the 1st beat (bass) of the waltz measure
+            let isBeatOne = (beatIndex % 3 === 0);
+            let maxVol = isBeatOne ? 0.05 : 0.025;
+            let decay = isBeatOne ? 1.5 : 0.8;
+            
+            harmonyGain.gain.setValueAtTime(0, time);
+            harmonyGain.gain.linearRampToValueAtTime(maxVol, time + 0.05);
+            harmonyGain.gain.exponentialRampToValueAtTime(0.001, time + beatDuration * decay);
+            harmonyOsc.start(time); harmonyOsc.stop(time + beatDuration * 2);
         }
 
         document.getElementById('btn-music').addEventListener('click', toggleMusic);
@@ -759,7 +843,7 @@
         }
 
         // ==========================================
-        // GAMEPLAY ENGINE (V8 logic)
+        // GAMEPLAY ENGINE
         // ==========================================
         let maxSpins = 20; let spinsLeft = 20; let mathTriesLeft = 4; let spellTriesLeft = 4;
         let isSpinning = false; let gameActive = false;
@@ -1020,11 +1104,14 @@
         }
 
         // ==========================================
-        // MAGIC SPELLING
+        // CUTE MAGIC SPELLING
         // ==========================================
         let currentSpellWord = '';
         const SPELL_EASY = [{w:'cat', e:'🐱'}, {w:'dog', e:'🐶'}, {w:'sun', e:'☀️'}, {w:'bug', e:'🐛'}, {w:'pig', e:'🐷'}, {w:'bat', e:'🦇'}, {w:'red', e:'🔴'}];
         const SPELL_HARD = [{w:'star', e:'⭐'}, {w:'fish', e:'🐟'}, {w:'moon', e:'🌙'}, {w:'tree', e:'🌳'}, {w:'pink', e:'🎀'}, {w:'wand', e:'🪄'}, {w:'book', e:'📖'}];
+
+        // Ensure voices are loaded (Chrome/Safari quirk)
+        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
         document.getElementById('btn-spell-scroll').addEventListener('click', () => {
             if(!gameActive || spellTriesLeft <= 0) return; initAudio(); playSound('pop'); generateSpellQuestion();
@@ -1049,7 +1136,22 @@
         function playSpellWord() {
             if (!window.speechSynthesis) return;
             const utterance = new SpeechSynthesisUtterance("Spell the word: " + currentSpellWord);
+            
+            // Make the voice much cuter
             utterance.rate = 0.85; 
+            utterance.pitch = 1.6;
+            
+            // Search for feminine voices
+            const voices = window.speechSynthesis.getVoices();
+            const cuteVoice = voices.find(v => 
+                v.name.includes('Samantha') || 
+                v.name.includes('Zira') || 
+                v.name.includes('Google UK English Female') || 
+                v.name.includes('Female') ||
+                v.name.includes('Victoria')
+            );
+            
+            if (cuteVoice) utterance.voice = cuteVoice;
             window.speechSynthesis.speak(utterance);
         }
 
