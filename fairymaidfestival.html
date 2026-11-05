@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fairy-Maid Festival V10</title>
+    <title>Fairy-Maid Festival V11</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -123,10 +123,17 @@
                 <div id="customizer-preview" class="w-40 h-56 sm:w-48 sm:h-64 bg-gradient-to-b from-pink-100 to-white rounded-[2.5rem] border-8 border-pink-200 shadow-xl flex items-center justify-center p-2 svg-container pointer-events-none"></div>
                 
                 <div class="flex flex-col gap-4 w-full max-w-sm">
+                    <!-- Hairstyle Picker -->
                     <div class="flex items-center justify-between bg-pink-50 p-2 rounded-2xl border-2 border-pink-200 shadow-inner">
                         <button id="btn-hair-prev" class="text-3xl hover:scale-110 active:scale-95 px-2 drop-shadow-md">◀️</button>
                         <span id="hair-style-label" class="font-black text-pink-500 uppercase tracking-widest text-sm sm:text-base">Long Hair</span>
                         <button id="btn-hair-next" class="text-3xl hover:scale-110 active:scale-95 px-2 drop-shadow-md">▶️</button>
+                    </div>
+                    <!-- Eye Style Picker -->
+                    <div class="flex items-center justify-between bg-blue-50 p-2 rounded-2xl border-2 border-blue-200 shadow-inner">
+                        <button id="btn-eye-prev" class="text-3xl hover:scale-110 active:scale-95 px-2 drop-shadow-md">◀️</button>
+                        <span id="eye-style-label" class="font-black text-blue-500 uppercase tracking-widest text-sm sm:text-base">Classic Eyes</span>
+                        <button id="btn-eye-next" class="text-3xl hover:scale-110 active:scale-95 px-2 drop-shadow-md">▶️</button>
                     </div>
                     <div class="bg-pink-50 p-3 rounded-2xl border-2 border-pink-200 shadow-inner">
                         <div class="text-[10px] sm:text-xs font-black text-pink-400 mb-2 uppercase text-center tracking-widest">Hair Color</div>
@@ -240,7 +247,7 @@
                 </button>
             </div>
 
-            <!-- Shared Treasure Chest (5 Items) -->
+            <!-- Shared Treasure Chest -->
             <div class="bg-amber-100 rounded-[2rem] p-5 shadow-xl border-4 border-amber-300">
                 <h2 class="text-xl text-amber-800 mb-3 text-center font-black">Treasure Chest 🧰</h2>
                 <div class="grid grid-cols-5 gap-2">
@@ -307,7 +314,7 @@
     <div id="modal-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
         <div id="modal-content" class="bg-white rounded-[3rem] p-6 max-w-lg w-full text-center shadow-2xl border-8 border-pink-400 bounce-in hidden flex-col items-center my-8">
             <h2 id="modal-title" class="text-5xl font-black mb-2"></h2>
-            <p id="modal-msg" class="text-xl text-gray-600 mb-4 font-bold"></p>
+            <p id="modal-msg" class="text-xl text-gray-600 mb-4 font-bold whitespace-pre-line"></p>
             
             <div id="modal-reward-area" class="w-full hidden flex-col items-center mb-6">
                 <!-- Normal Reward -->
@@ -389,10 +396,25 @@
             { id: 'buns', name: 'Cute Buns' },
             { id: 'bob', name: 'Short Bob' },
             { id: 'braids', name: 'Braids' },
-            { id: 'afro', name: 'Afro Puff' }
+            { id: 'afro', name: 'Afro Puff' },
+            { id: 'ponytail', name: 'High Ponytail' },
+            { id: 'sweep', name: 'Side Sweep' },
+            { id: 'space_buns', name: 'Space Buns' },
+            { id: 'side_braid', name: 'Side Braid' },
+            { id: 'pixie', name: 'Pixie Cut' },
+            { id: 'messy_bun', name: 'Messy Bun' }
         ];
-        const HAIR_COLORS = ['#fde047', '#78350f', '#27272a', '#dc2626', '#ec4899', '#8b5cf6', '#06b6d4'];
-        const SKIN_TONES = ['#fee2e2', '#ffedd5', '#d4a373', '#8b5a2b', '#451a03'];
+        
+        const EYE_STYLES = [
+            { id: 'classic', name: 'Classic Anime' },
+            { id: 'starry', name: 'Starry Eyes' },
+            { id: 'winking', name: 'Cute Wink' },
+            { id: 'gentle', name: 'Gentle Smile' }
+        ];
+
+        const HAIR_COLORS = ['#fde047', '#78350f', '#27272a', '#dc2626', '#ec4899', '#8b5cf6', '#06b6d4', '#10b981'];
+        // Extended skin tones featuring 5 very light shades first, then graduating to dark
+        const SKIN_TONES = ['#FFF0E5', '#FFE0D2', '#FAD6C6', '#FCE8D5', '#fee2e2', '#ffedd5', '#d4a373', '#8b5a2b', '#451a03'];
 
         const ITEMS = {
             // -- HEAD (9 items) --
@@ -465,6 +487,7 @@
         function generateDollSVG(avatarDef, equipped) {
             let skin = avatarDef.skin || '#fee2e2'; 
             let hairColor = avatarDef.hairColor || '#fde047';
+            let eyeStyle = avatarDef.eyes || 'classic';
             let hairBack = '', hairFront = '';
             
             // Add subtle hair highlights using opacity stroke
@@ -493,27 +516,76 @@
                     hairBack = `<circle cx="20" cy="25" r="18" fill="${hairColor}"/><circle cx="80" cy="25" r="18" fill="${hairColor}"/><circle cx="50" cy="25" r="22" fill="${hairColor}"/>`; 
                     hairFront = `<path d="M 20 45 Q 20 -5 50 0 Q 80 -5 80 45 Q 65 25 50 22 Q 35 25 20 45 Z" fill="${hairColor}"/>`; 
                     break;
+                case 'ponytail':
+                    hairBack = `<path d="M 50 15 Q 20 -10 30 70 Q 50 50 50 15 Z" fill="${hairColor}"/><circle cx="50" cy="15" r="8" fill="#f472b6"/>`;
+                    break;
+                case 'sweep':
+                    hairBack = `<path d="M 20 35 L 20 80 Q 50 90 80 80 L 80 35 Z" fill="${hairColor}"/>`;
+                    hairFront = `<path d="M 22 45 Q 20 -10 60 10 Q 90 20 80 50 Q 60 20 22 45 Z" fill="${hairColor}"/>${hl}`;
+                    break;
+                case 'space_buns':
+                    hairBack = `<circle cx="25" cy="15" r="14" fill="${hairColor}"/><circle cx="75" cy="15" r="14" fill="${hairColor}"/><path d="M 15 15 L 35 15 M 25 5 L 25 25 M 65 15 L 85 15 M 75 5 L 75 25" stroke="#000" stroke-opacity="0.2" stroke-width="2"/>`;
+                    break;
+                case 'side_braid':
+                    hairBack = `<circle cx="50" cy="25" r="22" fill="${hairColor}"/><path d="M 70 40 Q 90 50 75 100 Q 65 80 70 40 Z" fill="${hairColor}"/><path d="M 70 50 L 85 55 M 68 70 L 82 75 M 70 90 L 80 90" stroke="#000" stroke-opacity="0.2" stroke-width="2"/>`;
+                    break;
+                case 'pixie':
+                    hairBack = `<path d="M 25 35 Q 50 10 75 35 L 75 55 Q 50 65 25 55 Z" fill="${hairColor}"/>`;
+                    hairFront = baseFrontHair(hairColor) + `<path d="M 20 35 Q 50 20 80 35" fill="none" stroke="#38bdf8" stroke-width="4"/>`;
+                    break;
+                case 'messy_bun':
+                    hairBack = `<circle cx="50" cy="10" r="18" fill="${hairColor}"/><path d="M 35 5 Q 50 -10 65 5 Q 50 25 35 5 Z" fill="${hairColor}" opacity="0.8"/>`;
+                    break;
                 default:
                     hairBack = `<path d="M 20 35 Q -5 60 15 80 Q 30 60 35 35 Z" fill="${hairColor}"/><path d="M 80 35 Q 105 60 85 80 Q 70 60 65 35 Z" fill="${hairColor}"/>`; 
             }
 
-            // Anime-style face details
+            // Eyes Configuration
+            let eyeSvg = '';
+            if(eyeStyle === 'classic') {
+                eyeSvg = `
+                    <ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/>
+                    <ellipse cx="62" cy="35" rx="5" ry="6" fill="#fff"/>
+                    <ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
+                    <ellipse cx="62" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
+                    <ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/>
+                    <ellipse cx="62" cy="35" rx="2.5" ry="3.5" fill="#000"/>
+                    <circle cx="36" cy="33" r="1.5" fill="#fff"/><circle cx="39" cy="37" r="0.8" fill="#fff"/>
+                    <circle cx="60" cy="33" r="1.5" fill="#fff"/><circle cx="63" cy="37" r="0.8" fill="#fff"/>
+                    <path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M 56 33 Q 62 28 68 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                `;
+            } else if (eyeStyle === 'starry') {
+                eyeSvg = `
+                    <ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/>
+                    <ellipse cx="62" cy="35" rx="5" ry="6" fill="#fff"/>
+                    <ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#a855f7"/>
+                    <ellipse cx="62" cy="35" rx="4.5" ry="5.5" fill="#a855f7"/>
+                    <ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/>
+                    <ellipse cx="62" cy="35" rx="2.5" ry="3.5" fill="#000"/>
+                    <polygon points="36,31 37,33 39,33 37,34 38,36 36,35 34,36 35,34 33,33 35,33" fill="#fff"/>
+                    <polygon points="60,31 61,33 63,33 61,34 62,36 60,35 58,36 59,34 57,33 59,33" fill="#fff"/>
+                    <path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M 56 33 Q 62 28 68 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                `;
+            } else if (eyeStyle === 'winking') {
+                eyeSvg = `
+                    <ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/>
+                    <ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
+                    <ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/>
+                    <circle cx="36" cy="33" r="1.5" fill="#fff"/><circle cx="39" cy="37" r="0.8" fill="#fff"/>
+                    <path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M 58 35 Q 62 30 66 35 M 58 37 Q 62 32 66 37" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                `;
+            } else if (eyeStyle === 'gentle') {
+                eyeSvg = `
+                    <path d="M 33 35 Q 38 30 43 35 M 33 37 Q 38 32 43 37" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M 57 35 Q 62 30 67 35 M 57 37 Q 62 32 67 37" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+                `;
+            }
+
             const faceDetails = `
-                <!-- Eye whites and irises -->
-                <ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/>
-                <ellipse cx="62" cy="35" rx="5" ry="6" fill="#fff"/>
-                <ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
-                <ellipse cx="62" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
-                <ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/>
-                <ellipse cx="62" cy="35" rx="2.5" ry="3.5" fill="#000"/>
-                <!-- Eye Highlights -->
-                <circle cx="36" cy="33" r="1.5" fill="#fff"/><circle cx="39" cy="37" r="0.8" fill="#fff"/>
-                <circle cx="60" cy="33" r="1.5" fill="#fff"/><circle cx="63" cy="37" r="0.8" fill="#fff"/>
-                <!-- Eyelashes -->
-                <path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                <path d="M 33 30 L 30 28 M 43 30 L 46 28" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M 56 33 Q 62 28 68 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                <path d="M 57 30 L 54 28 M 67 30 L 70 28" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+                ${eyeSvg}
                 <!-- Blush -->
                 <ellipse cx="33" cy="41" rx="4" ry="2" fill="#f43f5e" opacity="0.4"/>
                 <ellipse cx="67" cy="41" rx="4" ry="2" fill="#f43f5e" opacity="0.4"/>
@@ -524,7 +596,6 @@
                 <path d="M 47 45 Q 50 48 53 45 Z" fill="#fb7185"/>
             `;
 
-            // Cute pastel swimsuit base (instead of gray box)
             let baseDress = `
                 <rect x="34" y="55" width="32" height="35" rx="10" fill="#fbcfe8"/>
                 <rect x="34" y="65" width="32" height="5" fill="#f472b6"/>
@@ -553,11 +624,11 @@
             </svg>`;
         }
 
-        const STORAGE_KEY = 'fairy_maid_v10_users'; const CURRENT_USER_KEY = 'fairy_maid_v10_current';
+        const STORAGE_KEY = 'fairy_maid_v11_users'; const CURRENT_USER_KEY = 'fairy_maid_v11_current';
         let allUsers = {}; let currentUser = null;
-        let userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#fee2e2' }, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+        let userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' }, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
         
-        let customizerState = { styleIdx: 0, hairColor: '#fde047', skin: '#fee2e2' };
+        let customizerState = { styleIdx: 0, eyeIdx: 0, hairColor: '#fde047', skin: '#FFF0E5' };
 
         function loadData() {
             try {
@@ -566,7 +637,8 @@
                 if (lastUser && allUsers[lastUser]) {
                     currentUser = lastUser; userData = allUsers[currentUser];
                     if(!userData.level) userData.level = 1;
-                    if(typeof userData.avatar === 'string') userData.avatar = { style: 'long', hairColor: '#fde047', skin: '#fee2e2' };
+                    if(typeof userData.avatar === 'string') userData.avatar = { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' };
+                    if(!userData.avatar.eyes) userData.avatar.eyes = 'classic';
                     return true;
                 }
             } catch(e) {}
@@ -577,7 +649,7 @@
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers)); localStorage.setItem(CURRENT_USER_KEY, currentUser); } catch(e) {}
         }
         function logout() {
-            currentUser = null; userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#fee2e2' }, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+            currentUser = null; userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' }, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
             localStorage.removeItem(CURRENT_USER_KEY); showScreen('auth'); document.getElementById('auth-username').value = '';
             updateCustomizerPreview();
         }
@@ -593,7 +665,7 @@
             if(name === 'inventory') renderDressUp();
             if(name === 'menu') {
                 document.getElementById('menu-level-display').innerText = userData.level;
-                const desc = userData.level === 1 ? "Start your adventure!" : (userData.level === 4 ? "Max Level Challenge!" : "Keep building up!");
+                const desc = userData.level === 1 ? "Start your adventure!" : (userData.level === 5 ? "Level 5 Ultimate Challenge!" : "Keep building up!");
                 document.getElementById('menu-level-desc').innerText = desc;
             }
             window.scrollTo(0,0);
@@ -605,21 +677,16 @@
         }
 
         function updateCustomizerPreview() {
-            const def = { style: HAIR_STYLES[customizerState.styleIdx].id, hairColor: customizerState.hairColor, skin: customizerState.skin };
+            const def = { style: HAIR_STYLES[customizerState.styleIdx].id, hairColor: customizerState.hairColor, skin: customizerState.skin, eyes: EYE_STYLES[customizerState.eyeIdx].id };
             document.getElementById('customizer-preview').innerHTML = generateDollSVG(def, {});
             document.getElementById('hair-style-label').innerText = HAIR_STYLES[customizerState.styleIdx].name;
+            document.getElementById('eye-style-label').innerText = EYE_STYLES[customizerState.eyeIdx].name;
         }
 
-        document.getElementById('btn-hair-prev').addEventListener('click', () => {
-            initAudio(); playSound('pop');
-            customizerState.styleIdx = (customizerState.styleIdx - 1 + HAIR_STYLES.length) % HAIR_STYLES.length;
-            updateCustomizerPreview();
-        });
-        document.getElementById('btn-hair-next').addEventListener('click', () => {
-            initAudio(); playSound('pop');
-            customizerState.styleIdx = (customizerState.styleIdx + 1) % HAIR_STYLES.length;
-            updateCustomizerPreview();
-        });
+        document.getElementById('btn-hair-prev').addEventListener('click', () => { initAudio(); playSound('pop'); customizerState.styleIdx = (customizerState.styleIdx - 1 + HAIR_STYLES.length) % HAIR_STYLES.length; updateCustomizerPreview(); });
+        document.getElementById('btn-hair-next').addEventListener('click', () => { initAudio(); playSound('pop'); customizerState.styleIdx = (customizerState.styleIdx + 1) % HAIR_STYLES.length; updateCustomizerPreview(); });
+        document.getElementById('btn-eye-prev').addEventListener('click', () => { initAudio(); playSound('pop'); customizerState.eyeIdx = (customizerState.eyeIdx - 1 + EYE_STYLES.length) % EYE_STYLES.length; updateCustomizerPreview(); });
+        document.getElementById('btn-eye-next').addEventListener('click', () => { initAudio(); playSound('pop'); customizerState.eyeIdx = (customizerState.eyeIdx + 1) % EYE_STYLES.length; updateCustomizerPreview(); });
 
         const hairColorContainer = document.getElementById('hair-color-swatches');
         HAIR_COLORS.forEach(color => {
@@ -656,7 +723,7 @@
         document.getElementById('btn-login').addEventListener('click', () => {
             let name = document.getElementById('auth-username').value.trim(); if(!name) { alert("Please enter a magic name!"); return; }
             currentUser = name;
-            const chosenAvatar = { style: HAIR_STYLES[customizerState.styleIdx].id, hairColor: customizerState.hairColor, skin: customizerState.skin };
+            const chosenAvatar = { style: HAIR_STYLES[customizerState.styleIdx].id, hairColor: customizerState.hairColor, skin: customizerState.skin, eyes: EYE_STYLES[customizerState.eyeIdx].id };
             
             if(!allUsers[currentUser]) allUsers[currentUser] = { avatar: chosenAvatar, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
             else allUsers[currentUser].avatar = chosenAvatar; 
@@ -708,34 +775,22 @@
         let musicTimeoutId = null;
         let nextNoteTime = 0;
         let musicNoteIndex = 0;
-        let beatDuration = 60 / 130; // 130 BPM
+        let beatDuration = 60 / 130; 
         
-        // Procedurally generating a 32-measure waltz (96 beats total)
-        // 8-bar chord progression repeated 4 times with variations
         const chordProg = [
-            [261.63, 329.63, 392.00], // C Maj
-            [261.63, 329.63, 392.00], // C Maj
-            [349.23, 440.00, 523.25], // F Maj
-            [261.63, 329.63, 392.00], // C Maj
-            [392.00, 493.88, 587.33], // G Maj
-            [349.23, 440.00, 523.25], // F Maj
-            [261.63, 329.63, 392.00], // C Maj
-            [392.00, 493.88, 587.33], // G Maj
+            [261.63, 329.63, 392.00], [261.63, 329.63, 392.00], 
+            [349.23, 440.00, 523.25], [261.63, 329.63, 392.00], 
+            [392.00, 493.88, 587.33], [349.23, 440.00, 523.25], 
+            [261.63, 329.63, 392.00], [392.00, 493.88, 587.33]
         ];
-        
-        const waltzNotes = [];
-        const waltzBass = [];
-        
+        const waltzNotes = []; const waltzBass = [];
         for (let rep = 0; rep < 4; rep++) {
             chordProg.forEach((chord, barIndex) => {
-                // Bass notes (1 octave down)
                 waltzBass.push(chord[0] / 2, chord[1] / 2, chord[2] / 2);
-                
-                // Melody variations per repetition
                 let m1 = chord[2], m2 = chord[1], m3 = chord[0];
-                if (rep % 2 === 1) { m1 = chord[0]*2; m2 = chord[2]; m3 = chord[1]; } // higher inversion
-                if (rep === 3 && barIndex % 2 === 0) { m1 = chord[1]*2; m2 = chord[2]; m3 = chord[0]; } // sweeping run
-                if (barIndex === 7) { m1 = chord[0]; m2 = chord[0]; m3 = chord[0]; } // dramatic resolution rest
+                if (rep % 2 === 1) { m1 = chord[0]*2; m2 = chord[2]; m3 = chord[1]; } 
+                if (rep === 3 && barIndex % 2 === 0) { m1 = chord[1]*2; m2 = chord[2]; m3 = chord[0]; } 
+                if (barIndex === 7) { m1 = chord[0]; m2 = chord[0]; m3 = chord[0]; } 
                 waltzNotes.push(m1, m2, m3);
             });
         }
@@ -762,45 +817,63 @@
         
         function playMusicLoop() {
             if (!musicPlaying || !audioCtx) return;
-            
-            // Scheduling lookahead
             while (nextNoteTime < audioCtx.currentTime + 0.15) {
                 scheduleNote(musicNoteIndex, nextNoteTime);
                 nextNoteTime += beatDuration;
-                musicNoteIndex = (musicNoteIndex + 1) % 96; // 96 beats = 32 measures
+                musicNoteIndex = (musicNoteIndex + 1) % 96; 
             }
             musicTimeoutId = setTimeout(playMusicLoop, 25);
         }
 
         function scheduleNote(beatIndex, time) {
-            // Melody Oscillator (Triangle wave for music box feel)
-            let melodyOsc = audioCtx.createOscillator();
-            let melodyGain = audioCtx.createGain();
-            melodyOsc.type = 'triangle';
-            melodyOsc.frequency.value = waltzNotes[beatIndex];
+            let melodyOsc = audioCtx.createOscillator(); let melodyGain = audioCtx.createGain();
+            melodyOsc.type = 'triangle'; melodyOsc.frequency.value = waltzNotes[beatIndex];
             melodyOsc.connect(melodyGain); melodyGain.connect(audioCtx.destination);
-            
             melodyGain.gain.setValueAtTime(0, time);
             melodyGain.gain.linearRampToValueAtTime(0.06, time + 0.05);
             melodyGain.gain.exponentialRampToValueAtTime(0.001, time + beatDuration * 0.9);
             melodyOsc.start(time); melodyOsc.stop(time + beatDuration);
             
-            // Harmony Oscillator (Sine wave for warm bass/chords)
-            let harmonyOsc = audioCtx.createOscillator();
-            let harmonyGain = audioCtx.createGain();
-            harmonyOsc.type = 'sine';
-            harmonyOsc.frequency.value = waltzBass[beatIndex];
+            let harmonyOsc = audioCtx.createOscillator(); let harmonyGain = audioCtx.createGain();
+            harmonyOsc.type = 'sine'; harmonyOsc.frequency.value = waltzBass[beatIndex];
             harmonyOsc.connect(harmonyGain); harmonyGain.connect(audioCtx.destination);
             
-            // Emphasize the 1st beat (bass) of the waltz measure
             let isBeatOne = (beatIndex % 3 === 0);
-            let maxVol = isBeatOne ? 0.05 : 0.025;
-            let decay = isBeatOne ? 1.5 : 0.8;
-            
+            let maxVol = isBeatOne ? 0.05 : 0.025; let decay = isBeatOne ? 1.5 : 0.8;
             harmonyGain.gain.setValueAtTime(0, time);
             harmonyGain.gain.linearRampToValueAtTime(maxVol, time + 0.05);
             harmonyGain.gain.exponentialRampToValueAtTime(0.001, time + beatDuration * decay);
             harmonyOsc.start(time); harmonyOsc.stop(time + beatDuration * 2);
+        }
+
+        function playVictoryFanfare() {
+            if (!audioCtx) initAudio();
+            const now = audioCtx.currentTime;
+            
+            // C Maj -> F Maj -> G Maj -> C Maj (High)
+            const fanfareNotes = [
+                {f: 523.25, t: 0}, {f: 659.25, t: 0.15}, {f: 783.99, t: 0.3},
+                {f: 698.46, t: 0.5}, {f: 880.00, t: 0.65}, {f: 1046.50, t: 0.8},
+                {f: 783.99, t: 1.0}, {f: 987.77, t: 1.15}, {f: 1174.66, t: 1.3},
+                {f: 1046.50, t: 1.5}, {f: 1318.51, t: 1.6}, {f: 1567.98, t: 1.7}, {f: 2093.00, t: 1.8}
+            ];
+            
+            fanfareNotes.forEach(n => {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = n.f;
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                
+                gain.gain.setValueAtTime(0, now + n.t);
+                gain.gain.linearRampToValueAtTime(0.12, now + n.t + 0.05);
+                // Last note rings out longer
+                const duration = n.t === 1.8 ? 1.5 : 0.4;
+                gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + duration);
+                
+                osc.start(now + n.t);
+                osc.stop(now + n.t + duration + 0.1);
+            });
         }
 
         document.getElementById('btn-music').addEventListener('click', toggleMusic);
@@ -811,7 +884,6 @@
             if (type === 'spin') { osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1); gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(now); osc.stop(now + 0.2); } 
             else if (type === 'pop') { osc.type = 'triangle'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1); gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(now); osc.stop(now + 0.15); } 
             else if (type === 'build' || type === 'trade') { playTone(440, now, 0.1); playTone(554, now + 0.1, 0.1); playTone(659, now + 0.2, 0.3); } 
-            else if (type === 'win') { playTone(523.25, now, 0.2); playTone(659.25, now + 0.2, 0.2); playTone(783.99, now + 0.4, 0.2); playTone(1046.50, now + 0.6, 0.6); } 
             else if (type === 'lose' || type === 'wrong') { playTone(440, now, 0.2); playTone(415, now + 0.2, 0.3); if(type === 'lose') playTone(392, now + 0.5, 0.6); }
             else if (type === 'cloud') { playTone(300, now, 0.3); playTone(250, now + 0.2, 0.4); }
         }
@@ -877,8 +949,10 @@
                 activeBuildings = [poolE[0], poolM[0], poolEp[0]];
             } else if (userData.level === 2) {
                 activeBuildings = [poolE[0], poolM[0], poolM[1], poolEp[0]];
-            } else { // 3 and 4
+            } else if (userData.level === 3 || userData.level === 4) { 
                 activeBuildings = [poolE[0], poolM[0], poolH[0], poolEp[0]];
+            } else { // Level 5
+                activeBuildings = [poolE[0], poolM[0], poolM[1], poolH[0], poolEp[0]];
             }
             
             activeBuildings = activeBuildings.map((b, i) => ({ ...b, built: false, index: i }));
@@ -1055,13 +1129,12 @@
             const lvl = userData.level; const isHard = lvl >= 3; const isAdd = Math.random() > 0.5;
             let questionStr = ""; let ans = 0;
 
-            if(!isHard) { // Level 1 & 2: Normal A + B = ?
+            if(!isHard) {
                 let a = Math.floor(Math.random() * 10) + 1; let b = Math.floor(Math.random() * 10) + 1;
                 if (!isAdd && a < b) { let temp = a; a = b; b = temp; }
                 ans = isAdd ? (a + b) : (a - b); questionStr = `${a} ${isAdd?'+':'-'} ${b} = ?`;
-            } else { // Level 3 & 4: Missing Addend A + ? = C
-                let a = Math.floor(Math.random() * 10) + 1; let b = Math.floor(Math.random() * 8) + 1;
-                let c = a + b;
+            } else {
+                let a = Math.floor(Math.random() * 10) + 1; let b = Math.floor(Math.random() * 8) + 1; let c = a + b;
                 if(isAdd) {
                     if(Math.random() > 0.5) { questionStr = `${a} + ? = ${c}`; ans = b; }
                     else { questionStr = `? + ${b} = ${c}`; ans = a; }
@@ -1089,7 +1162,6 @@
                 mathTriesLeft -= 1; updateMathWandUI(); playSound('build'); 
                 document.getElementById('modal-math').classList.add('hidden'); document.getElementById('modal-math').classList.remove('flex');
                 
-                // 25% chance for Stardust, else random standard
                 let getStardust = Math.random() < 0.25;
                 let rewardKey = getStardust ? 'stardust' : pickRandom(standardKeys);
                 resources[rewardKey].count++;
@@ -1110,7 +1182,6 @@
         const SPELL_EASY = [{w:'cat', e:'🐱'}, {w:'dog', e:'🐶'}, {w:'sun', e:'☀️'}, {w:'bug', e:'🐛'}, {w:'pig', e:'🐷'}, {w:'bat', e:'🦇'}, {w:'red', e:'🔴'}];
         const SPELL_HARD = [{w:'star', e:'⭐'}, {w:'fish', e:'🐟'}, {w:'moon', e:'🌙'}, {w:'tree', e:'🌳'}, {w:'pink', e:'🎀'}, {w:'wand', e:'🪄'}, {w:'book', e:'📖'}];
 
-        // Ensure voices are loaded (Chrome/Safari quirk)
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
         document.getElementById('btn-spell-scroll').addEventListener('click', () => {
@@ -1126,47 +1197,28 @@
         function generateSpellQuestion() {
             const isHard = userData.level >= 3;
             const pool = isHard ? SPELL_HARD : SPELL_EASY;
-            const item = pickRandom(pool);
-            currentSpellWord = item.w;
-            document.getElementById('spell-emoji').innerText = item.e;
-            document.getElementById('spell-input').value = '';
+            const item = pickRandom(pool); currentSpellWord = item.w;
+            document.getElementById('spell-emoji').innerText = item.e; document.getElementById('spell-input').value = '';
             playSpellWord();
         }
         
         function playSpellWord() {
             if (!window.speechSynthesis) return;
             const utterance = new SpeechSynthesisUtterance("Spell the word: " + currentSpellWord);
-            
-            // Make the voice much cuter
-            utterance.rate = 0.85; 
-            utterance.pitch = 1.6;
-            
-            // Search for feminine voices
+            utterance.rate = 0.85; utterance.pitch = 1.6;
             const voices = window.speechSynthesis.getVoices();
-            const cuteVoice = voices.find(v => 
-                v.name.includes('Samantha') || 
-                v.name.includes('Zira') || 
-                v.name.includes('Google UK English Female') || 
-                v.name.includes('Female') ||
-                v.name.includes('Victoria')
-            );
-            
+            const cuteVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Google UK English Female') || v.name.includes('Female') || v.name.includes('Victoria'));
             if (cuteVoice) utterance.voice = cuteVoice;
             window.speechSynthesis.speak(utterance);
         }
 
         function checkSpellAnswer() {
             const input = document.getElementById('spell-input').value.trim().toLowerCase();
-            if (!input) return;
-            initAudio();
+            if (!input) return; initAudio();
             if (input === currentSpellWord) {
                 spellTriesLeft -= 1; updateMathWandUI(); playSound('build');
                 document.getElementById('modal-spelling').classList.add('hidden'); document.getElementById('modal-spelling').classList.remove('flex');
-                
-                resources['stardust'].count++;
-                let rewardKey = pickRandom(standardKeys);
-                resources[rewardKey].count++;
-                
+                resources['stardust'].count++; let rewardKey = pickRandom(standardKeys); resources[rewardKey].count++;
                 showToast(`Perfect! +1 💫 +1 ${resources[rewardKey].emoji}`);
                 createConfetti(window.innerWidth/2, window.innerHeight/2, 25); updateUI(); checkGameOver();
             } else {
@@ -1197,9 +1249,8 @@
                     if(rarePool.length) { newRareReward = pickRandom(rarePool); userData.inventory.push(newRareReward); }
                 }
 
-                // Level up
                 let lvlUp = false;
-                if(userData.level < 4) { userData.level++; lvlUp = true; }
+                if(userData.level < 5) { userData.level++; lvlUp = true; }
 
                 saveData();
                 setTimeout(() => showGameOverModal('win', newNormalReward, newRareReward, isSpeedWin, lvlUp), 800);
@@ -1222,7 +1273,11 @@
                 if(lvlUp) msg += `\n🌟 Unlocked Level ${userData.level}!`;
                 document.getElementById('modal-msg').innerText = msg;
                 document.getElementById('modal-emoji').innerText = isSpeedWin ? "🌟" : "🎉";
-                modalContent.style.borderColor = isSpeedWin ? "#facc15" : "#4ade80"; playSound('win');
+                modalContent.style.borderColor = isSpeedWin ? "#facc15" : "#4ade80"; 
+                
+                // Play Procedural Triumphant Fanfare!
+                playVictoryFanfare();
+                
                 isConfettiContinuous = true; createConfetti(canvas.width/2, canvas.height/2, 80);
 
                 if(normalRewardId || rareRewardId) {
@@ -1244,7 +1299,7 @@
 
         function resetGameState() {
             isConfettiContinuous = false; particles = []; 
-            maxSpins = userData.level === 4 ? 15 : 20;
+            maxSpins = userData.level >= 4 ? 15 : 20;
             spinsLeft = maxSpins; mathTriesLeft = 4; spellTriesLeft = 4; cloudActive = false;
             gameActive = true; isSpinning = false; document.getElementById('spinner-emoji').innerText = '🧭';
             tradeGive = null; tradeGet = null;
