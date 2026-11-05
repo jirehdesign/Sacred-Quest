@@ -93,10 +93,17 @@
     .terrain-9 { background: #718096; } .terrain-10 { background: #F6AD55; }
     .terrain-11 { background: #DD6B20; } .terrain-12 { background: #1A202C; border: 1px solid #718096; }
     
-    /* Town & Obstacles */
+    /* Obstacles & Map Features */
     .tile.water { background: #3182CE; box-shadow: inset 0 0 8px rgba(0,0,0,0.3); }
     .tile.mountain { background: #4A5568; box-shadow: inset 0 0 8px rgba(0,0,0,0.5); }
-    .tile.town-wall { background: #718096; box-shadow: inset 0 0 5px rgba(0,0,0,0.4); }
+    .tile.swamp { background: #2C7A7B; box-shadow: inset 0 0 10px rgba(0,0,0,0.4); }
+    .tile.bridge { background: #9C4221; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); border-left: 2px solid #7B341E; border-right: 2px solid #7B341E;}
+    
+    /* Town Features */
+    .tile.stone-wall { background: #718096; border: 2px solid #4A5568; }
+    .tile.town-building { background: #E2E8F0; border: 2px solid #A0AEC0; }
+    .tile.town-tree { background: #276749; box-shadow: inset 0 0 6px rgba(0,0,0,0.5); }
+    .tile.brick-road { background: #C53030; box-shadow: inset 0 0 4px #9B2C2C; }
     .tile.town-exit { background: #CBD5E0; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
     
     .castle-icon { font-size: 1.8rem; position: absolute; }
@@ -169,7 +176,7 @@
       border: 4px solid #4A5568; border-radius: 16px; padding: 20px; margin-bottom: 20px;
       display: flex; flex-direction: column; align-items: center; gap: 10px; color: white;
     }
-    #boss-name { font-size: 1.4rem; color: #FEB2B2; text-transform: uppercase; letter-spacing: 2px; }
+    #boss-name { font-size: 1.4rem; color: #FEB2B2; text-transform: uppercase; letter-spacing: 2px; text-align: center;}
     .boss-avatar { font-size: 6rem; line-height: 1; margin: 5px 0; animation: pulseBoss 1s infinite alternate; }
     @keyframes pulseBoss { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
     .boss-hp-bar { width: 100%; max-width: 300px; height: 18px; background: #4A5568; border-radius: 9px; overflow: hidden; border: 2px solid #A0AEC0; }
@@ -284,6 +291,17 @@
     </div>
   </div>
 
+  <!-- Custom Confirm System (For the Wizard Quiz) -->
+  <div class="modal-overlay" id="custom-confirm-overlay" style="z-index: 1001;">
+    <div class="modal-card" style="max-width: 400px; padding: 30px;">
+      <p id="custom-confirm-text" style="font-size: 1.15rem; font-weight: 600; margin-bottom: 25px; white-space: pre-wrap; color: #2D3748; line-height: 1.4;"></p>
+      <div style="display:flex; gap:15px; justify-content:center;">
+         <button class="action-btn" id="custom-confirm-yes" style="width: 120px; justify-content:center;">Yes</button>
+         <button class="nav-btn" id="custom-confirm-no" style="width: 120px; justify-content:center;">No</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Training Academy Modal (Manual Selection) -->
   <div class="modal-overlay" id="training-modal" style="z-index: 500;">
     <div class="modal-card" style="max-width: 600px; max-height: 85vh;">
@@ -387,7 +405,10 @@
         <div id="combat-zone-label" style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0;">Zone Level 1</div>
         <strong id="boss-name">Wild Slime</strong>
         <div class="boss-avatar" id="boss-avatar-icon">💧</div>
-        <div class="boss-hp-bar"><div class="boss-hp-fill" id="boss-hp-fill"></div></div>
+        
+        <div class="boss-hp-bar" id="boss-hp-bar-container">
+          <div class="boss-hp-fill" id="boss-hp-fill"></div>
+        </div>
       </div>
 
       <div class="question-prompt" id="q-prompt">Which letter is 'Aleph'?</div>
@@ -408,13 +429,27 @@
       return arr;
     }
 
-    // --- Custom Alert System ---
+    // --- Custom Alert & Confirm Systems ---
     function showAlert(message, callback) {
       const overlay = document.getElementById('custom-alert-overlay');
       document.getElementById('custom-alert-text').textContent = message;
       overlay.classList.add('active');
       const btn = document.getElementById('custom-alert-btn');
       btn.onclick = () => { overlay.classList.remove('active'); if (callback) callback(); };
+    }
+
+    function showConfirm(message, yesCallback, noCallback) {
+      const overlay = document.getElementById('custom-confirm-overlay');
+      document.getElementById('custom-confirm-text').textContent = message;
+      overlay.classList.add('active');
+      document.getElementById('custom-confirm-yes').onclick = () => {
+        overlay.classList.remove('active');
+        if(yesCallback) yesCallback();
+      };
+      document.getElementById('custom-confirm-no').onclick = () => {
+        overlay.classList.remove('active');
+        if(noCallback) noCallback();
+      };
     }
 
     // --- Audio System (Sensory Friendly Envelopes) ---
@@ -473,44 +508,45 @@
     }
 
     // --- GAME MAP DATA (36 x 12 Grids) ---
+    // Added Bridges (-) and Swamps (~)
     const MAPS = {
       beginner: [
-        "......M..WW.....MMM............WWWW#",
-        ".........WW.....M..............WW...",
-        "..MM...........M....................",
-        "......MM...........M.........M......",
+        "......M..W-.....MMM.......~....WWWW#",
+        ".........W-.....M.........~....WW...",
+        "..MM.....WW....M.........~~.........",
+        "......MM..WW.......M.....~...M......",
         "W..MM.....W......MM.................",
-        "WW........W....WW..T...........T....",
-        "W...T..M..W..W.W........M........M..",
-        "..........W...W.....................",
-        ".MMM...M.......M.............MMM....",
-        ".......M.........M..................",
+        "WW..~.....W....WW..T...........T....",
+        "W...T..M..W--W.W........M........M..",
+        "..........W..WW.....................",
+        ".MMM...M.......M.......~.....MMM....",
+        ".......M.........M.....~............",
         "M.......M...M.......M.......M.......",
         "@..M................................"
       ],
       intermediate: [
-        "...MMM...WW.....MMM..W.........WWWW#",
-        ".M..MM.M.WW...M..M...W.........WW...",
-        ".MM..M.M......M..M...W...T..........",
+        "...MMM...W-.....MMM..W....~....WWWW#",
+        ".M..MM.M.W-.......M..W....~~...WW...",
+        ".MM..M.M.WW.......M..W...T..........",
         "..MM...MM.W...MM...M.W.......M......",
-        "W..MMMM...W......MM..W..............",
-        "WW..T...M.W..WW......W.....M...T....",
+        "W..MMMM...W......MM..W--W...........",
+        "WW..T...M.W--W.......W..W..M...T....",
         "WWWW.WWWW.W..W.W...M...MM........M..",
-        ".....M....W...W.................M...",
-        ".MMM.M.MMMM....MMM...M.......MMM....",
-        "...M.M...........M...M..............",
+        "~....M....W...W.................M...",
+        "~MMM.M.MMMM....MMM...M.......MMM....",
+        "...M.M...........M...M.......~......",
         "MM.....MMMM.M..M...M.M......M.......",
         "@..M......M........................."
       ],
       advanced: [
-        "M.MMMMM..MW.M.MM.MM..M.......MMMWWW#",
-        "M...M....MW.M.M...M..M.......MWWW...",
-        "M.M.M.MMMM..M...M.M..M...T...M......",
-        "..M...M...W...M...M..M.......M......",
-        "WM.MMMM.M.W.W.MMMM...M..............",
-        "WW......M.W.W......M.M.MM..M...T....",
-        "WWWW.WWWW.W.W.WWWW...M...MM......M..",
-        "..T..M....W..T..M....M..M.......M...",
+        "M.MMMMM..MW-..MM.MM..M.......MMMWWW#",
+        "M...M....MW-..M...M..M....~..MWWW...",
+        "M.M.M.MMMM.W....M.M..M...T~..M......",
+        "..M...M...W-..M...M..M.......M......",
+        "WM.MMMM.M.W-..MMMM...M..............",
+        "WW......M.W-.......M.M.MM..M...T....",
+        "WWWW.WWWW.W-..WWWW...M...MM......M..",
+        "..T..M....WW...T..M....M..M.......M.",
         ".MMMMM.MMMM..MMM.MM.MM.......MMM....",
         "...M.M.........M..M..M..............",
         "MM.M...MMMM.MM...M...M......M.......",
@@ -519,20 +555,20 @@
     };
 
     // --- TOWN LAYOUT (12x12) ---
-    // T = Tree, B = Building, $ = Shopkeeper, S = Shop Sign, N = NPC, E = Exit
+    // O=Stone Wall, B=Building, $=Shopkeeper, S=Shop Sign, N=NPC, E=Exit, +=Brick Road, Z=Wizard
     const TOWN_LAYOUT = [
-      "TTTTTTTTTTTT",
-      "TTBBBBBBBBTT",
-      "TB..$.$..SBT",
-      "TB........BT",
-      "T.N..N..N..T",
-      "T...N..N...T",
-      "T.N..N..N..T",
-      "T...N..N...T",
-      "T.N......N.T",
-      "T..........T",
-      "T..........T",
-      "TTTT.EE.TTTT"
+      "OOOOOOOOOOOO",
+      "OOBBBBBBBBOO",
+      "OB++$.$++SBO",
+      "OB++++++++BO",
+      "O+N++T+++N+O",
+      "O+N++++Z+N+O",
+      "O+++T++++++O",
+      "O+N++N+++N+O",
+      "O++++++T+++O",
+      "O+N++N+++N+O",
+      "O++++++++++O",
+      "OOOO+EE+OOOO"
     ];
 
     const AVATARS = [
@@ -628,6 +664,10 @@
     let inBattle = false;
     let inTown = false;
     let townNPCs = {};
+    
+    // Wizard Quiz State
+    let inWizardQuiz = false;
+    let wizardStreak = 0;
 
     function saveDB() {
       if (currentUser) usersDB[currentUser.name] = currentUser;
@@ -797,17 +837,17 @@
         "Don't forget to check your Backpack in the Profile menu to use your medicine.",
         "The Demon Lord awaits in the dark castle at the far east.",
         "Hebrew is read from right to left! Keep that in mind.",
-        "Always look for the green arrows at the edge of the world map to travel to the next region.",
+        "Look for the green arrows at the edge of the world map to travel to the next region.",
         "We are safe in this town, no monsters will attack you here."
       ];
       shuffleArray(genericTips);
       
-      while(concepts.length < 12) {
+      while(concepts.length < 11) {
         concepts.push(genericTips.pop() || "Blessings on your journey, hero!");
       }
       shuffleArray(concepts);
       
-      const emojis = ['🧔', '👩', '👴', '👵', '🧙', '💂', '🕵️', '👩‍🌾', '👨‍🍳', '🧝', '🥷', '🤴'];
+      const emojis = ['🧔', '👩', '👴', '👵', '💂', '🕵️', '👩‍🌾', '👨‍🍳', '🧝', '🥷', '🤴'];
       shuffleArray(emojis);
       
       let index = 0;
@@ -844,11 +884,13 @@
           tile.className = 'tile';
           
           if (tileType === 'W') {
-            tile.classList.add('water');
-            tile.innerHTML = '<span class="env-icon">🌊</span>';
+            tile.classList.add('water'); tile.innerHTML = '<span class="env-icon">🌊</span>';
           } else if (tileType === 'M') {
-            tile.classList.add('mountain');
-            tile.innerHTML = '<span class="env-icon">⛰️</span>';
+            tile.classList.add('mountain'); tile.innerHTML = '<span class="env-icon">⛰️</span>';
+          } else if (tileType === '~') {
+            tile.classList.add('swamp'); tile.innerHTML = '<span class="env-icon">🐸</span>';
+          } else if (tileType === '-') {
+            tile.classList.add('bridge'); tile.innerHTML = '<span class="env-icon">🪵</span>';
           } else {
             const dist = (globalX - 0) + (11 - y);
             const level = Math.min(12, Math.floor(dist / 4) + 1);
@@ -890,13 +932,20 @@
           tile.className = 'tile';
           tile.id = `town-cell-${x}-${y}`;
           
-          if (tileType === 'T') {
-            tile.classList.add('terrain-4'); tile.innerHTML = '<span class="env-icon">🌲</span>';
+          if (tileType === 'O') {
+            tile.classList.add('stone-wall'); tile.innerHTML = '<span class="env-icon">🧱</span>';
           } else if (tileType === 'B') {
-            tile.classList.add('town-wall'); tile.innerHTML = '<span class="env-icon">🧱</span>';
+            tile.classList.add('town-building'); tile.innerHTML = '<span class="env-icon">🏠</span>';
+          } else if (tileType === 'T') {
+            tile.classList.add('town-tree'); tile.innerHTML = '<span class="env-icon">🌲</span>';
+          } else if (tileType === '+') {
+            tile.classList.add('brick-road'); 
           } else if (tileType === '$' || tileType === 'S') {
             tile.classList.add('terrain-2'); 
             tile.innerHTML = tileType === '$' ? '<span class="env-icon" style="font-size:1.6rem;">🧑‍💼</span>' : '<span class="env-icon">🛒</span>';
+          } else if (tileType === 'Z') {
+            tile.classList.add('brick-road'); 
+            tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">🧙‍♂️</span>';
           } else if (tileType === 'E') {
             tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>';
           } else if (tileType === 'N') {
@@ -1033,13 +1082,14 @@
         if (nx >= 0 && nx < 12 && ny >= 0 && ny < 12) {
           const tile = TOWN_LAYOUT[ny][nx];
           
-          if (tile === 'T' || tile === 'B' || tile === 'S') {
+          if (tile === 'O' || tile === 'B' || tile === 'S' || tile === 'T') {
             sfx.bump();
             const token = document.getElementById('player-map-token');
             if (token) { token.classList.add('bump-anim'); setTimeout(() => token.classList.remove('bump-anim'), 200); }
             return;
           }
           if (tile === '$') { sfx.step(); openShop(); return; }
+          if (tile === 'Z') { sfx.step(); triggerWizardQuiz(); return; }
           if (tile === 'N') {
             sfx.encounter(); 
             const npc = townNPCs[`${nx},${ny}`];
@@ -1103,7 +1153,10 @@
         
         if (tileType === '#') {
           triggerEncounter(true);
-        } else if ((currentUser.x !== 0 || currentUser.y !== 11) && Math.random() < 0.35) {
+        } else if (tileType !== '-' && tileType !== '~' && (currentUser.x !== 0 || currentUser.y !== 11) && Math.random() < 0.35) {
+          triggerEncounter(false);
+        } else if (tileType === '~' && Math.random() < 0.50) { 
+          // Swamps have higher encounter rate
           triggerEncounter(false);
         }
       }
@@ -1117,8 +1170,33 @@
       if (e.key === 'ArrowRight') { movePlayer(1, 0); e.preventDefault(); }
     });
 
+
+    // --- WIZARD QUIZ LOGIC ---
+    function triggerWizardQuiz() {
+      showConfirm("Greetings, traveler! I am the Town Wizard.\n\nWould you care for a harmless quiz? If you get 5 or 10 right in a row, I will reward you!", 
+      () => {
+        inBattle = true;
+        inWizardQuiz = true;
+        wizardStreak = 0;
+        sfx.encounter(); 
+        
+        currentEnemyLevel = getCurrentZoneLevel(); 
+        document.getElementById('combat-zone-label').textContent = "THE WIZARD'S CHALLENGE";
+        document.getElementById('boss-name').textContent = "Wizard Master";
+        document.getElementById('boss-avatar-icon').textContent = "🧙‍♂️";
+        
+        // Hide HP bar for Wizard quiz
+        document.getElementById('boss-hp-bar-container').style.display = 'none';
+        
+        loadNextBattleQuestion();
+        document.getElementById('battle-modal').classList.add('active');
+      }, 
+      null);
+    }
+
     function triggerEncounter(isCastleBoss) {
       inBattle = true;
+      inWizardQuiz = false;
       sfx.encounter();
       
       currentEnemyLevel = isCastleBoss ? 12 : getCurrentZoneLevel();
@@ -1130,6 +1208,9 @@
       document.getElementById('combat-zone-label').textContent = isCastleBoss ? "FINAL BOSS" : `Danger Zone: Level ${currentEnemyLevel}`;
       document.getElementById('boss-name').textContent = isCastleBoss ? "Demon Lord" : `Lvl ${currentEnemyLevel} ${enemyDef.name}`;
       document.getElementById('boss-avatar-icon').textContent = enemyDef.icon;
+      
+      // Ensure HP bar is visible for normal battles
+      document.getElementById('boss-hp-bar-container').style.display = 'block';
       updateEnemyHPBar();
       
       loadNextBattleQuestion();
@@ -1176,6 +1257,47 @@
     }
 
     function processAnswer(selected) {
+      if (inWizardQuiz) {
+        if (selected === activeQuestion.a) {
+          sfx.win();
+          wizardStreak++;
+          let msg = `Correct! That's ${wizardStreak} in a row.`;
+          let rewardMsg = "";
+          
+          if (wizardStreak === 5) {
+            if (Math.random() < 0.5) {
+              currentUser.coins += 50; rewardMsg = "\n\n🎁 You earned 50 coins!";
+            } else {
+              currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; rewardMsg = "\n\n🎁 You earned a Medicine!";
+            }
+            saveDB(); updateUI();
+          } else if (wizardStreak === 10) {
+            if (Math.random() < 0.5) {
+              currentUser.coins += 150; rewardMsg = "\n\n💎 Amazing! You earned 150 coins!";
+            } else {
+              currentUser.consumables['i3'] = (currentUser.consumables['i3'] || 0) + 1; rewardMsg = "\n\n💎 Amazing! You earned an Elixir!";
+            }
+            saveDB(); updateUI();
+          }
+          
+          showConfirm(msg + rewardMsg + "\n\nShall we continue the quiz?", () => {
+            loadNextBattleQuestion();
+          }, () => {
+            endBattle();
+          });
+        } else {
+          sfx.bump();
+          wizardStreak = 0;
+          showConfirm(`Not quite! The correct answer was:\n${activeQuestion.a}\n\nYour streak has reset. Shall we try again?`, () => {
+            loadNextBattleQuestion();
+          }, () => {
+            endBattle();
+          });
+        }
+        return;
+      }
+
+      // Normal Combat Logic
       if (selected === activeQuestion.a) {
         sfx.hitEnemy();
         const pDmg = getPlayerDamage();
@@ -1248,6 +1370,7 @@
 
     function endBattle() {
       inBattle = false;
+      inWizardQuiz = false;
       document.getElementById('battle-modal').classList.remove('active');
       saveDB(); updateUI();
     }
