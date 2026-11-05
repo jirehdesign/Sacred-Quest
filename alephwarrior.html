@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -505,9 +506,9 @@
         const mapBass =   [N.C3, 0, N.G2, 0, N.C3, 0, N.G2, 0, N.C3, 0, N.G2, 0, N.C3, 0, N.E3, 0, 
                            N.F2, 0, N.C3, 0, N.F2, 0, N.A2, 0, N.C3, 0, N.G2, 0, N.C3, 0, N.G2, 0];
 
-        // Frantic Battle Theme (Sawtooth + Square)
-        const batMelody = [N.C4, N.Eb4, N.G4, N.Eb4, N.C4, N.Eb4, N.G4, N.C5, N.Ab4, N.C5, N.Eb5, N.C5, N.G4, N.B4, N.D5, N.B4];
-        const batBass =   [N.C2, N.C2, N.C2, N.C2, N.C3, N.C3, N.C3, N.C3, N.Ab2, N.Ab2, N.Ab2, N.Ab2, N.G2, N.G2, N.G2, N.G2];
+        // Bouncy, Fun Battle Theme (Square + Triangle) - Replaces Frantic Tense Theme
+        const batMelody = [N.C4, N.E4, N.G4, N.C5, N.G4, N.E4, N.C4, N.E4, N.F4, N.A4, N.C5, N.F5, N.C5, N.A4, N.F4, N.A4];
+        const batBass =   [N.C3, N.G2, N.C3, N.G2, N.C3, N.G2, N.C3, N.G2, N.F2, N.C3, N.F2, N.C3, N.F2, N.C3, N.F2, N.C3];
 
         // Positive, Magical Wizard Theme (Sine + Triangle)
         const wizMelody = [N.C5, N.E5, N.G5, N.B5, N.C6, N.B5, N.G5, N.E5, N.F5, N.A5, N.C6, N.E6, N.F6, N.E6, N.C6, N.A5,
@@ -530,10 +531,10 @@
             this.playTone(wizBass[i], 'triangle', 0.5, 0.04);
             
           } else if (inBattle) {
-            speedMs = 130; // ALLEGRO (Fast tempo for battle)
+            speedMs = 150; // MODERATELY FAST (bouncy battle pace)
             const i = this.tick % batMelody.length;
-            this.playTone(batMelody[i], 'sawtooth', 0.15, 0.02);
-            this.playTone(batBass[i], 'square', 0.2, 0.03);
+            this.playTone(batMelody[i], 'square', 0.15, 0.02); // Much happier square wave
+            this.playTone(batBass[i], 'triangle', 0.2, 0.03);
             
           } else {
             speedMs = 180; // MODERATO (Medium tempo for world map)
@@ -657,7 +658,7 @@
       1: { name: 'Green Slime', icon: '💧' }, 2: { name: 'Red Slime', icon: '🩸' }, 3: { name: 'Angry Shroom', icon: '🍄' },
       4: { name: 'Forest Goblin', icon: '👺' }, 5: { name: 'Wild Boar', icon: '🐗' }, 6: { name: 'Dire Wolf', icon: '🐺' },
       7: { name: 'Rock Golem', icon: '🪨' }, 8: { name: 'Mountain Troll', icon: '🧌' }, 9: { name: 'Gargoyle', icon: '🦇' },
-      10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Demon Lord', icon: '👿' }
+      10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Giant Hamster', icon: '🐹' }
     };
 
     // --- TRAINING ACADEMY DATA ---
@@ -887,7 +888,7 @@
         "Armor reduces the damage you take when you make a mistake.",
         "A better weapon helps you defeat enemies in fewer turns!",
         "Don't forget to check your Backpack in the Profile menu to use your medicine.",
-        "The Demon Lord awaits in the dark castle at the far east.",
+        "The Giant Hamster awaits in the dark castle at the far east.",
         "Hebrew is read from right to left! Keep that in mind.",
         "Look for the green arrows at the edge of the world map to travel to the next region.",
         "We are safe in this town, no monsters will attack you here."
@@ -1257,7 +1258,7 @@
       currentEnemyHP = currentEnemyMaxHP;
       
       document.getElementById('combat-zone-label').textContent = isCastleBoss ? "FINAL BOSS" : `Danger Zone: Level ${currentEnemyLevel}`;
-      document.getElementById('boss-name').textContent = isCastleBoss ? "Demon Lord" : `Lvl ${currentEnemyLevel} ${enemyDef.name}`;
+      document.getElementById('boss-name').textContent = isCastleBoss ? "Giant Hamster" : `Lvl ${currentEnemyLevel} ${enemyDef.name}`;
       document.getElementById('boss-avatar-icon').textContent = enemyDef.icon;
       
       // Ensure HP bar is visible for normal battles
@@ -1373,7 +1374,7 @@
             showAlert(victoryMsg, () => {
               if (currentEnemyLevel === 12 && currentLayout[currentUser.y][currentUser.x] === '#') {
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
-                showAlert("👑 CONGRATULATIONS! You have defeated the Demon Lord and saved the realm! Returning to village...", () => {
+                showAlert("👑 CONGRATULATIONS! You have defeated the Giant Hamster and saved the realm! Returning to village...", () => {
                   currentUser.x = 0; currentUser.y = 11;
                   renderCurrentScreen();
                   updateUI();
