@@ -515,26 +515,40 @@
         const wizBass =   [N.C4, 0, N.G3, 0, N.C4, 0, N.G3, 0, N.F3, 0, N.C4, 0, N.F3, 0, N.C4, 0,
                            N.D3, 0, N.A3, 0, N.D3, 0, N.A3, 0, N.G3, 0, N.D4, 0, N.G3, 0, N.D4, 0];
 
-        this.bgmTimer = setInterval(() => {
+        // The dynamic music loop via setTimeout allows us to change tempo instantly based on game state!
+        const bgmLoop = () => {
+          if (!this.musicOn) return;
           this.tick++;
           
+          let speedMs = 180; // Default map speed
+          
           if (inWizardQuiz) {
+            speedMs = 350; // ADAGIO (Slower tempo for Wizard)
             const i = this.tick % wizMelody.length;
-            this.playTone(wizMelody[i], 'sine', 0.2, 0.03); 
-            this.playTone(wizBass[i], 'triangle', 0.3, 0.04);
+            // Notes sustain longer to match the slow tempo
+            this.playTone(wizMelody[i], 'sine', 0.5, 0.03); 
+            this.playTone(wizBass[i], 'triangle', 0.5, 0.04);
+            
           } else if (inBattle) {
+            speedMs = 130; // ALLEGRO (Fast tempo for battle)
             const i = this.tick % batMelody.length;
             this.playTone(batMelody[i], 'sawtooth', 0.15, 0.02);
             this.playTone(batBass[i], 'square', 0.2, 0.03);
+            
           } else {
+            speedMs = 180; // MODERATO (Medium tempo for world map)
             const i = this.tick % mapMelody.length;
             this.playTone(mapMelody[i], 'square', 0.2, 0.02); 
             this.playTone(mapBass[i], 'triangle', 0.2, 0.04);
           }
-        }, 150); // Fast 16th note pace (100 BPM)
+          
+          this.bgmTimer = setTimeout(bgmLoop, speedMs);
+        };
+        
+        bgmLoop(); 
       }
       
-      stopBGM() { if(this.bgmTimer) clearInterval(this.bgmTimer); this.bgmTimer = null; }
+      stopBGM() { if(this.bgmTimer) clearTimeout(this.bgmTimer); this.bgmTimer = null; }
     }
     
     const sfx = new SoundFX();
