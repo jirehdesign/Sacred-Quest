@@ -244,10 +244,12 @@
 
     .training-header { background: #EBF8FF; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #90CDF4; }
     .training-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px;}
-    .training-card { background: #F7FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px;}
+    .training-card { background: #F7FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative;}
     .training-hebrew { font-family: 'Rubik', sans-serif; font-size: 3rem; color: var(--primary-dark); font-weight: bold;}
     .training-name { font-weight: bold; font-size: 1.1rem; color: #2D3748;}
     .training-desc { font-size: 0.85rem; color: #718096; text-align: center;}
+    .mini-audio-btn { position: absolute; top: 5px; right: 5px; background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: transform 0.1s;}
+    .mini-audio-btn:hover { transform: scale(1.2); }
   </style>
 </head>
 <body>
@@ -310,14 +312,38 @@
     </div>
   </div>
 
+  <!-- Town Teacher Modal -->
+  <div class="modal-overlay" id="teacher-modal" style="z-index: 501;">
+    <div class="modal-card" style="max-width: 500px; max-height: 85vh;">
+      <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">👩‍🏫 Town Teacher</h2>
+      
+      <!-- Topic Selection View -->
+      <div id="teacher-topics-view">
+        <p style="color:#718096; margin-bottom: 15px;">"Shalom! I can teach you about what you've encountered so far on your journey. What shall we study today?"</p>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 45vh; overflow-y: auto; padding-right: 5px;" id="teacher-topics-list"></div>
+        <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('teacher-modal')">Leave Class</button>
+      </div>
+
+      <!-- Lesson View -->
+      <div id="teacher-lesson-view" style="display: none;">
+        <div class="training-header">
+          <strong id="teacher-lesson-title" style="font-size:1.2rem; color:#2B6CB0;"></strong>
+          <p style="font-size:0.95rem; color:#4A5568; margin-top:5px;">Click the speaker icons to hear pronunciation!</p>
+        </div>
+        <div class="training-grid" id="teacher-lesson-content" style="max-height: 45vh; overflow-y: auto; padding: 5px;"></div>
+        <button class="action-btn" style="margin: 15px auto 0; font-size: 1rem; padding: 10px 20px;" onclick="backToTeacherTopics()">🔙 Back to Topics</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Training Academy Modal (Manual Selection) -->
   <div class="modal-overlay" id="training-modal" style="z-index: 500;">
     <div class="modal-card" style="max-width: 600px; max-height: 85vh;">
-      <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">📜 Training Academy</h2>
+      <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">📜 Training Manual</h2>
       
       <!-- View 1: Lesson List -->
       <div id="training-view-list">
-        <p style="color:#718096; margin-bottom: 15px;">Select a lesson to study before heading into the danger zones.</p>
+        <p style="color:#718096; margin-bottom: 15px;">Review the master compendium for all 12 zones.</p>
         <div style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-right: 5px;" id="lesson-list-container"></div>
         <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('training-modal')">Close</button>
       </div>
@@ -459,6 +485,14 @@
         if(noCallback) noCallback();
       };
     }
+    
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(word);
+        utt.lang = 'he-IL'; utt.rate = 0.85; window.speechSynthesis.speak(utt);
+      }
+    }
 
     // --- RPG 8-BIT AUDIO ENGINE ---
     class SoundFX {
@@ -508,53 +542,47 @@
           C6: 1046.5, D6: 1174.7, E6: 1318.5, F6: 1396.9, G6: 1568.0
         };
 
-        // Heroic Map Theme (Square + Triangle)
         const mapMelody = [N.C4, 0, N.C4, N.G3, N.C4, N.D4, N.E4, 0, N.E4, 0, N.E4, N.C4, N.E4, N.F4, N.G4, 0, 
                            N.A4, 0, N.A4, N.F4, N.C5, N.A4, N.G4, 0, N.E4, N.C4, N.D4, N.E4, N.C4, 0, 0, 0];
         const mapBass =   [N.C3, 0, N.G2, 0, N.C3, 0, N.G2, 0, N.C3, 0, N.G2, 0, N.C3, 0, N.E3, 0, 
                            N.F2, 0, N.C3, 0, N.F2, 0, N.A2, 0, N.C3, 0, N.G2, 0, N.C3, 0, N.G2, 0];
 
-        // Ominous Castle Theme (Deep Triangle + Sine) - Very slow!
         const casMelody = [N.C3, 0, N.Eb3, 0, N.D3, 0, N.Ab2, 0];
         const casBass =   [N.C2, 0, N.C2, 0, N.G1, 0, N.G1, 0];
 
-        // Bouncy, Fun Battle Theme (Square + Triangle)
         const batMelody = [N.C4, N.E4, N.G4, N.C5, N.G4, N.E4, N.C4, N.E4, N.F4, N.A4, N.C5, N.F5, N.C5, N.A4, N.F4, N.A4];
         const batBass =   [N.C3, N.G2, N.C3, N.G2, N.C3, N.G2, N.C3, N.G2, N.F2, N.C3, N.F2, N.C3, N.F2, N.C3, N.F2, N.C3];
 
-        // Positive, Magical Wizard Theme (Sine + Triangle)
         const wizMelody = [N.C5, N.E5, N.G5, N.B5, N.C6, N.B5, N.G5, N.E5, N.F5, N.A5, N.C6, N.E6, N.F6, N.E6, N.C6, N.A5,
                            N.D5, N.F5, N.A5, N.C6, N.D6, N.C6, N.A5, N.F5, N.G5, N.B5, N.D6, N.F6, N.G6, N.F6, N.D6, N.B5];
         const wizBass =   [N.C4, 0, N.G3, 0, N.C4, 0, N.G3, 0, N.F3, 0, N.C4, 0, N.F3, 0, N.C4, 0,
                            N.D3, 0, N.A3, 0, N.D3, 0, N.A3, 0, N.G3, 0, N.D4, 0, N.G3, 0, N.D4, 0];
 
-        // The dynamic music loop allows us to change tempo and instruments instantly
         const bgmLoop = () => {
           if (!this.musicOn) return;
           this.tick++;
-          
-          let speedMs = 180; // Default map speed
+          let speedMs = 180;
           
           if (inWizardQuiz) {
-            speedMs = 350; // ADAGIO (Slower tempo for Wizard)
+            speedMs = 350;
             const i = this.tick % wizMelody.length;
             this.playTone(wizMelody[i], 'sine', 0.5, 0.03); 
             this.playTone(wizBass[i], 'triangle', 0.5, 0.04);
             
           } else if (inBattle) {
-            speedMs = 150; // MODERATELY FAST (bouncy battle pace)
+            speedMs = 150;
             const i = this.tick % batMelody.length;
             this.playTone(batMelody[i], 'square', 0.15, 0.02); 
             this.playTone(batBass[i], 'triangle', 0.2, 0.03);
             
           } else if (inCastle) {
-            speedMs = 600; // VERY SLOW and ominous for the dungeon
+            speedMs = 600;
             const i = this.tick % casMelody.length;
             this.playTone(casMelody[i], 'triangle', 0.8, 0.04);
             this.playTone(casBass[i], 'sine', 0.9, 0.05);
 
           } else {
-            speedMs = 180; // MODERATO (Medium tempo for world map)
+            speedMs = 180; 
             const i = this.tick % mapMelody.length;
             this.playTone(mapMelody[i], 'square', 0.2, 0.02); 
             this.playTone(mapBass[i], 'triangle', 0.2, 0.04);
@@ -624,13 +652,14 @@
     };
 
     // --- TOWN LAYOUT (12x12) ---
+    // C = Classroom / Teacher, Z = Wizard
     const TOWN_LAYOUT = [
       "OOOOOOOOOOOO",
       "OOBBBBBBBBOO",
       "OB++$.$++SBO",
       "OB++++++++BO",
       "O+N++T+++N+O",
-      "O+N++++Z+N+O",
+      "O+C++++Z+N+O", 
       "O+++T++++++O",
       "O+N++N+++N+O",
       "O++++++T+++O",
@@ -640,7 +669,6 @@
     ];
 
     // --- CASTLE LAYOUT (12x12 TRUE MAZE) ---
-    // X=Castle Wall, .=Castle Floor, E=Exit, M=High Level Monster, H=Giant Hamster Boss
     const CASTLE_LAYOUT = [
       "XXXXXXXXXXXX",
       "X.H......M.X",
@@ -693,7 +721,7 @@
       10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Giant Hamster', icon: '🐹' }
     };
 
-    // --- TRAINING ACADEMY DATA ---
+    // --- MASSIVELY EXPANDED TRAINING / TEACHER DATA ---
     const TRAINING_DATA = {
       beginner: {
         1: { title: "Aleph, Bet, Vet", desc: "Hebrew is read Right to Left.", items: [["א", "Aleph", "Silent"], ["בּ", "Bet", "Makes 'B' sound"], ["ב", "Vet", "Makes 'V' sound"]] },
@@ -706,31 +734,31 @@
         8: { title: "Resh, Shin, Sin, Tav", desc: "The final letters of the Aleph-Bet.", items: [["ר", "Resh", "'R' sound"], ["שׁ", "Shin", "'Sh' sound (dot on right)"], ["שׂ", "Sin", "'S' sound (dot on left)"], ["ת", "Tav", "'T' sound"]] },
         9: { title: "Sofit (Final) Letters 1", desc: "Some letters change shape at the END of a word.", items: [["ך", "Khaf Sofit", "End of word 'Ch'"], ["ם", "Mem Sofit", "End of word 'M'"]] },
         10: { title: "Sofit (Final) Letters 2", desc: "More shape-changers at the end of words.", items: [["ן", "Nun Sofit", "End of word 'N'"], ["ף", "Fey Sofit", "End of word 'F'"], ["ץ", "Tsadi Sofit", "End of word 'Ts'"]] },
-        11: { title: "The 'Ah' Vowels", desc: "Vowels sit under the letters.", items: [["אַ", "Patach", "Short 'Ah' sound"], ["אָ", "Kamatz", "Long 'Ah' sound"]] },
-        12: { title: "The 'Eh' & 'Ee' Vowels", desc: "Mastering the basic vowel sounds.", items: [["אֶ", "Segol", "'Eh' sound"], ["אֵ", "Tzere", "'Ey' sound"], ["אִ", "Chirik", "'Ee' sound"]] }
+        11: { title: "The 'Ah' Vowels", desc: "Vowels sit under the letters.", items: [["אַ", "Patach", "Short 'Ah' sound"], ["אָ", "Kamatz", "Long 'Ah' sound"], ["אֲ", "Chataf Patach", "Quick 'Ah' sound"]] },
+        12: { title: "The 'Eh' & 'Ee' Vowels", desc: "Mastering the basic vowel sounds.", items: [["אֶ", "Segol", "'Eh' sound"], ["אֵ", "Tzere", "'Ey' sound"], ["אִ", "Chirik", "'Ee' sound"], ["אֱ", "Chataf Segol", "Quick 'Eh' sound"]] }
       },
       intermediate: {
-        1: { title: "Greetings", desc: "Saying hello in Hebrew.", items: [["שָׁלוֹם", "Shalom", "Hello / Peace"], ["בֹּקֶר טוֹב", "Boker Tov", "Good Morning"]] },
-        2: { title: "Family (Mishpacha)", desc: "Words for family members.", items: [["אַבָּא", "Abba", "Father"], ["אִמָּא", "Ima", "Mother"], ["בֵּן", "Ben", "Son"]] },
-        3: { title: "Colors (Tzvaim)", desc: "Identifying common colors.", items: [["אָדוֹם", "Adom", "Red"], ["כָּחוֹל", "Kachol", "Blue"], ["יָרוֹק", "Yarok", "Green"]] },
-        4: { title: "Animals (Chayot)", desc: "Basic pets and animals.", items: [["כֶּלֶב", "Kelev", "Dog"], ["חָתוּל", "Chatul", "Cat"], ["סוּס", "Sus", "Horse"]] },
-        5: { title: "Numbers 1-3", desc: "Counting basics.", items: [["אַחַת", "Achat", "One"], ["שְׁתַּיִם", "Shtayim", "Two"], ["שָׁלוֹשׁ", "Shalosh", "Three"]] },
-        6: { title: "Food (Ochel)", desc: "Things we eat and drink.", items: [["לֶחֶם", "Lechem", "Bread"], ["מַיִם", "Mayim", "Water"], ["חָלָב", "Chalav", "Milk"]] },
-        7: { title: "Body Parts", desc: "Identifying parts of the body.", items: [["רֹאשׁ", "Rosh", "Head"], ["עַיִן", "Ayin", "Eye"], ["יָד", "Yad", "Hand"]] },
-        8: { title: "Nature", desc: "The world outside.", items: [["שֶׁמֶשׁ", "Shemesh", "Sun"], ["עֵץ", "Etz", "Tree"], ["יָם", "Yam", "Sea"]] },
-        9: { title: "Clothing (Begadim)", desc: "What we wear.", items: [["בֶּגֶד", "Beged", "Garment"], ["נַעֲלַיִם", "Na'alayim", "Shoes"], ["כּוֹבַע", "Kova", "Hat"]] },
-        10: { title: "Home (Bayit)", desc: "Around the house.", items: [["בַּיִת", "Bayit", "House"], ["דֶּלֶת", "Delet", "Door"], ["חַלּוֹן", "Chalon", "Window"]] },
-        11: { title: "Time (Zman)", desc: "Telling time.", items: [["יוֹם", "Yom", "Day"], ["לַיְלָה", "Laila", "Night"], ["שָׁעָה", "Sha'a", "Hour"]] },
-        12: { title: "Common Nouns", desc: "Essential everyday words.", items: [["סֵפֶר", "Sefer", "Book"], ["יֶלֶד", "Yeled", "Boy"], ["יַלְדָּה", "Yalda", "Girl"]] }
+        1: { title: "Greetings", desc: "Saying hello in Hebrew.", items: [["שָׁלוֹם", "Shalom", "Hello / Peace / Goodbye"], ["בֹּקֶר טוֹב", "Boker Tov", "Good Morning"], ["עֶרֶב טוֹב", "Erev Tov", "Good Evening"], ["לַיְלָה טוֹב", "Laila Tov", "Good Night"], ["תּוֹדָה", "Toda", "Thank you"], ["סְלִיחָה", "Slicha", "Excuse me / Sorry"]] },
+        2: { title: "Family (Mishpacha)", desc: "Words for family members.", items: [["אַבָּא", "Abba", "Father"], ["אִמָּא", "Ima", "Mother"], ["בֵּן", "Ben", "Son"], ["בַּת", "Bat", "Daughter"], ["אָח", "Ach", "Brother"], ["אָחוֹת", "Achot", "Sister"], ["סָבָּא", "Saba", "Grandfather"], ["סָבְתָא", "Savta", "Grandmother"]] },
+        3: { title: "Colors (Tzvaim)", desc: "Identifying common colors.", items: [["אָדוֹם", "Adom", "Red"], ["כָּחוֹל", "Kachol", "Blue"], ["יָרוֹק", "Yarok", "Green"], ["צָהוֹב", "Tzahov", "Yellow"], ["שָׁחוֹר", "Shachor", "Black"], ["לָבָן", "Lavan", "White"], ["וָרוֹד", "Varod", "Pink"]] },
+        4: { title: "Animals (Chayot)", desc: "Basic pets and animals.", items: [["כֶּלֶב", "Kelev", "Dog"], ["חָתוּל", "Chatul", "Cat"], ["סוּס", "Sus", "Horse"], ["צִפּוֹר", "Tzipor", "Bird"], ["דָּג", "Dag", "Fish"], ["פָּרָה", "Parah", "Cow"], ["קוֹף", "Kof", "Monkey"]] },
+        5: { title: "Numbers 1-10", desc: "Counting basics.", items: [["אַחַת", "Achat", "One"], ["שְׁתַּיִם", "Shtayim", "Two"], ["שָׁלוֹשׁ", "Shalosh", "Three"], ["אַרְבַּע", "Arba", "Four"], ["חָמֵשׁ", "Chamesh", "Five"], ["שֵׁשׁ", "Shesh", "Six"], ["שֶׁבַע", "Sheva", "Seven"], ["שְׁמוֹנֶה", "Shmone", "Eight"], ["תֵּשַׁע", "Tesha", "Nine"], ["עֶשֶׂר", "Eser", "Ten"]] },
+        6: { title: "Food (Ochel)", desc: "Things we eat and drink.", items: [["לֶחֶם", "Lechem", "Bread"], ["מַיִם", "Mayim", "Water"], ["חָלָב", "Chalav", "Milk"], ["תַּפּוּחַ", "Tapuach", "Apple"], ["בָּשָׂר", "Basar", "Meat"], ["גְּבִינָה", "Gvina", "Cheese"], ["פְּרִי", "Pri", "Fruit"]] },
+        7: { title: "Body Parts", desc: "Identifying parts of the body.", items: [["רֹאשׁ", "Rosh", "Head"], ["עַיִן", "Ayin", "Eye"], ["יָד", "Yad", "Hand"], ["רֶגֶל", "Regel", "Leg"], ["אֹזֶן", "Ozen", "Ear"], ["פֶּה", "Peh", "Mouth"], ["אַף", "Af", "Nose"]] },
+        8: { title: "Nature", desc: "The world outside.", items: [["שֶׁמֶשׁ", "Shemesh", "Sun"], ["עֵץ", "Etz", "Tree"], ["יָם", "Yam", "Sea"], ["יָרֵחַ", "Yareach", "Moon"], ["כּוֹכָב", "Kochav", "Star"], ["הַר", "Har", "Mountain"], ["פֶּרַח", "Perach", "Flower"]] },
+        9: { title: "Clothing (Begadim)", desc: "What we wear.", items: [["בֶּגֶד", "Beged", "Garment"], ["נַעֲלַיִם", "Na'alayim", "Shoes"], ["כּוֹבַע", "Kova", "Hat"], ["חוּלְצָה", "Chultza", "Shirt"], ["מִכְנָסַיִם", "Michnasayim", "Pants"], ["מְעִיל", "Me'il", "Coat"]] },
+        10: { title: "Home (Bayit)", desc: "Around the house.", items: [["בַּיִת", "Bayit", "House"], ["דֶּלֶת", "Delet", "Door"], ["חַלּוֹן", "Chalon", "Window"], ["שֻׁלְחָן", "Shulchan", "Table"], ["כִּסֵּא", "Kise", "Chair"], ["מִטָּה", "Mita", "Bed"]] },
+        11: { title: "Time (Zman)", desc: "Telling time.", items: [["יוֹם", "Yom", "Day"], ["לַיְלָה", "Laila", "Night"], ["שָׁעָה", "Sha'a", "Hour"], ["שָׁבוּעַ", "Shavua", "Week"], ["חֹדֶשׁ", "Chodesh", "Month"], ["שָׁנָה", "Shana", "Year"], ["מָחָר", "Machar", "Tomorrow"]] },
+        12: { title: "Common Nouns", desc: "Essential everyday words.", items: [["סֵפֶר", "Sefer", "Book"], ["יֶלֶד", "Yeled", "Boy"], ["יַלְדָּה", "Yalda", "Girl"], ["כֶּסֶף", "Kesef", "Money"], ["עִיר", "Ir", "City"], ["חָבֵר", "Chaver", "Friend"]] }
       },
       advanced: {
-        1: { title: "Pronouns", desc: "Who is doing the action?", items: [["אֲנִי", "Ani", "I"], ["אַתָּה", "Ata", "You (M)"], ["הוּא", "Hu", "He"]] },
-        2: { title: "Basic Verbs 1", desc: "Action words.", items: [["אוֹכֵל", "Ochel", "Eating"], ["שׁוֹתֶה", "Shoteh", "Drinking"]] },
-        3: { title: "Question Words", desc: "Asking for information.", items: [["מִי", "Mi", "Who?"], ["מָה", "Ma", "What?"], ["אֵיפֹה", "Eifo", "Where?"]] },
-        4: { title: "Adjectives", desc: "Describing things.", items: [["גָּדוֹל", "Gadol", "Big"], ["קָטָן", "Katan", "Small"], ["טוֹב", "Tov", "Good"]] },
-        5: { title: "Prepositions", desc: "Connecting words.", items: [["בְּ", "Be-", "In / At"], ["לְ", "Le-", "To / For"], ["שֶׁל", "Shel", "Of / Belonging to"]] },
-        6: { title: "Polite Phrases", desc: "Manners matter.", items: [["בְּבַקָּשָׁה", "Bevakasha", "Please"], ["תּוֹדָה", "Toda", "Thank You"]] },
-        7: { title: "Advanced Grammar", desc: "Preparing for the Castle.", items: [["אֲנִי רוֹצֶה", "Ani Rotzeh", "I want (M)"], ["אֲנִי רוֹצָה", "Ani Rotza", "I want (F)"]] }
+        1: { title: "Pronouns", desc: "Who is doing the action?", items: [["אֲנִי", "Ani", "I"], ["אַתָּה", "Ata", "You (M)"], ["הוּא", "Hu", "He"], ["הִיא", "Hi", "She"], ["אֲנַחְנוּ", "Anachnu", "We"]] },
+        2: { title: "Basic Verbs 1", desc: "Action words.", items: [["אוֹכֵל", "Ochel", "Eating"], ["שׁוֹתֶה", "Shoteh", "Drinking"], ["הוֹלֵךְ", "Holech", "Walking"], ["יוֹשֵׁב", "Yoshev", "Sitting"]] },
+        3: { title: "Question Words", desc: "Asking for information.", items: [["מִי", "Mi", "Who?"], ["מָה", "Ma", "What?"], ["אֵיפֹה", "Eifo", "Where?"], ["לָמָּה", "Lama", "Why?"], ["מָתַי", "Matay", "When?"]] },
+        4: { title: "Adjectives", desc: "Describing things.", items: [["גָּדוֹל", "Gadol", "Big"], ["קָטָן", "Katan", "Small"], ["טוֹב", "Tov", "Good"], ["רַע", "Ra", "Bad"], ["יָפֶה", "Yafeh", "Beautiful"]] },
+        5: { title: "Prepositions", desc: "Connecting words.", items: [["בְּ", "Be-", "In / At"], ["לְ", "Le-", "To / For"], ["שֶׁל", "Shel", "Of / Belonging to"], ["עַל", "Al", "On / About"], ["עִם", "Im", "With"]] },
+        6: { title: "Polite Phrases", desc: "Manners matter.", items: [["בְּבַקָּשָׁה", "Bevakasha", "Please"], ["תּוֹדָה רַבָּה", "Toda Raba", "Thank You Very Much"], ["אֵין דָּבָר", "Ein Davar", "You're Welcome / It's Nothing"]] },
+        7: { title: "Advanced Grammar", desc: "Preparing for the Castle.", items: [["אֲנִי רוֹצֶה", "Ani Rotzeh", "I want (M)"], ["אֲנִי רוֹצָה", "Ani Rotza", "I want (F)"], ["יֵשׁ לִי", "Yesh Li", "I have"], ["אֵין לִי", "Ein Li", "I don't have"]] }
       }
     };
     const DEFAULT_TRAINING = { title: "Combat Ready!", desc: "You have learned the basics. Rely on your wits!", items: [["⚔️", "Prepare", "Get ready for battle!"]] };
@@ -816,7 +844,7 @@
       
       if (currentUser.hp <= 0) currentUser.hp = currentUser.maxHp;
       inTown = false;
-      inCastle = false; // Always default to overworld on load to prevent getting stuck
+      inCastle = false; 
       
       loadQuestionBank(); 
     }
@@ -828,7 +856,6 @@
       showLoginModal();
     }
 
-    // --- Loading Questions ---
     async function loadQuestionBank() {
       if (!currentUser) return;
       const fileName = currentUser.track === 'advanced' ? 'questions3.json' : (currentUser.track === 'intermediate' ? 'questions2.json' : 'questions.json');
@@ -864,7 +891,6 @@
       loadQuestionBank(); 
     }
 
-    // --- Player Stats Calc ---
     function getPlayerDamage() {
       if (!currentUser.equippedWeapon) return 1;
       const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon);
@@ -927,15 +953,15 @@
       }
       
       let genericTips = [
-        "Welcome to our town! The shop here sells medicine. Stock up before you leave!",
+        "Welcome to our town! The shop here sells medicine.",
+        "Talk to the Teacher near the Wizard if you want a detailed vocabulary list for topics you have encountered!",
         "The monsters get much stronger the further east you travel.",
         "Armor reduces the damage you take when you make a mistake.",
         "A better weapon helps you defeat enemies in fewer turns!",
         "Don't forget to check your Backpack in the Profile menu to use your medicine.",
         "The Giant Hamster awaits in the dark castle maze at the far east.",
         "Hebrew is read from right to left! Keep that in mind.",
-        "Look for the green arrows at the edge of the world map to travel to the next region.",
-        "We are safe in this town, no monsters will attack you here."
+        "Look for the green arrows at the edge of the world map to travel to the next region."
       ];
       shuffleArray(genericTips);
       
@@ -1060,6 +1086,9 @@
           } else if (tileType === 'Z') {
             tile.classList.add('brick-road'); 
             tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">🧙‍♂️</span>';
+          } else if (tileType === 'C') { // TEACHER
+            tile.classList.add('brick-road'); 
+            tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">👩‍🏫</span>';
           } else if (tileType === 'E') {
             tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>';
           } else if (tileType === 'N') {
@@ -1096,7 +1125,6 @@
             
             if (castleMonsters[`${x},${y}`]) {
               const m = castleMonsters[`${x},${y}`];
-              // Gives the monsters an ominous red glow in the dungeon
               tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1; filter: drop-shadow(0px 0px 8px rgba(252,129,129,0.9));">${m.icon}</span>`;
             }
           }
@@ -1157,7 +1185,67 @@
     }
 
 
-    // --- TRAINING ACADEMY UI (Manual Selection) ---
+    // --- TOWN TEACHER UI ---
+    function openTeacher() {
+      if(!currentUser) return;
+      document.getElementById('teacher-topics-view').style.display = 'block';
+      document.getElementById('teacher-lesson-view').style.display = 'none';
+      
+      const container = document.getElementById('teacher-topics-list');
+      container.innerHTML = '';
+      const trackData = TRAINING_DATA[currentUser.track] || {};
+      
+      // Teacher only teaches up to the user's current zone level progression!
+      const maxLvl = getCurrentZoneLevel();
+      
+      for(let i = 1; i <= maxLvl; i++) {
+        const lesson = trackData[i];
+        if (lesson) {
+          const btn = document.createElement('button');
+          btn.className = 'lesson-btn';
+          btn.innerHTML = `
+            <span class="lesson-title">${lesson.title}</span>
+            <span class="lesson-desc">${lesson.desc}</span>
+          `;
+          btn.onclick = () => showTeacherLesson(i);
+          container.appendChild(btn);
+        }
+      }
+      document.getElementById('teacher-modal').classList.add('active');
+    }
+
+    function showTeacherLesson(level) {
+      document.getElementById('teacher-topics-view').style.display = 'none';
+      document.getElementById('teacher-lesson-view').style.display = 'block';
+      
+      const trackData = TRAINING_DATA[currentUser.track] || {};
+      const lesson = trackData[level] || DEFAULT_TRAINING; 
+      
+      document.getElementById('teacher-lesson-title').textContent = lesson.title;
+
+      const grid = document.getElementById('teacher-lesson-content');
+      grid.innerHTML = '';
+      
+      lesson.items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'training-card';
+        card.innerHTML = `
+          <div class="training-hebrew">${item[0]}</div>
+          <div class="training-name">${item[1]}</div>
+          <div class="training-desc">${item[2]}</div>
+          <button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function backToTeacherTopics() {
+      document.getElementById('teacher-topics-view').style.display = 'block';
+      document.getElementById('teacher-lesson-view').style.display = 'none';
+    }
+
+
+    // --- GLOBAL TRAINING ACADEMY UI (Manual Selection) ---
     function openTrainingManual() {
       if(!currentUser) return;
       renderLessonList();
@@ -1205,6 +1293,7 @@
           <div class="training-hebrew">${item[0]}</div>
           <div class="training-name">${item[1]}</div>
           <div class="training-desc">${item[2]}</div>
+          <button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>
         `;
         grid.appendChild(card);
       });
@@ -1213,6 +1302,7 @@
     function backToLessonList() {
       renderLessonList();
     }
+
 
     // --- MOVEMENT & ENCOUNTERS ---
     function movePlayer(dx, dy) {
@@ -1241,13 +1331,11 @@
             return;
           }
 
-          // Move player visually
           currentUser.castleX = nx;
           currentUser.castleY = ny;
           sfx.step();
           positionPlayerOnMap();
 
-          // Trigger fight if moving onto a monster
           if (castleMonsters[`${nx},${ny}`]) {
             const m = castleMonsters[`${nx},${ny}`];
             activeCastleEnemyKey = `${nx},${ny}`;
@@ -1273,6 +1361,7 @@
           }
           if (tile === '$') { sfx.step(); openShop(); return; }
           if (tile === 'Z') { sfx.step(); triggerWizardQuiz(); return; }
+          if (tile === 'C') { sfx.step(); openTeacher(); return; } // Teacher interaction
           if (tile === 'N') {
             sfx.encounter(); 
             const npc = townNPCs[`${nx},${ny}`];
@@ -1345,11 +1434,9 @@
           return;
         } 
         
-        // Random wild encounters on world map
         if (tileType !== '-' && tileType !== '~' && (currentUser.x !== 0 || currentUser.y !== 11) && Math.random() < 0.35) {
           triggerEncounter(false, null);
         } else if (tileType === '~' && Math.random() < 0.50) { 
-          // Swamps have higher encounter rate
           triggerEncounter(false, null);
         }
       }
@@ -1368,7 +1455,7 @@
     function triggerWizardQuiz() {
       showConfirm("Greetings, traveler! I am the Town Wizard.\n\nWould you care for a harmless quiz? If you get 5 or 10 right in a row, I will reward you!", 
       () => {
-        inWizardQuiz = true; // Sets Wizard music
+        inWizardQuiz = true; 
         inBattle = true;
         wizardStreak = 0;
         
@@ -1376,8 +1463,6 @@
         document.getElementById('combat-zone-label').textContent = "THE WIZARD'S CHALLENGE";
         document.getElementById('boss-name').textContent = "Wizard Master";
         document.getElementById('boss-avatar-icon').textContent = "🧙‍♂️";
-        
-        // Hide HP bar for Wizard quiz
         document.getElementById('boss-hp-bar-container').style.display = 'none';
         
         loadNextBattleQuestion();
@@ -1387,7 +1472,7 @@
     }
 
     function triggerEncounter(isBoss, overrideLevel = null) {
-      inWizardQuiz = false; // Sets normal battle music
+      inWizardQuiz = false; 
       inBattle = true;
       sfx.encounter();
       
@@ -1402,8 +1487,6 @@
       document.getElementById('combat-zone-label').textContent = label;
       document.getElementById('boss-name').textContent = isBoss ? "Giant Hamster" : `Lvl ${currentEnemyLevel} ${enemyDef.name}`;
       document.getElementById('boss-avatar-icon').textContent = enemyDef.icon;
-      
-      // Ensure HP bar is visible for normal battles
       document.getElementById('boss-hp-bar-container').style.display = 'block';
       updateEnemyHPBar();
       
@@ -1491,7 +1574,6 @@
         return;
       }
 
-      // Normal Combat Logic
       if (selected === activeQuestion.a) {
         sfx.hitEnemy();
         const pDmg = getPlayerDamage();
@@ -1513,7 +1595,6 @@
             
             showAlert(victoryMsg, () => {
               if (inCastle && currentEnemyLevel === 12 && activeCastleEnemyKey && castleMonsters[activeCastleEnemyKey] && castleMonsters[activeCastleEnemyKey].isBoss) {
-                // Defeated the final Boss
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
                 showAlert("👑 CONGRATULATIONS! You have defeated the Giant Hamster and saved the realm! Returning to village...", () => {
                   currentUser.x = 0; currentUser.y = 11;
@@ -1524,11 +1605,10 @@
                   endBattle();
                 });
               } else {
-                // Normal monster win (or optional dungeon monster win)
                 if (inCastle && activeCastleEnemyKey) {
                   delete castleMonsters[activeCastleEnemyKey];
                   activeCastleEnemyKey = null;
-                  renderCurrentScreen(); // Refresh to remove the monster icon from the map
+                  renderCurrentScreen(); 
                 }
                 endBattle();
               }
