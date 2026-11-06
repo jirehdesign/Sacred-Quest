@@ -319,7 +319,7 @@
       
       <!-- Topic Selection View -->
       <div id="teacher-topics-view">
-        <p style="color:#718096; margin-bottom: 15px;">"Shalom! I can teach you about what you've encountered so far on your journey. What shall we study today?"</p>
+        <p style="color:#718096; margin-bottom: 15px;">"Shalom! I can teach you the skills needed for every zone on your journey. What shall we study today?"</p>
         <div style="display: flex; flex-direction: column; gap: 8px; max-height: 45vh; overflow-y: auto; padding-right: 5px;" id="teacher-topics-list"></div>
         <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('teacher-modal')">Leave Class</button>
       </div>
@@ -501,7 +501,7 @@
       init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
       
       playTone(freq, type, duration, vol = 0.05) {
-        if (!freq) return; // Allow 0 for rests/silence
+        if (!freq) return; 
         this.init();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
@@ -532,7 +532,6 @@
         this.stopBGM();
         if(!this.musicOn) return;
         
-        // Expanded frequencies for deeper ominous dungeon notes
         const N = {
           C1: 32.7, D1: 36.7, Eb1: 38.9, E1: 41.2, F1: 43.6, G1: 49.0, Ab1: 51.9, A1: 55.0, Bb1: 58.3, B1: 61.7,
           C2: 65.4, D2: 73.4, Eb2: 77.8, E2: 82.4, F2: 87.3, G2: 98.0, Ab2: 103.8, A2: 110.0, Bb2: 116.5, B2: 123.5,
@@ -733,9 +732,9 @@
         7: { title: "Fey, Tsadi, Qof", desc: "Almost finished with the letters!", items: [["פ", "Fey", "'F' sound (no dot)"], ["צ", "Tsadi", "'Ts' sound like in Cats"], ["ק", "Qof", "'K' sound"]] },
         8: { title: "Resh, Shin, Sin, Tav", desc: "The final letters of the Aleph-Bet.", items: [["ר", "Resh", "'R' sound"], ["שׁ", "Shin", "'Sh' sound (dot on right)"], ["שׂ", "Sin", "'S' sound (dot on left)"], ["ת", "Tav", "'T' sound"]] },
         9: { title: "Sofit (Final) Letters 1", desc: "Some letters change shape at the END of a word.", items: [["ך", "Khaf Sofit", "End of word 'Ch'"], ["ם", "Mem Sofit", "End of word 'M'"]] },
-        10: { title: "Sofit (Final) Letters 2", desc: "More shape-changers at the end of words.", items: [["ן", "Nun Sofit", "End of word 'N'"], ["ף", "Fey Sofit", "End of word 'F'"], ["ץ", "Tsadi Sofit", "End of word 'Ts'"]] },
-        11: { title: "The 'Ah' Vowels", desc: "Vowels sit under the letters.", items: [["אַ", "Patach", "Short 'Ah' sound"], ["אָ", "Kamatz", "Long 'Ah' sound"], ["אֲ", "Chataf Patach", "Quick 'Ah' sound"]] },
-        12: { title: "The 'Eh' & 'Ee' Vowels", desc: "Mastering the basic vowel sounds.", items: [["אֶ", "Segol", "'Eh' sound"], ["אֵ", "Tzere", "'Ey' sound"], ["אִ", "Chirik", "'Ee' sound"], ["אֱ", "Chataf Segol", "Quick 'Eh' sound"]] }
+        10: { title: "Sofit (Final) Letters 2", desc: "More shape-changers at the end of words.", items: [["ן", "Nun Sofit", "End of word 'N'"], ["ף", "Fey Sofit", "End of word 'F'"], ["ץ", "Tsadi Sofit", "End of word 'Ts'"], ["ץ", "Etz (Tree)", "Example of Tsadi Sofit"]] },
+        11: { title: "Vowels 1: Ah & Oh", desc: "Vowels sit under or next to letters.", items: [["אַ", "Patach", "Short 'Ah' sound"], ["אָ", "Kamatz", "Long 'Ah' sound"], ["אֲ", "Chataf Patach", "Quick 'Ah' sound"], ["וֹ", "Cholam", "'Oh' sound with Vav"], ["אָ", "Kamatz Katan", "'Oh' sound (rare)"]] },
+        12: { title: "Vowels 2: Eh, Ee, Oo", desc: "Mastering the rest of the vowel sounds.", items: [["אֶ", "Segol", "'Eh' sound"], ["אֵ", "Tzere", "'Ey' sound"], ["אִ", "Chirik", "'Ee' sound"], ["וּ", "Shuruk", "'Oo' sound with Vav"], ["אֻ", "Kubutz", "'Oo' sound under letter"], ["אְ", "Shva", "Silent or quick 'eh' pause"]] }
       },
       intermediate: {
         1: { title: "Greetings", desc: "Saying hello in Hebrew.", items: [["שָׁלוֹם", "Shalom", "Hello / Peace / Goodbye"], ["בֹּקֶר טוֹב", "Boker Tov", "Good Morning"], ["עֶרֶב טוֹב", "Erev Tov", "Good Evening"], ["לַיְלָה טוֹב", "Laila Tov", "Good Night"], ["תּוֹדָה", "Toda", "Thank you"], ["סְלִיחָה", "Slicha", "Excuse me / Sorry"]] },
@@ -758,7 +757,12 @@
         4: { title: "Adjectives", desc: "Describing things.", items: [["גָּדוֹל", "Gadol", "Big"], ["קָטָן", "Katan", "Small"], ["טוֹב", "Tov", "Good"], ["רַע", "Ra", "Bad"], ["יָפֶה", "Yafeh", "Beautiful"]] },
         5: { title: "Prepositions", desc: "Connecting words.", items: [["בְּ", "Be-", "In / At"], ["לְ", "Le-", "To / For"], ["שֶׁל", "Shel", "Of / Belonging to"], ["עַל", "Al", "On / About"], ["עִם", "Im", "With"]] },
         6: { title: "Polite Phrases", desc: "Manners matter.", items: [["בְּבַקָּשָׁה", "Bevakasha", "Please"], ["תּוֹדָה רַבָּה", "Toda Raba", "Thank You Very Much"], ["אֵין דָּבָר", "Ein Davar", "You're Welcome / It's Nothing"]] },
-        7: { title: "Advanced Grammar", desc: "Preparing for the Castle.", items: [["אֲנִי רוֹצֶה", "Ani Rotzeh", "I want (M)"], ["אֲנִי רוֹצָה", "Ani Rotza", "I want (F)"], ["יֵשׁ לִי", "Yesh Li", "I have"], ["אֵין לִי", "Ein Li", "I don't have"]] }
+        7: { title: "Advanced Grammar", desc: "Preparing for the Castle.", items: [["אֲנִי רוֹצֶה", "Ani Rotzeh", "I want (M)"], ["אֲנִי רוֹצָה", "Ani Rotza", "I want (F)"], ["יֵשׁ לִי", "Yesh Li", "I have"], ["אֵין לִי", "Ein Li", "I don't have"]] },
+        8: { title: "Directions & Places", desc: "Navigating the world.", items: [["צָפוֹן", "Tzafon", "North"], ["דָּרוֹם", "Darom", "South"], ["מִזְרָח", "Mizrach", "East"], ["מַעֲרָב", "Ma'arav", "West"], ["יָמִינָה", "Yamina", "Right"], ["שְׂמֹאלָה", "Smola", "Left"]] },
+        9: { title: "Shopping & Money", desc: "For the town shop.", items: [["כֶּסֶף", "Kesef", "Money"], ["חֲנוּת", "Chanut", "Shop/Store"], ["קְנִיָּה", "Kniya", "Purchase"], ["יָקָר", "Yakar", "Expensive"], ["זוֹל", "Zol", "Cheap"]] },
+        10: { title: "Weather & Seasons", desc: "The elements.", items: [["גֶּשֶׁם", "Geshem", "Rain"], ["שֶׁלֶג", "Sheleg", "Snow"], ["קַיִץ", "Kayitz", "Summer"], ["חֹרֶף", "Choref", "Winter"], ["חַם", "Cham", "Hot"], ["קַר", "Kar", "Cold"]] },
+        11: { title: "Emotions & Feelings", desc: "State of mind.", items: [["שָׂמֵחַ", "Sameach", "Happy"], ["עָצוּב", "Atzuv", "Sad"], ["כּוֹעֵס", "Ko'es", "Angry"], ["עָיֵף", "Ayef", "Tired"], ["רָעֵב", "Ra'ev", "Hungry"]] },
+        12: { title: "Hero's Journey", desc: "Terms for the final dungeon.", items: [["חֶרֶב", "Cherev", "Sword"], ["מָגֵן", "Magen", "Shield"], ["קֶסֶם", "Kesem", "Magic"], ["מִפְלֶצֶת", "Mifletzet", "Monster"], ["גִּבּוֹר", "Gibor", "Hero"], ["מֶלֶךְ", "Melech", "King"]] }
       }
     };
     const DEFAULT_TRAINING = { title: "Combat Ready!", desc: "You have learned the basics. Rely on your wits!", items: [["⚔️", "Prepare", "Get ready for battle!"]] };
@@ -1086,7 +1090,7 @@
           } else if (tileType === 'Z') {
             tile.classList.add('brick-road'); 
             tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">🧙‍♂️</span>';
-          } else if (tileType === 'C') { // TEACHER
+          } else if (tileType === 'C') { 
             tile.classList.add('brick-road'); 
             tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">👩‍🏫</span>';
           } else if (tileType === 'E') {
@@ -1195,16 +1199,14 @@
       container.innerHTML = '';
       const trackData = TRAINING_DATA[currentUser.track] || {};
       
-      // Teacher only teaches up to the user's current zone level progression!
-      const maxLvl = getCurrentZoneLevel();
-      
-      for(let i = 1; i <= maxLvl; i++) {
+      // The teacher now offers all 12 lessons so you can study ahead for the hardest zones!
+      for(let i = 1; i <= 12; i++) {
         const lesson = trackData[i];
         if (lesson) {
           const btn = document.createElement('button');
           btn.className = 'lesson-btn';
           btn.innerHTML = `
-            <span class="lesson-title">${lesson.title}</span>
+            <span class="lesson-title">Zone ${i}: ${lesson.title}</span>
             <span class="lesson-desc">${lesson.desc}</span>
           `;
           btn.onclick = () => showTeacherLesson(i);
