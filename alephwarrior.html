@@ -243,11 +243,8 @@
     .lesson-desc { font-size: 0.85rem; color: #718096; }
 
     .training-header { background: #EBF8FF; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #90CDF4; }
-    .training-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px;}
+    .training-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;}
     .training-card { background: #F7FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative;}
-    .training-hebrew { font-family: 'Rubik', sans-serif; font-size: 3rem; color: var(--primary-dark); font-weight: bold;}
-    .training-name { font-weight: bold; font-size: 1.1rem; color: #2D3748;}
-    .training-desc { font-size: 0.85rem; color: #718096; text-align: center;}
     .mini-audio-btn { position: absolute; top: 5px; right: 5px; background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: transform 0.1s;}
     .mini-audio-btn:hover { transform: scale(1.2); }
   </style>
@@ -270,7 +267,7 @@
     <div class="hero-avatar-container" id="hero-display-avatar"></div>
     <div class="hero-details">
       <div class="hero-name" id="hero-display-name">Player Name</div>
-      <div class="hero-title" id="hero-display-title" style="margin-top:2px;">Beginner Track</div>
+      <div class="hero-title" id="hero-display-title" style="margin-top:2px;">Hebrew Quest</div>
       <div style="display:flex; gap:10px; margin-top:8px;">
         <div class="stat-badge hp" id="top-hp-display">❤️ 50/50</div>
         <div class="stat-badge coins" id="top-coin-display">🪙 0</div>
@@ -314,12 +311,12 @@
 
   <!-- Town Teacher Modal -->
   <div class="modal-overlay" id="teacher-modal" style="z-index: 501;">
-    <div class="modal-card" style="max-width: 500px; max-height: 85vh;">
+    <div class="modal-card" style="max-width: 550px; max-height: 85vh;">
       <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">👩‍🏫 Town Teacher</h2>
       
       <!-- Topic Selection View -->
       <div id="teacher-topics-view">
-        <p style="color:#718096; margin-bottom: 15px;">"Shalom! I can teach you the skills needed for every zone on your journey. What shall we study today?"</p>
+        <p style="color:#718096; margin-bottom: 15px;">"Shalom! I can teach you the skills needed for every zone on your journey based on the master scroll. What shall we study today?"</p>
         <div style="display: flex; flex-direction: column; gap: 8px; max-height: 45vh; overflow-y: auto; padding-right: 5px;" id="teacher-topics-list"></div>
         <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('teacher-modal')">Leave Class</button>
       </div>
@@ -328,7 +325,7 @@
       <div id="teacher-lesson-view" style="display: none;">
         <div class="training-header">
           <strong id="teacher-lesson-title" style="font-size:1.2rem; color:#2B6CB0;"></strong>
-          <p style="font-size:0.95rem; color:#4A5568; margin-top:5px;">Click the speaker icons to hear pronunciation!</p>
+          <p style="font-size:0.95rem; color:#4A5568; margin-top:5px;">Study these questions carefully before traveling east!</p>
         </div>
         <div class="training-grid" id="teacher-lesson-content" style="max-height: 45vh; overflow-y: auto; padding: 5px;"></div>
         <button class="action-btn" style="margin: 15px auto 0; font-size: 1rem; padding: 10px 20px;" onclick="backToTeacherTopics()">🔙 Back to Topics</button>
@@ -377,12 +374,10 @@
   <!-- Track Selection Modal -->
   <div class="modal-overlay" id="track-modal">
     <div class="modal-card">
-      <h2>Select Difficulty Track</h2>
-      <p style="color:#718096; margin-bottom:15px;">Questions scale automatically as you travel to the dark castle.</p>
+      <h2>Game Resets</h2>
+      <p style="color:#718096; margin-bottom:15px;">Your game is configured to draw entirely from the master scroll for all zones. Click below to return to the starting village.</p>
       <div style="display:flex; flex-direction:column; gap:10px;">
-        <button class="action-btn" style="width:100%; justify-content:center;" onclick="switchTrack('beginner')">🌱 Beginner (Aleph-Bet)</button>
-        <button class="action-btn" style="width:100%; justify-content:center; background:#8338EC;" onclick="switchTrack('intermediate')">🚀 Intermediate (Vocab)</button>
-        <button class="action-btn" style="width:100%; justify-content:center; background:#E53E3E;" onclick="switchTrack('advanced')">🏆 Advanced (Fluency)</button>
+        <button class="action-btn" style="width:100%; justify-content:center;" onclick="switchTrack('beginner')">🌱 Return to Village</button>
       </div>
       <button class="nav-btn" style="margin: 15px auto 0;" onclick="closeModal('track-modal')">Cancel</button>
     </div>
@@ -486,6 +481,14 @@
       };
     }
     
+    // --- Clever Extractor for Pronunciation ---
+    function extractHebrew(str) {
+      if (!str) return '';
+      // Matches Hebrew letters and vowel points
+      const match = str.match(/[\u0590-\u05FF\u05B0-\u05C7]+/g);
+      return match ? match.join(' ') : str;
+    }
+
     function speakWord(word) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -605,50 +608,20 @@
     }
 
     // --- GAME MAP DATA (36 x 12 Grids) ---
-    const MAPS = {
-      beginner: [
-        "......M..W-.....MMM.......~....WWWW#",
-        ".........W-.....M.........~....WW...",
-        "..MM.....WW....M.........~~.........",
-        "......MM..WW.......M.....~...M......",
-        "W..MM.....W......MM.................",
-        "WW..~.....W....WW..T...........T....",
-        "W...T..M..W--W.W........M........M..",
-        "..........W..WW.....................",
-        ".MMM...M.......M.......~.....MMM....",
-        ".......M.........M.....~............",
-        "M.......M...M.......M.......M.......",
-        "@..M................................"
-      ],
-      intermediate: [
-        "...MMM...W-.....MMM..W....~....WWWW#",
-        ".M..MM.M.W-.......M..W....~~...WW...",
-        ".MM..M.M.WW.......M..W...T..........",
-        "..MM...MM.W...MM...M.W.......M......",
-        "W..MMMM...W......MM..W--W...........",
-        "WW..T...M.W--W.......W..W..M...T....",
-        "WWWW.WWWW.W..W.W...M...MM........M..",
-        "~....M....W...W.................M...",
-        "~MMM.M.MMMM....MMM...M.......MMM....",
-        "...M.M...........M...M.......~......",
-        "MM.....MMMM.M..M...M.M......M.......",
-        "@..M......M........................."
-      ],
-      advanced: [
-        "M.MMMMM..MW-..MM.MM..M.......MMMWWW#",
-        "M...M....MW-..M...M..M....~..MWWW...",
-        "M.M.M.MMMM.W....M.M..M...T~..M......",
-        "..M...M...W-..M...M..M.......M......",
-        "WM.MMMM.M.W-..MMMM...M..............",
-        "WW......M.W-.......M.M.MM..M...T....",
-        "WWWW.WWWW.W-..WWWW...M...MM......M..",
-        "..T..M....WW...T..M....M..M.......M.",
-        ".MMMMM.MMMM..MMM.MM.MM.......MMM....",
-        "...M.M.........M..M..M..............",
-        "MM.M...MMMM.MM...M...M......M.......",
-        "@..M.M....M..M..M....M.............."
-      ]
-    };
+    const MAP_LAYOUT = [
+      "......M..W-.....MMM.......~....WWWW#",
+      ".........W-.....M.........~....WW...",
+      "..MM.....WW....M.........~~.........",
+      "......MM..WW.......M.....~...M......",
+      "W..MM.....W......MM.................",
+      "WW..~.....W....WW..T...........T....",
+      "W...T..M..W--W.W........M........M..",
+      "..........W..WW.....................",
+      ".MMM...M.......M.......~.....MMM....",
+      ".......M.........M.....~............",
+      "M.......M...M.......M.......M.......",
+      "@..M................................"
+    ];
 
     // --- TOWN LAYOUT (12x12) ---
     // C = Classroom / Teacher, Z = Wizard
@@ -720,57 +693,13 @@
       10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Giant Hamster', icon: '🐹' }
     };
 
-    // --- MASSIVELY EXPANDED TRAINING / TEACHER DATA ---
-    const TRAINING_DATA = {
-      beginner: {
-        1: { title: "Aleph, Bet, Vet", desc: "Hebrew is read Right to Left.", items: [["א", "Aleph", "Silent"], ["בּ", "Bet", "Makes 'B' sound"], ["ב", "Vet", "Makes 'V' sound"]] },
-        2: { title: "Gimmel, Dalet, Hey", desc: "Three new important letters.", items: [["ג", "Gimmel", "'G' as in Good"], ["ד", "Dalet", "'D' sound"], ["ה", "Hey", "'H' sound"]] },
-        3: { title: "Vav, Zayin, Chet, Tet", desc: "Moving further into the alphabet.", items: [["ו", "Vav", "'V' sound"], ["ז", "Zayin", "'Z' sound"], ["ח", "Chet", "Throaty 'Ch' sound"], ["ט", "Tet", "'T' sound"]] },
-        4: { title: "Yod, Kaf, Khaf", desc: "Pay attention to the dot (Dagesh)!", items: [["י", "Yod", "'Y' sound"], ["כּ", "Kaf", "'K' sound (has dot)"], ["כ", "Khaf", "Throaty 'Ch' sound (no dot)"]] },
-        5: { title: "Lamed, Mem, Nun", desc: "Common middle letters.", items: [["ל", "Lamed", "'L' sound"], ["מ", "Mem", "'M' sound"], ["נ", "Nun", "'N' sound"]] },
-        6: { title: "Samekh, Ayin, Pey", desc: "Ayin is silent, just like Aleph.", items: [["ס", "Samekh", "'S' sound"], ["ע", "Ayin", "Silent"], ["פּ", "Pey", "'P' sound (has dot)"]] },
-        7: { title: "Fey, Tsadi, Qof", desc: "Almost finished with the letters!", items: [["פ", "Fey", "'F' sound (no dot)"], ["צ", "Tsadi", "'Ts' sound like in Cats"], ["ק", "Qof", "'K' sound"]] },
-        8: { title: "Resh, Shin, Sin, Tav", desc: "The final letters of the Aleph-Bet.", items: [["ר", "Resh", "'R' sound"], ["שׁ", "Shin", "'Sh' sound (dot on right)"], ["שׂ", "Sin", "'S' sound (dot on left)"], ["ת", "Tav", "'T' sound"]] },
-        9: { title: "Sofit (Final) Letters 1", desc: "Some letters change shape at the END of a word.", items: [["ך", "Khaf Sofit", "End of word 'Ch'"], ["ם", "Mem Sofit", "End of word 'M'"]] },
-        10: { title: "Sofit (Final) Letters 2", desc: "More shape-changers at the end of words.", items: [["ן", "Nun Sofit", "End of word 'N'"], ["ף", "Fey Sofit", "End of word 'F'"], ["ץ", "Tsadi Sofit", "End of word 'Ts'"], ["ץ", "Etz (Tree)", "Example of Tsadi Sofit"]] },
-        11: { title: "Vowels 1: Ah & Oh", desc: "Vowels sit under or next to letters.", items: [["אַ", "Patach", "Short 'Ah' sound"], ["אָ", "Kamatz", "Long 'Ah' sound"], ["אֲ", "Chataf Patach", "Quick 'Ah' sound"], ["וֹ", "Cholam", "'Oh' sound with Vav"], ["אָ", "Kamatz Katan", "'Oh' sound (rare)"]] },
-        12: { title: "Vowels 2: Eh, Ee, Oo", desc: "Mastering the rest of the vowel sounds.", items: [["אֶ", "Segol", "'Eh' sound"], ["אֵ", "Tzere", "'Ey' sound"], ["אִ", "Chirik", "'Ee' sound"], ["וּ", "Shuruk", "'Oo' sound with Vav"], ["אֻ", "Kubutz", "'Oo' sound under letter"], ["אְ", "Shva", "Silent or quick 'eh' pause"]] }
-      },
-      intermediate: {
-        1: { title: "Greetings", desc: "Saying hello in Hebrew.", items: [["שָׁלוֹם", "Shalom", "Hello / Peace / Goodbye"], ["בֹּקֶר טוֹב", "Boker Tov", "Good Morning"], ["עֶרֶב טוֹב", "Erev Tov", "Good Evening"], ["לַיְלָה טוֹב", "Laila Tov", "Good Night"], ["תּוֹדָה", "Toda", "Thank you"], ["סְלִיחָה", "Slicha", "Excuse me / Sorry"]] },
-        2: { title: "Family (Mishpacha)", desc: "Words for family members.", items: [["אַבָּא", "Abba", "Father"], ["אִמָּא", "Ima", "Mother"], ["בֵּן", "Ben", "Son"], ["בַּת", "Bat", "Daughter"], ["אָח", "Ach", "Brother"], ["אָחוֹת", "Achot", "Sister"], ["סָבָּא", "Saba", "Grandfather"], ["סָבְתָא", "Savta", "Grandmother"]] },
-        3: { title: "Colors (Tzvaim)", desc: "Identifying common colors.", items: [["אָדוֹם", "Adom", "Red"], ["כָּחוֹל", "Kachol", "Blue"], ["יָרוֹק", "Yarok", "Green"], ["צָהוֹב", "Tzahov", "Yellow"], ["שָׁחוֹר", "Shachor", "Black"], ["לָבָן", "Lavan", "White"], ["וָרוֹד", "Varod", "Pink"]] },
-        4: { title: "Animals (Chayot)", desc: "Basic pets and animals.", items: [["כֶּלֶב", "Kelev", "Dog"], ["חָתוּל", "Chatul", "Cat"], ["סוּס", "Sus", "Horse"], ["צִפּוֹר", "Tzipor", "Bird"], ["דָּג", "Dag", "Fish"], ["פָּרָה", "Parah", "Cow"], ["קוֹף", "Kof", "Monkey"]] },
-        5: { title: "Numbers 1-10", desc: "Counting basics.", items: [["אַחַת", "Achat", "One"], ["שְׁתַּיִם", "Shtayim", "Two"], ["שָׁלוֹשׁ", "Shalosh", "Three"], ["אַרְבַּע", "Arba", "Four"], ["חָמֵשׁ", "Chamesh", "Five"], ["שֵׁשׁ", "Shesh", "Six"], ["שֶׁבַע", "Sheva", "Seven"], ["שְׁמוֹנֶה", "Shmone", "Eight"], ["תֵּשַׁע", "Tesha", "Nine"], ["עֶשֶׂר", "Eser", "Ten"]] },
-        6: { title: "Food (Ochel)", desc: "Things we eat and drink.", items: [["לֶחֶם", "Lechem", "Bread"], ["מַיִם", "Mayim", "Water"], ["חָלָב", "Chalav", "Milk"], ["תַּפּוּחַ", "Tapuach", "Apple"], ["בָּשָׂר", "Basar", "Meat"], ["גְּבִינָה", "Gvina", "Cheese"], ["פְּרִי", "Pri", "Fruit"]] },
-        7: { title: "Body Parts", desc: "Identifying parts of the body.", items: [["רֹאשׁ", "Rosh", "Head"], ["עַיִן", "Ayin", "Eye"], ["יָד", "Yad", "Hand"], ["רֶגֶל", "Regel", "Leg"], ["אֹזֶן", "Ozen", "Ear"], ["פֶּה", "Peh", "Mouth"], ["אַף", "Af", "Nose"]] },
-        8: { title: "Nature", desc: "The world outside.", items: [["שֶׁמֶשׁ", "Shemesh", "Sun"], ["עֵץ", "Etz", "Tree"], ["יָם", "Yam", "Sea"], ["יָרֵחַ", "Yareach", "Moon"], ["כּוֹכָב", "Kochav", "Star"], ["הַר", "Har", "Mountain"], ["פֶּרַח", "Perach", "Flower"]] },
-        9: { title: "Clothing (Begadim)", desc: "What we wear.", items: [["בֶּגֶד", "Beged", "Garment"], ["נַעֲלַיִם", "Na'alayim", "Shoes"], ["כּוֹבַע", "Kova", "Hat"], ["חוּלְצָה", "Chultza", "Shirt"], ["מִכְנָסַיִם", "Michnasayim", "Pants"], ["מְעִיל", "Me'il", "Coat"]] },
-        10: { title: "Home (Bayit)", desc: "Around the house.", items: [["בַּיִת", "Bayit", "House"], ["דֶּלֶת", "Delet", "Door"], ["חַלּוֹן", "Chalon", "Window"], ["שֻׁלְחָן", "Shulchan", "Table"], ["כִּסֵּא", "Kise", "Chair"], ["מִטָּה", "Mita", "Bed"]] },
-        11: { title: "Time (Zman)", desc: "Telling time.", items: [["יוֹם", "Yom", "Day"], ["לַיְלָה", "Laila", "Night"], ["שָׁעָה", "Sha'a", "Hour"], ["שָׁבוּעַ", "Shavua", "Week"], ["חֹדֶשׁ", "Chodesh", "Month"], ["שָׁנָה", "Shana", "Year"], ["מָחָר", "Machar", "Tomorrow"]] },
-        12: { title: "Common Nouns", desc: "Essential everyday words.", items: [["סֵפֶר", "Sefer", "Book"], ["יֶלֶד", "Yeled", "Boy"], ["יַלְדָּה", "Yalda", "Girl"], ["כֶּסֶף", "Kesef", "Money"], ["עִיר", "Ir", "City"], ["חָבֵר", "Chaver", "Friend"]] }
-      },
-      advanced: {
-        1: { title: "Pronouns", desc: "Who is doing the action?", items: [["אֲנִי", "Ani", "I"], ["אַתָּה", "Ata", "You (M)"], ["הוּא", "Hu", "He"], ["הִיא", "Hi", "She"], ["אֲנַחְנוּ", "Anachnu", "We"]] },
-        2: { title: "Basic Verbs 1", desc: "Action words.", items: [["אוֹכֵל", "Ochel", "Eating"], ["שׁוֹתֶה", "Shoteh", "Drinking"], ["הוֹלֵךְ", "Holech", "Walking"], ["יוֹשֵׁב", "Yoshev", "Sitting"]] },
-        3: { title: "Question Words", desc: "Asking for information.", items: [["מִי", "Mi", "Who?"], ["מָה", "Ma", "What?"], ["אֵיפֹה", "Eifo", "Where?"], ["לָמָּה", "Lama", "Why?"], ["מָתַי", "Matay", "When?"]] },
-        4: { title: "Adjectives", desc: "Describing things.", items: [["גָּדוֹל", "Gadol", "Big"], ["קָטָן", "Katan", "Small"], ["טוֹב", "Tov", "Good"], ["רַע", "Ra", "Bad"], ["יָפֶה", "Yafeh", "Beautiful"]] },
-        5: { title: "Prepositions", desc: "Connecting words.", items: [["בְּ", "Be-", "In / At"], ["לְ", "Le-", "To / For"], ["שֶׁל", "Shel", "Of / Belonging to"], ["עַל", "Al", "On / About"], ["עִם", "Im", "With"]] },
-        6: { title: "Polite Phrases", desc: "Manners matter.", items: [["בְּבַקָּשָׁה", "Bevakasha", "Please"], ["תּוֹדָה רַבָּה", "Toda Raba", "Thank You Very Much"], ["אֵין דָּבָר", "Ein Davar", "You're Welcome / It's Nothing"]] },
-        7: { title: "Advanced Grammar", desc: "Preparing for the Castle.", items: [["אֲנִי רוֹצֶה", "Ani Rotzeh", "I want (M)"], ["אֲנִי רוֹצָה", "Ani Rotza", "I want (F)"], ["יֵשׁ לִי", "Yesh Li", "I have"], ["אֵין לִי", "Ein Li", "I don't have"]] },
-        8: { title: "Directions & Places", desc: "Navigating the world.", items: [["צָפוֹן", "Tzafon", "North"], ["דָּרוֹם", "Darom", "South"], ["מִזְרָח", "Mizrach", "East"], ["מַעֲרָב", "Ma'arav", "West"], ["יָמִינָה", "Yamina", "Right"], ["שְׂמֹאלָה", "Smola", "Left"]] },
-        9: { title: "Shopping & Money", desc: "For the town shop.", items: [["כֶּסֶף", "Kesef", "Money"], ["חֲנוּת", "Chanut", "Shop/Store"], ["קְנִיָּה", "Kniya", "Purchase"], ["יָקָר", "Yakar", "Expensive"], ["זוֹל", "Zol", "Cheap"]] },
-        10: { title: "Weather & Seasons", desc: "The elements.", items: [["גֶּשֶׁם", "Geshem", "Rain"], ["שֶׁלֶג", "Sheleg", "Snow"], ["קַיִץ", "Kayitz", "Summer"], ["חֹרֶף", "Choref", "Winter"], ["חַם", "Cham", "Hot"], ["קַר", "Kar", "Cold"]] },
-        11: { title: "Emotions & Feelings", desc: "State of mind.", items: [["שָׂמֵחַ", "Sameach", "Happy"], ["עָצוּב", "Atzuv", "Sad"], ["כּוֹעֵס", "Ko'es", "Angry"], ["עָיֵף", "Ayef", "Tired"], ["רָעֵב", "Ra'ev", "Hungry"]] },
-        12: { title: "Hero's Journey", desc: "Terms for the final dungeon.", items: [["חֶרֶב", "Cherev", "Sword"], ["מָגֵן", "Magen", "Shield"], ["קֶסֶם", "Kesem", "Magic"], ["מִפְלֶצֶת", "Mifletzet", "Monster"], ["גִּבּוֹר", "Gibor", "Hero"], ["מֶלֶךְ", "Melech", "King"]] }
-      }
-    };
-    const DEFAULT_TRAINING = { title: "Combat Ready!", desc: "You have learned the basics. Rely on your wits!", items: [["⚔️", "Prepare", "Get ready for battle!"]] };
 
     // --- State Management ---
     const DB_KEY = 'aleph_rpg_users_db';
     let usersDB = JSON.parse(localStorage.getItem(DB_KEY)) || {};
     let currentUser = null;
+    
+    // Dynamic Questions loaded directly from the JSON file!
     let gameQuestions = [];
     
     // Engine State
@@ -826,7 +755,7 @@
       if (usersDB[name]) return showAlert("Username already exists!");
 
       usersDB[name] = {
-        name: name, coins: 0, track: 'beginner',
+        name: name, coins: 0,
         hp: 50, maxHp: 50,
         x: 0, y: 11, townX: 5, townY: 10, castleX: 5, castleY: 11,
         avatar: '🦁', unlockedAvatars: ['🦁'],
@@ -860,21 +789,20 @@
       showLoginModal();
     }
 
+    // THIS FUNCTION NOW READS DIRECTLY FROM THE JSON FILE
     async function loadQuestionBank() {
       if (!currentUser) return;
-      const fileName = currentUser.track === 'advanced' ? 'questions3.json' : (currentUser.track === 'intermediate' ? 'questions2.json' : 'questions.json');
+      const fileName = 'hebrewjson_data.json';
       try {
         const response = await fetch(fileName);
         if (!response.ok) throw new Error(`Not found: ${fileName}`);
         const data = await response.json();
         gameQuestions = data.levels || [];
       } catch (err) {
-        console.warn(`Could not load ${fileName}. Resetting to beginner.`);
-        if (currentUser.track !== 'beginner') {
-          currentUser.track = 'beginner';
-          loadQuestionBank();
-          return;
-        }
+        console.warn(`Could not load ${fileName}. Falling back to default data.`);
+        gameQuestions = [
+          { level: 1, questions: [{ q: "Waiting for hebrewjson_data.json to load via local server.", opts: ["OK"], a: "OK" }] }
+        ];
       } finally {
         renderCurrentScreen();
         updateUI();
@@ -885,7 +813,6 @@
     
     function switchTrack(track) {
       if (!currentUser) return;
-      currentUser.track = track;
       currentUser.x = 0;
       currentUser.y = 11; 
       inTown = false;
@@ -929,11 +856,10 @@
       
       document.getElementById('hero-display-avatar').innerHTML = tokenHTML;
       document.getElementById('hero-display-name').textContent = currentUser.name;
-      document.getElementById('hero-display-title').innerHTML = `${currentUser.track.charAt(0).toUpperCase() + currentUser.track.slice(1)} Track`;
       
       const hpPct = Math.max(0, (currentUser.hp / currentUser.maxHp) * 100);
       let hpHTML = `<div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${hpPct}%; background:${hpPct>25?'#68D391':'#FC8181'}"></div></div>`;
-      document.getElementById('hero-display-title').innerHTML += hpHTML;
+      document.getElementById('hero-display-title').innerHTML = `Hebrew Quest` + hpHTML;
 
       if (!inTown && !inCastle) { updateMapArrows(); }
       else { 
@@ -945,20 +871,21 @@
     // --- DYNAMIC ENTITY GENERATORS ---
     function setupTownNPCs(zoneLevel) {
       townNPCs = {};
-      const trackData = TRAINING_DATA[currentUser.track] || {};
       let concepts = [];
       
-      const l1 = trackData[zoneLevel] || DEFAULT_TRAINING;
-      const l2 = trackData[zoneLevel + 1] || trackData[zoneLevel] || DEFAULT_TRAINING;
+      const l1 = gameQuestions.find(l => l.level === zoneLevel);
+      const l2 = gameQuestions.find(l => l.level === zoneLevel + 1) || l1;
       
-      l1.items.forEach(i => concepts.push(`I study ${l1.title}.\n\nDid you know '${i[0]}' (${i[1]}) means:\n${i[2]}?`));
-      if(l1.title !== l2.title) {
-         l2.items.forEach(i => concepts.push(`Prepare yourself for the eastern zones!\n\nRemember '${i[0]}' (${i[1]}) means:\n${i[2]}.`));
+      if (l1 && l1.questions) {
+        l1.questions.slice(0, 4).forEach(q => concepts.push(`I study Zone ${zoneLevel}.\n\nDid you know the answer to:\n"${q.q}"\n\nIt is:\n${q.a}`));
+      }
+      if (l2 && l1 !== l2 && l2.questions) {
+         l2.questions.slice(0, 4).forEach(q => concepts.push(`Prepare yourself for the eastern zones!\n\nQuestion:\n"${q.q}"\n\nAnswer:\n${q.a}`));
       }
       
       let genericTips = [
         "Welcome to our town! The shop here sells medicine.",
-        "Talk to the Teacher near the Wizard if you want a detailed vocabulary list for topics you have encountered!",
+        "Talk to the Teacher near the Wizard if you want a complete study guide based on the game's master JSON!",
         "The monsters get much stronger the further east you travel.",
         "Armor reduces the damage you take when you make a mistake.",
         "A better weapon helps you defeat enemies in fewer turns!",
@@ -1015,14 +942,13 @@
       const map = document.getElementById('rpg-map');
       map.innerHTML = '';
       
-      const currentLayout = MAPS[currentUser.track];
       const mapSection = Math.floor(currentUser.x / 12);
       const startX = mapSection * 12;
 
       for (let y = 0; y < 12; y++) {
         for (let localX = 0; localX < 12; localX++) {
           const globalX = startX + localX;
-          const tileType = currentLayout[y][globalX];
+          const tileType = MAP_LAYOUT[y][globalX];
           
           const tile = document.createElement('div');
           tile.className = 'tile';
@@ -1171,16 +1097,15 @@
       const rightArrow = document.getElementById('map-arrow-right');
       if (!leftArrow || !rightArrow) return;
       
-      const currentLayout = MAPS[currentUser.track];
       let showLeft = false;
       let showRight = false;
       
       if (currentUser.x % 12 === 0 && currentUser.x > 0) {
-        const leftTile = currentLayout[currentUser.y][currentUser.x - 1];
+        const leftTile = MAP_LAYOUT[currentUser.y][currentUser.x - 1];
         if (leftTile !== 'W' && leftTile !== 'M') showLeft = true;
       }
       if (currentUser.x % 12 === 11 && currentUser.x < 35) {
-        const rightTile = currentLayout[currentUser.y][currentUser.x + 1];
+        const rightTile = MAP_LAYOUT[currentUser.y][currentUser.x + 1];
         if (rightTile !== 'W' && rightTile !== 'M') showRight = true;
       }
       
@@ -1189,7 +1114,7 @@
     }
 
 
-    // --- TOWN TEACHER UI ---
+    // --- TOWN TEACHER UI (DYNAMIC FROM JSON) ---
     function openTeacher() {
       if(!currentUser) return;
       document.getElementById('teacher-topics-view').style.display = 'block';
@@ -1197,22 +1122,24 @@
       
       const container = document.getElementById('teacher-topics-list');
       container.innerHTML = '';
-      const trackData = TRAINING_DATA[currentUser.track] || {};
       
-      // The teacher now offers all 12 lessons so you can study ahead for the hardest zones!
-      for(let i = 1; i <= 12; i++) {
-        const lesson = trackData[i];
-        if (lesson) {
-          const btn = document.createElement('button');
-          btn.className = 'lesson-btn';
-          btn.innerHTML = `
-            <span class="lesson-title">Zone ${i}: ${lesson.title}</span>
-            <span class="lesson-desc">${lesson.desc}</span>
-          `;
-          btn.onclick = () => showTeacherLesson(i);
-          container.appendChild(btn);
-        }
+      if (gameQuestions.length === 0) {
+        container.innerHTML = '<p style="color:#718096; text-align:center; padding:15px;">Waiting for hebrewjson_data.json data...</p>';
+        document.getElementById('teacher-modal').classList.add('active');
+        return;
       }
+
+      gameQuestions.forEach(lvlData => {
+        const btn = document.createElement('button');
+        btn.className = 'lesson-btn';
+        btn.innerHTML = `
+          <span class="lesson-title">Zone Level ${lvlData.level} Guide</span>
+          <span class="lesson-desc">Study the ${lvlData.questions.length} questions for this zone.</span>
+        `;
+        btn.onclick = () => showTeacherLesson(lvlData.level);
+        container.appendChild(btn);
+      });
+      
       document.getElementById('teacher-modal').classList.add('active');
     }
 
@@ -1220,22 +1147,26 @@
       document.getElementById('teacher-topics-view').style.display = 'none';
       document.getElementById('teacher-lesson-view').style.display = 'block';
       
-      const trackData = TRAINING_DATA[currentUser.track] || {};
-      const lesson = trackData[level] || DEFAULT_TRAINING; 
+      const lvlData = gameQuestions.find(l => l.level === level);
+      if (!lvlData) return;
       
-      document.getElementById('teacher-lesson-title').textContent = lesson.title;
+      document.getElementById('teacher-lesson-title').textContent = `Zone Level ${level} Guide`;
 
       const grid = document.getElementById('teacher-lesson-content');
       grid.innerHTML = '';
       
-      lesson.items.forEach(item => {
+      lvlData.questions.forEach(qObj => {
         const card = document.createElement('div');
         card.className = 'training-card';
+        card.style.justifyContent = 'center';
+        
+        const safeAnswer = qObj.a.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        const hebrewToSpeak = extractHebrew(qObj.a).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
         card.innerHTML = `
-          <div class="training-hebrew">${item[0]}</div>
-          <div class="training-name">${item[1]}</div>
-          <div class="training-desc">${item[2]}</div>
-          <button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>
+          <div style="font-size: 0.85rem; color: #4A5568; margin-bottom: 12px; text-align: center; line-height: 1.35;">${qObj.q}</div>
+          <div style="font-size: 1.25rem; font-weight: bold; color: var(--primary-dark); text-align: center; direction: rtl;">${qObj.a}</div>
+          <button class="mini-audio-btn" onclick="speakWord('${hebrewToSpeak}')">🔊</button>
         `;
         grid.appendChild(card);
       });
@@ -1247,7 +1178,7 @@
     }
 
 
-    // --- GLOBAL TRAINING ACADEMY UI (Manual Selection) ---
+    // --- GLOBAL TRAINING ACADEMY UI (Manual Selection - DYNAMIC FROM JSON) ---
     function openTrainingManual() {
       if(!currentUser) return;
       renderLessonList();
@@ -1260,42 +1191,48 @@
       
       const container = document.getElementById('lesson-list-container');
       container.innerHTML = '';
-      const trackData = TRAINING_DATA[currentUser.track] || {};
       
-      for(let i = 1; i <= 12; i++) {
-        const lesson = trackData[i] || DEFAULT_TRAINING;
+      if (gameQuestions.length === 0) {
+        container.innerHTML = '<p style="color:#718096; text-align:center; padding:15px;">Waiting for hebrewjson_data.json data...</p>';
+        return;
+      }
+
+      gameQuestions.forEach(lvlData => {
         const btn = document.createElement('button');
         btn.className = 'lesson-btn';
         btn.innerHTML = `
-          <span class="lesson-title">Zone Level ${i}: ${lesson.title}</span>
-          <span class="lesson-desc">${lesson.desc}</span>
+          <span class="lesson-title">Zone Level ${lvlData.level} Questions</span>
+          <span class="lesson-desc">Review all ${lvlData.questions.length} questions.</span>
         `;
-        btn.onclick = () => openLesson(i);
+        btn.onclick = () => openLesson(lvlData.level);
         container.appendChild(btn);
-      }
+      });
     }
 
     function openLesson(level) {
       document.getElementById('training-view-list').style.display = 'none';
       document.getElementById('training-view-content').style.display = 'block';
       
-      const trackData = TRAINING_DATA[currentUser.track] || {};
-      const lesson = trackData[level] || DEFAULT_TRAINING; 
+      const lvlData = gameQuestions.find(l => l.level === level);
+      if (!lvlData) return;
       
-      document.getElementById('train-level-title').textContent = `Zone Level ${level}: ${lesson.title}`;
-      document.getElementById('train-level-desc').textContent = lesson.desc;
+      document.getElementById('train-level-title').textContent = `Zone Level ${level} Master List`;
+      document.getElementById('train-level-desc').textContent = "Study these questions to prepare for battle.";
 
       const grid = document.getElementById('training-grid-container');
       grid.innerHTML = '';
       
-      lesson.items.forEach(item => {
+      lvlData.questions.forEach(qObj => {
         const card = document.createElement('div');
         card.className = 'training-card';
+        card.style.justifyContent = 'center';
+        
+        const hebrewToSpeak = extractHebrew(qObj.a).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
         card.innerHTML = `
-          <div class="training-hebrew">${item[0]}</div>
-          <div class="training-name">${item[1]}</div>
-          <div class="training-desc">${item[2]}</div>
-          <button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>
+          <div style="font-size: 0.85rem; color: #4A5568; margin-bottom: 12px; text-align: center; line-height: 1.35;">${qObj.q}</div>
+          <div style="font-size: 1.25rem; font-weight: bold; color: var(--primary-dark); text-align: center; direction: rtl;">${qObj.a}</div>
+          <button class="mini-audio-btn" onclick="speakWord('${hebrewToSpeak}')">🔊</button>
         `;
         grid.appendChild(card);
       });
@@ -1391,8 +1328,7 @@
       let ny = currentUser.y + dy;
       
       if (nx >= 0 && nx < 36 && ny >= 0 && ny < 12) {
-        const currentLayout = MAPS[currentUser.track];
-        const tileType = currentLayout[ny][nx];
+        const tileType = MAP_LAYOUT[ny][nx];
         
         if (tileType === 'W' || tileType === 'M') {
           sfx.bump();
@@ -1668,10 +1604,18 @@
       setTimeout(() => popup.remove(), 1500);
     }
 
+    // Clever text extraction for combat audio
     function speakCurrentQuestion() {
       if ('speechSynthesis' in window && activeQuestion) {
         window.speechSynthesis.cancel();
-        const utt = new SpeechSynthesisUtterance(activeQuestion.a || activeQuestion.q);
+        
+        let textToSpeak = extractHebrew(activeQuestion.a);
+        if (textToSpeak === activeQuestion.a) { 
+           let qHebrew = extractHebrew(activeQuestion.q);
+           if(qHebrew !== activeQuestion.q) textToSpeak = qHebrew;
+        }
+        
+        const utt = new SpeechSynthesisUtterance(textToSpeak);
         utt.lang = 'he-IL'; utt.rate = 0.85; window.speechSynthesis.speak(utt);
       }
     }
