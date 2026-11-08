@@ -106,15 +106,18 @@
     .tile.brick-road { background: #C53030; box-shadow: inset 0 0 4px #9B2C2C; }
     .tile.town-exit { background: #CBD5E0; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
     
-    /* Dark Dungeon Maze Styling */
+    /* Dragon Warrior Style Castle Dungeon Styling */
     .tile.castle-wall { 
-      background: #2D3748; border: 2px solid #1A202C; box-shadow: inset 0 0 10px #000; 
-      background-image: radial-gradient(#4A5568 15%, transparent 16%), radial-gradient(#4A5568 15%, transparent 16%);
-      background-size: 10px 10px; background-position: 0 0, 5px 5px;
+      background-color: #1A365D;
+      background-image: 
+        linear-gradient(90deg, #0D203F 2px, transparent 2px),
+        linear-gradient(0deg, #0D203F 2px, transparent 2px);
+      background-size: 12px 8px;
+      border: 1px solid #0D203F;
     }
-    .tile.castle-floor { background: #1A202C; box-shadow: inset 0 0 15px rgba(0,0,0,0.9); }
+    .tile.castle-floor { background: #000000; box-shadow: inset 0 0 15px rgba(0,0,0,0.9); }
     
-    .castle-icon { font-size: 1.8rem; position: absolute; }
+    .castle-icon { font-size: 1.8rem; position: absolute; filter: sepia(0.5) hue-rotate(200deg) saturate(1.5);}
     .env-icon { font-size: 1.2rem; opacity: 0.8; }
 
     /* Player Token on Map */
@@ -194,8 +197,8 @@
     .hebrew-text { font-family: 'Rubik', sans-serif; font-size: 2.5rem; color: var(--primary-dark); margin: 10px 0; direction: rtl; }
     .audio-btn { background: #EBF8FF; border: 2px solid #90CDF4; color: #2B6CB0; border-radius: 50%; width: 46px; height: 46px; font-size: 1.3rem; cursor: pointer; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
     .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-    .option-btn { padding: 14px; border-radius: 12px; border: 2px solid #E2E8F0; background: #F7FAFC; font-size: 1.05rem; font-weight: 600; cursor: pointer; direction: rtl; }
-    .option-btn:hover { border-color: var(--primary); background: #EBF8FF; }
+    .option-btn { padding: 14px; border-radius: 12px; border: 2px solid #E2E8F0; background: #F7FAFC; font-size: 1.05rem; font-weight: 600; cursor: pointer; direction: rtl; transition: all 0.2s; }
+    .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #EBF8FF; }
 
     /* Damage/Heal popups */
     .combat-popup {
@@ -651,7 +654,6 @@
     };
 
     // --- TOWN LAYOUT (12x12) ---
-    // C = Classroom / Teacher, Z = Wizard
     const TOWN_LAYOUT = [
       "OOOOOOOOOOOO",
       "OOBBBBBBBBOO",
@@ -667,20 +669,21 @@
       "OOOO+EE+OOOO"
     ];
 
-    // --- CASTLE LAYOUT (12x12 TRUE MAZE) ---
+    // --- CASTLE LAYOUT (Snake Path forced maze) ---
+    // The player must walk a specific winding path and defeat all 4 'M's before reaching 'H'
     const CASTLE_LAYOUT = [
       "XXXXXXXXXXXX",
-      "X.H......M.X",
-      "X.XXXXXX.X.X",
-      "X.X......X.X",
-      "X.X.XXXXXX.X",
-      "X.X.X.M....X",
-      "X.X.X.XXXXXX",
-      "X.M.X......X",
-      "XXXXXXX.XX.X",
-      "X.......X..X",
-      "XXXXX.XXXXXX",
-      "XXXXX.EXXXXX"
+      "XH........FX",
+      "XXXXXXXXXX.X",
+      "X........M.X",
+      "X.XXXXXXXXXX",
+      "X.M........X",
+      "XXXXXXXXXX.X",
+      "X........M.X",
+      "X.XXXXXXXXXX",
+      "X.M........X",
+      "XXXXXXXXXX.X",
+      "XXXXXXXXXEXX"
     ];
 
     const AVATARS = [
@@ -828,7 +831,7 @@
       usersDB[name] = {
         name: name, coins: 0, track: 'beginner',
         hp: 50, maxHp: 50,
-        x: 0, y: 11, townX: 5, townY: 10, castleX: 5, castleY: 11,
+        x: 0, y: 11, townX: 5, townY: 10, castleX: 9, castleY: 11,
         avatar: '🦁', unlockedAvatars: ['🦁'],
         inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null
       };
@@ -841,7 +844,7 @@
       currentUser = usersDB[name];
       if (!currentUser.consumables) currentUser.consumables = {};
       if (currentUser.townX === undefined) { currentUser.townX = 5; currentUser.townY = 10; }
-      if (currentUser.castleX === undefined) { currentUser.castleX = 5; currentUser.castleY = 11; }
+      if (currentUser.castleX === undefined) { currentUser.castleX = 9; currentUser.castleY = 11; }
       
       localStorage.setItem('aleph_rpg_active_user', name);
       document.getElementById('login-modal').classList.remove('active');
@@ -1124,9 +1127,8 @@
             tile.classList.add('castle-wall');
           } else if (tileType === 'E') {
             tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>';
-          } else {
+          } else if (tileType === 'F' || tileType === '.') {
             tile.classList.add('castle-floor');
-            
             if (castleMonsters[`${x},${y}`]) {
               const m = castleMonsters[`${x},${y}`];
               tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1; filter: drop-shadow(0px 0px 8px rgba(252,129,129,0.9));">${m.icon}</span>`;
@@ -1199,7 +1201,6 @@
       container.innerHTML = '';
       const trackData = TRAINING_DATA[currentUser.track] || {};
       
-      // The teacher now offers all 12 lessons so you can study ahead for the hardest zones!
       for(let i = 1; i <= 12; i++) {
         const lesson = trackData[i];
         if (lesson) {
@@ -1333,16 +1334,33 @@
             return;
           }
 
+          if (castleMonsters[`${nx},${ny}`]) {
+            const m = castleMonsters[`${nx},${ny}`];
+            
+            // BOSS SEAL MECHANIC
+            if (m.isBoss) {
+              const remainingMinions = Object.values(castleMonsters).filter(enemy => !enemy.isBoss).length;
+              if (remainingMinions > 0) {
+                 sfx.bump();
+                 const token = document.getElementById('player-map-token');
+                 if (token) { token.classList.add('bump-anim'); setTimeout(() => token.classList.remove('bump-anim'), 200); }
+                 showAlert(`🔒 A dark seal blocks the path!\n\nYou must defeat the remaining ${remainingMinions} Castle Defender(s) before facing the Giant Hamster!`);
+                 return;
+              }
+            }
+
+            currentUser.castleX = nx;
+            currentUser.castleY = ny;
+            activeCastleEnemyKey = `${nx},${ny}`;
+            positionPlayerOnMap();
+            triggerEncounter(m.isBoss, m.level);
+            return;
+          }
+
           currentUser.castleX = nx;
           currentUser.castleY = ny;
           sfx.step();
           positionPlayerOnMap();
-
-          if (castleMonsters[`${nx},${ny}`]) {
-            const m = castleMonsters[`${nx},${ny}`];
-            activeCastleEnemyKey = `${nx},${ny}`;
-            triggerEncounter(m.isBoss, m.level);
-          }
         }
         return;
       }
@@ -1363,7 +1381,7 @@
           }
           if (tile === '$') { sfx.step(); openShop(); return; }
           if (tile === 'Z') { sfx.step(); triggerWizardQuiz(); return; }
-          if (tile === 'C') { sfx.step(); openTeacher(); return; } // Teacher interaction
+          if (tile === 'C') { sfx.step(); openTeacher(); return; }
           if (tile === 'N') {
             sfx.encounter(); 
             const npc = townNPCs[`${nx},${ny}`];
@@ -1428,7 +1446,7 @@
         if (tileType === '#') {
           sfx.step();
           inCastle = true;
-          currentUser.castleX = 5;
+          currentUser.castleX = 9; 
           currentUser.castleY = 11;
           setupCastle();
           renderCurrentScreen();
@@ -1536,116 +1554,137 @@
     }
 
     function processAnswer(selected) {
-      if (inWizardQuiz) {
-        if (selected === activeQuestion.a) {
-          sfx.win();
-          wizardStreak++;
-          let msg = `Correct! That's ${wizardStreak} in a row.`;
-          let rewardMsg = "";
-          
-          if (wizardStreak === 5) {
-            if (Math.random() < 0.5) {
-              currentUser.coins += 50; rewardMsg = "\n\n🎁 You earned 50 coins!";
-            } else {
-              currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; rewardMsg = "\n\n🎁 You earned a Medicine!";
-            }
-            saveDB(); updateUI();
-          } else if (wizardStreak === 10) {
-            if (Math.random() < 0.5) {
-              currentUser.coins += 150; rewardMsg = "\n\n💎 Amazing! You earned 150 coins!";
-            } else {
-              currentUser.consumables['i3'] = (currentUser.consumables['i3'] || 0) + 1; rewardMsg = "\n\n💎 Amazing! You earned an Elixir!";
-            }
-            saveDB(); updateUI();
-          }
-          
-          showConfirm(msg + rewardMsg + "\n\nShall we continue the quiz?", () => {
-            loadNextBattleQuestion();
-          }, () => {
-            endBattle();
-          });
+      const buttons = document.querySelectorAll('.option-btn');
+      
+      // Visual Feedback instantly highlights Correct vs Incorrect options
+      buttons.forEach(b => {
+        b.disabled = true; // Disable further clicks
+        if (b.textContent === activeQuestion.a) {
+          b.style.backgroundColor = '#48BB78'; // Green
+          b.style.borderColor = '#2F855A';
+          b.style.color = 'white';
+        } else if (b.textContent === selected) {
+          b.style.backgroundColor = '#F56565'; // Red
+          b.style.borderColor = '#C53030';
+          b.style.color = 'white';
         } else {
-          sfx.bump();
-          wizardStreak = 0;
-          showConfirm(`Not quite! The correct answer was:\n${activeQuestion.a}\n\nYour streak has reset. Shall we try again?`, () => {
-            loadNextBattleQuestion();
-          }, () => {
-            endBattle();
-          });
+          b.style.opacity = '0.5';
         }
-        return;
-      }
+      });
 
-      if (selected === activeQuestion.a) {
-        sfx.hitEnemy();
-        const pDmg = getPlayerDamage();
-        currentEnemyHP -= pDmg;
-        showFloatText(`-${pDmg}`, 'dmg-text');
-        updateEnemyHPBar();
-
-        if (currentEnemyHP <= 0) {
-          setTimeout(() => {
+      // Pause for 1.2 seconds so the player can see the correct answer
+      setTimeout(() => {
+        if (inWizardQuiz) {
+          if (selected === activeQuestion.a) {
             sfx.win();
-            const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5);
-            currentUser.coins += goldEarned;
+            wizardStreak++;
+            let msg = `Correct! That's ${wizardStreak} in a row.`;
+            let rewardMsg = "";
             
-            let victoryMsg = `🎉 Victory! Earned ${goldEarned} coins.`;
-            if (Math.random() < 0.25) {
-              currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1;
-              victoryMsg = `🎉 Victory! +${goldEarned} coins.\n\n🧪 The enemy dropped Medicine! Check your Backpack.`;
+            if (wizardStreak === 5) {
+              if (Math.random() < 0.5) {
+                currentUser.coins += 50; rewardMsg = "\n\n🎁 You earned 50 coins!";
+              } else {
+                currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; rewardMsg = "\n\n🎁 You earned a Medicine!";
+              }
+              saveDB(); updateUI();
+            } else if (wizardStreak === 10) {
+              if (Math.random() < 0.5) {
+                currentUser.coins += 150; rewardMsg = "\n\n💎 Amazing! You earned 150 coins!";
+              } else {
+                currentUser.consumables['i3'] = (currentUser.consumables['i3'] || 0) + 1; rewardMsg = "\n\n💎 Amazing! You earned an Elixir!";
+              }
+              saveDB(); updateUI();
             }
             
-            showAlert(victoryMsg, () => {
-              if (inCastle && currentEnemyLevel === 12 && activeCastleEnemyKey && castleMonsters[activeCastleEnemyKey] && castleMonsters[activeCastleEnemyKey].isBoss) {
-                confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
-                showAlert("👑 CONGRATULATIONS! You have defeated the Giant Hamster and saved the realm! Returning to village...", () => {
-                  currentUser.x = 0; currentUser.y = 11;
-                  inCastle = false;
-                  activeCastleEnemyKey = null;
-                  renderCurrentScreen();
-                  updateUI();
-                  endBattle();
-                });
-              } else {
-                if (inCastle && activeCastleEnemyKey) {
-                  delete castleMonsters[activeCastleEnemyKey];
-                  activeCastleEnemyKey = null;
-                  renderCurrentScreen(); 
-                }
-                endBattle();
-              }
-            });
-            
-          }, 300);
-        } else {
-          setTimeout(loadNextBattleQuestion, 500);
-        }
-      } else {
-        sfx.takeDamage();
-        const eDmg = currentEnemyLevel * 2;
-        const pDef = getPlayerDefense();
-        const dmgTaken = Math.max(1, eDmg - pDef); 
-        
-        currentUser.hp -= dmgTaken;
-        updateUI();
-        showFloatText(`-${dmgTaken}`, 'dmg-text');
-        
-        showAlert(`❌ Incorrect! The enemy strikes back for ${dmgTaken} damage.\n\n(The right answer was: ${activeQuestion.a})`, () => {
-          if (currentUser.hp <= 0) {
-            showAlert("💀 YOU HAVE FALLEN IN BATTLE.\nYour journey restarts at the village.", () => {
-              currentUser.hp = currentUser.maxHp;
-              currentUser.x = 0; currentUser.y = 11;
-              inCastle = false;
-              activeCastleEnemyKey = null;
-              renderCurrentScreen();
-              updateUI();
+            showConfirm(msg + rewardMsg + "\n\nShall we continue the quiz?", () => {
+              loadNextBattleQuestion();
+            }, () => {
               endBattle();
             });
           } else {
+            sfx.bump();
+            wizardStreak = 0;
+            showConfirm(`Not quite! Your streak has reset. Shall we try again?`, () => {
+              loadNextBattleQuestion();
+            }, () => {
+              endBattle();
+            });
+          }
+          return;
+        }
+
+        if (selected === activeQuestion.a) {
+          sfx.hitEnemy();
+          const pDmg = getPlayerDamage();
+          currentEnemyHP -= pDmg;
+          showFloatText(`-${pDmg}`, 'dmg-text');
+          updateEnemyHPBar();
+
+          if (currentEnemyHP <= 0) {
+            setTimeout(() => {
+              sfx.win();
+              const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5);
+              currentUser.coins += goldEarned;
+              
+              let victoryMsg = `🎉 Victory! Earned ${goldEarned} coins.`;
+              if (Math.random() < 0.25) {
+                currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1;
+                victoryMsg = `🎉 Victory! +${goldEarned} coins.\n\n🧪 The enemy dropped Medicine! Check your Backpack.`;
+              }
+              
+              showAlert(victoryMsg, () => {
+                if (inCastle && currentEnemyLevel === 12 && activeCastleEnemyKey && castleMonsters[activeCastleEnemyKey] && castleMonsters[activeCastleEnemyKey].isBoss) {
+                  confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+                  showAlert("👑 CONGRATULATIONS! You have defeated the Giant Hamster and saved the realm! Returning to village...", () => {
+                    currentUser.x = 0; currentUser.y = 11;
+                    inCastle = false;
+                    activeCastleEnemyKey = null;
+                    renderCurrentScreen();
+                    updateUI();
+                    endBattle();
+                  });
+                } else {
+                  if (inCastle && activeCastleEnemyKey) {
+                    delete castleMonsters[activeCastleEnemyKey];
+                    activeCastleEnemyKey = null;
+                    renderCurrentScreen(); 
+                  }
+                  endBattle();
+                }
+              });
+              
+            }, 300);
+          } else {
             loadNextBattleQuestion();
           }
-        });
-      }
+        } else {
+          sfx.takeDamage();
+          const eDmg = currentEnemyLevel * 2;
+          const pDef = getPlayerDefense();
+          const dmgTaken = Math.max(1, eDmg - pDef); 
+          
+          currentUser.hp -= dmgTaken;
+          updateUI();
+          showFloatText(`-${dmgTaken}`, 'dmg-text');
+          
+          showAlert(`❌ Incorrect!\n\nThe enemy strikes back for ${dmgTaken} damage.`, () => {
+            if (currentUser.hp <= 0) {
+              showAlert("💀 YOU HAVE FALLEN IN BATTLE.\nYour journey restarts at the village.", () => {
+                currentUser.hp = currentUser.maxHp;
+                currentUser.x = 0; currentUser.y = 11;
+                inCastle = false;
+                activeCastleEnemyKey = null;
+                renderCurrentScreen();
+                updateUI();
+                endBattle();
+              });
+            } else {
+              loadNextBattleQuestion();
+            }
+          });
+        }
+      }, 1200); // 1.2 second visual pause
     }
 
     function updateEnemyHPBar() {
