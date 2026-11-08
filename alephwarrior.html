@@ -181,6 +181,11 @@
     }
     .modal-overlay.active .modal-card { transform: scale(1); }
 
+    /* Intro Slides */
+    .intro-slide { display: none; }
+    .intro-slide.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
     /* Battle UI */
     .boss-header {
       background: linear-gradient(135deg, #2D3748, #1A202C);
@@ -296,6 +301,62 @@
     </div>
   </main>
 
+  <!-- Story & Mechanics Intro Modal -->
+  <div class="modal-overlay" id="intro-modal" style="z-index: 2000;">
+    <div class="modal-card">
+      <button class="nav-btn" onclick="closeIntro()" style="position:absolute; top:10px; right:10px; font-size:0.7rem; padding:4px 8px;">Skip ⏭️</button>
+      
+      <!-- Slide 1: Backstory -->
+      <div class="intro-slide active" id="intro-slide-1">
+        <h1 style="font-size:3rem; margin-bottom:10px;">🐹</h1>
+        <h2 style="color:var(--primary-dark); font-size:1.8rem;">The Hamster's Reign</h2>
+        <p id="intro-story-text" style="text-align: left; margin-top: 15px; color:#4A5568; line-height:1.6; font-size:1.05rem;"></p>
+        <button class="action-btn" onclick="nextIntroSlide(2)" style="margin-top: 25px;">Next ➡️</button>
+      </div>
+
+      <!-- Slide 2: Gameplay -->
+      <div class="intro-slide" id="intro-slide-2">
+        <h1 style="font-size:3rem; margin-bottom:10px;">🎮</h1>
+        <h2 style="color:var(--primary-dark); font-size:1.8rem;">How to Play</h2>
+        <ul style="text-align: left; margin: 20px 0 20px 25px; line-height: 1.6; color:#4A5568; font-size:1.05rem;">
+          <li style="margin-bottom:8px;">Use the <b>D-Pad</b> or keyboard arrows to move.</li>
+          <li style="margin-bottom:8px;">Travel <b>East</b> (right) towards the dark castle. Enemies get harder the further you go!</li>
+          <li style="margin-bottom:8px;">Visit the <b>Town</b> to buy weapons, armor, and medicine.</li>
+          <li style="margin-bottom:8px;">Answer Hebrew questions correctly to attack in battle. Wrong answers mean you take damage!</li>
+        </ul>
+        <button class="action-btn" onclick="nextIntroSlide(3)" style="margin-top: 10px;">Next ➡️</button>
+      </div>
+
+      <!-- Slide 3: Hebrew Basics -->
+      <div class="intro-slide" id="intro-slide-3">
+        <h1 style="font-size:3rem; margin-bottom:10px;">🔤</h1>
+        <h2 style="color:var(--primary-dark); font-size:1.8rem;">Hebrew Basics</h2>
+        <p style="color:#718096; margin:10px 0;">Hebrew is read from <b>Right to Left</b>. Here are a few memory tricks to get you started!</p>
+        
+        <div style="text-align: left; max-height: 250px; overflow-y:auto; background:#EDF2F7; padding:15px; border-radius:12px; margin-bottom:20px; font-size:0.95rem; line-height:1.5;">
+          <p style="margin-bottom:10px;"><b>א (Aleph)</b> - Silent. Like the 'a' in apple waiting for a sound.</p>
+          <p style="margin-bottom:10px;"><b>בּ (Bet)</b> - 'B' sound. Has a bellybutton dot!</p>
+          <p style="margin-bottom:10px;"><b>ב (Vet)</b> - 'V' sound. No dot inside.</p>
+          <p style="margin-bottom:10px;"><b>ג (Gimel)</b> - 'G' for Girl. Looks like a boot walking.</p>
+          <p style="margin-bottom:10px;"><b>ד (Dalet)</b> - 'D' for Door. Looks like an open door frame.</p>
+          <p style="margin-bottom:10px;"><b>ה (Hei)</b> - 'H' sound. Has a little hole at the top left to let the air out!</p>
+          <p style="margin-bottom:10px;"><b>ו (Vav)</b> - 'V' sound. Just a straight vertical line.</p>
+        </div>
+        <button class="action-btn" onclick="closeIntro()">Start Adventure ⚔️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Victory Wrap-up Modal -->
+  <div class="modal-overlay" id="victory-modal" style="z-index: 2005;">
+    <div class="modal-card" style="border: 4px solid var(--accent); background: linear-gradient(to bottom, #ffffff, #FEFCBF);">
+      <h1 style="font-size:4rem; margin-bottom:10px; animation: pulseArrow 1.5s infinite;">🏆</h1>
+      <h2 style="color:var(--primary-dark); font-size:2.2rem; text-shadow: 1px 1px 0px white;">Realm Restored!</h2>
+      <p id="victory-story-text" style="margin:20px 0; font-size:1.15rem; color:#2D3748; line-height:1.6; font-weight:600;"></p>
+      <button class="action-btn" onclick="closeVictory()">Continue Playing</button>
+    </div>
+  </div>
+
   <!-- Custom Alert System (NPC Dialogue & Messages) -->
   <div class="modal-overlay" id="custom-alert-overlay" style="z-index: 1000;">
     <div class="modal-card" style="max-width: 400px; padding: 30px;">
@@ -364,7 +425,7 @@
   </div>
 
   <!-- Login/Account Modal -->
-  <div class="modal-overlay active" id="login-modal" style="background: rgba(0,0,0,0.9);">
+  <div class="modal-overlay active" id="login-modal" style="background: rgba(0,0,0,0.9); z-index: 3000;">
     <div class="modal-card">
       <h2 style="color:var(--primary-dark);">Aleph-Bet Quest</h2>
       <p style="color:#718096; margin-top:5px;">Select your profile or create a new one to save progress!</p>
@@ -525,6 +586,16 @@
       win() { this.playTone(400, 'square', 0.15, 0.03); setTimeout(() => this.playTone(500, 'square', 0.15, 0.03), 150); setTimeout(() => this.playTone(600, 'square', 0.4, 0.03), 300); }
       heal() { this.playTone(500, 'sine', 0.15, 0.03); setTimeout(() => this.playTone(700, 'sine', 0.3, 0.03), 120); }
       
+      victoryFanfare() {
+        this.stopBGM();
+        this.playTone(440, 'square', 0.2, 0.05); // A4
+        setTimeout(() => this.playTone(440, 'square', 0.2, 0.05), 250); 
+        setTimeout(() => this.playTone(440, 'square', 0.2, 0.05), 500); 
+        setTimeout(() => this.playTone(554, 'square', 0.4, 0.05), 750); // C#5
+        setTimeout(() => this.playTone(440, 'square', 0.2, 0.05), 1200); 
+        setTimeout(() => this.playTone(659, 'square', 0.6, 0.05), 1500); // E5
+      }
+
       toggleMusic() {
         this.musicOn = !this.musicOn;
         if(this.musicOn) { this.startBGM(); } else { this.stopBGM(); }
@@ -669,8 +740,7 @@
       "OOOO+EE+OOOO"
     ];
 
-    // --- CASTLE LAYOUT (Snake Path forced maze) ---
-    // The player must walk a specific winding path and defeat all 4 'M's before reaching 'H'
+    // --- CASTLE LAYOUT (Snake Path forced maze with safe floor entrance at bottom) ---
     const CASTLE_LAYOUT = [
       "XXXXXXXXXXXX",
       "XH........FX",
@@ -683,7 +753,7 @@
       "X.XXXXXXXXXX",
       "X.M........X",
       "XXXXXXXXXX.X",
-      "XXXXXXXXXEXX"
+      "XXXXXXXXFEXX"
     ];
 
     const AVATARS = [
@@ -831,9 +901,10 @@
       usersDB[name] = {
         name: name, coins: 0, track: 'beginner',
         hp: 50, maxHp: 50,
-        x: 0, y: 11, townX: 5, townY: 10, castleX: 9, castleY: 11,
+        x: 0, y: 11, townX: 5, townY: 10, castleX: 5, castleY: 11,
         avatar: '🦁', unlockedAvatars: ['🦁'],
-        inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null
+        inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null,
+        hasSeenIntro: false
       };
       saveDB();
       input.value = '';
@@ -844,7 +915,7 @@
       currentUser = usersDB[name];
       if (!currentUser.consumables) currentUser.consumables = {};
       if (currentUser.townX === undefined) { currentUser.townX = 5; currentUser.townY = 10; }
-      if (currentUser.castleX === undefined) { currentUser.castleX = 9; currentUser.castleY = 11; }
+      if (currentUser.castleX === undefined) { currentUser.castleX = 5; currentUser.castleY = 11; }
       
       localStorage.setItem('aleph_rpg_active_user', name);
       document.getElementById('login-modal').classList.remove('active');
@@ -854,6 +925,31 @@
       inCastle = false; 
       
       loadQuestionBank(); 
+      
+      // Trigger intro for new players
+      if (!currentUser.hasSeenIntro) {
+        openIntro();
+      }
+    }
+    
+    // --- Intro Flow Logic ---
+    function openIntro() {
+      document.getElementById('intro-story-text').innerHTML = `Once upon a time, a small village hamster ate a glowing, mutated tomato...<br><br>It transformed him into a Giant Mean Hamster! Now, he recruits wild monsters to trample villages, destroy crops, and drive up local housing costs!<br><br>Hero <b>${currentUser.name}</b>, you are our only hope! Drive this evil from the realm and restore our quality of life!`;
+      document.getElementById('intro-slide-1').classList.add('active');
+      document.getElementById('intro-slide-2').classList.remove('active');
+      document.getElementById('intro-slide-3').classList.remove('active');
+      document.getElementById('intro-modal').classList.add('active');
+    }
+
+    function nextIntroSlide(slideNum) {
+      document.querySelectorAll('.intro-slide').forEach(s => s.classList.remove('active'));
+      document.getElementById(`intro-slide-${slideNum}`).classList.add('active');
+    }
+
+    function closeIntro() {
+      document.getElementById('intro-modal').classList.remove('active');
+      currentUser.hasSeenIntro = true;
+      saveDB();
     }
 
     function logout() {
@@ -1449,7 +1545,7 @@
         if (tileType === '#') {
           sfx.step();
           inCastle = true;
-          currentUser.castleX = 9; 
+          currentUser.castleX = 9; // Safe floor tile in bottom row
           currentUser.castleY = 11;
           setupCastle();
           renderCurrentScreen();
@@ -1559,9 +1655,8 @@
     function processAnswer(selected) {
       const buttons = document.querySelectorAll('.option-btn');
       
-      // Visual Feedback instantly highlights Correct vs Incorrect options
       buttons.forEach(b => {
-        b.disabled = true; // Disable further clicks
+        b.disabled = true; 
         if (b.textContent === activeQuestion.a) {
           b.style.backgroundColor = '#48BB78'; // Green
           b.style.borderColor = '#2F855A';
@@ -1575,7 +1670,6 @@
         }
       });
 
-      // Pause for 1.2 seconds so the player can see the correct answer
       setTimeout(() => {
         if (inWizardQuiz) {
           if (selected === activeQuestion.a) {
@@ -1626,7 +1720,6 @@
 
           if (currentEnemyHP <= 0) {
             setTimeout(() => {
-              sfx.win();
               const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5);
               currentUser.coins += goldEarned;
               
@@ -1636,27 +1729,20 @@
                 victoryMsg = `🎉 Victory! +${goldEarned} coins.\n\n🧪 The enemy dropped Medicine! Check your Backpack.`;
               }
               
-              showAlert(victoryMsg, () => {
-                if (inCastle && currentEnemyLevel === 12 && activeCastleEnemyKey && castleMonsters[activeCastleEnemyKey] && castleMonsters[activeCastleEnemyKey].isBoss) {
-                  confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
-                  showAlert("👑 CONGRATULATIONS! You have defeated the Giant Hamster and saved the realm! Returning to village...", () => {
-                    currentUser.x = 0; currentUser.y = 11;
-                    inCastle = false;
-                    activeCastleEnemyKey = null;
-                    renderCurrentScreen();
-                    updateUI();
+              // GIANT HAMSTER DEFEATED -> FULL VICTORY SEQUENCE
+              if (inCastle && currentEnemyLevel === 12 && activeCastleEnemyKey && castleMonsters[activeCastleEnemyKey] && castleMonsters[activeCastleEnemyKey].isBoss) {
+                  triggerVictorySequence();
+              } else {
+                  sfx.win();
+                  showAlert(victoryMsg, () => {
+                    if (inCastle && activeCastleEnemyKey) {
+                      delete castleMonsters[activeCastleEnemyKey];
+                      activeCastleEnemyKey = null;
+                      renderCurrentScreen(); 
+                    }
                     endBattle();
                   });
-                } else {
-                  if (inCastle && activeCastleEnemyKey) {
-                    delete castleMonsters[activeCastleEnemyKey];
-                    activeCastleEnemyKey = null;
-                    renderCurrentScreen(); 
-                  }
-                  endBattle();
-                }
-              });
-              
+              }
             }, 300);
           } else {
             loadNextBattleQuestion();
@@ -1687,7 +1773,41 @@
             }
           });
         }
-      }, 1200); // 1.2 second visual pause
+      }, 1200);
+    }
+    
+    // --- Victory Wrap-up ---
+    function triggerVictorySequence() {
+      endBattle();
+      sfx.victoryFanfare();
+      
+      // Cascading Confetti
+      var duration = 4000;
+      var end = Date.now() + duration;
+      (function frame() {
+        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+        if (Date.now() < end) { requestAnimationFrame(frame); }
+      }());
+      
+      document.getElementById('victory-story-text').innerHTML = 
+        `You did it, <b>${currentUser.name}</b>!<br><br>` + 
+        `With the Giant Hamster defeated, his minions have scattered. ` + 
+        `The trampled crops are regrowing, housing costs have miraculously stabilized, ` + 
+        `and the villagers can safely rebuild their homes without fear of giant footprints!<br><br>` +
+        `You are a true hero to the realm.`;
+        
+      document.getElementById('victory-modal').classList.add('active');
+    }
+
+    function closeVictory() {
+      document.getElementById('victory-modal').classList.remove('active');
+      currentUser.x = 0; currentUser.y = 11;
+      inCastle = false;
+      activeCastleEnemyKey = null;
+      renderCurrentScreen();
+      updateUI();
+      if(sfx.musicOn) sfx.startBGM(); // Restart standard map music
     }
 
     function updateEnemyHPBar() {
