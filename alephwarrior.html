@@ -938,10 +938,13 @@
       let hpHTML = `<div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${hpPct}%; background:${hpPct>25?'#68D391':'#FC8181'}"></div></div>`;
       document.getElementById('hero-display-title').innerHTML += hpHTML;
 
-      if (!inTown && !inCastle) { updateMapArrows(); }
-      else { 
-        document.getElementById('map-arrow-left').style.display = 'none';
-        document.getElementById('map-arrow-right').style.display = 'none';
+      if (!inTown && !inCastle) { 
+        updateMapArrows(); 
+      } else { 
+        const leftArr = document.getElementById('map-arrow-left');
+        const rightArr = document.getElementById('map-arrow-right');
+        if (leftArr) leftArr.style.display = 'none';
+        if (rightArr) rightArr.style.display = 'none';
       }
     }
 
