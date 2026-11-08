@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fairy-Maid Festival V11</title>
+    <title>Fairy-Maid Festival V12</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -73,7 +73,7 @@
         .trade-icon.selected { transform: scale(1.3); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 1)); opacity: 1; }
 
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { background: linear-gradient(135deg, #a78bfa, #ec4899); color: white; padding: 12px 24px; border-radius: 9999px; font-weight: 900; box-shadow: 0 4px 6px rgba(0,0,0,0.1); animation: bounce-in 0.3s ease-out forwards, slideOut 0.3s ease-in 3s forwards; }
+        .toast { background: linear-gradient(135deg, #a78bfa, #ec4899); color: white; padding: 12px 24px; border-radius: 9999px; font-weight: 900; box-shadow: 0 4px 6px rgba(0,0,0,0.1); animation: bounce-in 0.3s ease-out forwards, slideOut 0.3s ease-in 3s forwards; text-align: center;}
         @keyframes slideOut { to { transform: translateY(-50px); opacity: 0; } }
 
         .math-wand-bg { background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); background-size: 200% 200%; animation: gradientShift 3s ease infinite; }
@@ -83,6 +83,8 @@
         .rare-item { background: linear-gradient(135deg, #fef08a, #fde047); border-color: #facc15; }
         .speed-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; text-shadow: 1px 1px 0 #b45309; }
         .stardust-glow { filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.8)); }
+        .gold-pulse { animation: gold-pulse 1s ease-out; }
+        @keyframes gold-pulse { 0% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.2); filter: brightness(1.5); } 100% { transform: scale(1); filter: brightness(1); } }
     </style>
 </head>
 <body class="text-purple-900 min-h-screen flex flex-col items-center py-6 px-4">
@@ -99,6 +101,9 @@
                 <div class="flex items-center gap-2 mt-1">
                     <p id="hero-title" class="text-sm font-bold text-pink-500 uppercase tracking-widest">Festival Star</p>
                     <div id="hero-level-badge" class="bg-indigo-500 text-white text-xs font-black px-2 py-0.5 rounded-full shadow-sm">Lvl 1</div>
+                    <div class="bg-yellow-400 text-yellow-900 text-sm font-black px-3 py-0.5 rounded-full shadow-sm border-2 border-yellow-500 flex items-center gap-1" id="hero-gold-container">
+                        🪙 <span id="hero-gold">0</span>
+                    </div>
                 </div>
                 <div id="hero-badges" class="flex gap-1 mt-2"></div>
             </div>
@@ -164,19 +169,46 @@
             <p id="menu-level-desc" class="text-teal-100 font-bold mt-1 text-sm"></p>
         </button>
 
-        <button id="btn-open-inventory" class="w-full bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white rounded-[2.5rem] p-6 shadow-xl border-4 border-white hover:scale-105 transition-transform group flex flex-col items-center">
-            <div class="text-6xl mb-2 group-hover:bounce-in emoji-shadow">👗</div>
-            <h2 class="text-4xl font-black drop-shadow-md">Dress Up Room</h2>
-            <p class="text-pink-100 font-bold mt-1 text-lg">Wear your prizes!</p>
-        </button>
+        <div class="grid grid-cols-2 gap-4 w-full">
+            <button id="btn-open-shop" class="w-full bg-gradient-to-r from-yellow-400 to-amber-500 text-white rounded-[2rem] p-4 shadow-lg border-4 border-white hover:scale-105 transition-transform group flex flex-col items-center">
+                <div class="text-5xl mb-2 group-hover:bounce-in emoji-shadow">🛍️</div>
+                <h2 class="text-2xl font-black drop-shadow-md leading-tight">Glitter<br>Boutique</h2>
+                <p class="text-yellow-100 font-bold mt-1 text-xs">Spend Gold!</p>
+            </button>
+            
+            <button id="btn-open-inventory" class="w-full bg-gradient-to-r from-pink-400 to-fuchsia-500 text-white rounded-[2rem] p-4 shadow-lg border-4 border-white hover:scale-105 transition-transform group flex flex-col items-center">
+                <div class="text-5xl mb-2 group-hover:bounce-in emoji-shadow">👗</div>
+                <h2 class="text-2xl font-black drop-shadow-md leading-tight">Dress Up<br>Room</h2>
+                <p class="text-pink-100 font-bold mt-1 text-xs">Wear Prizes!</p>
+            </button>
+        </div>
         
         <button id="btn-logout" class="bg-white/50 text-purple-500 font-bold px-6 py-2 rounded-full border-2 border-purple-200 hover:bg-white transition-colors mt-2">Switch Player</button>
     </div>
 
+    <!-- GLITTER BOUTIQUE (SHOP) SCREEN -->
+    <div id="screen-shop" class="screen-container flex-col items-center w-full max-w-5xl bg-white/80 p-4 sm:p-8 rounded-[3rem] border-4 border-yellow-300 shadow-lg">
+        <h2 class="text-4xl md:text-5xl text-amber-500 font-black mb-2 drop-shadow-md text-center">Glitter Boutique 🛍️</h2>
+        <p class="text-yellow-700 font-bold mb-6 text-center bg-yellow-100 px-6 py-2 rounded-full border-2 border-yellow-300">Tap an item to buy it with your Gold Coins!</p>
+        
+        <div class="flex flex-col md:flex-row w-full gap-8 items-start">
+            <div class="w-full md:w-1/3 flex flex-col items-center sticky top-4">
+                <div class="bg-gradient-to-b from-yellow-50 to-white rounded-[3rem] border-8 border-yellow-200 shadow-xl w-48 h-72 sm:w-64 sm:h-96 flex items-center justify-center p-4 svg-container" id="shop-preview"></div>
+                <div class="mt-4 bg-yellow-400 text-yellow-900 text-2xl font-black px-6 py-2 rounded-full shadow-md border-4 border-yellow-500 text-center w-full">
+                    My Gold: <span id="shop-gold-display">0</span> 🪙
+                </div>
+                <button id="btn-shop-back" class="mt-4 bg-white border-4 border-yellow-300 text-yellow-700 font-black text-xl py-3 px-10 rounded-full shadow-md hover:bg-yellow-50 hover:scale-105 transition-all w-full">
+                    ⬅️ Back to Menu
+                </button>
+            </div>
+            <div class="w-full md:w-2/3 grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 content-start pb-20" id="shop-grid"></div>
+        </div>
+    </div>
+
     <!-- DRESS UP / INVENTORY SCREEN -->
     <div id="screen-inventory" class="screen-container flex-col items-center w-full max-w-5xl bg-white/60 p-4 sm:p-8 rounded-[3rem] border-4 border-white shadow-lg">
-        <h2 class="text-4xl md:text-5xl text-pink-500 font-black mb-2 drop-shadow-md text-center">Dress Up Room 👗</h2>
-        <p class="text-purple-600 font-bold mb-6 text-center">Tap an item to wear it! Win games to unlock more!</p>
+        <h2 class="text-4xl md:text-5xl text-pink-500 font-black mb-2 drop-shadow-md text-center">My Closet 👗</h2>
+        <p class="text-purple-600 font-bold mb-6 text-center">Tap an item to wear it!</p>
         
         <div class="flex flex-col md:flex-row w-full gap-8 items-start">
             <div class="w-full md:w-1/3 flex flex-col items-center sticky top-4">
@@ -185,7 +217,12 @@
                     ⬅️ Back to Menu
                 </button>
             </div>
-            <div class="w-full md:w-2/3 grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 content-start pb-20" id="inventory-grid"></div>
+            <div class="w-full md:w-2/3">
+                <div id="inventory-empty-msg" class="text-center text-gray-500 font-bold text-xl py-10 hidden">
+                    Your closet is empty!<br>Visit the Glitter Boutique to buy outfits! 🛍️
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 content-start pb-20" id="inventory-grid"></div>
+            </div>
         </div>
     </div>
 
@@ -305,7 +342,7 @@
         <!-- Right Column: Buildings -->
         <div class="flex flex-col w-full md:w-[55%] pb-10">
             <h2 class="text-3xl text-purple-600 mb-2 text-center font-black drop-shadow-sm">Build In Order:</h2>
-            <p class="text-center text-gray-500 font-bold mb-4">Complete the top building to unlock the next!</p>
+            <p class="text-center text-gray-500 font-bold mb-4">Earn Gold 🪙 for every building!</p>
             <div id="buildings-container" class="flex flex-col gap-4"></div>
         </div>
     </div>
@@ -317,20 +354,14 @@
             <p id="modal-msg" class="text-xl text-gray-600 mb-4 font-bold whitespace-pre-line"></p>
             
             <div id="modal-reward-area" class="w-full hidden flex-col items-center mb-6">
-                <!-- Normal Reward -->
-                <div id="modal-normal-reward" class="hidden flex-col items-center">
-                    <p class="text-pink-500 font-black uppercase tracking-wide mb-2">New Item Unlocked!</p>
-                    <div id="modal-reward-item" class="bg-pink-50 border-4 border-pink-300 rounded-3xl p-4 flex flex-col items-center justify-center anim-spin-pop w-28 h-28 mb-2"></div>
-                </div>
-                <!-- Speed Bonus Reward -->
-                <div id="modal-speed-reward" class="hidden flex-col items-center bg-yellow-50 border-4 border-yellow-400 rounded-[2rem] p-4 mt-2 w-full">
+                <!-- Gold Reward -->
+                <div id="modal-gold-reward" class="hidden flex-col items-center bg-yellow-50 border-4 border-yellow-400 rounded-[2rem] p-4 mt-2 w-full">
                     <div class="flex items-center justify-center gap-2 mb-2">
-                        <span class="text-3xl">⚡</span>
-                        <h3 class="text-2xl font-black text-yellow-600">SPEED BONUS!</h3>
-                        <span class="text-3xl">⚡</span>
+                        <span class="text-3xl">🪙</span>
+                        <h3 class="text-3xl font-black text-yellow-600">REWARD!</h3>
+                        <span class="text-3xl">🪙</span>
                     </div>
-                    <p class="text-sm text-yellow-700 font-bold mb-3">Won with >8 clocks! Earned a RARE item!</p>
-                    <div id="modal-rare-item" class="bg-white border-4 border-yellow-300 rounded-3xl p-4 flex flex-col items-center justify-center anim-spin-pop w-28 h-28 shadow-inner"></div>
+                    <p id="modal-gold-text" class="text-xl text-yellow-700 font-black mb-3"></p>
                 </div>
             </div>
 
@@ -413,74 +444,73 @@
         ];
 
         const HAIR_COLORS = ['#fde047', '#78350f', '#27272a', '#dc2626', '#ec4899', '#8b5cf6', '#06b6d4', '#10b981'];
-        // Extended skin tones featuring 5 very light shades first, then graduating to dark
         const SKIN_TONES = ['#FFF0E5', '#FFE0D2', '#FAD6C6', '#FCE8D5', '#fee2e2', '#ffedd5', '#d4a373', '#8b5a2b', '#451a03'];
 
         const ITEMS = {
-            // -- HEAD (9 items) --
-            pearl_tiara: { id: 'pearl_tiara', type: 'head', isRare: false, emoji: '👑', name: 'Pearl Tiara', svg: `<path d="M 38 15 L 42 5 L 50 10 L 58 5 L 62 15 Z" fill="#fbbf24"/><circle cx="42" cy="5" r="2" fill="#fff"/><circle cx="50" cy="10" r="2" fill="#fff"/><circle cx="58" cy="5" r="2" fill="#fff"/>` },
-            flower_crown: { id: 'flower_crown', type: 'head', isRare: false, emoji: '🌸', name: 'Flower Crown', svg: `<circle cx="35" cy="18" r="4" fill="#f472b6"/><circle cx="50" cy="14" r="4" fill="#f472b6"/><circle cx="65" cy="18" r="4" fill="#f472b6"/><path d="M 35 20 Q 50 12 65 20" stroke="#4ade80" fill="none" stroke-width="2"/>` },
-            ribbon_bow: { id: 'ribbon_bow', type: 'head', isRare: false, emoji: '🎀', name: 'Magic Bow', svg: `<path d="M 40 10 L 45 15 L 40 20 Z" fill="#ef4444"/><path d="M 60 10 L 55 15 L 60 20 Z" fill="#ef4444"/><circle cx="50" cy="15" r="5" fill="#ef4444"/>` },
-            crystal_crown: { id: 'crystal_crown', type: 'head', isRare: true, emoji: '❄️', name: 'Crystal Crown', svg: `<path d="M 36 15 L 42 0 L 50 10 L 58 0 L 64 15 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1"/><circle cx="42" cy="0" r="2" fill="#bae6fd"/><circle cx="50" cy="10" r="2" fill="#bae6fd"/><circle cx="58" cy="0" r="2" fill="#bae6fd"/>` },
-            seashell_tiara: { id: 'seashell_tiara', type: 'head', isRare: false, emoji: '🐚', name: 'Seashell Tiara', svg: `<path d="M 40 15 L 45 5 L 50 10 L 55 5 L 60 15 Z" fill="#fb923c"/><circle cx="50" cy="15" r="3" fill="#fbcfe8"/>` },
-            diamond_crown: { id: 'diamond_crown', type: 'head', isRare: true, emoji: '💎', name: 'Diamond Crown', svg: `<path d="M 35 15 L 38 0 L 44 10 L 50 -5 L 56 10 L 62 0 L 65 15 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1"/>` },
-            star_crown: { id: 'star_crown', type: 'head', isRare: false, emoji: '⭐', name: 'Star Crown', svg: `<path d="M 35 15 L 42 5 L 50 10 L 58 5 L 65 15 Z" fill="#fef08a"/><polygon points="42,5 45,2 40,2" fill="#facc15" transform="translate(-1, -3)"/><polygon points="50,10 53,7 48,7" fill="#facc15" transform="translate(-1, -3)"/><polygon points="58,5 61,2 56,2" fill="#facc15" transform="translate(-1, -3)"/>` },
-            leaf_wreath: { id: 'leaf_wreath', type: 'head', isRare: false, emoji: '🌿', name: 'Leaf Wreath', svg: `<path d="M 35 15 Q 50 5 65 15" stroke="#22c55e" stroke-width="3" fill="none"/><path d="M 40 10 Q 42 5 45 10 Z M 50 7 Q 52 2 55 7 Z M 60 10 Q 62 5 65 10 Z" fill="#4ade80"/>` },
-            moon_hairpin: { id: 'moon_hairpin', type: 'head', isRare: true, emoji: '🌙', name: 'Moon Hairpin', svg: `<path d="M 60 10 A 8 8 0 1 0 70 20 A 6 6 0 1 1 60 10 Z" fill="#fde047"/>` },
+            // -- HEAD (Prices: Base 50, Rare 100) --
+            pearl_tiara: { id: 'pearl_tiara', type: 'head', price: 50, isRare: false, emoji: '👑', name: 'Pearl Tiara', svg: `<path d="M 38 15 L 42 5 L 50 10 L 58 5 L 62 15 Z" fill="#fbbf24"/><circle cx="42" cy="5" r="2" fill="#fff"/><circle cx="50" cy="10" r="2" fill="#fff"/><circle cx="58" cy="5" r="2" fill="#fff"/>` },
+            flower_crown: { id: 'flower_crown', type: 'head', price: 50, isRare: false, emoji: '🌸', name: 'Flower Crown', svg: `<circle cx="35" cy="18" r="4" fill="#f472b6"/><circle cx="50" cy="14" r="4" fill="#f472b6"/><circle cx="65" cy="18" r="4" fill="#f472b6"/><path d="M 35 20 Q 50 12 65 20" stroke="#4ade80" fill="none" stroke-width="2"/>` },
+            ribbon_bow: { id: 'ribbon_bow', type: 'head', price: 50, isRare: false, emoji: '🎀', name: 'Magic Bow', svg: `<path d="M 40 10 L 45 15 L 40 20 Z" fill="#ef4444"/><path d="M 60 10 L 55 15 L 60 20 Z" fill="#ef4444"/><circle cx="50" cy="15" r="5" fill="#ef4444"/>` },
+            crystal_crown: { id: 'crystal_crown', type: 'head', price: 100, isRare: true, emoji: '❄️', name: 'Crystal Crown', svg: `<path d="M 36 15 L 42 0 L 50 10 L 58 0 L 64 15 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1"/><circle cx="42" cy="0" r="2" fill="#bae6fd"/><circle cx="50" cy="10" r="2" fill="#bae6fd"/><circle cx="58" cy="0" r="2" fill="#bae6fd"/>` },
+            seashell_tiara: { id: 'seashell_tiara', type: 'head', price: 50, isRare: false, emoji: '🐚', name: 'Seashell Tiara', svg: `<path d="M 40 15 L 45 5 L 50 10 L 55 5 L 60 15 Z" fill="#fb923c"/><circle cx="50" cy="15" r="3" fill="#fbcfe8"/>` },
+            diamond_crown: { id: 'diamond_crown', type: 'head', price: 100, isRare: true, emoji: '💎', name: 'Diamond Crown', svg: `<path d="M 35 15 L 38 0 L 44 10 L 50 -5 L 56 10 L 62 0 L 65 15 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1"/>` },
+            star_crown: { id: 'star_crown', type: 'head', price: 50, isRare: false, emoji: '⭐', name: 'Star Crown', svg: `<path d="M 35 15 L 42 5 L 50 10 L 58 5 L 65 15 Z" fill="#fef08a"/><polygon points="42,5 45,2 40,2" fill="#facc15" transform="translate(-1, -3)"/><polygon points="50,10 53,7 48,7" fill="#facc15" transform="translate(-1, -3)"/><polygon points="58,5 61,2 56,2" fill="#facc15" transform="translate(-1, -3)"/>` },
+            leaf_wreath: { id: 'leaf_wreath', type: 'head', price: 50, isRare: false, emoji: '🌿', name: 'Leaf Wreath', svg: `<path d="M 35 15 Q 50 5 65 15" stroke="#22c55e" stroke-width="3" fill="none"/><path d="M 40 10 Q 42 5 45 10 Z M 50 7 Q 52 2 55 7 Z M 60 10 Q 62 5 65 10 Z" fill="#4ade80"/>` },
+            moon_hairpin: { id: 'moon_hairpin', type: 'head', price: 100, isRare: true, emoji: '🌙', name: 'Moon Hairpin', svg: `<path d="M 60 10 A 8 8 0 1 0 70 20 A 6 6 0 1 1 60 10 Z" fill="#fde047"/>` },
 
-            // -- BODY (13 items) --
-            pink_dress: { id: 'pink_dress', type: 'body', isRare: false, emoji: '👗', name: 'Sparkle Dress', svg: `<path d="M 34 55 L 66 55 L 75 100 L 25 100 Z" fill="#ec4899"/><rect x="34" y="70" width="32" height="5" fill="#be185d"/>` },
-            mermaid_tail: { id: 'mermaid_tail', type: 'body', isRare: false, emoji: '🧜‍♀️', name: 'Ocean Tail', svg: `<path d="M 34 85 Q 50 140 30 150 Q 50 130 70 150 Q 50 140 66 85 Z" fill="#06b6d4"/><path d="M 34 55 L 66 55 L 66 70 L 34 70 Z" fill="#8b5cf6"/>` },
-            fairy_dress: { id: 'fairy_dress', type: 'body', isRare: false, emoji: '🧚‍♀️', name: 'Fairy Wings', svg: `<path d="M 20 40 Q -10 20 15 80 Z M 80 40 Q 110 20 85 80 Z" fill="#ddd6fe" opacity="0.8"/><path d="M 30 55 L 70 55 L 80 90 L 20 90 Z" fill="#a78bfa"/>` },
-            starlight_gown: { id: 'starlight_gown', type: 'body', isRare: true, emoji: '✨', name: 'Starlight Gown', svg: `<path d="M 34 55 L 66 55 L 80 100 L 20 100 Z" fill="#1e1b4b"/><path d="M 40 70 L 42 75 L 47 75 L 43 78 L 45 83 L 40 80 L 35 83 L 37 78 L 33 75 L 38 75 Z" fill="#fef08a" transform="scale(0.5) translate(40, 50)"/><path d="M 40 70 L 42 75 L 47 75 L 43 78 L 45 83 L 40 80 L 35 83 L 37 78 L 33 75 L 38 75 Z" fill="#fef08a" transform="scale(0.6) translate(80, 80)"/>` },
-            galaxy_gown: { id: 'galaxy_gown', type: 'body', isRare: true, emoji: '🌌', name: 'Galaxy Gown', svg: `<path d="M 34 55 L 66 55 L 80 100 L 20 100 Z" fill="#2e1065"/><circle cx="30" cy="80" r="1" fill="#fff"/><circle cx="50" cy="90" r="1.5" fill="#fff"/><circle cx="70" cy="75" r="1" fill="#fff"/><circle cx="40" cy="70" r="1" fill="#fff"/><circle cx="60" cy="85" r="0.8" fill="#fff"/>` },
-            rose_dress: { id: 'rose_dress', type: 'body', isRare: false, emoji: '🌹', name: 'Rose Dress', svg: `<path d="M 34 55 L 66 55 L 75 90 L 25 90 Z" fill="#e11d48"/><path d="M 25 90 L 75 90 L 60 100 L 40 100 Z" fill="#166534"/><path d="M 40 55 L 60 55 L 50 65 Z" fill="#fb7185"/>` },
-            sunset_gown: { id: 'sunset_gown', type: 'body', isRare: false, emoji: '🌅', name: 'Sunset Gown', svg: `<path d="M 34 55 L 66 55 L 70 70 L 30 70 Z" fill="#f97316"/><path d="M 30 70 L 70 70 L 75 85 L 25 85 Z" fill="#ec4899"/><path d="M 25 85 L 75 85 L 80 100 L 20 100 Z" fill="#8b5cf6"/>` },
-            coral_tail: { id: 'coral_tail', type: 'body', isRare: false, emoji: '🐡', name: 'Coral Tail', svg: `<path d="M 34 85 Q 50 140 30 150 Q 50 130 70 150 Q 50 140 66 85 Z" fill="#f43f5e"/><path d="M 34 55 L 66 55 L 66 70 L 34 70 Z" fill="#f97316"/>` },
-            spring_dress: { id: 'spring_dress', type: 'body', isRare: false, emoji: '🌷', name: 'Spring Dress', svg: `<path d="M 34 55 L 66 55 L 80 95 L 20 95 Z" fill="#bbf7d0"/><rect x="34" y="65" width="32" height="4" fill="#fef08a"/><circle cx="50" cy="80" r="3" fill="#f472b6"/>` },
-            winter_coat: { id: 'winter_coat', type: 'body', isRare: false, emoji: '🧥', name: 'Winter Coat', svg: `<path d="M 34 55 L 66 55 L 75 95 L 25 95 Z" fill="#60a5fa"/><path d="M 30 50 L 70 50 L 70 60 L 30 60 Z" fill="#fff" rx="5"/><line x1="50" y1="60" x2="50" y2="95" stroke="#fff" stroke-width="2"/>` },
-            royal_ballgown: { id: 'royal_ballgown', type: 'body', isRare: true, emoji: '👸', name: 'Royal Ballgown', svg: `<path d="M 34 55 L 66 55 L 90 105 L 10 105 Z" fill="#facc15"/><path d="M 25 105 Q 50 90 75 105 Q 50 115 25 105 Z" fill="#eab308"/>` },
-            midnight_cloak: { id: 'midnight_cloak', type: 'body', isRare: true, emoji: '🦇', name: 'Midnight Cloak', svg: `<path d="M 25 55 L 75 55 L 95 100 L 5 100 Z" fill="#1e3a8a"/><path d="M 34 55 L 66 55 L 66 90 L 34 90 Z" fill="#000"/>` },
-            butterfly_tutu: { id: 'butterfly_tutu', type: 'body', isRare: false, emoji: '🦋', name: 'Butterfly Tutu', svg: `<path d="M 34 55 L 66 55 L 85 85 L 15 85 Z" fill="#d946ef" opacity="0.8"/><path d="M 30 55 L 70 55 L 80 80 L 20 80 Z" fill="#2dd4bf" opacity="0.8"/>` },
+            // -- BODY (Prices: Base 100, Rare 200) --
+            pink_dress: { id: 'pink_dress', type: 'body', price: 100, isRare: false, emoji: '👗', name: 'Sparkle Dress', svg: `<path d="M 34 55 L 66 55 L 75 100 L 25 100 Z" fill="#ec4899"/><rect x="34" y="70" width="32" height="5" fill="#be185d"/>` },
+            mermaid_tail: { id: 'mermaid_tail', type: 'body', price: 100, isRare: false, emoji: '🧜‍♀️', name: 'Ocean Tail', svg: `<path d="M 34 85 Q 50 140 30 150 Q 50 130 70 150 Q 50 140 66 85 Z" fill="#06b6d4"/><path d="M 34 55 L 66 55 L 66 70 L 34 70 Z" fill="#8b5cf6"/>` },
+            fairy_dress: { id: 'fairy_dress', type: 'body', price: 100, isRare: false, emoji: '🧚‍♀️', name: 'Fairy Wings', svg: `<path d="M 20 40 Q -10 20 15 80 Z M 80 40 Q 110 20 85 80 Z" fill="#ddd6fe" opacity="0.8"/><path d="M 30 55 L 70 55 L 80 90 L 20 90 Z" fill="#a78bfa"/>` },
+            starlight_gown: { id: 'starlight_gown', type: 'body', price: 200, isRare: true, emoji: '✨', name: 'Starlight Gown', svg: `<path d="M 34 55 L 66 55 L 80 100 L 20 100 Z" fill="#1e1b4b"/><path d="M 40 70 L 42 75 L 47 75 L 43 78 L 45 83 L 40 80 L 35 83 L 37 78 L 33 75 L 38 75 Z" fill="#fef08a" transform="scale(0.5) translate(40, 50)"/><path d="M 40 70 L 42 75 L 47 75 L 43 78 L 45 83 L 40 80 L 35 83 L 37 78 L 33 75 L 38 75 Z" fill="#fef08a" transform="scale(0.6) translate(80, 80)"/>` },
+            galaxy_gown: { id: 'galaxy_gown', type: 'body', price: 200, isRare: true, emoji: '🌌', name: 'Galaxy Gown', svg: `<path d="M 34 55 L 66 55 L 80 100 L 20 100 Z" fill="#2e1065"/><circle cx="30" cy="80" r="1" fill="#fff"/><circle cx="50" cy="90" r="1.5" fill="#fff"/><circle cx="70" cy="75" r="1" fill="#fff"/><circle cx="40" cy="70" r="1" fill="#fff"/><circle cx="60" cy="85" r="0.8" fill="#fff"/>` },
+            rose_dress: { id: 'rose_dress', type: 'body', price: 100, isRare: false, emoji: '🌹', name: 'Rose Dress', svg: `<path d="M 34 55 L 66 55 L 75 90 L 25 90 Z" fill="#e11d48"/><path d="M 25 90 L 75 90 L 60 100 L 40 100 Z" fill="#166534"/><path d="M 40 55 L 60 55 L 50 65 Z" fill="#fb7185"/>` },
+            sunset_gown: { id: 'sunset_gown', type: 'body', price: 100, isRare: false, emoji: '🌅', name: 'Sunset Gown', svg: `<path d="M 34 55 L 66 55 L 70 70 L 30 70 Z" fill="#f97316"/><path d="M 30 70 L 70 70 L 75 85 L 25 85 Z" fill="#ec4899"/><path d="M 25 85 L 75 85 L 80 100 L 20 100 Z" fill="#8b5cf6"/>` },
+            coral_tail: { id: 'coral_tail', type: 'body', price: 100, isRare: false, emoji: '🐡', name: 'Coral Tail', svg: `<path d="M 34 85 Q 50 140 30 150 Q 50 130 70 150 Q 50 140 66 85 Z" fill="#f43f5e"/><path d="M 34 55 L 66 55 L 66 70 L 34 70 Z" fill="#f97316"/>` },
+            spring_dress: { id: 'spring_dress', type: 'body', price: 100, isRare: false, emoji: '🌷', name: 'Spring Dress', svg: `<path d="M 34 55 L 66 55 L 80 95 L 20 95 Z" fill="#bbf7d0"/><rect x="34" y="65" width="32" height="4" fill="#fef08a"/><circle cx="50" cy="80" r="3" fill="#f472b6"/>` },
+            winter_coat: { id: 'winter_coat', type: 'body', price: 100, isRare: false, emoji: '🧥', name: 'Winter Coat', svg: `<path d="M 34 55 L 66 55 L 75 95 L 25 95 Z" fill="#60a5fa"/><path d="M 30 50 L 70 50 L 70 60 L 30 60 Z" fill="#fff" rx="5"/><line x1="50" y1="60" x2="50" y2="95" stroke="#fff" stroke-width="2"/>` },
+            royal_ballgown: { id: 'royal_ballgown', type: 'body', price: 200, isRare: true, emoji: '👸', name: 'Royal Ballgown', svg: `<path d="M 34 55 L 66 55 L 90 105 L 10 105 Z" fill="#facc15"/><path d="M 25 105 Q 50 90 75 105 Q 50 115 25 105 Z" fill="#eab308"/>` },
+            midnight_cloak: { id: 'midnight_cloak', type: 'body', price: 200, isRare: true, emoji: '🦇', name: 'Midnight Cloak', svg: `<path d="M 25 55 L 75 55 L 95 100 L 5 100 Z" fill="#1e3a8a"/><path d="M 34 55 L 66 55 L 66 90 L 34 90 Z" fill="#000"/>` },
+            butterfly_tutu: { id: 'butterfly_tutu', type: 'body', price: 100, isRare: false, emoji: '🦋', name: 'Butterfly Tutu', svg: `<path d="M 34 55 L 66 55 L 85 85 L 15 85 Z" fill="#d946ef" opacity="0.8"/><path d="M 30 55 L 70 55 L 80 80 L 20 80 Z" fill="#2dd4bf" opacity="0.8"/>` },
 
-            // -- FEET (8 items) --
-            glass_slippers: { id: 'glass_slippers', type: 'feet', isRare: false, emoji: '👡', name: 'Glass Slippers', svg: `<path d="M 34 125 L 46 125 L 46 135 Q 40 138 34 135 Z M 54 125 L 66 125 L 66 135 Q 60 138 54 135 Z" fill="#67e8f9" opacity="0.8"/>` },
-            red_shoes: { id: 'red_shoes', type: 'feet', isRare: false, emoji: '👠', name: 'Ruby Heels', svg: `<path d="M 34 125 L 46 125 L 46 132 Q 40 135 34 132 Z M 54 125 L 66 125 L 66 132 Q 60 135 54 132 Z" fill="#ef4444"/>` },
-            golden_boots: { id: 'golden_boots', type: 'feet', isRare: true, emoji: '👢', name: 'Golden Boots', svg: `<path d="M 34 115 L 46 115 L 46 135 Q 40 138 34 135 Z M 54 115 L 66 115 L 66 135 Q 60 138 54 135 Z" fill="#facc15"/>` },
-            winged_boots: { id: 'winged_boots', type: 'feet', isRare: true, emoji: '🪽', name: 'Winged Boots', svg: `<path d="M 34 115 L 46 115 L 46 135 Q 40 138 34 135 Z M 54 115 L 66 115 L 66 135 Q 60 138 54 135 Z" fill="#fbbf24"/><path d="M 30 115 Q 20 110 25 125 Z M 70 115 Q 80 110 75 125 Z" fill="#fff"/>` },
-            leaf_sandals: { id: 'leaf_sandals', type: 'feet', isRare: false, emoji: '🍃', name: 'Leaf Sandals', svg: `<path d="M 34 130 L 46 130 L 46 135 Q 40 138 34 135 Z M 54 130 L 66 130 L 66 135 Q 60 138 54 135 Z" fill="#4ade80"/><line x1="38" y1="120" x2="42" y2="130" stroke="#166534" stroke-width="2"/><line x1="58" y1="120" x2="62" y2="130" stroke="#166534" stroke-width="2"/>` },
-            pearl_anklets: { id: 'pearl_anklets', type: 'feet', isRare: false, emoji: '⚪', name: 'Pearl Anklets', svg: `<circle cx="36" cy="125" r="2" fill="#fff"/><circle cx="40" cy="125" r="2" fill="#fff"/><circle cx="44" cy="125" r="2" fill="#fff"/><circle cx="56" cy="125" r="2" fill="#fff"/><circle cx="60" cy="125" r="2" fill="#fff"/><circle cx="64" cy="125" r="2" fill="#fff"/>` },
-            ribbon_flats: { id: 'ribbon_flats', type: 'feet', isRare: false, emoji: '🩰', name: 'Ribbon Flats', svg: `<path d="M 34 130 L 46 130 L 46 135 Q 40 138 34 135 Z M 54 130 L 66 130 L 66 135 Q 60 138 54 135 Z" fill="#f472b6"/><line x1="38" y1="120" x2="42" y2="130" stroke="#f472b6" stroke-width="1"/><line x1="42" y1="120" x2="38" y2="130" stroke="#f472b6" stroke-width="1"/><line x1="58" y1="120" x2="62" y2="130" stroke="#f472b6" stroke-width="1"/><line x1="62" y1="120" x2="58" y2="130" stroke="#f472b6" stroke-width="1"/>` },
-            sparkle_sneakers: { id: 'sparkle_sneakers', type: 'feet', isRare: false, emoji: '👟', name: 'Sparkle Sneakers', svg: `<path d="M 34 125 L 46 125 L 46 135 L 34 135 Z M 54 125 L 66 125 L 66 135 L 54 135 Z" fill="#c084fc"/><rect x="34" y="132" width="12" height="3" fill="#fff"/><rect x="54" y="132" width="12" height="3" fill="#fff"/>` },
+            // -- FEET (Prices: Base 30, Rare 60) --
+            glass_slippers: { id: 'glass_slippers', type: 'feet', price: 30, isRare: false, emoji: '👡', name: 'Glass Slippers', svg: `<path d="M 34 125 L 46 125 L 46 135 Q 40 138 34 135 Z M 54 125 L 66 125 L 66 135 Q 60 138 54 135 Z" fill="#67e8f9" opacity="0.8"/>` },
+            red_shoes: { id: 'red_shoes', type: 'feet', price: 30, isRare: false, emoji: '👠', name: 'Ruby Heels', svg: `<path d="M 34 125 L 46 125 L 46 132 Q 40 135 34 132 Z M 54 125 L 66 125 L 66 132 Q 60 135 54 132 Z" fill="#ef4444"/>` },
+            golden_boots: { id: 'golden_boots', type: 'feet', price: 60, isRare: true, emoji: '👢', name: 'Golden Boots', svg: `<path d="M 34 115 L 46 115 L 46 135 Q 40 138 34 135 Z M 54 115 L 66 115 L 66 135 Q 60 138 54 135 Z" fill="#facc15"/>` },
+            winged_boots: { id: 'winged_boots', type: 'feet', price: 60, isRare: true, emoji: '🪽', name: 'Winged Boots', svg: `<path d="M 34 115 L 46 115 L 46 135 Q 40 138 34 135 Z M 54 115 L 66 115 L 66 135 Q 60 138 54 135 Z" fill="#fbbf24"/><path d="M 30 115 Q 20 110 25 125 Z M 70 115 Q 80 110 75 125 Z" fill="#fff"/>` },
+            leaf_sandals: { id: 'leaf_sandals', type: 'feet', price: 30, isRare: false, emoji: '🍃', name: 'Leaf Sandals', svg: `<path d="M 34 130 L 46 130 L 46 135 Q 40 138 34 135 Z M 54 130 L 66 130 L 66 135 Q 60 138 54 135 Z" fill="#4ade80"/><line x1="38" y1="120" x2="42" y2="130" stroke="#166534" stroke-width="2"/><line x1="58" y1="120" x2="62" y2="130" stroke="#166534" stroke-width="2"/>` },
+            pearl_anklets: { id: 'pearl_anklets', type: 'feet', price: 30, isRare: false, emoji: '⚪', name: 'Pearl Anklets', svg: `<circle cx="36" cy="125" r="2" fill="#fff"/><circle cx="40" cy="125" r="2" fill="#fff"/><circle cx="44" cy="125" r="2" fill="#fff"/><circle cx="56" cy="125" r="2" fill="#fff"/><circle cx="60" cy="125" r="2" fill="#fff"/><circle cx="64" cy="125" r="2" fill="#fff"/>` },
+            ribbon_flats: { id: 'ribbon_flats', type: 'feet', price: 30, isRare: false, emoji: '🩰', name: 'Ribbon Flats', svg: `<path d="M 34 130 L 46 130 L 46 135 Q 40 138 34 135 Z M 54 130 L 66 130 L 66 135 Q 60 138 54 135 Z" fill="#f472b6"/><line x1="38" y1="120" x2="42" y2="130" stroke="#f472b6" stroke-width="1"/><line x1="42" y1="120" x2="38" y2="130" stroke="#f472b6" stroke-width="1"/><line x1="58" y1="120" x2="62" y2="130" stroke="#f472b6" stroke-width="1"/><line x1="62" y1="120" x2="58" y2="130" stroke="#f472b6" stroke-width="1"/>` },
+            sparkle_sneakers: { id: 'sparkle_sneakers', type: 'feet', price: 30, isRare: false, emoji: '👟', name: 'Sparkle Sneakers', svg: `<path d="M 34 125 L 46 125 L 46 135 L 34 135 Z M 54 125 L 66 125 L 66 135 L 54 135 Z" fill="#c084fc"/><rect x="34" y="132" width="12" height="3" fill="#fff"/><rect x="54" y="132" width="12" height="3" fill="#fff"/>` },
 
-            // -- HAND (8 items) --
-            star_wand: { id: 'star_wand', type: 'hand', isRare: false, emoji: '🪄', name: 'Star Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#fcd34d" stroke-width="3"/><polygon points="95,40 98,48 106,48 100,53 102,61 95,56 88,61 90,53 84,48 92,48" fill="#fde047"/>` },
-            heart_wand: { id: 'heart_wand', type: 'hand', isRare: false, emoji: '💖', name: 'Heart Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#9ca3af" stroke-width="3"/><path d="M 95 45 Q 90 40 95 50 Q 100 40 95 45" fill="#f43f5e" transform="translate(0, -5) scale(1.5)"/>` },
-            rainbow_wand: { id: 'rainbow_wand', type: 'hand', isRare: true, emoji: '🌈', name: 'Rainbow Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#d8b4fe" stroke-width="3"/><path d="M 85 45 A 10 10 0 0 1 105 45" fill="none" stroke="#ef4444" stroke-width="2"/><path d="M 87 47 A 8 8 0 0 1 103 47" fill="none" stroke="#eab308" stroke-width="2"/><path d="M 89 49 A 6 6 0 0 1 101 49" fill="none" stroke="#3b82f6" stroke-width="2"/>` },
-            moon_staff: { id: 'moon_staff', type: 'hand', isRare: true, emoji: '🌙', name: 'Moon Staff', svg: `<line x1="78" y1="100" x2="95" y2="30" stroke="#9ca3af" stroke-width="4"/><path d="M 95 20 A 10 10 0 1 0 105 30 A 8 8 0 1 1 95 20 Z" fill="#fde047"/>` },
-            bubble_scepter: { id: 'bubble_scepter', type: 'hand', isRare: false, emoji: '🫧', name: 'Bubble Scepter', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#fbbf24" stroke-width="3"/><circle cx="95" cy="40" r="10" fill="#67e8f9" opacity="0.6"/><circle cx="92" cy="37" r="2" fill="#fff"/>` },
-            snowflake_wand: { id: 'snowflake_wand', type: 'hand', isRare: false, emoji: '❄️', name: 'Snowflake Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#e2e8f0" stroke-width="3"/><path d="M 95 35 L 95 45 M 90 40 L 100 40 M 92 37 L 98 43 M 92 43 L 98 37" stroke="#38bdf8" stroke-width="2"/>` },
-            sun_scepter: { id: 'sun_scepter', type: 'hand', isRare: false, emoji: '☀️', name: 'Sun Scepter', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#f59e0b" stroke-width="3"/><circle cx="95" cy="40" r="6" fill="#fcd34d"/><path d="M 95 30 L 95 33 M 95 47 L 95 50 M 85 40 L 88 40 M 102 40 L 105 40 M 88 33 L 90 35 M 100 47 L 102 49 M 88 47 L 90 45 M 100 33 L 102 35" stroke="#fb923c" stroke-width="2"/>` },
-            flower_staff: { id: 'flower_staff', type: 'hand', isRare: false, emoji: '🌻', name: 'Flower Staff', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#22c55e" stroke-width="3"/><circle cx="95" cy="40" r="4" fill="#facc15"/><circle cx="95" cy="34" r="3" fill="#ef4444"/><circle cx="95" cy="46" r="3" fill="#ef4444"/><circle cx="89" cy="40" r="3" fill="#ef4444"/><circle cx="101" cy="40" r="3" fill="#ef4444"/>` }
+            // -- HAND (Prices: Base 75, Rare 150) --
+            star_wand: { id: 'star_wand', type: 'hand', price: 75, isRare: false, emoji: '🪄', name: 'Star Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#fcd34d" stroke-width="3"/><polygon points="95,40 98,48 106,48 100,53 102,61 95,56 88,61 90,53 84,48 92,48" fill="#fde047"/>` },
+            heart_wand: { id: 'heart_wand', type: 'hand', price: 75, isRare: false, emoji: '💖', name: 'Heart Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#9ca3af" stroke-width="3"/><path d="M 95 45 Q 90 40 95 50 Q 100 40 95 45" fill="#f43f5e" transform="translate(0, -5) scale(1.5)"/>` },
+            rainbow_wand: { id: 'rainbow_wand', type: 'hand', price: 150, isRare: true, emoji: '🌈', name: 'Rainbow Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#d8b4fe" stroke-width="3"/><path d="M 85 45 A 10 10 0 0 1 105 45" fill="none" stroke="#ef4444" stroke-width="2"/><path d="M 87 47 A 8 8 0 0 1 103 47" fill="none" stroke="#eab308" stroke-width="2"/><path d="M 89 49 A 6 6 0 0 1 101 49" fill="none" stroke="#3b82f6" stroke-width="2"/>` },
+            moon_staff: { id: 'moon_staff', type: 'hand', price: 150, isRare: true, emoji: '🌙', name: 'Moon Staff', svg: `<line x1="78" y1="100" x2="95" y2="30" stroke="#9ca3af" stroke-width="4"/><path d="M 95 20 A 10 10 0 1 0 105 30 A 8 8 0 1 1 95 20 Z" fill="#fde047"/>` },
+            bubble_scepter: { id: 'bubble_scepter', type: 'hand', price: 75, isRare: false, emoji: '🫧', name: 'Bubble Scepter', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#fbbf24" stroke-width="3"/><circle cx="95" cy="40" r="10" fill="#67e8f9" opacity="0.6"/><circle cx="92" cy="37" r="2" fill="#fff"/>` },
+            snowflake_wand: { id: 'snowflake_wand', type: 'hand', price: 75, isRare: false, emoji: '❄️', name: 'Snowflake Wand', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#e2e8f0" stroke-width="3"/><path d="M 95 35 L 95 45 M 90 40 L 100 40 M 92 37 L 98 43 M 92 43 L 98 37" stroke="#38bdf8" stroke-width="2"/>` },
+            sun_scepter: { id: 'sun_scepter', type: 'hand', price: 75, isRare: false, emoji: '☀️', name: 'Sun Scepter', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#f59e0b" stroke-width="3"/><circle cx="95" cy="40" r="6" fill="#fcd34d"/><path d="M 95 30 L 95 33 M 95 47 L 95 50 M 85 40 L 88 40 M 102 40 L 105 40 M 88 33 L 90 35 M 100 47 L 102 49 M 88 47 L 90 45 M 100 33 L 102 35" stroke="#fb923c" stroke-width="2"/>` },
+            flower_staff: { id: 'flower_staff', type: 'hand', price: 75, isRare: false, emoji: '🌻', name: 'Flower Staff', svg: `<line x1="78" y1="92" x2="95" y2="50" stroke="#22c55e" stroke-width="3"/><circle cx="95" cy="40" r="4" fill="#facc15"/><circle cx="95" cy="34" r="3" fill="#ef4444"/><circle cx="95" cy="46" r="3" fill="#ef4444"/><circle cx="89" cy="40" r="3" fill="#ef4444"/><circle cx="101" cy="40" r="3" fill="#ef4444"/>` }
         };
 
         const BUILDING_DATA = {
             easy: [
-                { id: 'rainbow', name: 'Rainbow Bridge', emoji: '🌈', bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-800', light: 'text-red-600', cost: { pixie: 1, pearl: 1 } },
-                { id: 'flower', name: 'Flower Garden', emoji: '🌷', bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', light: 'text-rose-600', cost: { strawberry: 2 } }
+                { id: 'rainbow', baseGold: 2, name: 'Rainbow Bridge', emoji: '🌈', bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-800', light: 'text-red-600', cost: { pixie: 1, pearl: 1 } },
+                { id: 'flower', baseGold: 2, name: 'Flower Garden', emoji: '🌷', bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', light: 'text-rose-600', cost: { strawberry: 2 } }
             ],
             med: [
-                { id: 'mermaid', name: 'Mermaid Stage', emoji: '🧜‍♀️', bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-800', light: 'text-cyan-600', cost: { pearl: 2, gem: 1 } },
-                { id: 'fairy', name: 'Fairy Tent', emoji: '🧚‍♀️', bg: 'bg-fuchsia-50', border: 'border-fuchsia-200', text: 'text-fuchsia-800', light: 'text-fuchsia-600', cost: { pixie: 2, strawberry: 1 } },
-                { id: 'kitty', name: 'Kitty Castle', emoji: '🏰', bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-800', light: 'text-pink-600', cost: { strawberry: 2, pixie: 1 } }
+                { id: 'mermaid', baseGold: 5, name: 'Mermaid Stage', emoji: '🧜‍♀️', bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-800', light: 'text-cyan-600', cost: { pearl: 2, gem: 1 } },
+                { id: 'fairy', baseGold: 5, name: 'Fairy Tent', emoji: '🧚‍♀️', bg: 'bg-fuchsia-50', border: 'border-fuchsia-200', text: 'text-fuchsia-800', light: 'text-fuchsia-600', cost: { pixie: 2, strawberry: 1 } },
+                { id: 'kitty', baseGold: 5, name: 'Kitty Castle', emoji: '🏰', bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-800', light: 'text-pink-600', cost: { strawberry: 2, pixie: 1 } }
             ],
             hard: [
-                { id: 'glitter', name: 'Glitter Tower', emoji: '🗼', bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-800', light: 'text-purple-600', cost: { gem: 3 } },
-                { id: 'shell', name: 'Shell Palace', emoji: '🐚', bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-800', light: 'text-teal-600', cost: { pearl: 3 } }
+                { id: 'glitter', baseGold: 10, name: 'Glitter Tower', emoji: '🗼', bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-800', light: 'text-purple-600', cost: { gem: 3 } },
+                { id: 'shell', baseGold: 10, name: 'Shell Palace', emoji: '🐚', bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-800', light: 'text-teal-600', cost: { pearl: 3 } }
             ],
             epic: [
-                { id: 'grand', name: 'Grand Palace', emoji: '🕌', bg: 'bg-yellow-50', border: 'border-yellow-300', text: 'text-yellow-800', light: 'text-yellow-600', cost: { stardust: 1, gem: 1 } },
-                { id: 'star', name: 'Star Observatory', emoji: '🔭', bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-800', light: 'text-indigo-600', cost: { stardust: 1, pixie: 2 } }
+                { id: 'grand', baseGold: 20, name: 'Grand Palace', emoji: '🕌', bg: 'bg-yellow-50', border: 'border-yellow-300', text: 'text-yellow-800', light: 'text-yellow-600', cost: { stardust: 1, gem: 1 } },
+                { id: 'star', baseGold: 20, name: 'Star Observatory', emoji: '🔭', bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-800', light: 'text-indigo-600', cost: { stardust: 1, pixie: 2 } }
             ]
         };
 
@@ -490,7 +520,6 @@
             let eyeStyle = avatarDef.eyes || 'classic';
             let hairBack = '', hairFront = '';
             
-            // Add subtle hair highlights using opacity stroke
             const hl = `<path d="M 22 45 Q 22 -5 50 0 Q 78 -5 78 45" fill="none" stroke="#ffffff" stroke-width="3" stroke-opacity="0.25" stroke-linecap="round"/>`;
             const baseFrontHair = (color) => `<path d="M 22 45 Q 22 -5 50 0 Q 78 -5 78 45 Q 65 20 50 20 Q 35 20 22 45 Z" fill="${color}"/>${hl}`;
             hairFront = baseFrontHair(hairColor);
@@ -540,67 +569,27 @@
                     hairBack = `<path d="M 20 35 Q -5 60 15 80 Q 30 60 35 35 Z" fill="${hairColor}"/><path d="M 80 35 Q 105 60 85 80 Q 70 60 65 35 Z" fill="${hairColor}"/>`; 
             }
 
-            // Eyes Configuration
             let eyeSvg = '';
             if(eyeStyle === 'classic') {
-                eyeSvg = `
-                    <ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/>
-                    <ellipse cx="62" cy="35" rx="5" ry="6" fill="#fff"/>
-                    <ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
-                    <ellipse cx="62" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
-                    <ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/>
-                    <ellipse cx="62" cy="35" rx="2.5" ry="3.5" fill="#000"/>
-                    <circle cx="36" cy="33" r="1.5" fill="#fff"/><circle cx="39" cy="37" r="0.8" fill="#fff"/>
-                    <circle cx="60" cy="33" r="1.5" fill="#fff"/><circle cx="63" cy="37" r="0.8" fill="#fff"/>
-                    <path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M 56 33 Q 62 28 68 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                `;
+                eyeSvg = `<ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/><ellipse cx="62" cy="35" rx="5" ry="6" fill="#fff"/><ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/><ellipse cx="62" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/><ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/><ellipse cx="62" cy="35" rx="2.5" ry="3.5" fill="#000"/><circle cx="36" cy="33" r="1.5" fill="#fff"/><circle cx="39" cy="37" r="0.8" fill="#fff"/><circle cx="60" cy="33" r="1.5" fill="#fff"/><circle cx="63" cy="37" r="0.8" fill="#fff"/><path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/><path d="M 56 33 Q 62 28 68 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>`;
             } else if (eyeStyle === 'starry') {
-                eyeSvg = `
-                    <ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/>
-                    <ellipse cx="62" cy="35" rx="5" ry="6" fill="#fff"/>
-                    <ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#a855f7"/>
-                    <ellipse cx="62" cy="35" rx="4.5" ry="5.5" fill="#a855f7"/>
-                    <ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/>
-                    <ellipse cx="62" cy="35" rx="2.5" ry="3.5" fill="#000"/>
-                    <polygon points="36,31 37,33 39,33 37,34 38,36 36,35 34,36 35,34 33,33 35,33" fill="#fff"/>
-                    <polygon points="60,31 61,33 63,33 61,34 62,36 60,35 58,36 59,34 57,33 59,33" fill="#fff"/>
-                    <path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M 56 33 Q 62 28 68 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                `;
+                eyeSvg = `<ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/><ellipse cx="62" cy="35" rx="5" ry="6" fill="#fff"/><ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#a855f7"/><ellipse cx="62" cy="35" rx="4.5" ry="5.5" fill="#a855f7"/><ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/><ellipse cx="62" cy="35" rx="2.5" ry="3.5" fill="#000"/><polygon points="36,31 37,33 39,33 37,34 38,36 36,35 34,36 35,34 33,33 35,33" fill="#fff"/><polygon points="60,31 61,33 63,33 61,34 62,36 60,35 58,36 59,34 57,33 59,33" fill="#fff"/><path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/><path d="M 56 33 Q 62 28 68 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>`;
             } else if (eyeStyle === 'winking') {
-                eyeSvg = `
-                    <ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/>
-                    <ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/>
-                    <ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/>
-                    <circle cx="36" cy="33" r="1.5" fill="#fff"/><circle cx="39" cy="37" r="0.8" fill="#fff"/>
-                    <path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M 58 35 Q 62 30 66 35 M 58 37 Q 62 32 66 37" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                `;
+                eyeSvg = `<ellipse cx="38" cy="35" rx="5" ry="6" fill="#fff"/><ellipse cx="38" cy="35" rx="4.5" ry="5.5" fill="#3b82f6"/><ellipse cx="38" cy="35" rx="2.5" ry="3.5" fill="#000"/><circle cx="36" cy="33" r="1.5" fill="#fff"/><circle cx="39" cy="37" r="0.8" fill="#fff"/><path d="M 32 33 Q 38 28 44 33" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/><path d="M 58 35 Q 62 30 66 35 M 58 37 Q 62 32 66 37" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>`;
             } else if (eyeStyle === 'gentle') {
-                eyeSvg = `
-                    <path d="M 33 35 Q 38 30 43 35 M 33 37 Q 38 32 43 37" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M 57 35 Q 62 30 67 35 M 57 37 Q 62 32 67 37" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-                `;
+                eyeSvg = `<path d="M 33 35 Q 38 30 43 35 M 33 37 Q 38 32 43 37" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/><path d="M 57 35 Q 62 30 67 35 M 57 37 Q 62 32 67 37" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>`;
             }
 
             const faceDetails = `
                 ${eyeSvg}
-                <!-- Blush -->
                 <ellipse cx="33" cy="41" rx="4" ry="2" fill="#f43f5e" opacity="0.4"/>
                 <ellipse cx="67" cy="41" rx="4" ry="2" fill="#f43f5e" opacity="0.4"/>
-                <!-- Nose -->
                 <path d="M 49 40 Q 50 42 51 40" fill="none" stroke="#ca8a04" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-                <!-- Lips -->
                 <path d="M 46 45 Q 50 47 54 45" fill="none" stroke="#e11d48" stroke-width="1.5" stroke-linecap="round"/>
                 <path d="M 47 45 Q 50 48 53 45 Z" fill="#fb7185"/>
             `;
 
-            let baseDress = `
-                <rect x="34" y="55" width="32" height="35" rx="10" fill="#fbcfe8"/>
-                <rect x="34" y="65" width="32" height="5" fill="#f472b6"/>
-                <rect x="34" y="75" width="32" height="5" fill="#f472b6"/>
-            `;
+            let baseDress = `<rect x="34" y="55" width="32" height="35" rx="10" fill="#fbcfe8"/><rect x="34" y="65" width="32" height="5" fill="#f472b6"/><rect x="34" y="75" width="32" height="5" fill="#f472b6"/>`;
             let baseShoes = `<path d="M 34 125 L 46 125 L 46 135 L 34 135 Z M 54 125 L 66 125 L 66 135 L 54 135 Z" fill="#fbcfe8"/>`;
 
             let headSvg = equipped.head ? ITEMS[equipped.head].svg : ''; let bodySvg = equipped.body ? ITEMS[equipped.body].svg : baseDress;
@@ -624,9 +613,9 @@
             </svg>`;
         }
 
-        const STORAGE_KEY = 'fairy_maid_v11_users'; const CURRENT_USER_KEY = 'fairy_maid_v11_current';
+        const STORAGE_KEY = 'fairy_maid_v12_users'; const CURRENT_USER_KEY = 'fairy_maid_v12_current';
         let allUsers = {}; let currentUser = null;
-        let userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' }, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+        let userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' }, wins: 0, level: 1, gold: 0, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
         
         let customizerState = { styleIdx: 0, eyeIdx: 0, hairColor: '#fde047', skin: '#FFF0E5' };
 
@@ -637,6 +626,7 @@
                 if (lastUser && allUsers[lastUser]) {
                     currentUser = lastUser; userData = allUsers[currentUser];
                     if(!userData.level) userData.level = 1;
+                    if(userData.gold === undefined) userData.gold = 0;
                     if(typeof userData.avatar === 'string') userData.avatar = { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' };
                     if(!userData.avatar.eyes) userData.avatar.eyes = 'classic';
                     return true;
@@ -649,7 +639,7 @@
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers)); localStorage.setItem(CURRENT_USER_KEY, currentUser); } catch(e) {}
         }
         function logout() {
-            currentUser = null; userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' }, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+            currentUser = null; userData = { avatar: { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' }, wins: 0, level: 1, gold: 0, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
             localStorage.removeItem(CURRENT_USER_KEY); showScreen('auth'); document.getElementById('auth-username').value = '';
             updateCustomizerPreview();
         }
@@ -657,12 +647,13 @@
         // ==========================================
         // UI & NAVIGATION
         // ==========================================
-        const screens = { auth: document.getElementById('screen-auth'), menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), inventory: document.getElementById('screen-inventory') };
+        const screens = { auth: document.getElementById('screen-auth'), menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), inventory: document.getElementById('screen-inventory'), shop: document.getElementById('screen-shop') };
         function showScreen(name) {
             Object.values(screens).forEach(s => s.classList.remove('active')); screens[name].classList.add('active');
             if(name === 'auth') document.getElementById('main-header').classList.add('hidden');
             else { document.getElementById('main-header').classList.remove('hidden'); updateHeroShowcase(); }
             if(name === 'inventory') renderDressUp();
+            if(name === 'shop') renderShop();
             if(name === 'menu') {
                 document.getElementById('menu-level-display').innerText = userData.level;
                 const desc = userData.level === 1 ? "Start your adventure!" : (userData.level === 5 ? "Level 5 Ultimate Challenge!" : "Keep building up!");
@@ -673,7 +664,7 @@
 
         function showToast(message) {
             const container = document.getElementById('toast-container'); const toast = document.createElement('div');
-            toast.className = 'toast'; toast.innerText = message; container.appendChild(toast); setTimeout(() => toast.remove(), 3500); playSound('build');
+            toast.className = 'toast'; toast.innerText = message; container.appendChild(toast); setTimeout(() => toast.remove(), 3500);
         }
 
         function updateCustomizerPreview() {
@@ -694,11 +685,9 @@
             btn.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-full border-4 shadow-sm transition-transform hover:scale-110 active:scale-95 ${color === customizerState.hairColor ? 'border-pink-500 scale-110' : 'border-white'}`;
             btn.style.backgroundColor = color;
             btn.onclick = () => {
-                initAudio(); playSound('pop');
-                customizerState.hairColor = color;
+                initAudio(); playSound('pop'); customizerState.hairColor = color;
                 Array.from(hairColorContainer.children).forEach(c => { c.classList.remove('border-pink-500', 'scale-110'); c.classList.add('border-white'); });
-                btn.classList.remove('border-white'); btn.classList.add('border-pink-500', 'scale-110');
-                updateCustomizerPreview();
+                btn.classList.remove('border-white'); btn.classList.add('border-pink-500', 'scale-110'); updateCustomizerPreview();
             };
             hairColorContainer.appendChild(btn);
         });
@@ -709,11 +698,9 @@
             btn.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-full border-4 shadow-sm transition-transform hover:scale-110 active:scale-95 ${color === customizerState.skin ? 'border-pink-500 scale-110' : 'border-white'}`;
             btn.style.backgroundColor = color;
             btn.onclick = () => {
-                initAudio(); playSound('pop');
-                customizerState.skin = color;
+                initAudio(); playSound('pop'); customizerState.skin = color;
                 Array.from(skinToneContainer.children).forEach(c => { c.classList.remove('border-pink-500', 'scale-110'); c.classList.add('border-white'); });
-                btn.classList.remove('border-white'); btn.classList.add('border-pink-500', 'scale-110');
-                updateCustomizerPreview();
+                btn.classList.remove('border-white'); btn.classList.add('border-pink-500', 'scale-110'); updateCustomizerPreview();
             };
             skinToneContainer.appendChild(btn);
         });
@@ -725,7 +712,7 @@
             currentUser = name;
             const chosenAvatar = { style: HAIR_STYLES[customizerState.styleIdx].id, hairColor: customizerState.hairColor, skin: customizerState.skin, eyes: EYE_STYLES[customizerState.eyeIdx].id };
             
-            if(!allUsers[currentUser]) allUsers[currentUser] = { avatar: chosenAvatar, wins: 0, level: 1, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
+            if(!allUsers[currentUser]) allUsers[currentUser] = { avatar: chosenAvatar, wins: 0, level: 1, gold: 0, inventory: [], equipped: { head: null, body: null, feet: null, hand: null }, badges: [] };
             else allUsers[currentUser].avatar = chosenAvatar; 
             
             userData = allUsers[currentUser]; saveData(); initAudio(); showScreen('menu');
@@ -739,32 +726,91 @@
             document.getElementById('hero-name').innerText = currentUser;
             document.getElementById('hero-title').innerText = "Fairy Hero";
             document.getElementById('hero-level-badge').innerText = `Lvl ${userData.level}`;
+            const gEl = document.getElementById('hero-gold');
+            if (gEl.innerText != userData.gold) {
+                gEl.innerText = userData.gold;
+                const cont = document.getElementById('hero-gold-container');
+                cont.classList.remove('gold-pulse'); void cont.offsetWidth; cont.classList.add('gold-pulse');
+            }
             document.getElementById('hero-avatar').innerHTML = generateDollSVG(userData.avatar, userData.equipped);
             const badgesContainer = document.getElementById('hero-badges'); badgesContainer.innerHTML = '';
             if (userData.badges.includes('speed_star')) badgesContainer.innerHTML = `<span class="speed-badge text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">🌟 Speed Star</span>`;
         }
 
-        function renderDressUp() {
-            document.getElementById('inventory-preview').innerHTML = generateDollSVG(userData.avatar, userData.equipped);
-            const grid = document.getElementById('inventory-grid'); grid.innerHTML = '';
-            for (const id in ITEMS) {
-                const item = ITEMS[id]; const owned = userData.inventory.includes(id); const isEquipped = userData.equipped[item.type] === id;
+        // ==========================================
+        // SHOP & INVENTORY UI
+        // ==========================================
+
+        function renderShop() {
+            document.getElementById('shop-preview').innerHTML = generateDollSVG(userData.avatar, userData.equipped);
+            document.getElementById('shop-gold-display').innerText = userData.gold;
+            const grid = document.getElementById('shop-grid'); grid.innerHTML = '';
+            
+            let unownedItems = Object.keys(ITEMS).filter(id => !userData.inventory.includes(id));
+            
+            if (unownedItems.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center text-yellow-700 font-bold text-xl py-10">Wow! You bought everything in the boutique! 🎊</div>`;
+                return;
+            }
+
+            unownedItems.forEach(id => {
+                const item = ITEMS[id]; 
+                const canAfford = userData.gold >= item.price;
                 const div = document.createElement('div');
-                let baseStyle = owned ? (isEquipped ? 'bg-pink-100 border-pink-400 shadow-lg scale-105 cursor-pointer z-10' : (item.isRare ? 'rare-item cursor-pointer shadow-sm hover:scale-105' : 'bg-white border-pink-200 hover:bg-pink-50 cursor-pointer shadow-sm')) : 'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed filter grayscale';
-                div.className = `rounded-[2rem] p-3 sm:p-4 flex flex-col items-center text-center border-4 transition-all relative ${baseStyle}`;
-                div.innerHTML = `${item.isRare && owned ? '<span class="absolute -top-2 -right-2 text-xl emoji-shadow">✨</span>' : ''}
-                    <div class="text-4xl sm:text-5xl mb-2 ${owned ? 'emoji-shadow' : ''}">${item.emoji}</div>
-                    <h3 class="text-[10px] sm:text-xs font-black ${owned ? (item.isRare ? 'text-yellow-700' : 'text-purple-700') : 'text-gray-500'} leading-tight h-8 flex items-center justify-center">${item.name}</h3>
-                    <p class="text-[9px] sm:text-[10px] font-bold mt-1 uppercase ${isEquipped ? 'text-pink-600 bg-white/60 px-2 rounded-full' : 'text-gray-400'}">${isEquipped ? 'Wearing' : (owned ? 'Tap to wear' : 'Locked')}</p>`;
-                if (owned) {
+                div.className = `rounded-[2rem] p-3 sm:p-4 flex flex-col items-center text-center border-4 transition-all relative ${canAfford ? 'bg-white border-yellow-300 hover:bg-yellow-50 cursor-pointer shadow-md hover:scale-105' : 'bg-gray-100 border-gray-300 opacity-70 filter grayscale cursor-not-allowed'}`;
+                if (item.isRare) div.classList.add('rare-item');
+
+                div.innerHTML = `${item.isRare ? '<span class="absolute -top-2 -right-2 text-xl emoji-shadow">✨</span>' : ''}
+                    <div class="text-4xl sm:text-5xl mb-2 emoji-shadow">${item.emoji}</div>
+                    <h3 class="text-[10px] sm:text-xs font-black ${item.isRare ? 'text-yellow-700' : 'text-purple-700'} leading-tight h-8 flex items-center justify-center">${item.name}</h3>
+                    <button class="mt-2 text-xs font-black px-3 py-1 rounded-full w-full ${canAfford ? 'bg-yellow-400 text-yellow-900 border-b-2 border-yellow-600' : 'bg-gray-300 text-gray-500'}">
+                        ${item.price} 🪙
+                    </button>`;
+                
+                if (canAfford) {
                     div.onclick = () => {
-                        initAudio(); playSound('pop');
-                        if (userData.equipped[item.type] === id) userData.equipped[item.type] = null; else userData.equipped[item.type] = id;
-                        saveData(); renderDressUp(); updateHeroShowcase(); createConfetti(window.innerWidth/2, window.innerHeight/2, 10);
+                        initAudio();
+                        userData.gold -= item.price;
+                        userData.inventory.push(id);
+                        userData.equipped[item.type] = id; // Auto equip
+                        saveData(); 
+                        playSound('trade'); 
+                        createConfetti(window.innerWidth/2, window.innerHeight/2, 20);
+                        renderShop(); 
+                        updateHeroShowcase();
                     };
                 }
                 grid.appendChild(div);
-            }
+            });
+        }
+
+        function renderDressUp() {
+            document.getElementById('inventory-preview').innerHTML = generateDollSVG(userData.avatar, userData.equipped);
+            const grid = document.getElementById('inventory-grid'); grid.innerHTML = '';
+            const emptyMsg = document.getElementById('inventory-empty-msg');
+            
+            let ownedItems = Object.keys(ITEMS).filter(id => userData.inventory.includes(id));
+            if (ownedItems.length === 0) { emptyMsg.classList.remove('hidden'); } 
+            else { emptyMsg.classList.add('hidden'); }
+
+            ownedItems.forEach(id => {
+                const item = ITEMS[id]; const isEquipped = userData.equipped[item.type] === id;
+                const div = document.createElement('div');
+                div.className = `rounded-[2rem] p-3 sm:p-4 flex flex-col items-center text-center border-4 transition-all relative cursor-pointer ${isEquipped ? 'bg-pink-100 border-pink-400 shadow-lg scale-105 z-10' : 'bg-white border-pink-200 hover:bg-pink-50 shadow-sm'}`;
+                if (item.isRare && !isEquipped) div.classList.add('rare-item');
+
+                div.innerHTML = `${item.isRare ? '<span class="absolute -top-2 -right-2 text-xl emoji-shadow">✨</span>' : ''}
+                    <div class="text-4xl sm:text-5xl mb-2 emoji-shadow">${item.emoji}</div>
+                    <h3 class="text-[10px] sm:text-xs font-black ${item.isRare ? 'text-yellow-700' : 'text-purple-700'} leading-tight h-8 flex items-center justify-center">${item.name}</h3>
+                    <p class="text-[9px] sm:text-[10px] font-bold mt-1 uppercase ${isEquipped ? 'text-pink-600 bg-white/60 px-2 rounded-full' : 'text-gray-400'}">${isEquipped ? 'Wearing' : 'Tap to wear'}</p>`;
+                
+                div.onclick = () => {
+                    initAudio(); playSound('pop');
+                    if (userData.equipped[item.type] === id) userData.equipped[item.type] = null; else userData.equipped[item.type] = id;
+                    saveData(); renderDressUp(); updateHeroShowcase(); createConfetti(window.innerWidth/2, window.innerHeight/2, 10);
+                };
+                grid.appendChild(div);
+            });
         }
 
         // ==========================================
@@ -849,31 +895,26 @@
         function playVictoryFanfare() {
             if (!audioCtx) initAudio();
             const now = audioCtx.currentTime;
-            
-            // C Maj -> F Maj -> G Maj -> C Maj (High)
             const fanfareNotes = [
                 {f: 523.25, t: 0}, {f: 659.25, t: 0.15}, {f: 783.99, t: 0.3},
                 {f: 698.46, t: 0.5}, {f: 880.00, t: 0.65}, {f: 1046.50, t: 0.8},
                 {f: 783.99, t: 1.0}, {f: 987.77, t: 1.15}, {f: 1174.66, t: 1.3},
                 {f: 1046.50, t: 1.5}, {f: 1318.51, t: 1.6}, {f: 1567.98, t: 1.7}, {f: 2093.00, t: 1.8}
             ];
-            
             fanfareNotes.forEach(n => {
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.value = n.f;
+                let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
+                osc.type = 'triangle'; osc.frequency.value = n.f;
                 osc.connect(gain); gain.connect(audioCtx.destination);
-                
                 gain.gain.setValueAtTime(0, now + n.t);
                 gain.gain.linearRampToValueAtTime(0.12, now + n.t + 0.05);
-                // Last note rings out longer
                 const duration = n.t === 1.8 ? 1.5 : 0.4;
                 gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + duration);
-                
-                osc.start(now + n.t);
-                osc.stop(now + n.t + duration + 0.1);
+                osc.start(now + n.t); osc.stop(now + n.t + duration + 0.1);
             });
+        }
+        function playCoinSound() {
+            if (!audioCtx) return; const now = audioCtx.currentTime;
+            playTone(880, now, 0.1); playTone(1318.51, now + 0.1, 0.3);
         }
 
         document.getElementById('btn-music').addEventListener('click', toggleMusic);
@@ -951,7 +992,7 @@
                 activeBuildings = [poolE[0], poolM[0], poolM[1], poolEp[0]];
             } else if (userData.level === 3 || userData.level === 4) { 
                 activeBuildings = [poolE[0], poolM[0], poolH[0], poolEp[0]];
-            } else { // Level 5
+            } else { 
                 activeBuildings = [poolE[0], poolM[0], poolM[1], poolH[0], poolEp[0]];
             }
             
@@ -969,9 +1010,11 @@
                 div.className = `${b.bg} rounded-3xl p-5 shadow-lg border-4 ${b.border} flex flex-col sm:flex-row items-center gap-4 transition-all duration-300 relative overflow-hidden ${isLocked ? 'locked-build' : ''}`;
                 
                 let lockOverlay = isLocked ? `<div class="absolute inset-0 bg-white/50 z-10 flex items-center justify-center backdrop-blur-[1px]"><span class="text-4xl">🔒</span></div>` : '';
+                let rewardDisplay = b.built ? `<div class="absolute top-2 right-2 text-green-600 font-black text-xl">✅</div>` : `<div class="absolute top-2 right-2 bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full font-black text-xs border-2 border-yellow-500 shadow-sm">+${b.baseGold * userData.level} 🪙</div>`;
 
                 div.innerHTML = `
                     ${lockOverlay}
+                    ${rewardDisplay}
                     <div class="text-5xl sm:text-6xl emoji-shadow w-20 sm:w-24 text-center">${b.emoji}</div>
                     <div class="flex-grow text-center sm:text-left">
                         <h3 class="text-xl sm:text-2xl ${b.text} mb-1 font-black leading-tight">${b.name}</h3>
@@ -1023,7 +1066,16 @@
         function buildBuilding(index) {
             initAudio(); const b = activeBuildings.find(x => x.index === index);
             for (let res in b.cost) resources[res].count -= b.cost[res];
-            b.built = true; currentTargetIndex++; playSound('build');
+            b.built = true; currentTargetIndex++; 
+            
+            // Gold Reward Calculation
+            let earnedGold = Math.floor(b.baseGold * userData.level);
+            userData.gold += earnedGold;
+            saveData();
+            updateHeroShowcase();
+            playCoinSound();
+            showToast(`Built! +${earnedGold} 🪙`);
+
             const card = document.getElementById(`card-build-${b.index}`);
             card.classList.add('bounce-in'); card.style.borderColor = '#4ade80'; card.style.backgroundColor = '#dcfce7';
             const rect = card.getBoundingClientRect(); createConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2, 40);
@@ -1098,7 +1150,6 @@
                     resources[randKey].count++; spinnerEmoji.innerText = resources[randKey].emoji; playSound('pop');
                     const rect = spinBtn.getBoundingClientRect(); showFloatingResource(resources[randKey].emoji, rect.left + rect.width/2 - 20, rect.top + rect.height/2 - 20);
                     
-                    // 15% chance to spawn cloud for NEXT turn
                     if(Math.random() < 0.15) { cloudActive = true; setTimeout(() => playSound('cloud'), 500); }
                 }
                 updateUI(); checkGameOver(); isSpinning = false;
@@ -1239,32 +1290,32 @@
                 const isSpeedWin = spinsLeft > 8;
 
                 if (isSpeedWin && !userData.badges.includes('speed_star')) userData.badges.push('speed_star');
-                let normalPool = Object.keys(ITEMS).filter(id => !ITEMS[id].isRare && !userData.inventory.includes(id));
-                let newNormalReward = normalPool.length ? pickRandom(normalPool) : null;
-                if(newNormalReward) userData.inventory.push(newNormalReward);
                 
-                let newRareReward = null;
-                if (isSpeedWin) {
-                    let rarePool = Object.keys(ITEMS).filter(id => ITEMS[id].isRare && !userData.inventory.includes(id));
-                    if(rarePool.length) { newRareReward = pickRandom(rarePool); userData.inventory.push(newRareReward); }
-                }
+                // Calculate Win Gold
+                let winGold = 50 * userData.level;
+                if (isSpeedWin) winGold += 100;
+                userData.gold += winGold;
 
                 let lvlUp = false;
                 if(userData.level < 5) { userData.level++; lvlUp = true; }
 
                 saveData();
-                setTimeout(() => showGameOverModal('win', newNormalReward, newRareReward, isSpeedWin, lvlUp), 800);
+                updateHeroShowcase();
+                setTimeout(() => showGameOverModal('win', winGold, isSpeedWin, lvlUp), 800);
             } else if (spinsLeft <= 0) {
-                gameActive = false; setTimeout(() => showGameOverModal('lose', null, null, false, false), 800);
+                gameActive = false; setTimeout(() => showGameOverModal('lose', 0, false, false), 800);
             }
         }
 
-        function showGameOverModal(type, normalRewardId, rareRewardId, isSpeedWin, lvlUp) {
+        function showGameOverModal(type, goldEarned, isSpeedWin, lvlUp) {
             const modalOverlay = document.getElementById('modal-overlay'); const modalContent = document.getElementById('modal-content');
             modalOverlay.classList.remove('hidden'); modalOverlay.classList.add('flex'); modalContent.classList.remove('hidden');
             
-            const rewardArea = document.getElementById('modal-reward-area'); const nRewardArea = document.getElementById('modal-normal-reward'); const sRewardArea = document.getElementById('modal-speed-reward');
-            rewardArea.classList.add('hidden'); rewardArea.classList.remove('flex'); nRewardArea.classList.add('hidden'); nRewardArea.classList.remove('flex'); sRewardArea.classList.add('hidden'); sRewardArea.classList.remove('flex');
+            const rewardArea = document.getElementById('modal-reward-area'); 
+            const goldReward = document.getElementById('modal-gold-reward'); 
+            
+            rewardArea.classList.add('hidden'); rewardArea.classList.remove('flex'); 
+            goldReward.classList.add('hidden'); goldReward.classList.remove('flex'); 
 
             if (type === 'win') {
                 document.getElementById('modal-title').innerText = isSpeedWin ? "SPEED STAR! ⚡" : "Festival Ready! 🎪";
@@ -1275,21 +1326,14 @@
                 document.getElementById('modal-emoji').innerText = isSpeedWin ? "🌟" : "🎉";
                 modalContent.style.borderColor = isSpeedWin ? "#facc15" : "#4ade80"; 
                 
-                // Play Procedural Triumphant Fanfare!
                 playVictoryFanfare();
                 
                 isConfettiContinuous = true; createConfetti(canvas.width/2, canvas.height/2, 80);
 
-                if(normalRewardId || rareRewardId) {
+                if (goldEarned > 0) {
                     rewardArea.classList.remove('hidden'); rewardArea.classList.add('flex');
-                    if (normalRewardId) {
-                        const item = ITEMS[normalRewardId]; nRewardArea.classList.remove('hidden'); nRewardArea.classList.add('flex');
-                        document.getElementById('modal-reward-item').innerHTML = `<div class="text-6xl emoji-shadow">${item.emoji}</div><p class="text-[11px] font-black text-pink-600 mt-2 text-center leading-tight uppercase">${item.name}</p>`;
-                    }
-                    if (rareRewardId) {
-                        const rItem = ITEMS[rareRewardId]; sRewardArea.classList.remove('hidden'); sRewardArea.classList.add('flex');
-                        document.getElementById('modal-rare-item').innerHTML = `<div class="text-6xl emoji-shadow">${rItem.emoji}</div><p class="text-[11px] font-black text-yellow-600 mt-2 text-center leading-tight uppercase">${rItem.name}</p>`;
-                    }
+                    goldReward.classList.remove('hidden'); goldReward.classList.add('flex');
+                    document.getElementById('modal-gold-text').innerHTML = `You earned +${goldEarned} 🪙! <br> <span class="text-sm">Spend it in the Glitter Boutique!</span>`;
                 }
             } else {
                 document.getElementById('modal-title').innerText = "Sun has set! 🌙"; document.getElementById('modal-title').className = "text-5xl font-black mb-4 text-indigo-500";
@@ -1312,7 +1356,9 @@
 
         document.getElementById('btn-start-game').addEventListener('click', startGameFlow);
         document.getElementById('btn-open-inventory').addEventListener('click', () => { initAudio(); showScreen('inventory'); });
+        document.getElementById('btn-open-shop').addEventListener('click', () => { initAudio(); showScreen('shop'); });
         document.getElementById('btn-inv-back').addEventListener('click', () => { initAudio(); showScreen('menu'); });
+        document.getElementById('btn-shop-back').addEventListener('click', () => { initAudio(); showScreen('menu'); });
         document.getElementById('spin-btn').addEventListener('click', spin);
         document.getElementById('btn-restart').addEventListener('click', () => { document.getElementById('modal-overlay').classList.add('hidden'); startGameFlow(); });
         document.getElementById('btn-modal-menu').addEventListener('click', () => { document.getElementById('modal-overlay').classList.add('hidden'); gameActive = false; showScreen('menu'); });
