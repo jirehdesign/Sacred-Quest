@@ -181,9 +181,8 @@
     }
     .modal-overlay.active .modal-card { transform: scale(1); }
 
-    /* Intro Slides */
-    .intro-slide { display: none; }
-    .intro-slide.active { display: block; animation: fadeIn 0.4s ease; }
+    /* Dynamic Intro Animations */
+    .intro-slide-content { animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Battle UI */
@@ -238,7 +237,8 @@
     .user-list { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; max-height: 200px; overflow-y: auto;}
     .user-row { padding: 10px; background: #EDF2F7; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;}
     .user-row:hover { background: #E2E8F0; }
-    .action-btn { padding: 12px 24px; font-size: 1.1rem; font-weight: 700; background: var(--primary); color: white; border: none; border-radius: 14px; cursor: pointer;}
+    .action-btn { padding: 12px 24px; font-size: 1.1rem; font-weight: 700; background: var(--primary); color: white; border: none; border-radius: 14px; cursor: pointer; transition: all 0.2s;}
+    .action-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
     input[type="text"] { padding: 8px 12px; border-radius: 10px; border: 2px solid #CBD5E0; font-size: 1rem; outline: none; }
 
     /* Training Module UI */
@@ -301,49 +301,10 @@
     </div>
   </main>
 
-  <!-- Story & Mechanics Intro Modal -->
+  <!-- Dynamic Intro & Mechanics Modal -->
   <div class="modal-overlay" id="intro-modal" style="z-index: 2000;">
-    <div class="modal-card">
-      <button class="nav-btn" onclick="closeIntro()" style="position:absolute; top:10px; right:10px; font-size:0.7rem; padding:4px 8px;">Skip ⏭️</button>
-      
-      <!-- Slide 1: Backstory -->
-      <div class="intro-slide active" id="intro-slide-1">
-        <h1 style="font-size:3rem; margin-bottom:10px;">🐹</h1>
-        <h2 style="color:var(--primary-dark); font-size:1.8rem;">The Hamster's Reign</h2>
-        <p id="intro-story-text" style="text-align: left; margin-top: 15px; color:#4A5568; line-height:1.6; font-size:1.05rem;"></p>
-        <button class="action-btn" onclick="nextIntroSlide(2)" style="margin-top: 25px;">Next ➡️</button>
-      </div>
-
-      <!-- Slide 2: Gameplay -->
-      <div class="intro-slide" id="intro-slide-2">
-        <h1 style="font-size:3rem; margin-bottom:10px;">🎮</h1>
-        <h2 style="color:var(--primary-dark); font-size:1.8rem;">How to Play</h2>
-        <ul style="text-align: left; margin: 20px 0 20px 25px; line-height: 1.6; color:#4A5568; font-size:1.05rem;">
-          <li style="margin-bottom:8px;">Use the <b>D-Pad</b> or keyboard arrows to move.</li>
-          <li style="margin-bottom:8px;">Travel <b>East</b> (right) towards the dark castle. Enemies get harder the further you go!</li>
-          <li style="margin-bottom:8px;">Visit the <b>Town</b> to buy weapons, armor, and medicine.</li>
-          <li style="margin-bottom:8px;">Answer Hebrew questions correctly to attack in battle. Wrong answers mean you take damage!</li>
-        </ul>
-        <button class="action-btn" onclick="nextIntroSlide(3)" style="margin-top: 10px;">Next ➡️</button>
-      </div>
-
-      <!-- Slide 3: Hebrew Basics -->
-      <div class="intro-slide" id="intro-slide-3">
-        <h1 style="font-size:3rem; margin-bottom:10px;">🔤</h1>
-        <h2 style="color:var(--primary-dark); font-size:1.8rem;">Hebrew Basics</h2>
-        <p style="color:#718096; margin:10px 0;">Hebrew is read from <b>Right to Left</b>. Here are a few memory tricks to get you started!</p>
-        
-        <div style="text-align: left; max-height: 250px; overflow-y:auto; background:#EDF2F7; padding:15px; border-radius:12px; margin-bottom:20px; font-size:0.95rem; line-height:1.5;">
-          <p style="margin-bottom:10px;"><b>א (Aleph)</b> - Silent. Like the 'a' in apple waiting for a sound.</p>
-          <p style="margin-bottom:10px;"><b>בּ (Bet)</b> - 'B' sound. Has a bellybutton dot!</p>
-          <p style="margin-bottom:10px;"><b>ב (Vet)</b> - 'V' sound. No dot inside.</p>
-          <p style="margin-bottom:10px;"><b>ג (Gimel)</b> - 'G' for Girl. Looks like a boot walking.</p>
-          <p style="margin-bottom:10px;"><b>ד (Dalet)</b> - 'D' for Door. Looks like an open door frame.</p>
-          <p style="margin-bottom:10px;"><b>ה (Hei)</b> - 'H' sound. Has a little hole at the top left to let the air out!</p>
-          <p style="margin-bottom:10px;"><b>ו (Vav)</b> - 'V' sound. Just a straight vertical line.</p>
-        </div>
-        <button class="action-btn" onclick="closeIntro()">Start Adventure ⚔️</button>
-      </div>
+    <div class="modal-card" id="intro-card-content" style="min-height: 350px; display:flex; flex-direction:column; justify-content:center;">
+      <!-- Content injected by JS -->
     </div>
   </div>
 
@@ -380,15 +341,11 @@
   <div class="modal-overlay" id="teacher-modal" style="z-index: 501;">
     <div class="modal-card" style="max-width: 500px; max-height: 85vh;">
       <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">👩‍🏫 Town Teacher</h2>
-      
-      <!-- Topic Selection View -->
       <div id="teacher-topics-view">
         <p style="color:#718096; margin-bottom: 15px;">"Shalom! I can teach you the skills needed for every zone on your journey. What shall we study today?"</p>
         <div style="display: flex; flex-direction: column; gap: 8px; max-height: 45vh; overflow-y: auto; padding-right: 5px;" id="teacher-topics-list"></div>
         <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('teacher-modal')">Leave Class</button>
       </div>
-
-      <!-- Lesson View -->
       <div id="teacher-lesson-view" style="display: none;">
         <div class="training-header">
           <strong id="teacher-lesson-title" style="font-size:1.2rem; color:#2B6CB0;"></strong>
@@ -400,19 +357,15 @@
     </div>
   </div>
 
-  <!-- Training Academy Modal (Manual Selection) -->
+  <!-- Training Academy Modal -->
   <div class="modal-overlay" id="training-modal" style="z-index: 500;">
     <div class="modal-card" style="max-width: 600px; max-height: 85vh;">
       <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">📜 Training Manual</h2>
-      
-      <!-- View 1: Lesson List -->
       <div id="training-view-list">
         <p style="color:#718096; margin-bottom: 15px;">Review the master compendium for all 12 zones.</p>
         <div style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-right: 5px;" id="lesson-list-container"></div>
         <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('training-modal')">Close</button>
       </div>
-
-      <!-- View 2: Lesson Content -->
       <div id="training-view-content" style="display: none;">
         <div class="training-header">
           <strong id="train-level-title" style="font-size:1.2rem; color:#2B6CB0;"></strong>
@@ -456,7 +409,6 @@
   <div class="modal-overlay" id="profile-modal">
     <div class="modal-card">
       <h2 style="color:var(--primary-dark);" id="profile-name-display-modal">Player Name</h2>
-      
       <div class="stat-details" id="profile-stats-detailed"></div>
       
       <h3 style="color:#2D3748;">My Equipment</h3>
@@ -498,7 +450,6 @@
   <!-- Battle Encounter Modal -->
   <div class="modal-overlay" id="battle-modal">
     <div class="modal-card" style="background: #EDF2F7; border: 4px solid #A0AEC0;">
-      
       <div class="boss-header">
         <div id="combat-zone-label" style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0;">Zone Level 1</div>
         <strong id="boss-name">Wild Slime</strong>
@@ -527,7 +478,6 @@
       return arr;
     }
 
-    // --- Custom Alert & Confirm Systems ---
     function showAlert(message, callback) {
       const overlay = document.getElementById('custom-alert-overlay');
       document.getElementById('custom-alert-text').textContent = message;
@@ -641,19 +591,16 @@
             const i = this.tick % wizMelody.length;
             this.playTone(wizMelody[i], 'sine', 0.5, 0.03); 
             this.playTone(wizBass[i], 'triangle', 0.5, 0.04);
-            
           } else if (inBattle) {
             speedMs = 150;
             const i = this.tick % batMelody.length;
             this.playTone(batMelody[i], 'square', 0.15, 0.02); 
             this.playTone(batBass[i], 'triangle', 0.2, 0.03);
-            
           } else if (inCastle) {
             speedMs = 600;
             const i = this.tick % casMelody.length;
             this.playTone(casMelody[i], 'triangle', 0.8, 0.04);
             this.playTone(casBass[i], 'sine', 0.9, 0.05);
-
           } else {
             speedMs = 180; 
             const i = this.tick % mapMelody.length;
@@ -663,10 +610,8 @@
           
           this.bgmTimer = setTimeout(bgmLoop, speedMs);
         };
-        
         bgmLoop(); 
       }
-      
       stopBGM() { if(this.bgmTimer) clearTimeout(this.bgmTimer); this.bgmTimer = null; }
     }
     
@@ -678,7 +623,7 @@
       else { btn.textContent = "🎵 OFF"; btn.classList.remove('active'); }
     }
 
-    // --- GAME MAP DATA (36 x 12 Grids) ---
+    // --- GAME MAP DATA ---
     const MAPS = {
       beginner: [
         "......M..W-.....MMM.......~....WWWW#",
@@ -724,7 +669,6 @@
       ]
     };
 
-    // --- TOWN LAYOUT (12x12) ---
     const TOWN_LAYOUT = [
       "OOOOOOOOOOOO",
       "OOBBBBBBBBOO",
@@ -740,7 +684,7 @@
       "OOOO+EE+OOOO"
     ];
 
-    // --- CASTLE LAYOUT (Snake Path forced maze with safe floor entrance at bottom) ---
+    // Floor tile F is at Index X:8, Y:11
     const CASTLE_LAYOUT = [
       "XXXXXXXXXXXX",
       "XH........FX",
@@ -793,7 +737,6 @@
       10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Giant Hamster', icon: '🐹' }
     };
 
-    // --- MASSIVELY EXPANDED TRAINING / TEACHER DATA ---
     const TRAINING_DATA = {
       beginner: {
         1: { title: "Letters: Aleph to Yod", desc: "The first 10 letters and basic sounds.", items: [["א", "Aleph", "Silent"], ["בּ", "Bet", "Makes 'B' sound (with dot)"], ["ב", "Vet", "Makes 'V' sound (no dot)"], ["ג", "Gimel", "'G' as in Girl"], ["ד", "Dalet", "'D' sound"], ["ה", "Hei", "'H' sound"], ["ו", "Vav", "'V' or 'O/U' sound"], ["ז", "Zayin", "'Z' sound"], ["ח", "Chet", "Guttural 'Ch' sound"], ["ט", "Tet", "'T' sound"], ["י", "Yod", "'Y' sound"], ["ר", "Resh", "Looks like Dalet, rounded"], ["ת", "Tav", "Looks like Chet, has a foot"]] },
@@ -811,31 +754,11 @@
       },
       intermediate: {
         1: { title: "Greetings", desc: "Saying hello in Hebrew.", items: [["שָׁלוֹם", "Shalom", "Hello / Peace / Goodbye"], ["בֹּקֶר טוֹב", "Boker Tov", "Good Morning"], ["עֶרֶב טוֹב", "Erev Tov", "Good Evening"], ["לַיְלָה טוֹב", "Laila Tov", "Good Night"], ["תּוֹדָה", "Toda", "Thank you"], ["סְלִיחָה", "Slicha", "Excuse me / Sorry"]] },
-        2: { title: "Family (Mishpacha)", desc: "Words for family members.", items: [["אַבָּא", "Abba", "Father"], ["אִמָּא", "Ima", "Mother"], ["בֵּן", "Ben", "Son"], ["בַּת", "Bat", "Daughter"], ["אָח", "Ach", "Brother"], ["אָחוֹת", "Achot", "Sister"], ["סָבָּא", "Saba", "Grandfather"], ["סָבְתָא", "Savta", "Grandmother"]] },
-        3: { title: "Colors (Tzvaim)", desc: "Identifying common colors.", items: [["אָדוֹם", "Adom", "Red"], ["כָּחוֹל", "Kachol", "Blue"], ["יָרוֹק", "Yarok", "Green"], ["צָהוֹב", "Tzahov", "Yellow"], ["שָׁחוֹר", "Shachor", "Black"], ["לָבָן", "Lavan", "White"], ["וָרוֹד", "Varod", "Pink"]] },
-        4: { title: "Animals (Chayot)", desc: "Basic pets and animals.", items: [["כֶּלֶב", "Kelev", "Dog"], ["חָתוּל", "Chatul", "Cat"], ["סוּס", "Sus", "Horse"], ["צִפּוֹר", "Tzipor", "Bird"], ["דָּג", "Dag", "Fish"], ["פָּרָה", "Parah", "Cow"], ["קוֹף", "Kof", "Monkey"]] },
-        5: { title: "Numbers 1-10", desc: "Counting basics.", items: [["אַחַת", "Achat", "One"], ["שְׁתַּיִם", "Shtayim", "Two"], ["שָׁלוֹשׁ", "Shalosh", "Three"], ["אַרְבַּע", "Arba", "Four"], ["חָמֵשׁ", "Chamesh", "Five"], ["שֵׁשׁ", "Shesh", "Six"], ["שֶׁבַע", "Sheva", "Seven"], ["שְׁמוֹנֶה", "Shmone", "Eight"], ["תֵּשַׁע", "Tesha", "Nine"], ["עֶשֶׂר", "Eser", "Ten"]] },
-        6: { title: "Food (Ochel)", desc: "Things we eat and drink.", items: [["לֶחֶם", "Lechem", "Bread"], ["מַיִם", "Mayim", "Water"], ["חָלָב", "Chalav", "Milk"], ["תַּפּוּחַ", "Tapuach", "Apple"], ["בָּשָׂר", "Basar", "Meat"], ["גְּבִינָה", "Gvina", "Cheese"], ["פְּרִי", "Pri", "Fruit"]] },
-        7: { title: "Body Parts", desc: "Identifying parts of the body.", items: [["רֹאשׁ", "Rosh", "Head"], ["עַיִן", "Ayin", "Eye"], ["יָד", "Yad", "Hand"], ["רֶגֶל", "Regel", "Leg"], ["אֹזֶן", "Ozen", "Ear"], ["פֶּה", "Peh", "Mouth"], ["אַף", "Af", "Nose"]] },
-        8: { title: "Nature", desc: "The world outside.", items: [["שֶׁמֶשׁ", "Shemesh", "Sun"], ["עֵץ", "Etz", "Tree"], ["יָם", "Yam", "Sea"], ["יָרֵחַ", "Yareach", "Moon"], ["כּוֹכָב", "Kochav", "Star"], ["הַר", "Har", "Mountain"], ["פֶּרַח", "Perach", "Flower"]] },
-        9: { title: "Clothing (Begadim)", desc: "What we wear.", items: [["בֶּגֶד", "Beged", "Garment"], ["נַעֲלַיִם", "Na'alayim", "Shoes"], ["כּוֹבַע", "Kova", "Hat"], ["חוּלְצָה", "Chultza", "Shirt"], ["מִכְנָסַיִם", "Michnasayim", "Pants"], ["מְעִיל", "Me'il", "Coat"]] },
-        10: { title: "Home (Bayit)", desc: "Around the house.", items: [["בַּיִת", "Bayit", "House"], ["דֶּלֶת", "Delet", "Door"], ["חַלּוֹן", "Chalon", "Window"], ["שֻׁלְחָן", "Shulchan", "Table"], ["כִּסֵּא", "Kise", "Chair"], ["מִטָּה", "Mita", "Bed"]] },
-        11: { title: "Time (Zman)", desc: "Telling time.", items: [["יוֹם", "Yom", "Day"], ["לַיְלָה", "Laila", "Night"], ["שָׁעָה", "Sha'a", "Hour"], ["שָׁבוּעַ", "Shavua", "Week"], ["חֹדֶשׁ", "Chodesh", "Month"], ["שָׁנָה", "Shana", "Year"], ["מָחָר", "Machar", "Tomorrow"]] },
-        12: { title: "Common Nouns", desc: "Essential everyday words.", items: [["סֵפֶר", "Sefer", "Book"], ["יֶלֶד", "Yeled", "Boy"], ["יַלְדָּה", "Yalda", "Girl"], ["כֶּסֶף", "Kesef", "Money"], ["עִיר", "Ir", "City"], ["חָבֵר", "Chaver", "Friend"]] }
+        2: { title: "Family (Mishpacha)", desc: "Words for family members.", items: [["אַבָּא", "Abba", "Father"], ["אִמָּא", "Ima", "Mother"], ["בֵּן", "Ben", "Son"], ["בַּת", "Bat", "Daughter"], ["אָח", "Ach", "Brother"], ["אָחוֹת", "Achot", "Sister"], ["סָבָּא", "Saba", "Grandfather"], ["סָבְתָא", "Savta", "Grandmother"]] }
       },
       advanced: {
         1: { title: "Pronouns", desc: "Who is doing the action?", items: [["אֲנִי", "Ani", "I"], ["אַתָּה", "Ata", "You (M)"], ["הוּא", "Hu", "He"], ["הִיא", "Hi", "She"], ["אֲנַחְנוּ", "Anachnu", "We"]] },
-        2: { title: "Basic Verbs 1", desc: "Action words.", items: [["אוֹכֵל", "Ochel", "Eating"], ["שׁוֹתֶה", "Shoteh", "Drinking"], ["הוֹלֵךְ", "Holech", "Walking"], ["יוֹשֵׁב", "Yoshev", "Sitting"]] },
-        3: { title: "Question Words", desc: "Asking for information.", items: [["מִי", "Mi", "Who?"], ["מָה", "Ma", "What?"], ["אֵיפֹה", "Eifo", "Where?"], ["לָמָּה", "Lama", "Why?"], ["מָתַי", "Matay", "When?"]] },
-        4: { title: "Adjectives", desc: "Describing things.", items: [["גָּדוֹל", "Gadol", "Big"], ["קָטָן", "Katan", "Small"], ["טוֹב", "Tov", "Good"], ["רַע", "Ra", "Bad"], ["יָפֶה", "Yafeh", "Beautiful"]] },
-        5: { title: "Prepositions", desc: "Connecting words.", items: [["בְּ", "Be-", "In / At"], ["לְ", "Le-", "To / For"], ["שֶׁל", "Shel", "Of / Belonging to"], ["עַל", "Al", "On / About"], ["עִם", "Im", "With"]] },
-        6: { title: "Polite Phrases", desc: "Manners matter.", items: [["בְּבַקָּשָׁה", "Bevakasha", "Please"], ["תּוֹדָה רַבָּה", "Toda Raba", "Thank You Very Much"], ["אֵין דָּבָר", "Ein Davar", "You're Welcome / It's Nothing"]] },
-        7: { title: "Advanced Grammar", desc: "Preparing for the Castle.", items: [["אֲנִי רוֹצֶה", "Ani Rotzeh", "I want (M)"], ["אֲנִי רוֹצָה", "Ani Rotza", "I want (F)"], ["יֵשׁ לִי", "Yesh Li", "I have"], ["אֵין לִי", "Ein Li", "I don't have"]] },
-        8: { title: "Directions & Places", desc: "Navigating the world.", items: [["צָפוֹן", "Tzafon", "North"], ["דָּרוֹם", "Darom", "South"], ["מִזְרָח", "Mizrach", "East"], ["מַעֲרָב", "Ma'arav", "West"], ["יָמִינָה", "Yamina", "Right"], ["שְׂמֹאלָה", "Smola", "Left"]] },
-        9: { title: "Shopping & Money", desc: "For the town shop.", items: [["כֶּסֶף", "Kesef", "Money"], ["חֲנוּת", "Chanut", "Shop/Store"], ["קְנִיָּה", "Kniya", "Purchase"], ["יָקָר", "Yakar", "Expensive"], ["זוֹל", "Zol", "Cheap"]] },
-        10: { title: "Weather & Seasons", desc: "The elements.", items: [["גֶּשֶׁם", "Geshem", "Rain"], ["שֶׁלֶג", "Sheleg", "Snow"], ["קַיִץ", "Kayitz", "Summer"], ["חֹרֶף", "Choref", "Winter"], ["חַם", "Cham", "Hot"], ["קַר", "Kar", "Cold"]] },
-        11: { title: "Emotions & Feelings", desc: "State of mind.", items: [["שָׂמֵחַ", "Sameach", "Happy"], ["עָצוּב", "Atzuv", "Sad"], ["כּוֹעֵס", "Ko'es", "Angry"], ["עָיֵף", "Ayef", "Tired"], ["רָעֵב", "Ra'ev", "Hungry"]] },
-        12: { title: "Hero's Journey", desc: "Terms for the final dungeon.", items: [["חֶרֶב", "Cherev", "Sword"], ["מָגֵן", "Magen", "Shield"], ["קֶסֶם", "Kesem", "Magic"], ["מִפְלֶצֶת", "Mifletzet", "Monster"], ["גִּבּוֹר", "Gibor", "Hero"], ["מֶלֶךְ", "Melech", "King"]] }
+        2: { title: "Basic Verbs 1", desc: "Action words.", items: [["אוֹכֵל", "Ochel", "Eating"], ["שׁוֹתֶה", "Shoteh", "Drinking"], ["הוֹלֵךְ", "Holech", "Walking"], ["יוֹשֵׁב", "Yoshev", "Sitting"]] }
       }
     };
     const DEFAULT_TRAINING = { title: "Combat Ready!", desc: "You have learned the basics. Rely on your wits!", items: [["⚔️", "Prepare", "Get ready for battle!"]] };
@@ -851,7 +774,6 @@
     let currentEnemyLevel = 1;
     let currentEnemyMaxHP = 1;
     let currentEnemyHP = 1;
-    
     let inBattle = false;
     let inTown = false;
     let inCastle = false;
@@ -860,7 +782,6 @@
     let castleMonsters = {};
     let activeCastleEnemyKey = null;
     
-    // Wizard Quiz State
     let inWizardQuiz = false;
     let wizardStreak = 0;
 
@@ -901,7 +822,7 @@
       usersDB[name] = {
         name: name, coins: 0, track: 'beginner',
         hp: 50, maxHp: 50,
-        x: 0, y: 11, townX: 5, townY: 10, castleX: 5, castleY: 11,
+        x: 0, y: 11, townX: 5, townY: 10, castleX: 8, castleY: 11, // Fixed Spawn
         avatar: '🦁', unlockedAvatars: ['🦁'],
         inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null,
         hasSeenIntro: false
@@ -915,7 +836,7 @@
       currentUser = usersDB[name];
       if (!currentUser.consumables) currentUser.consumables = {};
       if (currentUser.townX === undefined) { currentUser.townX = 5; currentUser.townY = 10; }
-      if (currentUser.castleX === undefined) { currentUser.castleX = 5; currentUser.castleY = 11; }
+      if (currentUser.castleX === undefined) { currentUser.castleX = 8; currentUser.castleY = 11; }
       
       localStorage.setItem('aleph_rpg_active_user', name);
       document.getElementById('login-modal').classList.remove('active');
@@ -926,24 +847,145 @@
       
       loadQuestionBank(); 
       
-      // Trigger intro for new players
       if (!currentUser.hasSeenIntro) {
         openIntro();
       }
     }
     
-    // --- Intro Flow Logic ---
+    // --- Dynamic Intro Engine ---
+    let introSequence = [];
+    let currentIntroIndex = 0;
+
+    const HEBREW_LETTERS_DATA = [
+      { l: "א", n: "Aleph", s: "Silent", m: "An Apple waiting for a sound to drop on it." },
+      { l: "בּ", n: "Bet", s: "B", m: "Has a Bellybutton dot in the middle!" },
+      { l: "ב", n: "Vet", s: "V", m: "Void of a dot." },
+      { l: "ג", n: "Gimel", s: "G", m: "Looks like a Girl walking in a high-heeled boot." },
+      { l: "ד", n: "Dalet", s: "D", m: "Looks like an open Door frame." },
+      { l: "ה", n: "Hei", s: "H", m: "Has a Hole in the roof to let the hot air out." },
+      { l: "ו", n: "Vav", s: "V/O/U", m: "A simple Vertical line." },
+      { l: "ז", n: "Zayin", s: "Z", m: "A Zig-zag sword." },
+      { l: "ח", n: "Chet", s: "Ch", m: "Choking on a hairball! (Closed roof, no gap)." },
+      { l: "ט", n: "Tet", s: "T", m: "Looks like a Tea cup." },
+      { l: "י", n: "Yod", s: "Y", m: "A Yummy tiny drop floating in the air." },
+      { l: "כּ", n: "Kaf", s: "K", m: "A Kitten Curled up with a dot." },
+      { l: "כ", n: "Chaf", s: "Ch", m: "Curled up without a dot." },
+      { l: "ל", n: "Lamed", s: "L", m: "A Lightning bolt reaching up high." },
+      { l: "מ", n: "Mem", s: "M", m: "A Mountain with a little cliff." },
+      { l: "נ", n: "Nun", s: "N", m: "A Noodle standing straight up." },
+      { l: "ס", n: "Samech", s: "S", m: "A circle like a Sun." },
+      { l: "ע", n: "Ayin", s: "Silent", m: "Two Eyes looking up (a silent watcher)." },
+      { l: "פ", n: "Peh", s: "P", m: "A face with a tongue (dot) inside." },
+      { l: "צ", n: "Tzadi", s: "Tz", m: "A Tree branch pointing up." },
+      { l: "ק", n: "Kof", s: "K", m: "A Keyhole." },
+      { l: "ר", n: "Resh", s: "R", m: "A Rounded roof." },
+      { l: "שׁ", n: "Shin", s: "Sh", m: "Three flames. Dot on the right! (Sheesh!)" },
+      { l: "שׂ", n: "Sin", s: "S", m: "Three flames. Dot on the left! (Sinister left!)" },
+      { l: "ת", n: "Tav", s: "T", m: "A foot with the Toe pointing out." }
+    ];
+
     function openIntro() {
-      document.getElementById('intro-story-text').innerHTML = `Once upon a time, a small village hamster ate a glowing, mutated tomato...<br><br>It transformed him into a Giant Mean Hamster! Now, he recruits wild monsters to trample villages, destroy crops, and drive up local housing costs!<br><br>Hero <b>${currentUser.name}</b>, you are our only hope! Drive this evil from the realm and restore our quality of life!`;
-      document.getElementById('intro-slide-1').classList.add('active');
-      document.getElementById('intro-slide-2').classList.remove('active');
-      document.getElementById('intro-slide-3').classList.remove('active');
+      introSequence = [
+        { type: "story", title: "🐹 The Hamster's Reign", content: `Once upon a time, a beloved classroom pet named Sir Nibbles escaped into ${currentUser.name}'s backyard garden...<br><br>He ate a glowing, radioactive heirloom tomato that had fallen from the neighbor's experimental compost bin. It transformed him into a 50-foot-tall Giant Mean Hamster wearing a stretchy top hat!<br><br>Now, he has recruited a union of wild monsters (goblins, slimes, and trolls) to protest low wages by trampling houses. As a result, property taxes and HOA fees are through the roof!` },
+        { type: "story", title: "⚔️ A Hero is Needed", content: `Hero <b>${currentUser.name}</b>, you are our only hope! Drive this evil from the realm and restore our quality of life.<br><br>Your journey will take you east across dangerous lands, into a walled town to buy supplies, and finally into the dark labyrinth to defeat Sir Nibbles!` },
+        { type: "mechanics", title: "🎮 How to Play", content: `<ul style="text-align: left; margin-left: 20px; line-height: 1.6;">
+          <li style="margin-bottom:8px;">Use the <b>D-Pad</b> or keyboard arrows to move.</li>
+          <li style="margin-bottom:8px;">Travel <b>East</b> (right) towards the dark castle.</li>
+          <li style="margin-bottom:8px;">Answer Hebrew questions correctly to deal damage. Wrong answers mean you take damage!</li>
+          </ul>` }
+      ];
+
+      // Add Bootcamp
+      introSequence.push({ type: "story", title: "🔤 Hebrew Bootcamp", content: "Before you face the monsters, let's learn the Aleph-Bet! Hebrew is read from <b>Right to Left</b>.<br><br>We have prepared a grueling sequence of training and quizzes for every single letter so you are combat-ready!" });
+      
+      HEBREW_LETTERS_DATA.forEach(letter => {
+        introSequence.push({ type: "lesson", letter: letter.l, name: letter.n, sound: letter.s, mnemonic: letter.m });
+        introSequence.push({ type: "practice", letter: letter.l, name: letter.n, sound: letter.s });
+      });
+
+      introSequence.push({ type: "story", title: "🛡️ You are ready!", content: "Your training is complete. Step into the world, equip yourself in town, and defeat the Giant Hamster!" });
+
+      currentIntroIndex = 0;
+      renderIntroSlide();
       document.getElementById('intro-modal').classList.add('active');
     }
 
-    function nextIntroSlide(slideNum) {
-      document.querySelectorAll('.intro-slide').forEach(s => s.classList.remove('active'));
-      document.getElementById(`intro-slide-${slideNum}`).classList.add('active');
+    function renderIntroSlide() {
+      const container = document.getElementById('intro-card-content');
+      container.innerHTML = '';
+      
+      const skipBtn = document.createElement('button');
+      skipBtn.className = 'nav-btn';
+      skipBtn.style = 'position:absolute; top:10px; right:10px; font-size:0.75rem; padding:6px 12px; background:#FED7D7; border-color:#FC8181; color:#9B2C2C; z-index:10;';
+      skipBtn.textContent = 'Skip Intro ⏭️';
+      skipBtn.onclick = closeIntro;
+      container.appendChild(skipBtn);
+
+      const slide = introSequence[currentIntroIndex];
+      const slideDiv = document.createElement('div');
+      slideDiv.className = 'intro-slide-content';
+      slideDiv.style = 'display:flex; flex-direction:column; align-items:center; width:100%;';
+
+      if (slide.type === 'story' || slide.type === 'mechanics') {
+        slideDiv.innerHTML = `<h2 style="color:var(--primary-dark); font-size:2rem; margin: 15px 0;">${slide.title}</h2>
+                              <p style="text-align: left; color:#4A5568; line-height:1.6; font-size:1.1rem; padding: 0 15px;">${slide.content}</p>
+                              <button class="action-btn" onclick="nextSlide()" style="margin-top: 30px; width: 200px;">Next ➡️</button>`;
+      } 
+      else if (slide.type === 'lesson') {
+        slideDiv.innerHTML = `<div style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0; margin-bottom:5px;">COMBAT TRAINING</div>
+                              <h2 style="color:var(--primary-dark); font-size:1.5rem;">The Letter ${slide.name}</h2>
+                              <div style="font-family:'Rubik', sans-serif; font-size:6rem; color:var(--primary); font-weight:bold; margin: 10px 0; line-height: 1;">${slide.letter}</div>
+                              <div style="background:#EDF2F7; padding:15px; border-radius:12px; width:90%; font-size:1.05rem; line-height:1.5;">
+                                <b>Sound:</b> "${slide.sound}"<br><br>
+                                <b>Memory Trick:</b> ${slide.mnemonic}
+                              </div>
+                              <button class="action-btn" onclick="nextSlide()" style="margin-top: 25px; width: 200px;">Got it! ➡️</button>`;
+      }
+      else if (slide.type === 'practice') {
+        slideDiv.innerHTML = `<div style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0; margin-bottom:5px;">POP QUIZ!</div>
+                              <div style="font-family:'Rubik', sans-serif; font-size:4rem; color:#2D3748; font-weight:bold; margin: 10px 0; line-height: 1;">${slide.letter}</div>
+                              <h2 style="font-size:1.3rem; margin-bottom:15px; color:#4A5568;">What sound does this letter make?</h2>
+                              <div class="options-grid" id="practice-options" style="width: 100%; max-width: 400px;"></div>`;
+        
+        container.appendChild(slideDiv);
+
+        // Generate Wrong Options
+        let wrongSounds = HEBREW_LETTERS_DATA.filter(l => l.s !== slide.sound).map(l => l.s);
+        wrongSounds = shuffleArray(wrongSounds).slice(0, 3);
+        let options = shuffleArray([slide.sound, ...wrongSounds]);
+
+        const optsContainer = document.getElementById('practice-options');
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.textContent = opt;
+          btn.onclick = (e) => {
+            if (opt === slide.sound) {
+              sfx.win();
+              e.target.style.backgroundColor = '#48BB78'; e.target.style.color = 'white';
+              setTimeout(nextSlide, 400);
+            } else {
+              sfx.takeDamage();
+              e.target.style.backgroundColor = '#F56565'; e.target.style.color = 'white';
+              e.target.classList.add('bump-anim');
+              setTimeout(() => e.target.classList.remove('bump-anim'), 200);
+            }
+          };
+          optsContainer.appendChild(btn);
+        });
+        return; // Early return since we appended
+      }
+
+      container.appendChild(slideDiv);
+    }
+
+    function nextSlide() {
+      currentIntroIndex++;
+      if (currentIntroIndex >= introSequence.length) {
+        closeIntro();
+      } else {
+        renderIntroSlide();
+      }
     }
 
     function closeIntro() {
@@ -1044,7 +1086,6 @@
       }
     }
 
-    // --- DYNAMIC ENTITY GENERATORS ---
     function setupTownNPCs(zoneLevel) {
       townNPCs = {};
       const trackData = TRAINING_DATA[currentUser.track] || {};
@@ -1071,9 +1112,7 @@
       ];
       shuffleArray(genericTips);
       
-      while(concepts.length < 11) {
-        concepts.push(genericTips.pop() || "Blessings on your journey, hero!");
-      }
+      while(concepts.length < 11) { concepts.push(genericTips.pop() || "Blessings on your journey, hero!"); }
       shuffleArray(concepts);
       
       const emojis = ['🧔', '👩', '👴', '👵', '💂', '🕵️', '👩‍🌾', '👨‍🍳', '🧝', '🥷', '🤴'];
@@ -1105,8 +1144,6 @@
       }
     }
 
-
-    // --- MAP RENDERING ---
     function renderCurrentScreen() {
       if (inCastle) renderCastleMap();
       else if (inTown) renderTownMap();
@@ -1129,26 +1166,18 @@
           const tile = document.createElement('div');
           tile.className = 'tile';
           
-          if (tileType === 'W') {
-            tile.classList.add('water'); tile.innerHTML = '<span class="env-icon">🌊</span>';
-          } else if (tileType === 'M') {
-            tile.classList.add('mountain'); tile.innerHTML = '<span class="env-icon">⛰️</span>';
-          } else if (tileType === '~') {
-            tile.classList.add('swamp'); tile.innerHTML = '<span class="env-icon">🐸</span>';
-          } else if (tileType === '-') {
-            tile.classList.add('bridge'); tile.innerHTML = '<span class="env-icon">🪵</span>';
-          } else {
+          if (tileType === 'W') { tile.classList.add('water'); tile.innerHTML = '<span class="env-icon">🌊</span>'; } 
+          else if (tileType === 'M') { tile.classList.add('mountain'); tile.innerHTML = '<span class="env-icon">⛰️</span>'; } 
+          else if (tileType === '~') { tile.classList.add('swamp'); tile.innerHTML = '<span class="env-icon">🐸</span>'; } 
+          else if (tileType === '-') { tile.classList.add('bridge'); tile.innerHTML = '<span class="env-icon">🪵</span>'; } 
+          else {
             const dist = (globalX - 0) + (11 - y);
             const level = Math.min(12, Math.floor(dist / 4) + 1);
             tile.classList.add(`terrain-${level}`);
             
-            if (tileType === '#') {
-              tile.innerHTML = '<span class="castle-icon">🏰</span>';
-            } else if (tileType === 'T') {
-              tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem; opacity: 1;">🏘️</span>';
-            }
+            if (tileType === '#') { tile.innerHTML = '<span class="castle-icon">🏰</span>'; } 
+            else if (tileType === 'T') { tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem; opacity: 1;">🏘️</span>'; }
           }
-          
           tile.id = `world-cell-${globalX}-${y}`;
           map.appendChild(tile);
         }
@@ -1178,33 +1207,23 @@
           tile.className = 'tile';
           tile.id = `town-cell-${x}-${y}`;
           
-          if (tileType === 'O') {
-            tile.classList.add('stone-wall'); tile.innerHTML = '<span class="env-icon">🧱</span>';
-          } else if (tileType === 'B') {
-            tile.classList.add('town-building'); tile.innerHTML = '<span class="env-icon">🏠</span>';
-          } else if (tileType === 'T') {
-            tile.classList.add('town-tree'); tile.innerHTML = '<span class="env-icon">🌲</span>';
-          } else if (tileType === '+') {
-            tile.classList.add('brick-road'); 
-          } else if (tileType === '$' || tileType === 'S') {
+          if (tileType === 'O') { tile.classList.add('stone-wall'); tile.innerHTML = '<span class="env-icon">🧱</span>'; } 
+          else if (tileType === 'B') { tile.classList.add('town-building'); tile.innerHTML = '<span class="env-icon">🏠</span>'; } 
+          else if (tileType === 'T') { tile.classList.add('town-tree'); tile.innerHTML = '<span class="env-icon">🌲</span>'; } 
+          else if (tileType === '+') { tile.classList.add('brick-road'); } 
+          else if (tileType === '$' || tileType === 'S') {
             tile.classList.add('terrain-2'); 
             tile.innerHTML = tileType === '$' ? '<span class="env-icon" style="font-size:1.6rem;">🧑‍💼</span>' : '<span class="env-icon">🛒</span>';
-          } else if (tileType === 'Z') {
-            tile.classList.add('brick-road'); 
-            tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">🧙‍♂️</span>';
-          } else if (tileType === 'C') { 
-            tile.classList.add('brick-road'); 
-            tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">👩‍🏫</span>';
-          } else if (tileType === 'E') {
-            tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>';
-          } else if (tileType === 'N') {
+          } 
+          else if (tileType === 'Z') { tile.classList.add('brick-road'); tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">🧙‍♂️</span>'; } 
+          else if (tileType === 'C') { tile.classList.add('brick-road'); tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">👩‍🏫</span>'; } 
+          else if (tileType === 'E') { tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>'; } 
+          else if (tileType === 'N') {
             tile.classList.add('terrain-1');
             const npc = townNPCs[`${x},${y}`];
             tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1;">${npc ? npc.emoji : '🧍'}</span>`;
-          } else {
-            tile.classList.add('terrain-1');
-          }
-          
+          } 
+          else { tile.classList.add('terrain-1'); }
           map.appendChild(tile);
         }
       }
@@ -1222,11 +1241,9 @@
           tile.className = 'tile';
           tile.id = `castle-cell-${x}-${y}`;
 
-          if (tileType === 'X') {
-            tile.classList.add('castle-wall');
-          } else if (tileType === 'E') {
-            tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>';
-          } else if (tileType === 'F' || tileType === '.') {
+          if (tileType === 'X') { tile.classList.add('castle-wall'); } 
+          else if (tileType === 'E') { tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>'; } 
+          else if (tileType === 'F' || tileType === '.') {
             tile.classList.add('castle-floor');
             if (castleMonsters[`${x},${y}`]) {
               const m = castleMonsters[`${x},${y}`];
@@ -1305,10 +1322,7 @@
         if (lesson) {
           const btn = document.createElement('button');
           btn.className = 'lesson-btn';
-          btn.innerHTML = `
-            <span class="lesson-title">Zone ${i}: ${lesson.title}</span>
-            <span class="lesson-desc">${lesson.desc}</span>
-          `;
+          btn.innerHTML = `<span class="lesson-title">Zone ${i}: ${lesson.title}</span><span class="lesson-desc">${lesson.desc}</span>`;
           btn.onclick = () => showTeacherLesson(i);
           container.appendChild(btn);
         }
@@ -1331,12 +1345,7 @@
       lesson.items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'training-card';
-        card.innerHTML = `
-          <div class="training-hebrew">${item[0]}</div>
-          <div class="training-name">${item[1]}</div>
-          <div class="training-desc">${item[2]}</div>
-          <button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>
-        `;
+        card.innerHTML = `<div class="training-hebrew">${item[0]}</div><div class="training-name">${item[1]}</div><div class="training-desc">${item[2]}</div><button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>`;
         grid.appendChild(card);
       });
     }
@@ -1366,10 +1375,7 @@
         const lesson = trackData[i] || DEFAULT_TRAINING;
         const btn = document.createElement('button');
         btn.className = 'lesson-btn';
-        btn.innerHTML = `
-          <span class="lesson-title">Zone Level ${i}: ${lesson.title}</span>
-          <span class="lesson-desc">${lesson.desc}</span>
-        `;
+        btn.innerHTML = `<span class="lesson-title">Zone Level ${i}: ${lesson.title}</span><span class="lesson-desc">${lesson.desc}</span>`;
         btn.onclick = () => openLesson(i);
         container.appendChild(btn);
       }
@@ -1391,19 +1397,12 @@
       lesson.items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'training-card';
-        card.innerHTML = `
-          <div class="training-hebrew">${item[0]}</div>
-          <div class="training-name">${item[1]}</div>
-          <div class="training-desc">${item[2]}</div>
-          <button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>
-        `;
+        card.innerHTML = `<div class="training-hebrew">${item[0]}</div><div class="training-name">${item[1]}</div><div class="training-desc">${item[2]}</div><button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>`;
         grid.appendChild(card);
       });
     }
 
-    function backToLessonList() {
-      renderLessonList();
-    }
+    function backToLessonList() { renderLessonList(); }
 
 
     // --- MOVEMENT & ENCOUNTERS ---
@@ -1411,7 +1410,6 @@
       if (inBattle || document.querySelector('.modal-overlay.active')) return;
       if (!currentUser) return;
 
-      // CASTLE MAZE MOVEMENT
       if (inCastle) {
         let nx = currentUser.castleX + dx;
         let ny = currentUser.castleY + dy;
@@ -1426,17 +1424,11 @@
             return;
           }
           if (tile === 'E') {
-            sfx.step();
-            inCastle = false;
-            renderCurrentScreen();
-            updateUI();
-            return;
+            sfx.step(); inCastle = false; renderCurrentScreen(); updateUI(); return;
           }
 
           if (castleMonsters[`${nx},${ny}`]) {
             const m = castleMonsters[`${nx},${ny}`];
-            
-            // BOSS SEAL MECHANIC
             if (m.isBoss) {
               const remainingMinions = Object.values(castleMonsters).filter(enemy => !enemy.isBoss).length;
               if (remainingMinions > 0) {
@@ -1448,23 +1440,19 @@
               }
             }
 
-            currentUser.castleX = nx;
-            currentUser.castleY = ny;
+            currentUser.castleX = nx; currentUser.castleY = ny;
             activeCastleEnemyKey = `${nx},${ny}`;
             positionPlayerOnMap();
             triggerEncounter(m.isBoss, m.level);
             return;
           }
 
-          currentUser.castleX = nx;
-          currentUser.castleY = ny;
-          sfx.step();
-          positionPlayerOnMap();
+          currentUser.castleX = nx; currentUser.castleY = ny;
+          sfx.step(); positionPlayerOnMap();
         }
         return;
       }
 
-      // TOWN MOVEMENT
       if (inTown) {
         let nx = currentUser.townX + dx;
         let ny = currentUser.townY + dy;
@@ -1488,22 +1476,15 @@
             return;
           }
           if (tile === 'E') {
-            sfx.step();
-            inTown = false;
-            renderCurrentScreen();
-            updateUI();
-            return;
+            sfx.step(); inTown = false; renderCurrentScreen(); updateUI(); return;
           }
           
-          currentUser.townX = nx;
-          currentUser.townY = ny;
-          sfx.step();
-          positionPlayerOnMap();
+          currentUser.townX = nx; currentUser.townY = ny;
+          sfx.step(); positionPlayerOnMap();
         }
         return;
       }
 
-      // WORLD MAP MOVEMENT
       let nx = currentUser.x + dx;
       let ny = currentUser.y + dy;
       
@@ -1520,37 +1501,21 @@
 
         const oldSection = Math.floor(currentUser.x / 12);
         
-        currentUser.x = nx;
-        currentUser.y = ny;
-        sfx.step();
-        saveDB();
+        currentUser.x = nx; currentUser.y = ny;
+        sfx.step(); saveDB();
         
         const newSection = Math.floor(currentUser.x / 12);
-        
-        if (oldSection !== newSection) renderCurrentScreen(); 
-        else positionPlayerOnMap();
-        
+        if (oldSection !== newSection) renderCurrentScreen(); else positionPlayerOnMap();
         updateUI();
         
         if (tileType === 'T') {
-          sfx.heal();
-          inTown = true;
-          currentUser.townX = 5; 
-          currentUser.townY = 10;
-          setupTownNPCs(getCurrentZoneLevel());
-          renderCurrentScreen();
-          return; 
+          sfx.heal(); inTown = true; currentUser.townX = 5; currentUser.townY = 10;
+          setupTownNPCs(getCurrentZoneLevel()); renderCurrentScreen(); return; 
         }
         
         if (tileType === '#') {
-          sfx.step();
-          inCastle = true;
-          currentUser.castleX = 9; // Safe floor tile in bottom row
-          currentUser.castleY = 11;
-          setupCastle();
-          renderCurrentScreen();
-          updateUI();
-          return;
+          sfx.step(); inCastle = true; currentUser.castleX = 8; currentUser.castleY = 11;
+          setupCastle(); renderCurrentScreen(); updateUI(); return;
         } 
         
         if (tileType !== '-' && tileType !== '~' && (currentUser.x !== 0 || currentUser.y !== 11) && Math.random() < 0.35) {
@@ -1570,45 +1535,33 @@
     });
 
 
-    // --- WIZARD QUIZ LOGIC ---
+    // --- BATTLE LOGIC ---
     function triggerWizardQuiz() {
-      showConfirm("Greetings, traveler! I am the Town Wizard.\n\nWould you care for a harmless quiz? If you get 5 or 10 right in a row, I will reward you!", 
-      () => {
-        inWizardQuiz = true; 
-        inBattle = true;
-        wizardStreak = 0;
-        
+      showConfirm("Greetings, traveler! I am the Town Wizard.\n\nWould you care for a harmless quiz? If you get 5 or 10 right in a row, I will reward you!", () => {
+        inWizardQuiz = true; inBattle = true; wizardStreak = 0;
         currentEnemyLevel = getCurrentZoneLevel(); 
         document.getElementById('combat-zone-label').textContent = "THE WIZARD'S CHALLENGE";
         document.getElementById('boss-name').textContent = "Wizard Master";
         document.getElementById('boss-avatar-icon').textContent = "🧙‍♂️";
         document.getElementById('boss-hp-bar-container').style.display = 'none';
-        
         loadNextBattleQuestion();
         document.getElementById('battle-modal').classList.add('active');
-      }, 
-      null);
+      }, null);
     }
 
     function triggerEncounter(isBoss, overrideLevel = null) {
-      inWizardQuiz = false; 
-      inBattle = true;
-      sfx.encounter();
-      
+      inWizardQuiz = false; inBattle = true; sfx.encounter();
       currentEnemyLevel = overrideLevel !== null ? overrideLevel : getCurrentZoneLevel();
       const enemyDef = ENEMY_TYPES[currentEnemyLevel] || ENEMY_TYPES[1];
-      
       currentEnemyMaxHP = Math.ceil(currentEnemyLevel / 3);
       currentEnemyHP = currentEnemyMaxHP;
       
       let label = isBoss ? "FINAL BOSS" : (inCastle ? "CASTLE DEFENDER" : `Danger Zone: Level ${currentEnemyLevel}`);
-      
       document.getElementById('combat-zone-label').textContent = label;
       document.getElementById('boss-name').textContent = isBoss ? "Giant Hamster" : `Lvl ${currentEnemyLevel} ${enemyDef.name}`;
       document.getElementById('boss-avatar-icon').textContent = enemyDef.icon;
       document.getElementById('boss-hp-bar-container').style.display = 'block';
       updateEnemyHPBar();
-      
       loadNextBattleQuestion();
       document.getElementById('battle-modal').classList.add('active');
     }
@@ -1617,38 +1570,26 @@
       let lvlData = gameQuestions.find(l => l.level === currentEnemyLevel);
       if (!lvlData) lvlData = gameQuestions[gameQuestions.length - 1]; 
       
-      if (!lvlData || !lvlData.questions || lvlData.questions.length === 0) {
-        showAlert("Error loading questions!", () => { endBattle(); }); 
-        return;
-      }
+      if (!lvlData || !lvlData.questions || lvlData.questions.length === 0) { showAlert("Error loading questions!", () => { endBattle(); }); return; }
       
-      let newQuestion;
-      let attempts = 0;
-      do {
-        newQuestion = lvlData.questions[Math.floor(Math.random() * lvlData.questions.length)];
-        attempts++;
-      } while (newQuestion === activeQuestion && lvlData.questions.length > 1 && attempts < 10);
-      
+      let newQuestion; let attempts = 0;
+      do { newQuestion = lvlData.questions[Math.floor(Math.random() * lvlData.questions.length)]; attempts++; } 
+      while (newQuestion === activeQuestion && lvlData.questions.length > 1 && attempts < 10);
       activeQuestion = newQuestion;
       
       document.getElementById('q-prompt').textContent = activeQuestion.q;
       const hasHebrew = /[\u0590-\u05FF]/.test(activeQuestion.q);
       const hebrewElem = document.getElementById('q-hebrew');
       if (hasHebrew) {
-        hebrewElem.textContent = activeQuestion.q.match(/[\u0590-\u05FF]+/)?.[0] || '';
-        hebrewElem.style.display = 'block';
+        hebrewElem.textContent = activeQuestion.q.match(/[\u0590-\u05FF]+/)?.[0] || ''; hebrewElem.style.display = 'block';
       } else { hebrewElem.style.display = 'none'; }
 
-      const container = document.getElementById('options-container');
-      container.innerHTML = '';
+      const container = document.getElementById('options-container'); container.innerHTML = '';
       const randomizedOptions = shuffleArray(activeQuestion.opts);
 
       randomizedOptions.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.textContent = opt;
-        btn.onclick = () => processAnswer(opt);
-        container.appendChild(btn);
+        const btn = document.createElement('button'); btn.className = 'option-btn'; btn.textContent = opt;
+        btn.onclick = () => processAnswer(opt); container.appendChild(btn);
       });
     }
 
@@ -1657,360 +1598,189 @@
       
       buttons.forEach(b => {
         b.disabled = true; 
-        if (b.textContent === activeQuestion.a) {
-          b.style.backgroundColor = '#48BB78'; // Green
-          b.style.borderColor = '#2F855A';
-          b.style.color = 'white';
-        } else if (b.textContent === selected) {
-          b.style.backgroundColor = '#F56565'; // Red
-          b.style.borderColor = '#C53030';
-          b.style.color = 'white';
-        } else {
-          b.style.opacity = '0.5';
-        }
+        if (b.textContent === activeQuestion.a) { b.style.backgroundColor = '#48BB78'; b.style.borderColor = '#2F855A'; b.style.color = 'white'; } 
+        else if (b.textContent === selected) { b.style.backgroundColor = '#F56565'; b.style.borderColor = '#C53030'; b.style.color = 'white'; } 
+        else { b.style.opacity = '0.5'; }
       });
 
       setTimeout(() => {
         if (inWizardQuiz) {
           if (selected === activeQuestion.a) {
-            sfx.win();
-            wizardStreak++;
-            let msg = `Correct! That's ${wizardStreak} in a row.`;
-            let rewardMsg = "";
-            
+            sfx.win(); wizardStreak++;
+            let msg = `Correct! That's ${wizardStreak} in a row.`; let rewardMsg = "";
             if (wizardStreak === 5) {
-              if (Math.random() < 0.5) {
-                currentUser.coins += 50; rewardMsg = "\n\n🎁 You earned 50 coins!";
-              } else {
-                currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; rewardMsg = "\n\n🎁 You earned a Medicine!";
-              }
+              if (Math.random() < 0.5) { currentUser.coins += 50; rewardMsg = "\n\n🎁 You earned 50 coins!"; } else { currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; rewardMsg = "\n\n🎁 You earned a Medicine!"; }
               saveDB(); updateUI();
             } else if (wizardStreak === 10) {
-              if (Math.random() < 0.5) {
-                currentUser.coins += 150; rewardMsg = "\n\n💎 Amazing! You earned 150 coins!";
-              } else {
-                currentUser.consumables['i3'] = (currentUser.consumables['i3'] || 0) + 1; rewardMsg = "\n\n💎 Amazing! You earned an Elixir!";
-              }
+              if (Math.random() < 0.5) { currentUser.coins += 150; rewardMsg = "\n\n💎 Amazing! You earned 150 coins!"; } else { currentUser.consumables['i3'] = (currentUser.consumables['i3'] || 0) + 1; rewardMsg = "\n\n💎 Amazing! You earned an Elixir!"; }
               saveDB(); updateUI();
             }
-            
-            showConfirm(msg + rewardMsg + "\n\nShall we continue the quiz?", () => {
-              loadNextBattleQuestion();
-            }, () => {
-              endBattle();
-            });
+            showConfirm(msg + rewardMsg + "\n\nShall we continue the quiz?", () => { loadNextBattleQuestion(); }, () => { endBattle(); });
           } else {
-            sfx.bump();
-            wizardStreak = 0;
-            showConfirm(`Not quite! Your streak has reset. Shall we try again?`, () => {
-              loadNextBattleQuestion();
-            }, () => {
-              endBattle();
-            });
+            sfx.bump(); wizardStreak = 0; showConfirm(`Not quite! Your streak has reset. Shall we try again?`, () => { loadNextBattleQuestion(); }, () => { endBattle(); });
           }
           return;
         }
 
         if (selected === activeQuestion.a) {
-          sfx.hitEnemy();
-          const pDmg = getPlayerDamage();
-          currentEnemyHP -= pDmg;
-          showFloatText(`-${pDmg}`, 'dmg-text');
-          updateEnemyHPBar();
+          sfx.hitEnemy(); const pDmg = getPlayerDamage(); currentEnemyHP -= pDmg; showFloatText(`-${pDmg}`, 'dmg-text'); updateEnemyHPBar();
 
           if (currentEnemyHP <= 0) {
             setTimeout(() => {
-              const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5);
-              currentUser.coins += goldEarned;
-              
+              const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5); currentUser.coins += goldEarned;
               let victoryMsg = `🎉 Victory! Earned ${goldEarned} coins.`;
-              if (Math.random() < 0.25) {
-                currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1;
-                victoryMsg = `🎉 Victory! +${goldEarned} coins.\n\n🧪 The enemy dropped Medicine! Check your Backpack.`;
-              }
+              if (Math.random() < 0.25) { currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; victoryMsg = `🎉 Victory! +${goldEarned} coins.\n\n🧪 The enemy dropped Medicine! Check your Backpack.`; }
               
-              // GIANT HAMSTER DEFEATED -> FULL VICTORY SEQUENCE
               if (inCastle && currentEnemyLevel === 12 && activeCastleEnemyKey && castleMonsters[activeCastleEnemyKey] && castleMonsters[activeCastleEnemyKey].isBoss) {
                   triggerVictorySequence();
               } else {
                   sfx.win();
                   showAlert(victoryMsg, () => {
-                    if (inCastle && activeCastleEnemyKey) {
-                      delete castleMonsters[activeCastleEnemyKey];
-                      activeCastleEnemyKey = null;
-                      renderCurrentScreen(); 
-                    }
+                    if (inCastle && activeCastleEnemyKey) { delete castleMonsters[activeCastleEnemyKey]; activeCastleEnemyKey = null; renderCurrentScreen(); }
                     endBattle();
                   });
               }
             }, 300);
-          } else {
-            loadNextBattleQuestion();
-          }
+          } else { loadNextBattleQuestion(); }
         } else {
-          sfx.takeDamage();
-          const eDmg = currentEnemyLevel * 2;
-          const pDef = getPlayerDefense();
-          const dmgTaken = Math.max(1, eDmg - pDef); 
-          
-          currentUser.hp -= dmgTaken;
-          updateUI();
-          showFloatText(`-${dmgTaken}`, 'dmg-text');
-          
+          sfx.takeDamage(); const eDmg = currentEnemyLevel * 2; const pDef = getPlayerDefense(); const dmgTaken = Math.max(1, eDmg - pDef); 
+          currentUser.hp -= dmgTaken; updateUI(); showFloatText(`-${dmgTaken}`, 'dmg-text');
           showAlert(`❌ Incorrect!\n\nThe enemy strikes back for ${dmgTaken} damage.`, () => {
             if (currentUser.hp <= 0) {
               showAlert("💀 YOU HAVE FALLEN IN BATTLE.\nYour journey restarts at the village.", () => {
-                currentUser.hp = currentUser.maxHp;
-                currentUser.x = 0; currentUser.y = 11;
-                inCastle = false;
-                activeCastleEnemyKey = null;
-                renderCurrentScreen();
-                updateUI();
-                endBattle();
+                currentUser.hp = currentUser.maxHp; currentUser.x = 0; currentUser.y = 11; inCastle = false; activeCastleEnemyKey = null; renderCurrentScreen(); updateUI(); endBattle();
               });
-            } else {
-              loadNextBattleQuestion();
-            }
+            } else { loadNextBattleQuestion(); }
           });
         }
       }, 1200);
     }
     
-    // --- Victory Wrap-up ---
     function triggerVictorySequence() {
-      endBattle();
-      sfx.victoryFanfare();
-      
-      // Cascading Confetti
-      var duration = 4000;
-      var end = Date.now() + duration;
+      endBattle(); sfx.victoryFanfare();
+      var duration = 4000; var end = Date.now() + duration;
       (function frame() {
-        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
-        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } }); confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
         if (Date.now() < end) { requestAnimationFrame(frame); }
       }());
       
-      document.getElementById('victory-story-text').innerHTML = 
-        `You did it, <b>${currentUser.name}</b>!<br><br>` + 
-        `With the Giant Hamster defeated, his minions have scattered. ` + 
-        `The trampled crops are regrowing, housing costs have miraculously stabilized, ` + 
-        `and the villagers can safely rebuild their homes without fear of giant footprints!<br><br>` +
-        `You are a true hero to the realm.`;
-        
+      document.getElementById('victory-story-text').innerHTML = `You did it, <b>${currentUser.name}</b>!<br><br>With the Giant Hamster defeated, his minions have scattered. The trampled crops are regrowing, housing costs have miraculously stabilized, and the villagers can safely rebuild their homes without fear of giant footprints!<br><br>You are a true hero to the realm.`;
       document.getElementById('victory-modal').classList.add('active');
     }
 
     function closeVictory() {
       document.getElementById('victory-modal').classList.remove('active');
-      currentUser.x = 0; currentUser.y = 11;
-      inCastle = false;
-      activeCastleEnemyKey = null;
-      renderCurrentScreen();
-      updateUI();
-      if(sfx.musicOn) sfx.startBGM(); // Restart standard map music
+      currentUser.x = 0; currentUser.y = 11; inCastle = false; activeCastleEnemyKey = null; renderCurrentScreen(); updateUI();
+      if(sfx.musicOn) sfx.startBGM(); 
     }
 
-    function updateEnemyHPBar() {
-      const pct = Math.max(0, (currentEnemyHP / currentEnemyMaxHP) * 100);
-      document.getElementById('boss-hp-fill').style.width = `${pct}%`;
-    }
-
-    function endBattle() {
-      inBattle = false;
-      inWizardQuiz = false;
-      document.getElementById('battle-modal').classList.remove('active');
-      saveDB(); updateUI();
-    }
+    function updateEnemyHPBar() { const pct = Math.max(0, (currentEnemyHP / currentEnemyMaxHP) * 100); document.getElementById('boss-hp-fill').style.width = `${pct}%`; }
+    function endBattle() { inBattle = false; inWizardQuiz = false; document.getElementById('battle-modal').classList.remove('active'); saveDB(); updateUI(); }
     
     function showFloatText(text, cssClass) {
-      const popup = document.createElement('div');
-      popup.className = `combat-popup ${cssClass}`;
-      popup.textContent = text;
-      document.getElementById('battle-modal').appendChild(popup);
-      setTimeout(() => popup.remove(), 1500);
+      const popup = document.createElement('div'); popup.className = `combat-popup ${cssClass}`; popup.textContent = text;
+      document.getElementById('battle-modal').appendChild(popup); setTimeout(() => popup.remove(), 1500);
     }
 
     function speakCurrentQuestion() {
       if ('speechSynthesis' in window && activeQuestion) {
         window.speechSynthesis.cancel();
-        const utt = new SpeechSynthesisUtterance(activeQuestion.a || activeQuestion.q);
-        utt.lang = 'he-IL'; utt.rate = 0.85; window.speechSynthesis.speak(utt);
+        const utt = new SpeechSynthesisUtterance(activeQuestion.a || activeQuestion.q); utt.lang = 'he-IL'; utt.rate = 0.85; window.speechSynthesis.speak(utt);
       }
     }
 
     // --- Profile UI ---
     function openProfile() {
       if (!currentUser) return;
-      const pDmg = getPlayerDamage();
-      const pDef = getPlayerDefense();
-      
+      const pDmg = getPlayerDamage(); const pDef = getPlayerDefense();
       document.getElementById('profile-name-display-modal').innerHTML = `${currentUser.avatar} ${currentUser.name}`;
-      document.getElementById('profile-stats-detailed').innerHTML = 
-        `❤️ HP: ${currentUser.hp}/${currentUser.maxHp} &nbsp;|&nbsp; ⚔️ Attack: ${pDmg} &nbsp;|&nbsp; 🛡️ Defense: ${pDef}<br>
-        <span style="font-size:0.8rem; color:#718096; font-weight:normal;">Weapons deal more damage per correct answer. Armor reduces damage taken on mistakes.</span>`;
+      document.getElementById('profile-stats-detailed').innerHTML = `❤️ HP: ${currentUser.hp}/${currentUser.maxHp} &nbsp;|&nbsp; ⚔️ Attack: ${pDmg} &nbsp;|&nbsp; 🛡️ Defense: ${pDef}<br><span style="font-size:0.8rem; color:#718096; font-weight:normal;">Weapons deal more damage per correct answer. Armor reduces damage taken on mistakes.</span>`;
       
-      const wSlot = document.getElementById('equip-slot-weapon');
-      const aSlot = document.getElementById('equip-slot-armor');
-      if (currentUser.equippedWeapon) {
-        const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon);
-        wSlot.innerHTML = `<div class="slot-icon">${w.icon}</div><div style="color:var(--primary-dark)">${w.name}</div>`;
-      } else wSlot.innerHTML = `<div class="slot-icon" style="opacity:0.3">🗡️</div><div>No Weapon</div>`;
+      const wSlot = document.getElementById('equip-slot-weapon'); const aSlot = document.getElementById('equip-slot-armor');
+      if (currentUser.equippedWeapon) { const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon); wSlot.innerHTML = `<div class="slot-icon">${w.icon}</div><div style="color:var(--primary-dark)">${w.name}</div>`; } else wSlot.innerHTML = `<div class="slot-icon" style="opacity:0.3">🗡️</div><div>No Weapon</div>`;
+      if (currentUser.equippedArmor) { const a = SHOP_ITEMS.armor.find(x => x.id === currentUser.equippedArmor); aSlot.innerHTML = `<div class="slot-icon">${a.icon}</div><div style="color:var(--primary-dark)">${a.name}</div>`; } else aSlot.innerHTML = `<div class="slot-icon" style="opacity:0.3">🛡️</div><div>No Armor</div>`;
 
-      if (currentUser.equippedArmor) {
-        const a = SHOP_ITEMS.armor.find(x => x.id === currentUser.equippedArmor);
-        aSlot.innerHTML = `<div class="slot-icon">${a.icon}</div><div style="color:var(--primary-dark)">${a.name}</div>`;
-      } else aSlot.innerHTML = `<div class="slot-icon" style="opacity:0.3">🛡️</div><div>No Armor</div>`;
-
-      const grid = document.getElementById('inventory-grid');
-      grid.innerHTML = '';
-      if (!currentUser.inventory || currentUser.inventory.length === 0) {
-        grid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">Your inventory is empty.</span>';
-      } else {
+      const grid = document.getElementById('inventory-grid'); grid.innerHTML = '';
+      if (!currentUser.inventory || currentUser.inventory.length === 0) { grid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">Your inventory is empty.</span>'; } 
+      else {
         currentUser.inventory.forEach(itemId => {
-          const isWeapon = SHOP_ITEMS.weapons.find(i => i.id === itemId);
-          const isArmor = SHOP_ITEMS.armor.find(i => i.id === itemId);
-          const item = isWeapon || isArmor;
-          const type = isWeapon ? 'weapon' : 'armor';
-          const isEquipped = (currentUser.equippedWeapon === item.id || currentUser.equippedArmor === item.id);
-          
-          const card = document.createElement('div');
-          card.className = `item-card ${isEquipped ? 'equipped' : ''}`;
+          const isWeapon = SHOP_ITEMS.weapons.find(i => i.id === itemId); const isArmor = SHOP_ITEMS.armor.find(i => i.id === itemId); const item = isWeapon || isArmor;
+          const type = isWeapon ? 'weapon' : 'armor'; const isEquipped = (currentUser.equippedWeapon === item.id || currentUser.equippedArmor === item.id);
+          const card = document.createElement('div'); card.className = `item-card ${isEquipped ? 'equipped' : ''}`;
           card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span><span style="font-size:0.8rem; font-weight:700; text-align:center;">${item.name}</span><span style="font-size:0.7rem; color:var(--success);">${isEquipped ? 'Equipped' : 'Equip'}</span>`;
-          
           card.onclick = () => {
-            if (isEquipped) {
-              if(type === 'weapon') currentUser.equippedWeapon = null;
-              if(type === 'armor') currentUser.equippedArmor = null;
-            } else {
-              if(type === 'weapon') currentUser.equippedWeapon = item.id;
-              if(type === 'armor') currentUser.equippedArmor = item.id;
-            }
+            if (isEquipped) { if(type === 'weapon') currentUser.equippedWeapon = null; if(type === 'armor') currentUser.equippedArmor = null; } 
+            else { if(type === 'weapon') currentUser.equippedWeapon = item.id; if(type === 'armor') currentUser.equippedArmor = item.id; }
             saveDB(); positionPlayerOnMap(); updateUI(); openProfile();
           };
           grid.appendChild(card);
         });
       }
 
-      const consGrid = document.getElementById('consumables-grid');
-      consGrid.innerHTML = '';
-      
-      let hasItems = false;
+      const consGrid = document.getElementById('consumables-grid'); consGrid.innerHTML = ''; let hasItems = false;
       Object.keys(currentUser.consumables).forEach(itemId => {
         const count = currentUser.consumables[itemId];
         if (count > 0) {
-          hasItems = true;
-          const item = SHOP_ITEMS.items.find(i => i.id === itemId);
-          const card = document.createElement('div');
-          card.className = 'item-card';
-          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span>
-                            <span style="font-size:0.8rem; font-weight:700; text-align:center;">${item.name}</span>
-                            <span style="font-size:0.7rem; font-weight:bold; color:var(--primary);">x${count}</span>
-                            <span style="font-size:0.7rem; color:var(--success);">USE</span>`;
-          
+          hasItems = true; const item = SHOP_ITEMS.items.find(i => i.id === itemId);
+          const card = document.createElement('div'); card.className = 'item-card';
+          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span><span style="font-size:0.8rem; font-weight:700; text-align:center;">${item.name}</span><span style="font-size:0.7rem; font-weight:bold; color:var(--primary);">x${count}</span><span style="font-size:0.7rem; color:var(--success);">USE</span>`;
           card.onclick = () => {
-            if (currentUser.hp >= currentUser.maxHp) {
-              showAlert("Your HP is already full!"); return;
-            }
-            currentUser.hp = Math.min(currentUser.maxHp, currentUser.hp + item.heal);
-            currentUser.consumables[itemId]--;
-            sfx.heal();
-            saveDB();
-            updateUI();
-            openProfile();
+            if (currentUser.hp >= currentUser.maxHp) { showAlert("Your HP is already full!"); return; }
+            currentUser.hp = Math.min(currentUser.maxHp, currentUser.hp + item.heal); currentUser.consumables[itemId]--; sfx.heal(); saveDB(); updateUI(); openProfile();
           };
           consGrid.appendChild(card);
         }
       });
-
-      if (!hasItems) {
-        consGrid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">No items. Buy medicine in a Town shop!</span>';
-      }
-
+      if (!hasItems) { consGrid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">No items. Buy medicine in a Town shop!</span>'; }
       document.getElementById('profile-modal').classList.add('active');
     }
 
     // --- Town Shop UI ---
-    function openShop() {
-      if(!currentUser || !inTown) return;
-      renderShop('items');
-      document.getElementById('shop-modal').classList.add('active');
-    }
-
+    function openShop() { if(!currentUser || !inTown) return; renderShop('items'); document.getElementById('shop-modal').classList.add('active'); }
     function renderShop(category) {
       ['avatars', 'weapons', 'armor', 'items'].forEach(t => document.getElementById(`tab-${t}`).classList.toggle('active', t === category));
-      const container = document.getElementById('shop-items-container');
-      container.innerHTML = '';
+      const container = document.getElementById('shop-items-container'); container.innerHTML = '';
 
       if (category === 'avatars') {
         AVATARS.forEach(av => {
-          const isUnlocked = currentUser.unlockedAvatars.includes(av.icon);
-          const isEquipped = currentUser.avatar === av.icon;
-          const card = document.createElement('div');
-          card.className = `item-card ${isEquipped ? 'equipped' : (isUnlocked ? 'owned' : '')}`;
+          const isUnlocked = currentUser.unlockedAvatars.includes(av.icon); const isEquipped = currentUser.avatar === av.icon;
+          const card = document.createElement('div'); card.className = `item-card ${isEquipped ? 'equipped' : (isUnlocked ? 'owned' : '')}`;
           card.innerHTML = `<span style="font-size:2rem;">${av.icon}</span><span style="font-size:0.85rem; font-weight:700;">${isEquipped ? 'Equipped' : (isUnlocked ? 'Owned' : `🪙 ${av.price}`)}</span>`;
-          card.onclick = () => handleBuyAvatar(av);
-          container.appendChild(card);
+          card.onclick = () => handleBuyAvatar(av); container.appendChild(card);
         });
       } else {
         SHOP_ITEMS[category].forEach(item => {
-          let isOwned = false;
-          let countText = '';
-          let actionText = `🪙 ${item.price}`;
-
+          let isOwned = false; let countText = ''; let actionText = `🪙 ${item.price}`;
           if (category === 'items') {
-             const count = currentUser.consumables[item.id] || 0;
-             if (count > 0) countText = `<span style="color:var(--success); font-weight:bold;">Owned: ${count}</span>`;
+             const count = currentUser.consumables[item.id] || 0; if (count > 0) countText = `<span style="color:var(--success); font-weight:bold;">Owned: ${count}</span>`;
           } else {
-             isOwned = currentUser.inventory.includes(item.id);
-             if (isOwned) actionText = 'Owned';
+             isOwned = currentUser.inventory.includes(item.id); if (isOwned) actionText = 'Owned';
           }
-
-          const card = document.createElement('div');
-          card.className = `item-card ${isOwned ? 'owned' : ''}`;
-          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span>
-                            <strong style="font-size:0.8rem; text-align:center;">${item.name}</strong>
-                            <span style="font-size:0.7rem; color:#718096;">${item.desc}</span>
-                            <span style="font-size:0.85rem; font-weight:700; margin-top:4px;">${actionText}</span>
-                            ${countText}`;
-          card.onclick = () => handleBuyItem(item, category);
-          container.appendChild(card);
+          const card = document.createElement('div'); card.className = `item-card ${isOwned ? 'owned' : ''}`;
+          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span><strong style="font-size:0.8rem; text-align:center;">${item.name}</strong><span style="font-size:0.7rem; color:#718096;">${item.desc}</span><span style="font-size:0.85rem; font-weight:700; margin-top:4px;">${actionText}</span>${countText}`;
+          card.onclick = () => handleBuyItem(item, category); container.appendChild(card);
         });
       }
     }
 
     function handleBuyAvatar(av) {
-      if (currentUser.unlockedAvatars.includes(av.icon)) {
-        currentUser.avatar = av.icon; saveDB(); positionPlayerOnMap(); updateUI(); renderShop('avatars');
-      } else if (currentUser.coins >= av.price) {
-        currentUser.coins -= av.price; currentUser.unlockedAvatars.push(av.icon); currentUser.avatar = av.icon;
-        saveDB(); positionPlayerOnMap(); updateUI(); renderShop('avatars');
-      } else showAlert('Not enough coins!');
+      if (currentUser.unlockedAvatars.includes(av.icon)) { currentUser.avatar = av.icon; saveDB(); positionPlayerOnMap(); updateUI(); renderShop('avatars'); } 
+      else if (currentUser.coins >= av.price) { currentUser.coins -= av.price; currentUser.unlockedAvatars.push(av.icon); currentUser.avatar = av.icon; saveDB(); positionPlayerOnMap(); updateUI(); renderShop('avatars'); } 
+      else showAlert('Not enough coins!');
     }
 
     function handleBuyItem(item, category) {
       if (category === 'items') {
-        if (currentUser.coins >= item.price) {
-          currentUser.coins -= item.price;
-          currentUser.consumables[item.id] = (currentUser.consumables[item.id] || 0) + 1;
-          sfx.heal(); 
-          saveDB(); updateUI(); renderShop(category);
-        } else {
-          showAlert('Not enough coins!');
-        }
+        if (currentUser.coins >= item.price) { currentUser.coins -= item.price; currentUser.consumables[item.id] = (currentUser.consumables[item.id] || 0) + 1; sfx.heal(); saveDB(); updateUI(); renderShop(category); } 
+        else { showAlert('Not enough coins!'); }
       } else {
         if (currentUser.inventory.includes(item.id)) showAlert("Already owned! Check Profile to equip.");
-        else if (currentUser.coins >= item.price) {
-          currentUser.coins -= item.price; currentUser.inventory.push(item.id);
-          saveDB(); updateUI(); renderShop(category); showAlert(`Purchased ${item.name}!`);
-        } else showAlert('Not enough coins!');
+        else if (currentUser.coins >= item.price) { currentUser.coins -= item.price; currentUser.inventory.push(item.id); saveDB(); updateUI(); renderShop(category); showAlert(`Purchased ${item.name}!`); } 
+        else showAlert('Not enough coins!');
       }
     }
 
-    function closeModal(id) {
-      if (id === 'login-modal' && !currentUser) return;
-      document.getElementById(id).classList.remove('active');
-    }
-
+    function closeModal(id) { if (id === 'login-modal' && !currentUser) return; document.getElementById(id).classList.remove('active'); }
     document.addEventListener('DOMContentLoaded', initAuth);
   </script>
 </body>
