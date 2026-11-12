@@ -47,6 +47,7 @@
     .stat-badge.coins { background: #FEFCBF; color: #744210; }
     .stat-badge.hp { background: #FED7D7; color: #9B2C2C; }
     .stat-badge.lvl { background: #E9D8FD; color: #553C9A; }
+    .stat-badge.xp { background: #C6F6D5; color: #22543D; }
 
     /* --- HERO SHOWCASE BANNER --- */
     .hero-showcase {
@@ -280,8 +281,9 @@
     <div class="hero-details">
       <div class="hero-name" id="hero-display-name">Player Name</div>
       <div class="hero-title" id="hero-display-title" style="margin-top:2px;">Beginner Track</div>
-      <div style="display:flex; gap:10px; margin-top:8px; flex-wrap:wrap;">
+      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
         <div class="stat-badge lvl" id="top-lvl-display">⭐ Lvl 1</div>
+        <div class="stat-badge xp" id="top-xp-display">📈 0 XP</div>
         <div class="stat-badge hp" id="top-hp-display">❤️ 50/50</div>
         <div class="stat-badge coins" id="top-coin-display">🪙 0</div>
       </div>
@@ -1202,6 +1204,7 @@
       if (!currentUser) return;
       document.getElementById('hero-showcase').style.display = 'flex';
       document.getElementById('top-lvl-display').textContent = `⭐ Lvl ${currentUser.level || 1}`;
+      document.getElementById('top-xp-display').textContent = `📈 ${currentUser.xp || 0} XP`;
       document.getElementById('top-hp-display').textContent = `❤️ ${currentUser.hp}/${currentUser.maxHp}`;
       document.getElementById('top-coin-display').textContent = `🪙 ${currentUser.coins}`;
       
