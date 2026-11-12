@@ -888,6 +888,24 @@
       { l: "ת", n: "Tav", s: "T", m: "A foot with the Toe pointing out." }
     ];
 
+    const INTERMEDIATE_VOCAB_DATA = [
+      { w: "שָׁלוֹם", t: "Shalom", m: "Hello / Peace", hint: "The most famous Hebrew greeting!" },
+      { w: "תּוֹדָה", t: "Toda", m: "Thank you", hint: "Show your gratitude." },
+      { w: "בֹּקֶר טוֹב", t: "Boker Tov", m: "Good Morning", hint: "Used to greet someone early in the day." },
+      { w: "אַבָּא", t: "Abba", m: "Father", hint: "A loving term for dad." },
+      { w: "אִמָּא", t: "Ima", m: "Mother", hint: "A loving term for mom." },
+      { w: "בֵּן", t: "Ben", m: "Son", hint: "A male child." },
+      { w: "בַּת", t: "Bat", m: "Daughter", hint: "A female child." }
+    ];
+
+    const ADVANCED_VOCAB_DATA = [
+      { w: "אֲנִי", t: "Ani", m: "I / Me", hint: "Talking about yourself." },
+      { w: "אַתָּה", t: "Ata", m: "You (M)", hint: "Talking to a male." },
+      { w: "אוֹכֵל", t: "Ochel", m: "Eating", hint: "Action of consuming food." },
+      { w: "שׁוֹתֶה", t: "Shoteh", m: "Drinking", hint: "Action of consuming liquids." },
+      { w: "הוֹלֵךְ", t: "Holech", m: "Walking", hint: "Traveling on foot." }
+    ];
+
     function openIntro() {
       const TRACK_STORIES = {
         beginner: {
@@ -931,8 +949,18 @@
           introSequence.push({ type: "lesson", letter: letter.l, name: letter.n, sound: letter.s, mnemonic: letter.m });
           introSequence.push({ type: "practice", letter: letter.l, name: letter.n, sound: letter.s });
         });
-      } else {
-        introSequence.push({ type: "story", title: "🔤 Advanced Bootcamp", content: "You've survived this far! Remember, your questions will now cover advanced vocabulary and grammar.<br><br>Visit the Town Teacher or check your Training Manual to study the new material." });
+      } else if (currentUser.track === 'intermediate') {
+        introSequence.push({ type: "story", title: "🔤 Vocab Bootcamp", content: "To survive the intermediate zones, you need to know basic vocabulary!<br><br>Let's review essential words before you embark so you are combat-ready." });
+        INTERMEDIATE_VOCAB_DATA.forEach(vocab => {
+          introSequence.push({ type: "vocab-lesson", word: vocab.w, trans: vocab.t, meaning: vocab.m, hint: vocab.hint });
+          introSequence.push({ type: "vocab-practice", word: vocab.w, meaning: vocab.m });
+        });
+      } else if (currentUser.track === 'advanced') {
+        introSequence.push({ type: "story", title: "🔤 Grammar Bootcamp", content: "Emperor Fluffypants requires advanced fluency to defeat!<br><br>Let's review your pronouns and action verbs before you step into the world." });
+        ADVANCED_VOCAB_DATA.forEach(vocab => {
+          introSequence.push({ type: "vocab-lesson", word: vocab.w, trans: vocab.t, meaning: vocab.m, hint: vocab.hint });
+          introSequence.push({ type: "vocab-practice", word: vocab.w, meaning: vocab.m });
+        });
       }
 
       introSequence.push({ type: "story", title: "🛡️ You are ready!", content: `Your training is complete. Step into the world, equip yourself in town, and defeat ${story.bossName}!` });
@@ -973,6 +1001,16 @@
                               </div>
                               <button class="action-btn" onclick="nextSlide()" style="margin-top: 25px; width: 200px;">Got it! ➡️</button>`;
       }
+      else if (slide.type === 'vocab-lesson') {
+        slideDiv.innerHTML = `<div style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0; margin-bottom:5px;">COMBAT TRAINING</div>
+                              <h2 style="color:var(--primary-dark); font-size:1.5rem;">${slide.trans}</h2>
+                              <div style="font-family:'Rubik', sans-serif; font-size:4rem; color:var(--primary); font-weight:bold; margin: 10px 0; line-height: 1;">${slide.word}</div>
+                              <div style="background:#EDF2F7; padding:15px; border-radius:12px; width:90%; font-size:1.05rem; line-height:1.5;">
+                                <b>Meaning:</b> "${slide.meaning}"<br><br>
+                                <b>Hint:</b> ${slide.hint}
+                              </div>
+                              <button class="action-btn" onclick="nextSlide()" style="margin-top: 25px; width: 200px;">Got it! ➡️</button>`;
+      }
       else if (slide.type === 'practice') {
         slideDiv.innerHTML = `<div style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0; margin-bottom:5px;">POP QUIZ!</div>
                               <div style="font-family:'Rubik', sans-serif; font-size:4rem; color:#2D3748; font-weight:bold; margin: 10px 0; line-height: 1;">${slide.letter}</div>
@@ -992,6 +1030,44 @@
           btn.textContent = opt;
           btn.onclick = (e) => {
             if (opt === slide.sound) {
+              sfx.win();
+              e.target.style.backgroundColor = '#48BB78'; e.target.style.color = 'white';
+              setTimeout(nextSlide, 400);
+            } else {
+              sfx.takeDamage();
+              e.target.style.backgroundColor = '#F56565'; e.target.style.color = 'white';
+              e.target.classList.add('bump-anim');
+              setTimeout(() => e.target.classList.remove('bump-anim'), 200);
+            }
+          };
+          optsContainer.appendChild(btn);
+        });
+        return; 
+      }
+      else if (slide.type === 'vocab-practice') {
+        slideDiv.innerHTML = `<div style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0; margin-bottom:5px;">POP QUIZ!</div>
+                              <div style="font-family:'Rubik', sans-serif; font-size:3.5rem; color:#2D3748; font-weight:bold; margin: 10px 0; line-height: 1;">${slide.word}</div>
+                              <h2 style="font-size:1.3rem; margin-bottom:15px; color:#4A5568;">What does this mean?</h2>
+                              <div class="options-grid" id="practice-options" style="width: 100%; max-width: 400px;"></div>`;
+        
+        container.appendChild(slideDiv);
+
+        let sourceData = currentUser.track === 'intermediate' ? INTERMEDIATE_VOCAB_DATA : ADVANCED_VOCAB_DATA;
+        let wrongMeanings = sourceData.filter(v => v.m !== slide.meaning).map(v => v.m);
+        
+        if (wrongMeanings.length < 3) {
+           wrongMeanings = wrongMeanings.concat(["House", "Apple", "Tree"]);
+        }
+        wrongMeanings = shuffleArray(wrongMeanings).slice(0, 3);
+        let options = shuffleArray([slide.meaning, ...wrongMeanings]);
+
+        const optsContainer = document.getElementById('practice-options');
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.textContent = opt;
+          btn.onclick = (e) => {
+            if (opt === slide.meaning) {
               sfx.win();
               e.target.style.backgroundColor = '#48BB78'; e.target.style.color = 'white';
               setTimeout(nextSlide, 400);
