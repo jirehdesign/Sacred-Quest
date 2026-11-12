@@ -46,6 +46,7 @@
     }
     .stat-badge.coins { background: #FEFCBF; color: #744210; }
     .stat-badge.hp { background: #FED7D7; color: #9B2C2C; }
+    .stat-badge.lvl { background: #E9D8FD; color: #553C9A; }
 
     /* --- HERO SHOWCASE BANNER --- */
     .hero-showcase {
@@ -279,7 +280,8 @@
     <div class="hero-details">
       <div class="hero-name" id="hero-display-name">Player Name</div>
       <div class="hero-title" id="hero-display-title" style="margin-top:2px;">Beginner Track</div>
-      <div style="display:flex; gap:10px; margin-top:8px;">
+      <div style="display:flex; gap:10px; margin-top:8px; flex-wrap:wrap;">
+        <div class="stat-badge lvl" id="top-lvl-display">⭐ Lvl 1</div>
         <div class="stat-badge hp" id="top-hp-display">❤️ 50/50</div>
         <div class="stat-badge coins" id="top-coin-display">🪙 0</div>
       </div>
@@ -650,7 +652,7 @@
         "..........W..WW.................M.......W..WW....",
         ".MMM...M.......M.......~.....MMM........W....M...",
         ".......M.........M.....~................W........",
-        "M.......M...M.......M.......M......MM...W........",
+        "M.......M...M.......M.......M......MM   W........",
         "@..M........................M...........W........"
       ],
       advanced: [
@@ -684,8 +686,6 @@
       "OOOO+EE+OOOO"
     ];
 
-    // Castle Map
-    // F (Floor Spawn) is at X: 10, Y: 11
     const CASTLE_LAYOUT = [
       "XXXXXXXXXXXX",
       "XH........FX",
@@ -845,7 +845,7 @@
         userNames.forEach(name => {
           const row = document.createElement('div');
           row.className = 'user-row';
-          row.innerHTML = `👤 ${name} (HP: ${usersDB[name].hp}/${usersDB[name].maxHp} - 🪙 ${usersDB[name].coins})`;
+          row.innerHTML = `👤 ${name} (Lvl ${usersDB[name].level || 1} - ❤️ ${usersDB[name].hp}/${usersDB[name].maxHp} - 🪙 ${usersDB[name].coins})`;
           row.onclick = () => loginUser(name);
           listContainer.appendChild(row);
         });
@@ -861,7 +861,7 @@
 
       usersDB[name] = {
         name: name, coins: 0, track: 'beginner',
-        hp: 50, maxHp: 50,
+        hp: 50, maxHp: 50, level: 1, xp: 0,
         x: 0, y: 11, townX: 5, townY: 10, castleX: 10, castleY: 11,
         avatar: '🦁', unlockedAvatars: ['🦁'],
         inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null,
@@ -875,6 +875,8 @@
     function loginUser(name) {
       currentUser = usersDB[name];
       if (!currentUser.consumables) currentUser.consumables = {};
+      if (currentUser.level === undefined) currentUser.level = 1;
+      if (currentUser.xp === undefined) currentUser.xp = 0;
       if (currentUser.townX === undefined) { currentUser.townX = 5; currentUser.townY = 10; }
       if (currentUser.castleX === undefined) { currentUser.castleX = 10; currentUser.castleY = 11; }
       
@@ -1165,7 +1167,7 @@
       currentUser.x = 0; currentUser.y = 11; 
       inTown = false; inCastle = false;
       
-      // Auto-boost player HP to handle the new zone damage scaling
+      // Auto-boost player HP / baseline to handle new zone track scaling
       if (track === 'intermediate') {
          currentUser.maxHp = Math.max(currentUser.maxHp, 150);
          currentUser.hp = currentUser.maxHp;
@@ -1199,6 +1201,7 @@
     function updateUI() {
       if (!currentUser) return;
       document.getElementById('hero-showcase').style.display = 'flex';
+      document.getElementById('top-lvl-display').textContent = `⭐ Lvl ${currentUser.level || 1}`;
       document.getElementById('top-hp-display').textContent = `❤️ ${currentUser.hp}/${currentUser.maxHp}`;
       document.getElementById('top-coin-display').textContent = `🪙 ${currentUser.coins}`;
       
@@ -1691,9 +1694,38 @@
 
           if (currentEnemyHP <= 0) {
             setTimeout(() => {
-              const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5); currentUser.coins += goldEarned;
-              let victoryMsg = `🎉 Victory! Earned ${goldEarned} coins.`;
-              if (Math.random() < 0.25) { currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; victoryMsg = `🎉 Victory! +${goldEarned} coins.\n\n🧪 The enemy dropped Medicine! Check your Backpack.`; }
+              const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5); 
+              currentUser.coins += goldEarned;
+              
+              // XP & Level-Up Logic
+              const xpEarned = currentEnemyLevel * 15;
+              currentUser.xp += xpEarned;
+              
+              let leveledUp = false;
+              let xpNeeded = currentUser.level * 60;
+              while (currentUser.xp >= xpNeeded) {
+                currentUser.xp -= xpNeeded;
+                currentUser.level++;
+                leveledUp = true;
+                
+                // Track-proportional Max HP boost on level-up
+                let hpGain = 15;
+                if (currentUser.track === 'intermediate') hpGain = 35;
+                if (currentUser.track === 'advanced') hpGain = 80;
+                
+                currentUser.maxHp += hpGain;
+                currentUser.hp = currentUser.maxHp; // Full heal on level up
+                xpNeeded = currentUser.level * 60;
+              }
+
+              let victoryMsg = `🎉 Victory! Earned ${goldEarned} coins & ${xpEarned} XP.`;
+              if (leveledUp) {
+                victoryMsg += `\n\n⭐ LEVEL UP! You reached Level ${currentUser.level}!\nMax HP increased and HP fully restored!`;
+              }
+              if (Math.random() < 0.25) { 
+                currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; 
+                victoryMsg += `\n\n🧪 The enemy dropped Medicine! Check your Backpack.`; 
+              }
               
               if (inCastle && currentEnemyLevel === 12 && activeCastleEnemyKey && castleMonsters[activeCastleEnemyKey] && castleMonsters[activeCastleEnemyKey].isBoss) {
                   triggerVictorySequence();
@@ -1773,8 +1805,10 @@
     function openProfile() {
       if (!currentUser) return;
       const pDmg = getPlayerDamage(); const pDef = getPlayerDefense();
+      const xpNeeded = currentUser.level * 60;
+      
       document.getElementById('profile-name-display-modal').innerHTML = `${currentUser.avatar} ${currentUser.name}`;
-      document.getElementById('profile-stats-detailed').innerHTML = `❤️ HP: ${currentUser.hp}/${currentUser.maxHp} &nbsp;|&nbsp; ⚔️ Attack: ${pDmg} &nbsp;|&nbsp; 🛡️ Defense: ${pDef}<br><span style="font-size:0.8rem; color:#718096; font-weight:normal;">Weapons deal more damage per correct answer. Armor reduces damage taken on mistakes.</span>`;
+      document.getElementById('profile-stats-detailed').innerHTML = `⭐ Level: ${currentUser.level} &nbsp;|&nbsp; 📈 XP: ${currentUser.xp}/${xpNeeded}<br>❤️ HP: ${currentUser.hp}/${currentUser.maxHp} &nbsp;|&nbsp; ⚔️ Attack: ${pDmg} &nbsp;|&nbsp; 🛡️ Defense: ${pDef}<br><span style="font-size:0.8rem; color:#718096; font-weight:normal;">Weapons deal more damage per correct answer. Armor reduces damage taken on mistakes.</span>`;
       
       const wSlot = document.getElementById('equip-slot-weapon'); const aSlot = document.getElementById('equip-slot-armor');
       if (currentUser.equippedWeapon) { const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon); wSlot.innerHTML = `<div class="slot-icon">${w.icon}</div><div style="color:var(--primary-dark)">${w.name}</div>`; } else wSlot.innerHTML = `<div class="slot-icon" style="opacity:0.3">🗡️</div><div>No Weapon</div>`;
