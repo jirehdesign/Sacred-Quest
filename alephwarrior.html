@@ -684,7 +684,10 @@
       "OOOO+EE+OOOO"
     ];
 
-    // Floor tile F is at Index X:8, Y:11
+    // Castle Map (Corrected)
+    // F (Floor Spawn) is at X: 10, Y: 11
+    // E (Exit Spawn) is at X: 11, Y: 11
+    // This perfectly lines up with the '.' opening at X: 10, Y: 10
     const CASTLE_LAYOUT = [
       "XXXXXXXXXXXX",
       "XH........FX",
@@ -697,7 +700,7 @@
       "X.XXXXXXXXXX",
       "X.M........X",
       "XXXXXXXXXX.X",
-      "XXXXXXXXFEXX"
+      "XXXXXXXXXXFE" 
     ];
 
     const AVATARS = [
@@ -822,7 +825,7 @@
       usersDB[name] = {
         name: name, coins: 0, track: 'beginner',
         hp: 50, maxHp: 50,
-        x: 0, y: 11, townX: 5, townY: 10, castleX: 8, castleY: 11, // Fixed Spawn
+        x: 0, y: 11, townX: 5, townY: 10, castleX: 10, castleY: 11, // Spawn Corrected to X:10
         avatar: '🦁', unlockedAvatars: ['🦁'],
         inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null,
         hasSeenIntro: false
@@ -836,7 +839,7 @@
       currentUser = usersDB[name];
       if (!currentUser.consumables) currentUser.consumables = {};
       if (currentUser.townX === undefined) { currentUser.townX = 5; currentUser.townY = 10; }
-      if (currentUser.castleX === undefined) { currentUser.castleX = 8; currentUser.castleY = 11; }
+      if (currentUser.castleX === undefined) { currentUser.castleX = 10; currentUser.castleY = 11; }
       
       localStorage.setItem('aleph_rpg_active_user', name);
       document.getElementById('login-modal').classList.remove('active');
@@ -895,7 +898,6 @@
           </ul>` }
       ];
 
-      // Add Bootcamp
       introSequence.push({ type: "story", title: "🔤 Hebrew Bootcamp", content: "Before you face the monsters, let's learn the Aleph-Bet! Hebrew is read from <b>Right to Left</b>.<br><br>We have prepared a grueling sequence of training and quizzes for every single letter so you are combat-ready!" });
       
       HEBREW_LETTERS_DATA.forEach(letter => {
@@ -949,7 +951,6 @@
         
         container.appendChild(slideDiv);
 
-        // Generate Wrong Options
         let wrongSounds = HEBREW_LETTERS_DATA.filter(l => l.s !== slide.sound).map(l => l.s);
         wrongSounds = shuffleArray(wrongSounds).slice(0, 3);
         let options = shuffleArray([slide.sound, ...wrongSounds]);
@@ -973,19 +974,14 @@
           };
           optsContainer.appendChild(btn);
         });
-        return; // Early return since we appended
+        return; 
       }
-
       container.appendChild(slideDiv);
     }
 
     function nextSlide() {
       currentIntroIndex++;
-      if (currentIntroIndex >= introSequence.length) {
-        closeIntro();
-      } else {
-        renderIntroSlide();
-      }
+      if (currentIntroIndex >= introSequence.length) { closeIntro(); } else { renderIntroSlide(); }
     }
 
     function closeIntro() {
@@ -1027,10 +1023,8 @@
     function switchTrack(track) {
       if (!currentUser) return;
       currentUser.track = track;
-      currentUser.x = 0;
-      currentUser.y = 11; 
-      inTown = false;
-      inCastle = false;
+      currentUser.x = 0; currentUser.y = 11; 
+      inTown = false; inCastle = false;
       saveDB();
       closeModal('track-modal');
       loadQuestionBank(); 
@@ -1079,52 +1073,34 @@
       if (!inTown && !inCastle) { 
         updateMapArrows(); 
       } else { 
-        const leftArr = document.getElementById('map-arrow-left');
-        const rightArr = document.getElementById('map-arrow-right');
-        if (leftArr) leftArr.style.display = 'none';
-        if (rightArr) rightArr.style.display = 'none';
+        const leftArr = document.getElementById('map-arrow-left'); const rightArr = document.getElementById('map-arrow-right');
+        if (leftArr) leftArr.style.display = 'none'; if (rightArr) rightArr.style.display = 'none';
       }
     }
 
     function setupTownNPCs(zoneLevel) {
-      townNPCs = {};
-      const trackData = TRAINING_DATA[currentUser.track] || {};
-      let concepts = [];
-      
-      const l1 = trackData[zoneLevel] || DEFAULT_TRAINING;
-      const l2 = trackData[zoneLevel + 1] || trackData[zoneLevel] || DEFAULT_TRAINING;
+      townNPCs = {}; const trackData = TRAINING_DATA[currentUser.track] || {}; let concepts = [];
+      const l1 = trackData[zoneLevel] || DEFAULT_TRAINING; const l2 = trackData[zoneLevel + 1] || trackData[zoneLevel] || DEFAULT_TRAINING;
       
       l1.items.forEach(i => concepts.push(`I study ${l1.title}.\n\nDid you know '${i[0]}' (${i[1]}) means:\n${i[2]}?`));
-      if(l1.title !== l2.title) {
-         l2.items.forEach(i => concepts.push(`Prepare yourself for the eastern zones!\n\nRemember '${i[0]}' (${i[1]}) means:\n${i[2]}.`));
-      }
+      if(l1.title !== l2.title) { l2.items.forEach(i => concepts.push(`Prepare yourself for the eastern zones!\n\nRemember '${i[0]}' (${i[1]}) means:\n${i[2]}.`)); }
       
       let genericTips = [
-        "Welcome to our town! The shop here sells medicine.",
-        "Talk to the Teacher near the Wizard if you want a detailed vocabulary list for topics you have encountered!",
-        "The monsters get much stronger the further east you travel.",
-        "Armor reduces the damage you take when you make a mistake.",
-        "A better weapon helps you defeat enemies in fewer turns!",
-        "Don't forget to check your Backpack in the Profile menu to use your medicine.",
-        "The Giant Hamster awaits in the dark castle maze at the far east.",
-        "Hebrew is read from right to left! Keep that in mind.",
+        "Welcome to our town! The shop here sells medicine.", "Talk to the Teacher near the Wizard if you want a detailed vocabulary list for topics you have encountered!",
+        "The monsters get much stronger the further east you travel.", "Armor reduces the damage you take when you make a mistake.",
+        "A better weapon helps you defeat enemies in fewer turns!", "Don't forget to check your Backpack in the Profile menu to use your medicine.",
+        "The Giant Hamster awaits in the dark castle maze at the far east.", "Hebrew is read from right to left! Keep that in mind.",
         "Look for the green arrows at the edge of the world map to travel to the next region."
       ];
       shuffleArray(genericTips);
-      
       while(concepts.length < 11) { concepts.push(genericTips.pop() || "Blessings on your journey, hero!"); }
       shuffleArray(concepts);
-      
-      const emojis = ['🧔', '👩', '👴', '👵', '💂', '🕵️', '👩‍🌾', '👨‍🍳', '🧝', '🥷', '🤴'];
-      shuffleArray(emojis);
+      const emojis = ['🧔', '👩', '👴', '👵', '💂', '🕵️', '👩‍🌾', '👨‍🍳', '🧝', '🥷', '🤴']; shuffleArray(emojis);
       
       let index = 0;
       for (let y = 0; y < 12; y++) {
         for (let x = 0; x < 12; x++) {
-          if (TOWN_LAYOUT[y][x] === 'N') {
-            townNPCs[`${x},${y}`] = { emoji: emojis[index], text: concepts[index] };
-            index++;
-          }
+          if (TOWN_LAYOUT[y][x] === 'N') { townNPCs[`${x},${y}`] = { emoji: emojis[index], text: concepts[index] }; index++; }
         }
       }
     }
@@ -1134,94 +1110,62 @@
       for(let y=0; y<12; y++){
         for(let x=0; x<12; x++){
           let tile = CASTLE_LAYOUT[y][x];
-          if (tile === 'M') {
-            let lvl = Math.random() < 0.5 ? 10 : 11;
-            castleMonsters[`${x},${y}`] = { level: lvl, icon: ENEMY_TYPES[lvl].icon, isBoss: false };
-          } else if (tile === 'H') {
-            castleMonsters[`${x},${y}`] = { level: 12, icon: ENEMY_TYPES[12].icon, isBoss: true };
-          }
+          if (tile === 'M') { let lvl = Math.random() < 0.5 ? 10 : 11; castleMonsters[`${x},${y}`] = { level: lvl, icon: ENEMY_TYPES[lvl].icon, isBoss: false }; } 
+          else if (tile === 'H') { castleMonsters[`${x},${y}`] = { level: 12, icon: ENEMY_TYPES[12].icon, isBoss: true }; }
         }
       }
     }
 
     function renderCurrentScreen() {
-      if (inCastle) renderCastleMap();
-      else if (inTown) renderTownMap();
-      else renderWorldMap();
+      if (inCastle) renderCastleMap(); else if (inTown) renderTownMap(); else renderWorldMap();
     }
 
     function renderWorldMap() {
-      const map = document.getElementById('rpg-map');
-      map.innerHTML = '';
-      
-      const currentLayout = MAPS[currentUser.track];
-      const mapSection = Math.floor(currentUser.x / 12);
-      const startX = mapSection * 12;
+      const map = document.getElementById('rpg-map'); map.innerHTML = '';
+      const currentLayout = MAPS[currentUser.track]; const mapSection = Math.floor(currentUser.x / 12); const startX = mapSection * 12;
 
       for (let y = 0; y < 12; y++) {
         for (let localX = 0; localX < 12; localX++) {
-          const globalX = startX + localX;
-          const tileType = currentLayout[y][globalX];
-          
-          const tile = document.createElement('div');
-          tile.className = 'tile';
+          const globalX = startX + localX; const tileType = currentLayout[y][globalX];
+          const tile = document.createElement('div'); tile.className = 'tile';
           
           if (tileType === 'W') { tile.classList.add('water'); tile.innerHTML = '<span class="env-icon">🌊</span>'; } 
           else if (tileType === 'M') { tile.classList.add('mountain'); tile.innerHTML = '<span class="env-icon">⛰️</span>'; } 
           else if (tileType === '~') { tile.classList.add('swamp'); tile.innerHTML = '<span class="env-icon">🐸</span>'; } 
           else if (tileType === '-') { tile.classList.add('bridge'); tile.innerHTML = '<span class="env-icon">🪵</span>'; } 
           else {
-            const dist = (globalX - 0) + (11 - y);
-            const level = Math.min(12, Math.floor(dist / 4) + 1);
-            tile.classList.add(`terrain-${level}`);
-            
+            const dist = (globalX - 0) + (11 - y); const level = Math.min(12, Math.floor(dist / 4) + 1); tile.classList.add(`terrain-${level}`);
             if (tileType === '#') { tile.innerHTML = '<span class="castle-icon">🏰</span>'; } 
             else if (tileType === 'T') { tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem; opacity: 1;">🏘️</span>'; }
           }
-          tile.id = `world-cell-${globalX}-${y}`;
-          map.appendChild(tile);
+          tile.id = `world-cell-${globalX}-${y}`; map.appendChild(tile);
         }
       }
 
-      let leftArrow = document.createElement('div');
-      leftArrow.id = 'map-arrow-left'; leftArrow.className = 'map-arrow left';
-      leftArrow.innerHTML = '⬅️'; leftArrow.onclick = () => movePlayer(-1, 0);
-      map.appendChild(leftArrow);
-
-      let rightArrow = document.createElement('div');
-      rightArrow.id = 'map-arrow-right'; rightArrow.className = 'map-arrow right';
-      rightArrow.innerHTML = '➡️'; rightArrow.onclick = () => movePlayer(1, 0);
-      map.appendChild(rightArrow);
-
+      let leftArrow = document.createElement('div'); leftArrow.id = 'map-arrow-left'; leftArrow.className = 'map-arrow left';
+      leftArrow.innerHTML = '⬅️'; leftArrow.onclick = () => movePlayer(-1, 0); map.appendChild(leftArrow);
+      let rightArrow = document.createElement('div'); rightArrow.id = 'map-arrow-right'; rightArrow.className = 'map-arrow right';
+      rightArrow.innerHTML = '➡️'; rightArrow.onclick = () => movePlayer(1, 0); map.appendChild(rightArrow);
       positionPlayerOnMap();
     }
 
     function renderTownMap() {
-      const map = document.getElementById('rpg-map');
-      map.innerHTML = '';
+      const map = document.getElementById('rpg-map'); map.innerHTML = '';
       
       for (let y = 0; y < 12; y++) {
         for (let x = 0; x < 12; x++) {
-          const tileType = TOWN_LAYOUT[y][x];
-          const tile = document.createElement('div');
-          tile.className = 'tile';
-          tile.id = `town-cell-${x}-${y}`;
+          const tileType = TOWN_LAYOUT[y][x]; const tile = document.createElement('div'); tile.className = 'tile'; tile.id = `town-cell-${x}-${y}`;
           
           if (tileType === 'O') { tile.classList.add('stone-wall'); tile.innerHTML = '<span class="env-icon">🧱</span>'; } 
           else if (tileType === 'B') { tile.classList.add('town-building'); tile.innerHTML = '<span class="env-icon">🏠</span>'; } 
           else if (tileType === 'T') { tile.classList.add('town-tree'); tile.innerHTML = '<span class="env-icon">🌲</span>'; } 
           else if (tileType === '+') { tile.classList.add('brick-road'); } 
-          else if (tileType === '$' || tileType === 'S') {
-            tile.classList.add('terrain-2'); 
-            tile.innerHTML = tileType === '$' ? '<span class="env-icon" style="font-size:1.6rem;">🧑‍💼</span>' : '<span class="env-icon">🛒</span>';
-          } 
+          else if (tileType === '$' || tileType === 'S') { tile.classList.add('terrain-2'); tile.innerHTML = tileType === '$' ? '<span class="env-icon" style="font-size:1.6rem;">🧑‍💼</span>' : '<span class="env-icon">🛒</span>'; } 
           else if (tileType === 'Z') { tile.classList.add('brick-road'); tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">🧙‍♂️</span>'; } 
           else if (tileType === 'C') { tile.classList.add('brick-road'); tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">👩‍🏫</span>'; } 
           else if (tileType === 'E') { tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>'; } 
           else if (tileType === 'N') {
-            tile.classList.add('terrain-1');
-            const npc = townNPCs[`${x},${y}`];
-            tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1;">${npc ? npc.emoji : '🧍'}</span>`;
+            tile.classList.add('terrain-1'); const npc = townNPCs[`${x},${y}`]; tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1;">${npc ? npc.emoji : '🧍'}</span>`;
           } 
           else { tile.classList.add('terrain-1'); }
           map.appendChild(tile);
@@ -1231,23 +1175,18 @@
     }
 
     function renderCastleMap() {
-      const map = document.getElementById('rpg-map');
-      map.innerHTML = '';
+      const map = document.getElementById('rpg-map'); map.innerHTML = '';
 
       for (let y = 0; y < 12; y++) {
         for (let x = 0; x < 12; x++) {
-          const tileType = CASTLE_LAYOUT[y][x];
-          const tile = document.createElement('div');
-          tile.className = 'tile';
-          tile.id = `castle-cell-${x}-${y}`;
+          const tileType = CASTLE_LAYOUT[y][x]; const tile = document.createElement('div'); tile.className = 'tile'; tile.id = `castle-cell-${x}-${y}`;
 
           if (tileType === 'X') { tile.classList.add('castle-wall'); } 
           else if (tileType === 'E') { tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>'; } 
           else if (tileType === 'F' || tileType === '.') {
             tile.classList.add('castle-floor');
             if (castleMonsters[`${x},${y}`]) {
-              const m = castleMonsters[`${x},${y}`];
-              tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1; filter: drop-shadow(0px 0px 8px rgba(252,129,129,0.9));">${m.icon}</span>`;
+              const m = castleMonsters[`${x},${y}`]; tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1; filter: drop-shadow(0px 0px 8px rgba(252,129,129,0.9));">${m.icon}</span>`;
             }
           }
           map.appendChild(tile);
@@ -1257,19 +1196,13 @@
     }
 
     function positionPlayerOnMap() {
-      const oldToken = document.getElementById('player-map-token');
-      if (oldToken) oldToken.remove();
-
+      const oldToken = document.getElementById('player-map-token'); if (oldToken) oldToken.remove();
       const px = inCastle ? currentUser.castleX : (inTown ? currentUser.townX : currentUser.x);
       const py = inCastle ? currentUser.castleY : (inTown ? currentUser.townY : currentUser.y);
       const prefix = inCastle ? 'castle' : (inTown ? 'town' : 'world');
 
-      const tile = document.getElementById(`${prefix}-cell-${px}-${py}`);
-      if (!tile) return;
-
-      const token = document.createElement('div');
-      token.id = 'player-map-token';
-      token.className = 'player-token';
+      const tile = document.getElementById(`${prefix}-cell-${px}-${py}`); if (!tile) return;
+      const token = document.createElement('div'); token.id = 'player-map-token'; token.className = 'player-token';
       
       let tokenHTML = currentUser.avatar;
       if (currentUser.equippedWeapon) {
@@ -1280,123 +1213,83 @@
         const a = SHOP_ITEMS.armor.find(x => x.id === currentUser.equippedArmor);
         if (a) tokenHTML += `<span class="token-equip equip-a" style="font-size:0.6rem; top:-2px; left:-2px; width:16px; height:16px;">${a.icon}</span>`;
       }
-      token.innerHTML = tokenHTML;
-      tile.appendChild(token);
+      token.innerHTML = tokenHTML; tile.appendChild(token);
     }
 
     function updateMapArrows() {
-      const leftArrow = document.getElementById('map-arrow-left');
-      const rightArrow = document.getElementById('map-arrow-right');
+      const leftArrow = document.getElementById('map-arrow-left'); const rightArrow = document.getElementById('map-arrow-right');
       if (!leftArrow || !rightArrow) return;
       
-      const currentLayout = MAPS[currentUser.track];
-      let showLeft = false;
-      let showRight = false;
+      const currentLayout = MAPS[currentUser.track]; let showLeft = false; let showRight = false;
+      if (currentUser.x % 12 === 0 && currentUser.x > 0) { const leftTile = currentLayout[currentUser.y][currentUser.x - 1]; if (leftTile !== 'W' && leftTile !== 'M') showLeft = true; }
+      if (currentUser.x % 12 === 11 && currentUser.x < 35) { const rightTile = currentLayout[currentUser.y][currentUser.x + 1]; if (rightTile !== 'W' && rightTile !== 'M') showRight = true; }
       
-      if (currentUser.x % 12 === 0 && currentUser.x > 0) {
-        const leftTile = currentLayout[currentUser.y][currentUser.x - 1];
-        if (leftTile !== 'W' && leftTile !== 'M') showLeft = true;
-      }
-      if (currentUser.x % 12 === 11 && currentUser.x < 35) {
-        const rightTile = currentLayout[currentUser.y][currentUser.x + 1];
-        if (rightTile !== 'W' && rightTile !== 'M') showRight = true;
-      }
-      
-      leftArrow.style.display = showLeft ? 'flex' : 'none';
-      rightArrow.style.display = showRight ? 'flex' : 'none';
+      leftArrow.style.display = showLeft ? 'flex' : 'none'; rightArrow.style.display = showRight ? 'flex' : 'none';
     }
 
 
     // --- TOWN TEACHER UI ---
     function openTeacher() {
       if(!currentUser) return;
-      document.getElementById('teacher-topics-view').style.display = 'block';
-      document.getElementById('teacher-lesson-view').style.display = 'none';
+      document.getElementById('teacher-topics-view').style.display = 'block'; document.getElementById('teacher-lesson-view').style.display = 'none';
       
-      const container = document.getElementById('teacher-topics-list');
-      container.innerHTML = '';
+      const container = document.getElementById('teacher-topics-list'); container.innerHTML = '';
       const trackData = TRAINING_DATA[currentUser.track] || {};
       
       for(let i = 1; i <= 12; i++) {
         const lesson = trackData[i];
         if (lesson) {
-          const btn = document.createElement('button');
-          btn.className = 'lesson-btn';
+          const btn = document.createElement('button'); btn.className = 'lesson-btn';
           btn.innerHTML = `<span class="lesson-title">Zone ${i}: ${lesson.title}</span><span class="lesson-desc">${lesson.desc}</span>`;
-          btn.onclick = () => showTeacherLesson(i);
-          container.appendChild(btn);
+          btn.onclick = () => showTeacherLesson(i); container.appendChild(btn);
         }
       }
       document.getElementById('teacher-modal').classList.add('active');
     }
 
     function showTeacherLesson(level) {
-      document.getElementById('teacher-topics-view').style.display = 'none';
-      document.getElementById('teacher-lesson-view').style.display = 'block';
-      
-      const trackData = TRAINING_DATA[currentUser.track] || {};
-      const lesson = trackData[level] || DEFAULT_TRAINING; 
+      document.getElementById('teacher-topics-view').style.display = 'none'; document.getElementById('teacher-lesson-view').style.display = 'block';
+      const trackData = TRAINING_DATA[currentUser.track] || {}; const lesson = trackData[level] || DEFAULT_TRAINING; 
       
       document.getElementById('teacher-lesson-title').textContent = lesson.title;
-
-      const grid = document.getElementById('teacher-lesson-content');
-      grid.innerHTML = '';
+      const grid = document.getElementById('teacher-lesson-content'); grid.innerHTML = '';
       
       lesson.items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'training-card';
+        const card = document.createElement('div'); card.className = 'training-card';
         card.innerHTML = `<div class="training-hebrew">${item[0]}</div><div class="training-name">${item[1]}</div><div class="training-desc">${item[2]}</div><button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>`;
         grid.appendChild(card);
       });
     }
 
-    function backToTeacherTopics() {
-      document.getElementById('teacher-topics-view').style.display = 'block';
-      document.getElementById('teacher-lesson-view').style.display = 'none';
-    }
+    function backToTeacherTopics() { document.getElementById('teacher-topics-view').style.display = 'block'; document.getElementById('teacher-lesson-view').style.display = 'none'; }
 
 
     // --- GLOBAL TRAINING ACADEMY UI (Manual Selection) ---
-    function openTrainingManual() {
-      if(!currentUser) return;
-      renderLessonList();
-      document.getElementById('training-modal').classList.add('active');
-    }
+    function openTrainingManual() { if(!currentUser) return; renderLessonList(); document.getElementById('training-modal').classList.add('active'); }
 
     function renderLessonList() {
-      document.getElementById('training-view-list').style.display = 'block';
-      document.getElementById('training-view-content').style.display = 'none';
-      
-      const container = document.getElementById('lesson-list-container');
-      container.innerHTML = '';
+      document.getElementById('training-view-list').style.display = 'block'; document.getElementById('training-view-content').style.display = 'none';
+      const container = document.getElementById('lesson-list-container'); container.innerHTML = '';
       const trackData = TRAINING_DATA[currentUser.track] || {};
       
       for(let i = 1; i <= 12; i++) {
         const lesson = trackData[i] || DEFAULT_TRAINING;
-        const btn = document.createElement('button');
-        btn.className = 'lesson-btn';
+        const btn = document.createElement('button'); btn.className = 'lesson-btn';
         btn.innerHTML = `<span class="lesson-title">Zone Level ${i}: ${lesson.title}</span><span class="lesson-desc">${lesson.desc}</span>`;
-        btn.onclick = () => openLesson(i);
-        container.appendChild(btn);
+        btn.onclick = () => openLesson(i); container.appendChild(btn);
       }
     }
 
     function openLesson(level) {
-      document.getElementById('training-view-list').style.display = 'none';
-      document.getElementById('training-view-content').style.display = 'block';
-      
-      const trackData = TRAINING_DATA[currentUser.track] || {};
-      const lesson = trackData[level] || DEFAULT_TRAINING; 
+      document.getElementById('training-view-list').style.display = 'none'; document.getElementById('training-view-content').style.display = 'block';
+      const trackData = TRAINING_DATA[currentUser.track] || {}; const lesson = trackData[level] || DEFAULT_TRAINING; 
       
       document.getElementById('train-level-title').textContent = `Zone Level ${level}: ${lesson.title}`;
       document.getElementById('train-level-desc').textContent = lesson.desc;
-
-      const grid = document.getElementById('training-grid-container');
-      grid.innerHTML = '';
+      const grid = document.getElementById('training-grid-container'); grid.innerHTML = '';
       
       lesson.items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'training-card';
+        const card = document.createElement('div'); card.className = 'training-card';
         card.innerHTML = `<div class="training-hebrew">${item[0]}</div><div class="training-name">${item[1]}</div><div class="training-desc">${item[2]}</div><button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>`;
         grid.appendChild(card);
       });
@@ -1514,7 +1407,7 @@
         }
         
         if (tileType === '#') {
-          sfx.step(); inCastle = true; currentUser.castleX = 8; currentUser.castleY = 11;
+          sfx.step(); inCastle = true; currentUser.castleX = 10; currentUser.castleY = 11;
           setupCastle(); renderCurrentScreen(); updateUI(); return;
         } 
         
