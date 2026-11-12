@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aleph-Bet Quest - Classic RPG</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Rubik:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #4A90E2;
+      --primary-dark: #2B6CB0;
+      --secondary: #FF6B6B;
+      --accent: #FFD166;
+      --success: #06D6A0;
+      --purple: #8338EC;
+      --bg: #1A202C; 
+      --card-bg: #FFFFFF;
+      --text: #2D3748;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Fredoka', cursive, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 15px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden;}
+
+    /* Header & Top Bar */
+    header {
+      width: 100%; max-width: 600px; background: var(--card-bg); border-radius: 16px;
+      padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 15px; flex-wrap: wrap; gap: 10px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 700; color: var(--primary-dark); }
+    .stats-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%;}
+    
+    .nav-btn {
+      padding: 8px 16px; border-radius: 10px; border: 2px solid #CBD5E0; background: white;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .nav-btn:hover { background: #EDF2F7; }
+    #music-btn.active { background: var(--success); color: white; border-color: #049670; }
+
+    .stat-badge {
+      background: #EDF2F7; padding: 6px 14px; border-radius: 20px; font-weight: 600;
+      display: flex; align-items: center; gap: 6px; font-size: 0.95rem;
+    }
+    .stat-badge.coins { background: #FEFCBF; color: #744210; }
+    .stat-badge.hp { background: #FED7D7; color: #9B2C2C; }
+    .stat-badge.lvl { background: #E9D8FD; color: #553C9A; }
+
+    /* --- HERO SHOWCASE BANNER --- */
+    .hero-showcase {
+      width: 100%; max-width: 600px; background: linear-gradient(135deg, var(--primary) 0%, var(--purple) 100%);
+      border-radius: 16px; padding: 15px 25px; margin-bottom: 15px; display: none;
+      align-items: center; gap: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); color: white;
+    }
+    .hero-avatar-container {
+      position: relative; width: 70px; height: 70px; background: rgba(255, 255, 255, 0.2);
+      border: 3px solid rgba(255, 255, 255, 0.6); border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; font-size: 3rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .hero-equip {
+      position: absolute; font-size: 1.4rem; background: white; border-radius: 50%;
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3); border: 2px solid #E2E8F0;
+    }
+    .hero-equip.weapon { bottom: -5px; right: -12px; }
+    .hero-equip.armor { top: -5px; left: -12px; }
+    
+    .hero-details { display: flex; flex-direction: column; flex: 1;}
+    .hero-name { font-size: 1.4rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+    .hp-bar-bg { width: 100%; height: 12px; background: rgba(0,0,0,0.3); border-radius: 6px; overflow: hidden; margin-top: 5px; border: 1px solid rgba(255,255,255,0.4);}
+    .hp-bar-fill { height: 100%; background: #FC8181; transition: width 0.3s ease; }
+
+    /* Main Container & RPG Map */
+    main { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 15px; }
+
+    .game-map {
+      background: #2D3748; border-radius: 12px; padding: 8px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5); display: grid;
+      grid-template-columns: repeat(12, 1fr); gap: 2px; position: relative;
+    }
+
+    .tile {
+      aspect-ratio: 1; border-radius: 4px; display: flex; align-items: center;
+      justify-content: center; position: relative; font-size: 1.4rem;
+    }
+    
+    /* Terrain Types */
+    .terrain-1 { background: #9AE6B4; } .terrain-2 { background: #68D391; }
+    .terrain-3 { background: #48BB78; } .terrain-4 { background: #38A169; }
+    .terrain-5 { background: #D6BCFA; } .terrain-6 { background: #B794F4; }
+    .terrain-7 { background: #CBD5E0; } .terrain-8 { background: #A0AEC0; }
+    .terrain-9 { background: #718096; } .terrain-10 { background: #F6AD55; }
+    .terrain-11 { background: #DD6B20; } .terrain-12 { background: #1A202C; border: 1px solid #718096; }
+    
+    /* Obstacles & Map Features */
+    .tile.water { background: #3182CE; box-shadow: inset 0 0 8px rgba(0,0,0,0.3); }
+    .tile.mountain { background: #4A5568; box-shadow: inset 0 0 8px rgba(0,0,0,0.5); }
+    .tile.swamp { background: #2C7A7B; box-shadow: inset 0 0 10px rgba(0,0,0,0.4); }
+    .tile.bridge { background: #9C4221; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); border-left: 2px solid #7B341E; border-right: 2px solid #7B341E;}
+    
+    /* Town & Castle Features */
+    .tile.stone-wall { background: #718096; border: 2px solid #4A5568; }
+    .tile.town-building { background: #E2E8F0; border: 2px solid #A0AEC0; }
+    .tile.town-tree { background: #276749; box-shadow: inset 0 0 6px rgba(0,0,0,0.5); }
+    .tile.brick-road { background: #C53030; box-shadow: inset 0 0 4px #9B2C2C; }
+    .tile.town-exit { background: #CBD5E0; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+    
+    /* Dragon Warrior Style Castle Dungeon Styling */
+    .tile.castle-wall { 
+      background-color: #1A365D;
+      background-image: 
+        linear-gradient(90deg, #0D203F 2px, transparent 2px),
+        linear-gradient(0deg, #0D203F 2px, transparent 2px);
+      background-size: 12px 8px;
+      border: 1px solid #0D203F;
+    }
+    .tile.castle-floor { background: #000000; box-shadow: inset 0 0 15px rgba(0,0,0,0.9); }
+    
+    .castle-icon { font-size: 1.8rem; position: absolute; filter: sepia(0.5) hue-rotate(200deg) saturate(1.5);}
+    .env-icon { font-size: 1.2rem; opacity: 0.8; }
+
+    /* Player Token on Map */
+    .player-token {
+      width: 90%; height: 90%; background: #FFFFFF; border: 2px solid var(--primary-dark);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; position: absolute; z-index: 10; box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      transition: all 0.15s ease-in-out;
+    }
+    .bump-anim { animation: bumpAnim 0.2s ease; }
+    @keyframes bumpAnim {
+      0%, 100% { transform: translate(-50%, -50%); }
+      25% { transform: translate(-65%, -50%); }
+      75% { transform: translate(-35%, -50%); }
+    }
+
+    /* Map Navigation Arrows */
+    .map-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; cursor: pointer; z-index: 20;
+      background: rgba(255,255,255,0.9); border-radius: 50%;
+      border: 3px solid var(--success);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      animation: pulseArrow 1.5s infinite;
+    }
+    .map-arrow.left { left: -18px; }
+    .map-arrow.right { right: -18px; }
+    @keyframes pulseArrow {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.15); border-color: var(--primary); }
+    }
+
+    /* D-PAD Controls */
+    .dpad-container {
+      display: grid; grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(3, 60px);
+      gap: 10px; justify-content: center; margin: 10px 0;
+    }
+    .dpad-btn {
+      background: var(--card-bg); border: 3px solid #CBD5E0; border-radius: 12px;
+      font-size: 1.8rem; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 4px 0 #A0AEC0; user-select: none;
+    }
+    .dpad-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #A0AEC0; }
+    .dpad-up { grid-column: 2; grid-row: 1; }
+    .dpad-left { grid-column: 1; grid-row: 2; }
+    .dpad-right { grid-column: 3; grid-row: 2; }
+    .dpad-down { grid-column: 2; grid-row: 3; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 15px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-card {
+      background: white; border-radius: 20px; padding: 25px; width: 100%; max-width: 520px;
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      text-align: center; position: relative; transform: scale(0.9); transition: transform 0.3s ease;
+    }
+    .modal-overlay.active .modal-card { transform: scale(1); }
+
+    /* Dynamic Intro Animations */
+    .intro-slide-content { animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Battle UI */
+    .boss-header {
+      background: linear-gradient(135deg, #2D3748, #1A202C);
+      border: 4px solid #4A5568; border-radius: 16px; padding: 20px; margin-bottom: 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px; color: white;
+    }
+    #boss-name { font-size: 1.4rem; color: #FEB2B2; text-transform: uppercase; letter-spacing: 2px; text-align: center;}
+    .boss-avatar { font-size: 6rem; line-height: 1; margin: 5px 0; animation: pulseBoss 1s infinite alternate; }
+    @keyframes pulseBoss { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+    .boss-hp-bar { width: 100%; max-width: 300px; height: 18px; background: #4A5568; border-radius: 9px; overflow: hidden; border: 2px solid #A0AEC0; }
+    .boss-hp-fill { height: 100%; background: #FC8181; width: 100%; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    .question-prompt { font-size: 1.55rem; line-height: 1.35; margin: 15px 0; font-weight: 700; color: #2D3748; }
+    .hebrew-text { font-family: 'Rubik', sans-serif; font-size: 2.5rem; color: var(--primary-dark); margin: 10px 0; direction: rtl; }
+    .audio-btn { background: #EBF8FF; border: 2px solid #90CDF4; color: #2B6CB0; border-radius: 50%; width: 46px; height: 46px; font-size: 1.3rem; cursor: pointer; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+    .option-btn { padding: 14px; border-radius: 12px; border: 2px solid #E2E8F0; background: #F7FAFC; font-size: 1.05rem; font-weight: 600; cursor: pointer; direction: rtl; transition: all 0.2s; }
+    .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #EBF8FF; }
+
+    /* Damage/Heal popups */
+    .combat-popup {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 3rem; font-weight: 900; z-index: 200; pointer-events: none;
+      animation: floatUp 1.5s forwards; text-shadow: 2px 2px 0 #000;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -150%) scale(1.5); }
+    }
+    .dmg-text { color: #FC8181; }
+    .heal-text { color: #68D391; }
+
+    /* Shop & Inventory Grid */
+    .shop-tabs { display: flex; justify-content: center; gap: 5px; margin: 15px 0; flex-wrap: wrap; }
+    .shop-tab-btn { padding: 8px 12px; font-weight: 700; border-radius: 10px; border: 2px solid #CBD5E0; background: white; cursor: pointer; }
+    .shop-tab-btn.active { background: var(--primary); color: white; border-color: var(--primary-dark); }
+    
+    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; padding: 10px; margin-bottom: 15px; }
+    .item-card { border: 2px solid #E2E8F0; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; background: #F7FAFC; }
+    .item-card:hover { border-color: var(--primary); }
+    .item-card.equipped, .item-card.owned { border-color: var(--success); background: #F0FFF4; }
+
+    /* Profile UI */
+    .equip-slots { display: flex; justify-content: center; gap: 15px; margin: 15px 0; }
+    .slot { border: 2px dashed #CBD5E0; border-radius: 12px; padding: 10px; width: 110px; font-weight: 600; font-size: 0.8rem; color: #718096; background: #F7FAFC; }
+    .slot-icon { font-size: 2.5rem; margin-bottom: 5px; }
+    .stat-details { background: #EDF2F7; padding: 10px; border-radius: 12px; font-size: 0.9rem; font-weight: bold; color: #2D3748; margin-bottom: 15px;}
+
+    /* Login UI */
+    .user-list { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; max-height: 200px; overflow-y: auto;}
+    .user-row { padding: 10px; background: #EDF2F7; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;}
+    .user-row:hover { background: #E2E8F0; }
+    .action-btn { padding: 12px 24px; font-size: 1.1rem; font-weight: 700; background: var(--primary); color: white; border: none; border-radius: 14px; cursor: pointer; transition: all 0.2s;}
+    .action-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+    input[type="text"] { padding: 8px 12px; border-radius: 10px; border: 2px solid #CBD5E0; font-size: 1rem; outline: none; }
+
+    /* Training Module UI */
+    .lesson-btn {
+      background: #F7FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 12px 15px;
+      text-align: left; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 4px; font-family: 'Fredoka', sans-serif;
+    }
+    .lesson-btn:hover { background: #EBF8FF; border-color: #90CDF4; transform: translateY(-2px); }
+    .lesson-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); }
+    .lesson-desc { font-size: 0.85rem; color: #718096; }
+
+    .training-header { background: #EBF8FF; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #90CDF4; }
+    .training-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px;}
+    .training-card { background: #F7FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative;}
+    .training-hebrew { font-family: 'Rubik', sans-serif; font-size: 3rem; color: var(--primary-dark); font-weight: bold;}
+    .training-name { font-weight: bold; font-size: 1.1rem; color: #2D3748;}
+    .training-desc { font-size: 0.85rem; color: #718096; text-align: center;}
+    .mini-audio-btn { position: absolute; top: 5px; right: 5px; background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: transform 0.1s;}
+    .mini-audio-btn:hover { transform: scale(1.2); }
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <div class="brand"><span>⚔️</span> Aleph-Bet Quest</div>
+    <div class="stats-bar">
+      <button class="nav-btn" onclick="openProfile()" id="profile-btn">👤 Profile</button>
+      <button class="nav-btn" onclick="openTrackSelector()">🗺️ Track</button>
+      <button class="nav-btn" onclick="openTrainingManual()" style="border-color:#90CDF4; color:#2B6CB0; background:#EBF8FF;">📖 Train</button>
+      <button class="nav-btn" onclick="toggleMusic()" id="music-btn">🎵 OFF</button>
+    </div>
+  </header>
+
+  <!-- Hero Showcase Banner -->
+  <div class="hero-showcase" id="hero-showcase">
+    <div class="hero-avatar-container" id="hero-display-avatar"></div>
+    <div class="hero-details">
+      <div class="hero-name" id="hero-display-name">Player Name</div>
+      <div class="hero-title" id="hero-display-title" style="margin-top:2px;">Beginner Track</div>
+      <div style="display:flex; gap:10px; margin-top:8px; flex-wrap:wrap;">
+        <div class="stat-badge lvl" id="top-lvl-display">⭐ Lvl 1</div>
+        <div class="stat-badge hp" id="top-hp-display">❤️ 50/50</div>
+        <div class="stat-badge coins" id="top-coin-display">🪙 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main RPG Container -->
+  <main>
+    <div class="game-map" id="rpg-map">
+      <!-- Tiles and navigation arrows are injected dynamically via JavaScript -->
+    </div>
+
+    <!-- D-Pad for Mobile Movement -->
+    <div class="dpad-container">
+      <div class="dpad-btn dpad-up" onclick="movePlayer(0, -1)">⬆️</div>
+      <div class="dpad-btn dpad-left" onclick="movePlayer(-1, 0)">⬅️</div>
+      <div class="dpad-btn dpad-right" onclick="movePlayer(1, 0)">➡️</div>
+      <div class="dpad-btn dpad-down" onclick="movePlayer(0, 1)">⬇️</div>
+    </div>
+  </main>
+
+  <!-- Dynamic Intro & Mechanics Modal -->
+  <div class="modal-overlay" id="intro-modal" style="z-index: 2000;">
+    <div class="modal-card" id="intro-card-content" style="min-height: 350px; display:flex; flex-direction:column; justify-content:center;">
+      <!-- Content injected by JS -->
+    </div>
+  </div>
+
+  <!-- Victory Wrap-up Modal -->
+  <div class="modal-overlay" id="victory-modal" style="z-index: 2005;">
+    <div class="modal-card" style="border: 4px solid var(--accent); background: linear-gradient(to bottom, #ffffff, #FEFCBF);">
+      <h1 style="font-size:4rem; margin-bottom:10px; animation: pulseArrow 1.5s infinite;">🏆</h1>
+      <h2 style="color:var(--primary-dark); font-size:2.2rem; text-shadow: 1px 1px 0px white;">Realm Restored!</h2>
+      <p id="victory-story-text" style="margin:20px 0; font-size:1.15rem; color:#2D3748; line-height:1.6; font-weight:600;"></p>
+      <button class="action-btn" onclick="closeVictory()">Continue Playing</button>
+    </div>
+  </div>
+
+  <!-- Custom Alert System (NPC Dialogue & Messages) -->
+  <div class="modal-overlay" id="custom-alert-overlay" style="z-index: 1000;">
+    <div class="modal-card" style="max-width: 400px; padding: 30px;">
+      <p id="custom-alert-text" style="font-size: 1.15rem; font-weight: 600; margin-bottom: 25px; white-space: pre-wrap; color: #2D3748; line-height: 1.4;"></p>
+      <button class="action-btn" id="custom-alert-btn" style="margin: 0 auto; width: 100px; justify-content: center;">OK</button>
+    </div>
+  </div>
+
+  <!-- Custom Confirm System (For the Wizard Quiz) -->
+  <div class="modal-overlay" id="custom-confirm-overlay" style="z-index: 1001;">
+    <div class="modal-card" style="max-width: 400px; padding: 30px;">
+      <p id="custom-confirm-text" style="font-size: 1.15rem; font-weight: 600; margin-bottom: 25px; white-space: pre-wrap; color: #2D3748; line-height: 1.4;"></p>
+      <div style="display:flex; gap:15px; justify-content:center;">
+         <button class="action-btn" id="custom-confirm-yes" style="width: 120px; justify-content:center;">Yes</button>
+         <button class="nav-btn" id="custom-confirm-no" style="width: 120px; justify-content:center;">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Town Teacher Modal -->
+  <div class="modal-overlay" id="teacher-modal" style="z-index: 501;">
+    <div class="modal-card" style="max-width: 500px; max-height: 85vh;">
+      <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">👩‍🏫 Town Teacher</h2>
+      <div id="teacher-topics-view">
+        <p style="color:#718096; margin-bottom: 15px;">"Shalom! I can teach you the skills needed for every zone on your journey. What shall we study today?"</p>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 45vh; overflow-y: auto; padding-right: 5px;" id="teacher-topics-list"></div>
+        <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('teacher-modal')">Leave Class</button>
+      </div>
+      <div id="teacher-lesson-view" style="display: none;">
+        <div class="training-header">
+          <strong id="teacher-lesson-title" style="font-size:1.2rem; color:#2B6CB0;"></strong>
+          <p style="font-size:0.95rem; color:#4A5568; margin-top:5px;">Click the speaker icons to hear pronunciation!</p>
+        </div>
+        <div class="training-grid" id="teacher-lesson-content" style="max-height: 45vh; overflow-y: auto; padding: 5px;"></div>
+        <button class="action-btn" style="margin: 15px auto 0; font-size: 1rem; padding: 10px 20px;" onclick="backToTeacherTopics()">🔙 Back to Topics</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Training Academy Modal -->
+  <div class="modal-overlay" id="training-modal" style="z-index: 500;">
+    <div class="modal-card" style="max-width: 600px; max-height: 85vh;">
+      <h2 style="color:var(--primary-dark); font-size:2rem; margin-bottom: 10px;">📜 Training Manual</h2>
+      <div id="training-view-list">
+        <p style="color:#718096; margin-bottom: 15px;">Review the master compendium for all 12 zones.</p>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-right: 5px;" id="lesson-list-container"></div>
+        <button class="nav-btn" style="margin: 20px auto 0;" onclick="closeModal('training-modal')">Close</button>
+      </div>
+      <div id="training-view-content" style="display: none;">
+        <div class="training-header">
+          <strong id="train-level-title" style="font-size:1.2rem; color:#2B6CB0;"></strong>
+          <p id="train-level-desc" style="font-size:0.95rem; color:#4A5568; margin-top:5px;"></p>
+        </div>
+        <div class="training-grid" id="training-grid-container" style="max-height: 40vh; overflow-y: auto; padding: 5px;"></div>
+        <button class="action-btn" style="margin: 15px auto 0; font-size: 1rem; padding: 10px 20px;" onclick="backToLessonList()">🔙 Back to Lessons</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login/Account Modal -->
+  <div class="modal-overlay active" id="login-modal" style="background: rgba(0,0,0,0.9); z-index: 3000;">
+    <div class="modal-card">
+      <h2 style="color:var(--primary-dark);">Aleph-Bet Quest</h2>
+      <p style="color:#718096; margin-top:5px;">Select your profile or create a new one to save progress!</p>
+      <div class="user-list" id="user-list-container"></div>
+      <div style="margin: 15px 0; font-weight: 600; color: #A0AEC0;">OR</div>
+      <div style="display: flex; gap: 8px; justify-content: center;">
+        <input type="text" id="new-username" placeholder="Enter new username..." autocomplete="off">
+        <button class="action-btn" style="padding: 8px 16px; font-size: 1rem;" onclick="createNewUser()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Track Selection Modal -->
+  <div class="modal-overlay" id="track-modal">
+    <div class="modal-card">
+      <h2>Select Difficulty Track</h2>
+      <p style="color:#718096; margin-bottom:15px;">Questions scale automatically as you travel to the dark castle.</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="action-btn" style="width:100%; justify-content:center;" onclick="switchTrack('beginner')">🌱 Beginner (Aleph-Bet)</button>
+        <button class="action-btn" style="width:100%; justify-content:center; background:#8338EC;" onclick="switchTrack('intermediate')">🚀 Intermediate (Vocab)</button>
+        <button class="action-btn" style="width:100%; justify-content:center; background:#E53E3E;" onclick="switchTrack('advanced')">🏆 Advanced (Fluency)</button>
+      </div>
+      <button class="nav-btn" style="margin: 15px auto 0;" onclick="closeModal('track-modal')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal-card">
+      <h2 style="color:var(--primary-dark);" id="profile-name-display-modal">Player Name</h2>
+      <div class="stat-details" id="profile-stats-detailed"></div>
+      
+      <h3 style="color:#2D3748;">My Equipment</h3>
+      <div class="equip-slots">
+        <div class="slot" id="equip-slot-weapon"><div class="slot-icon">🗡️</div><div>None</div></div>
+        <div class="slot" id="equip-slot-armor"><div class="slot-icon">🛡️</div><div>None</div></div>
+      </div>
+      <div class="grid-container" id="inventory-grid" style="max-height: 120px; overflow-y: auto;"></div>
+
+      <h3 style="margin-top: 20px; color:#2D3748;">My Backpack</h3>
+      <p style="font-size:0.8rem; color:#718096; margin-bottom:5px;">Click an item to use it!</p>
+      <div class="grid-container" id="consumables-grid" style="max-height: 120px; overflow-y: auto;"></div>
+
+      <div style="display:flex; justify-content: center; gap: 10px; margin-top:20px;">
+        <button class="nav-btn" onclick="logout()">🚪 Switch User</button>
+        <button class="nav-btn" onclick="closeModal('profile-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Town Shop Modal -->
+  <div class="modal-overlay" id="shop-modal">
+    <div class="modal-card">
+      <h2>🏪 Local Town Shop</h2>
+      <p style="font-size:0.9rem; color:#718096; margin-top:4px;">Gear up and buy medicine for the journey!</p>
+      
+      <div class="shop-tabs">
+        <button class="shop-tab-btn active" id="tab-avatars" onclick="renderShop('avatars')">Avatars</button>
+        <button class="shop-tab-btn" id="tab-weapons" onclick="renderShop('weapons')">Weapons</button>
+        <button class="shop-tab-btn" id="tab-armor" onclick="renderShop('armor')">Armor</button>
+        <button class="shop-tab-btn" id="tab-items" onclick="renderShop('items')">Items</button>
+      </div>
+
+      <div class="grid-container" id="shop-items-container" style="max-height: 300px; overflow-y: auto;"></div>
+      <button class="nav-btn" style="margin: 15px auto 0;" onclick="closeModal('shop-modal')">Leave Shop</button>
+    </div>
+  </div>
+
+  <!-- Battle Encounter Modal -->
+  <div class="modal-overlay" id="battle-modal">
+    <div class="modal-card" style="background: #EDF2F7; border: 4px solid #A0AEC0;">
+      <div class="boss-header">
+        <div id="combat-zone-label" style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0;">Zone Level 1</div>
+        <strong id="boss-name">Wild Slime</strong>
+        <div class="boss-avatar" id="boss-avatar-icon">💧</div>
+        
+        <div class="boss-hp-bar" id="boss-hp-bar-container">
+          <div class="boss-hp-fill" id="boss-hp-fill"></div>
+        </div>
+      </div>
+
+      <div class="question-prompt" id="q-prompt">Which letter is 'Aleph'?</div>
+      <div class="hebrew-text" id="q-hebrew" style="display: none;">א</div>
+      <button class="audio-btn" id="audio-pronounce-btn" onclick="speakCurrentQuestion()">🔊</button>
+      <div class="options-grid" id="options-container"></div>
+    </div>
+  </div>
+
+  <script>
+    // --- Helper: Shuffle Array ---
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function showAlert(message, callback) {
+      const overlay = document.getElementById('custom-alert-overlay');
+      document.getElementById('custom-alert-text').textContent = message;
+      overlay.classList.add('active');
+      const btn = document.getElementById('custom-alert-btn');
+      btn.onclick = () => { overlay.classList.remove('active'); if (callback) callback(); };
+    }
+
+    function showConfirm(message, yesCallback, noCallback) {
+      const overlay = document.getElementById('custom-confirm-overlay');
+      document.getElementById('custom-confirm-text').textContent = message;
+      overlay.classList.add('active');
+      document.getElementById('custom-confirm-yes').onclick = () => {
+        overlay.classList.remove('active');
+        if(yesCallback) yesCallback();
+      };
+      document.getElementById('custom-confirm-no').onclick = () => {
+        overlay.classList.remove('active');
+        if(noCallback) noCallback();
+      };
+    }
+    
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(word);
+        utt.lang = 'he-IL'; utt.rate = 0.85; window.speechSynthesis.speak(utt);
+      }
+    }
+
+    // --- RPG 8-BIT AUDIO ENGINE ---
+    class SoundFX {
+      constructor() { this.ctx = null; this.musicOn = false; this.bgmTimer = null; this.tick = 0; }
+      
+      init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      
+      playTone(freq, type, duration, vol = 0.05) {
+        if (!freq) return; 
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type; 
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.02); 
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration); 
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + duration);
+      }
+      
+      step() { this.playTone(200, 'sine', 0.15, 0.02); }
+      bump() { this.playTone(100, 'triangle', 0.2, 0.04); }
+      encounter() { this.playTone(350, 'square', 0.15, 0.03); setTimeout(() => this.playTone(450, 'square', 0.2, 0.03), 100); }
+      hitEnemy() { this.playTone(500, 'sawtooth', 0.1, 0.04); setTimeout(() => this.playTone(650, 'sawtooth', 0.15, 0.04), 80); }
+      takeDamage() { this.playTone(200, 'sawtooth', 0.2, 0.05); setTimeout(() => this.playTone(150, 'sawtooth', 0.3, 0.05), 150); }
+      win() { this.playTone(400, 'square', 0.15, 0.03); setTimeout(() => this.playTone(500, 'square', 0.15, 0.03), 150); setTimeout(() => this.playTone(600, 'square', 0.4, 0.03), 300); }
+      heal() { this.playTone(500, 'sine', 0.15, 0.03); setTimeout(() => this.playTone(700, 'sine', 0.3, 0.03), 120); }
+      
+      victoryFanfare() {
+        this.stopBGM();
+        this.playTone(440, 'square', 0.2, 0.05); // A4
+        setTimeout(() => this.playTone(440, 'square', 0.2, 0.05), 250); 
+        setTimeout(() => this.playTone(440, 'square', 0.2, 0.05), 500); 
+        setTimeout(() => this.playTone(554, 'square', 0.4, 0.05), 750); // C#5
+        setTimeout(() => this.playTone(440, 'square', 0.2, 0.05), 1200); 
+        setTimeout(() => this.playTone(659, 'square', 0.6, 0.05), 1500); // E5
+      }
+
+      toggleMusic() {
+        this.musicOn = !this.musicOn;
+        if(this.musicOn) { this.startBGM(); } else { this.stopBGM(); }
+        return this.musicOn;
+      }
+      
+      startBGM() {
+        this.stopBGM();
+        if(!this.musicOn) return;
+        
+        const N = {
+          C1: 32.7, D1: 36.7, Eb1: 38.9, E1: 41.2, F1: 43.6, G1: 49.0, Ab1: 51.9, A1: 55.0, Bb1: 58.3, B1: 61.7,
+          C2: 65.4, D2: 73.4, Eb2: 77.8, E2: 82.4, F2: 87.3, G2: 98.0, Ab2: 103.8, A2: 110.0, Bb2: 116.5, B2: 123.5,
+          C3: 130.8, D3: 146.8, Eb3: 155.6, E3: 164.8, F3: 174.6, G3: 196.0, Ab3: 207.7, A3: 220.0, B3: 246.9, 
+          C4: 261.6, D4: 293.7, Eb4: 311.1, E4: 329.6, F4: 349.2, G4: 392.0, Ab4: 415.3, A4: 440.0, B4: 493.9,
+          C5: 523.3, D5: 587.3, Eb5: 622.3, E5: 659.3, F5: 698.5, G5: 784.0, Ab5: 830.6, A5: 880.0, B5: 987.8,
+          C6: 1046.5, D6: 1174.7, E6: 1318.5, F6: 1396.9, G6: 1568.0
+        };
+
+        const mapMelody = [N.C4, 0, N.C4, N.G3, N.C4, N.D4, N.E4, 0, N.E4, 0, N.E4, N.C4, N.E4, N.F4, N.G4, 0, 
+                           N.A4, 0, N.A4, N.F4, N.C5, N.A4, N.G4, 0, N.E4, N.C4, N.D4, N.E4, N.C4, 0, 0, 0];
+        const mapBass =   [N.C3, 0, N.G2, 0, N.C3, 0, N.G2, 0, N.C3, 0, N.G2, 0, N.C3, 0, N.E3, 0, 
+                           N.F2, 0, N.C3, 0, N.F2, 0, N.A2, 0, N.C3, 0, N.G2, 0, N.C3, 0, N.G2, 0];
+
+        const casMelody = [N.C3, 0, N.Eb3, 0, N.D3, 0, N.Ab2, 0];
+        const casBass =   [N.C2, 0, N.C2, 0, N.G1, 0, N.G1, 0];
+
+        const batMelody = [N.C4, N.E4, N.G4, N.C5, N.G4, N.E4, N.C4, N.E4, N.F4, N.A4, N.C5, N.F5, N.C5, N.A4, N.F4, N.A4];
+        const batBass =   [N.C3, N.G2, N.C3, N.G2, N.C3, N.G2, N.C3, N.G2, N.F2, N.C3, N.F2, N.C3, N.F2, N.C3, N.F2, N.C3];
+
+        const wizMelody = [N.C5, N.E5, N.G5, N.B5, N.C6, N.B5, N.G5, N.E5, N.F5, N.A5, N.C6, N.E6, N.F6, N.E6, N.C6, N.A5,
+                           N.D5, N.F5, N.A5, N.C6, N.D6, N.C6, N.A5, N.F5, N.G5, N.B5, N.D6, N.F6, N.G6, N.F6, N.D6, N.B5];
+        const wizBass =   [N.C4, 0, N.G3, 0, N.C4, 0, N.G3, 0, N.F3, 0, N.C4, 0, N.F3, 0, N.C4, 0,
+                           N.D3, 0, N.A3, 0, N.D3, 0, N.A3, 0, N.G3, 0, N.D4, 0, N.G3, 0, N.D4, 0];
+
+        const bgmLoop = () => {
+          if (!this.musicOn) return;
+          this.tick++;
+          let speedMs = 180;
+          
+          if (inWizardQuiz) {
+            speedMs = 350;
+            const i = this.tick % wizMelody.length;
+            this.playTone(wizMelody[i], 'sine', 0.5, 0.03); 
+            this.playTone(wizBass[i], 'triangle', 0.5, 0.04);
+          } else if (inBattle) {
+            speedMs = 150;
+            const i = this.tick % batMelody.length;
+            this.playTone(batMelody[i], 'square', 0.15, 0.02); 
+            this.playTone(batBass[i], 'triangle', 0.2, 0.03);
+          } else if (inCastle) {
+            speedMs = 600;
+            const i = this.tick % casMelody.length;
+            this.playTone(casMelody[i], 'triangle', 0.8, 0.04);
+            this.playTone(casBass[i], 'sine', 0.9, 0.05);
+          } else {
+            speedMs = 180; 
+            const i = this.tick % mapMelody.length;
+            this.playTone(mapMelody[i], 'square', 0.2, 0.02); 
+            this.playTone(mapBass[i], 'triangle', 0.2, 0.04);
+          }
+          
+          this.bgmTimer = setTimeout(bgmLoop, speedMs);
+        };
+        bgmLoop(); 
+      }
+      stopBGM() { if(this.bgmTimer) clearTimeout(this.bgmTimer); this.bgmTimer = null; }
+    }
+    
+    const sfx = new SoundFX();
+
+    function toggleMusic() {
+      const btn = document.getElementById('music-btn');
+      if (sfx.toggleMusic()) { btn.textContent = "🎵 ON"; btn.classList.add('active'); } 
+      else { btn.textContent = "🎵 OFF"; btn.classList.remove('active'); }
+    }
+
+    // --- GAME MAP DATA (Progressive Scale) ---
+    const MAPS = {
+      beginner: [
+        "......M..W-.....MMM.......~....WWWW#",
+        ".........W-.....M.........~....WW...",
+        "..MM.....WW....M.........~~.........",
+        "......MM..WW.......M.....~...M......",
+        "W..MM.....W......MM.................",
+        "WW..~.....W....WW..T...........T....",
+        "W...T..M..W--W.W........M........M..",
+        "..........W..WW.....................",
+        ".MMM...M.......M.......~.....MMM....",
+        ".......M.........M.....~............",
+        "M.......M...M.......M.......M.......",
+        "@..M................................"
+      ],
+      intermediate: [
+        "......M..W-.....MMM.......~.......MMM.......WWWW#",
+        ".........W-.....M.........~.......M.........WW...",
+        "..MM.....WW....M.........~~..M...M...............",
+        "......MM..WW.......M.....~......MM......M........",
+        "W..MM.....W......MM.............MMMM.............",
+        "WW..~.....W....WW..T...........T....M.......T....",
+        "W...T..M..W--W.W........M......WWWW.....W--W..M..",
+        "..........W..WW.................M.......W..WW....",
+        ".MMM...M.......M.......~.....MMM........W....M...",
+        ".......M.........M.....~................W........",
+        "M.......M...M.......M.......M......MM   W........",
+        "@..M........................M...........W........"
+      ],
+      advanced: [
+        "......M..W-.....MMM.......~.......MMM.......W-......WWWW#",
+        ".........W-.....M.........~.......M.........W-......WW...",
+        "..MM.....WW....M.........~~..M...M........WW.............",
+        "......MM..WW.......M.....~......MM......M....W...........",
+        "W..MM.....W......MM.............MMMM.........W...........",
+        "WW..~.....W....WW..T...........T....M........W--W...T....",
+        "W...T..M..W--W.W........M......WWWW..........W..W.....M..",
+        "..........W..WW.................M............W...WW......",
+        ".MMM...M.......M.......~.....MMM........M.......M........",
+        ".......M.........M.....~.................................",
+        "M.......M...M.......M.......M......MM.......M............",
+        "@..M........................M............................"
+      ]
+    };
+
+    const TOWN_LAYOUT = [
+      "OOOOOOOOOOOO",
+      "OOBBBBBBBBOO",
+      "OB++$.$++SBO",
+      "OB++++++++BO",
+      "O+N++T+++N+O",
+      "O+C++++Z+N+O", 
+      "O+++T++++++O",
+      "O+N++N+++N+O",
+      "O++++++T+++O",
+      "O+N++N+++N+O",
+      "O++++++++++O",
+      "OOOO+EE+OOOO"
+    ];
+
+    const CASTLE_LAYOUT = [
+      "XXXXXXXXXXXX",
+      "XH........FX",
+      "XXXXXXXXXX.X",
+      "X........M.X",
+      "X.XXXXXXXXXX",
+      "X.M........X",
+      "XXXXXXXXXX.X",
+      "X........M.X",
+      "X.XXXXXXXXXX",
+      "X.M........X",
+      "XXXXXXXXXX.X",
+      "XXXXXXXXXXFE" 
+    ];
+
+    const AVATARS = [
+      { icon: '🦁', price: 0 }, { icon: '🐶', price: 50 }, { icon: '🐱', price: 50 }, { icon: '🦊', price: 50 }, 
+      { icon: '🐰', price: 100 }, { icon: '🐼', price: 100 }, { icon: '🐸', price: 100 }, { icon: '🦄', price: 100 },
+      { icon: '🤖', price: 150 }, { icon: '👽', price: 150 }, { icon: '👻', price: 150 }, { icon: '🐙', price: 150 },
+      { icon: '🦖', price: 250 }, { icon: '🐉', price: 250 }, { icon: '🥷', price: 300 }, { icon: '🧙‍♂️', price: 300 },
+      { icon: '🦸‍♂️', price: 400 }, { icon: '🧛‍♂️', price: 400 }, { icon: '🧟‍♂️', price: 400 }, { icon: '👑', price: 1000 }
+    ];
+
+    const SHOP_ITEMS = {
+      weapons: [
+        { id: 'w1', name: 'Wood Stick', icon: '🦯', price: 50, dmg: 1, desc: "Damage: 1" },
+        { id: 'w2', name: 'Iron Dagger', icon: '🗡️', price: 150, dmg: 2, desc: "Damage: 2" },
+        { id: 'w3', name: 'Knight Sword', icon: '⚔️', price: 400, dmg: 3, desc: "Damage: 3" },
+        { id: 'w4', name: 'Magic Staff', icon: '🪄', price: 800, dmg: 4, desc: "Damage: 4" },
+        { id: 'w5', name: 'Aleph Blade', icon: '⚡', price: 1500, dmg: 5, desc: "Damage: 5" },
+        { id: 'w6', name: 'Silver Mace', icon: '🔨', price: 3000, dmg: 8, desc: "Damage: 8" },
+        { id: 'w7', name: 'David\'s Sling', icon: '☄️', price: 5000, dmg: 12, desc: "Damage: 12" },
+        { id: 'w8', name: 'Gideon\'s Sword', icon: '🗡️', price: 9000, dmg: 18, desc: "Damage: 18" },
+        { id: 'w9', name: 'Samson\'s Pillar', icon: '🏛️', price: 15000, dmg: 26, desc: "Damage: 26" },
+        { id: 'w10', name: 'Blade of Light', icon: '✨', price: 25000, dmg: 40, desc: "Damage: 40" }
+      ],
+      armor: [
+        { id: 'a1', name: 'Cloth Tunic', icon: '👕', price: 50, def: 1, desc: "Def: 1" },
+        { id: 'a2', name: 'Leather Vest', icon: '🧥', price: 150, def: 2, desc: "Def: 2" },
+        { id: 'a3', name: 'Chainmail', icon: '⛓️', price: 400, def: 4, desc: "Def: 4" },
+        { id: 'a4', name: 'Steel Plate', icon: '🛡️', price: 800, def: 6, desc: "Def: 6" },
+        { id: 'a5', name: 'Wisdom Crown', icon: '👑', price: 1500, def: 10, desc: "Def: 10" },
+        { id: 'a6', name: 'Bronze Mail', icon: '🎽', price: 3000, def: 14, desc: "Def: 14" },
+        { id: 'a7', name: 'Royal Robes', icon: '🧥', price: 5000, def: 20, desc: "Def: 20" },
+        { id: 'a8', name: 'Titanium Vest', icon: '🦺', price: 9000, def: 28, desc: "Def: 28" },
+        { id: 'a9', name: 'Prophet\'s Cloak', icon: '🧣', price: 15000, def: 38, desc: "Def: 38" },
+        { id: 'a10', name: 'Aura of Peace', icon: '🕊️', price: 25000, def: 55, desc: "Def: 55" }
+      ],
+      items: [
+        { id: 'i1', name: 'Medicine', icon: '🧪', price: 30, heal: 20, desc: "Heals 20 HP" },
+        { id: 'i2', name: 'Hi-Potion', icon: '💊', price: 80, heal: 50, desc: "Heals 50 HP" },
+        { id: 'i3', name: 'Elixir', icon: '🏺', price: 200, heal: 999, desc: "Full Heal" },
+        { id: 'i4', name: 'Miracle Fruit', icon: '🍇', price: 500, heal: 150, desc: "Heals 150 HP" },
+        { id: 'i5', name: 'Manna', icon: '🍞', price: 1200, heal: 400, desc: "Heals 400 HP" },
+        { id: 'i6', name: 'Tree of Life', icon: '🌳', price: 2500, heal: 9999, desc: "Full Heal" }
+      ]
+    };
+
+    const ENEMY_TYPES = {
+      1: { name: 'Green Slime', icon: '💧' }, 2: { name: 'Red Slime', icon: '🩸' }, 3: { name: 'Angry Shroom', icon: '🍄' },
+      4: { name: 'Forest Goblin', icon: '👺' }, 5: { name: 'Wild Boar', icon: '🐗' }, 6: { name: 'Dire Wolf', icon: '🐺' },
+      7: { name: 'Rock Golem', icon: '🪨' }, 8: { name: 'Mountain Troll', icon: '🧌' }, 9: { name: 'Gargoyle', icon: '🦇' },
+      10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Boss', icon: '🐹' }
+    };
+
+    const BOSS_DEFS = {
+      beginner: { name: "Sir Nibbles", icon: "🐹", hp: 30 },
+      intermediate: { name: "Prof. Squeaks", icon: "🐭", hp: 150 },
+      advanced: { name: "Emp. Fluffypants", icon: "👑", hp: 500 }
+    };
+
+    const TRAINING_DATA = {
+      beginner: {
+        1: { title: "Letters: Aleph to Yod", desc: "The first 10 letters and basic sounds.", items: [["א", "Aleph", "Silent"], ["בּ", "Bet", "Makes 'B' sound (with dot)"], ["ב", "Vet", "Makes 'V' sound (no dot)"], ["ג", "Gimel", "'G' as in Girl"], ["ד", "Dalet", "'D' sound"], ["ה", "Hei", "'H' sound"], ["ו", "Vav", "'V' or 'O/U' sound"], ["ז", "Zayin", "'Z' sound"], ["ח", "Chet", "Guttural 'Ch' sound"], ["ט", "Tet", "'T' sound"], ["י", "Yod", "'Y' sound"], ["ר", "Resh", "Looks like Dalet, rounded"], ["ת", "Tav", "Looks like Chet, has a foot"]] },
+        2: { title: "Letters: Kaf to Tav & Final Forms", desc: "The rest of the alphabet and Sofit (final) letters.", items: [["כּ", "Kaf", "'K' sound (with dot)"], ["כ", "Chaf", "'Ch' sound (no dot)"], ["ל", "Lamed", "'L' sound"], ["מ", "Mem", "'M' sound"], ["נ", "Nun", "'N' sound"], ["ס", "Samech", "'S' sound"], ["ע", "Ayin", "Silent (from throat)"], ["פ", "Peh", "'P' or 'F' sound"], ["צ", "Tzadi", "'Tz' sound"], ["ק", "Kof", "'K' sound"], ["ר", "Resh", "'R' sound"], ["שׁ", "Shin", "'Sh' sound (dot right)"], ["שׂ", "Sin", "'S' sound (dot left)"], ["ת", "Tav", "'T' sound"], ["ם", "Mem Sofit", "Final Mem (square)"], ["ן", "Nun Sofit", "Final Nun"], ["ך", "Chaf Sofit", "Final Chaf"], ["ף", "Peh Sofit", "Final Peh"], ["ץ", "Tzadi Sofit", "Final Tzadi"]] },
+        3: { title: "Vowels 1: Ah, Eh, Ee", desc: "Kamatz, Patach, Tzere, Segol, Chiriq.", items: [["ָ", "Kamatz", "'Ah' sound"], ["ַ", "Patach", "'Ah' sound"], ["ֵ", "Tzere", "'Eh' or 'Ay' sound"], ["ֶ", "Segol", "'Eh' sound"], ["ִ", "Chiriq", "'Ee' sound"]] },
+        4: { title: "Vowels 2: Oh, Oo, Silent", desc: "Cholam, Shuruk, Kubutz, Sheva.", items: [["ֹ", "Cholam", "'Oh' sound (dot above left)"], ["וֹ", "Cholam with Vav", "'Oh' sound"], ["וּ", "Shuruk", "'Oo' sound (Vav with center dot)"], ["ֻ", "Kubutz", "'Oo' sound (three diagonal dots)"], ["ְ", "Sheva", "Short 'eh' or silent pause"]] },
+        5: { title: "Basic Words & Greetings", desc: "Everyday vocabulary and hellos.", items: [["אַבָּא", "Abba", "Father / Dad"], ["אִמָּא", "Imma", "Mother / Mom"], ["שָׁלוֹם", "Shalom", "Hello / Peace / Goodbye"], ["תּוֹדָה", "Todah", "Thank you"], ["כֵּן", "Ken", "Yes"], ["לֹא", "Lo", "No / Not"], ["בַּיִת", "Bayit", "House / Home"], ["סֵפֶר", "Sefer", "Book"], ["יֶלֶד", "Yeled", "Boy / Child"], ["יַלְדָּה", "Yalda", "Girl"], ["בְּבָקָשָׁה", "Bevakasha", "Please / You're welcome"], ["טוֹב", "Tov", "Good"], ["בֹּקֶר טוֹב", "Boker Tov", "Good morning"], ["לַיְלָה טוֹב", "Laila Tov", "Good night"], ["מַיִם", "Mayim", "Water"], ["לֶחֶם", "Lechem", "Bread"], ["חָלָב", "Chalav", "Milk"], ["יוֹם", "Yom", "Day"], ["יָם", "Yam", "Sea / Ocean"]] },
+        6: { title: "Nature, Colors & Numbers 1-3", desc: "Animals, elements, adjectives, and counting.", items: [["כֶּלֶב", "Kelev", "Dog"], ["חָתוּל", "Chatul", "Cat"], ["שֶׁמֶשׁ", "Shemesh", "Sun"], ["יָרֵחַ", "Yare'ach", "Moon"], ["עֵץ", "Etz", "Tree / Wood"], ["פֶּרַח", "Perach", "Flower"], ["גָּדוֹל", "Gadol", "Big"], ["קָטָן", "Katan", "Small"], ["אֶרֶץ", "Eretz", "Land / Earth"], ["שָׁמַיִם", "Shamayim", "Sky / Heavens"], ["אָדֹם", "Adom", "Red"], ["כָּחֹל", "Kachol", "Blue"], ["יָרֹק", "Yarok", "Green"], ["צָהֹב", "Tzahov", "Yellow"], ["לָבָן", "Lavan", "White"], ["שָׁחֹר", "Shachor", "Black"], ["אֶחָד", "Echad", "One"], ["שְׁנַיִם", "Shnayim", "Two"], ["שְׁלֹשָׁה", "Shlosha", "Three"]] },
+        7: { title: "Numbers 4-10 & Pronouns", desc: "Counting up to 10 and identifying people.", items: [["אַרְבָּעָה", "Arba'a", "Four"], ["חֲמִשָּׁה", "Chamisha", "Five"], ["שִׁשָּׁה", "Shisha", "Six"], ["שִׁבְעָה", "Shiv'a", "Seven"], ["שְׁמוֹנָה", "Shmona", "Eight"], ["תִּשְׁעָה", "Tish'a", "Nine"], ["עֲשָׂרָה", "Asara", "Ten"], ["אֲנִי", "Ani", "I / Me"], ["אַתָּה", "Atah", "You (m)"], ["אַתְּ", "At", "You (f)"], ["הוּא", "Hu", "He"], ["הִיא", "Hi", "She"], ["אֲנַחְנוּ", "Anachnu", "We"], ["הֵם", "Hem", "They (m/mixed)"]] },
+        8: { title: "Questions, Places & Sight Words", desc: "Important questions and Jewish concepts.", items: [["מִי", "Mi", "Who?"], ["מָה", "Ma", "What?"], ["אֵיפֹה", "Eifo", "Where?"], ["זֶה", "Zeh", "This (m)"], ["זֹאת", "Zot", "This (f)"], ["שַׁבָּת", "Shabbat", "Sabbath"], ["תּוֹרָה", "Torah", "Torah"], ["מִצְוָה", "Mitzvah", "Commandment"], ["יִשְׂרָאֵל", "Yisrael", "Israel"], ["כָּשֵׁר", "Kosher", "Kosher"], ["חַלָּה", "Challah", "Challah bread"], ["סִדּוּר", "Siddur", "Prayer book"], ["פֹּה", "Poh", "Here"], ["שָׁם", "Sham", "There"], ["מוֹרֶה", "Moreh", "Teacher (m)"], ["מוֹרָה", "Morah", "Teacher (f)"]] },
+        9: { title: "Prefixes & Common Phrases", desc: "Connecting words and expressions.", items: [["בְּ", "Be / Ba", "In / At"], ["לְ", "Le / La", "To / For"], ["מִ", "Mi", "From"], ["וְ", "Ve / U", "And"], ["הַ", "Ha", "The"], ["מְאֹד", "Me'od", "Very"], ["מַזָּל טוֹב", "Mazal Tov", "Congratulations"], ["שָׁלוֹם עֲלֵיכֶם", "Shalom Aleichem", "Peace be upon you"], ["אָמֵן", "Amen", "Amen"], ["בָּרוּךְ", "Baruch", "Blessed"]] },
+        10: { title: "Family (Mishpacha)", desc: "Words for relatives and people.", items: [["מִשְׁפָּחָה", "Mishpacha", "Family"], ["סַבָּא", "Saba", "Grandfather"], ["סָבְתָא", "Savta", "Grandmother"], ["בֵּן", "Ben", "Son / Boy"], ["בַּת", "Bat", "Daughter / Girl"], ["אָח", "Ach", "Brother"], ["אָחוֹת", "Achot", "Sister"], ["חָבֵר", "Chaver", "Friend (m)"], ["חֲבֵרָה", "Chavera", "Friend (f)"], ["אִישׁ", "Ish", "Man"], ["אִשָּׁה", "Isha", "Woman"], ["תִּינוֹק", "Tinok", "Baby"], ["שֶׁלִּי", "Sheli", "My / Mine"]] },
+        11: { title: "Verbs (Action Words)", desc: "What people do, want, and have.", items: [["אוֹהֵב", "Ohev", "Love / Like (m)"], ["אוֹהֶבֶת", "Ohevet", "Love / Like (f)"], ["רוֹצֶה", "Rotzeh", "Want (m)"], ["רוֹצָה", "Rotza", "Want (f)"], ["אוֹכֵל", "Ochel", "Eat (m)"], ["שׁוֹתֶה", "Shoteh", "Drink (m)"], ["הוֹלֵךְ", "Holech", "Walk / Go (m)"], ["לוֹמֵד", "Lomed", "Learn / Study (m)"], ["יוֹדֵעַ", "Yode'a", "Know (m)"], ["יֵשׁ", "Yesh", "There is / I have"], ["אֵין", "Ein", "There is not / I don't have"]] },
+        12: { title: "Phrases & Capstone Review", desc: "Mastering greetings and review terms.", items: [["מָה נִשְׁמָע?", "Ma nishma?", "How are you? / What's up?"], ["הַכֹּל טוֹב", "Hakol tov", "Everything is good"], ["שַׁבָּת שָׁלוֹם", "Shabbat Shalom", "Peaceful Sabbath"], ["כָּל הַכָּבוֹד", "Kol Hakavod", "Well done / Good job!"]] }
+      },
+      intermediate: {
+        1: { title: "Greetings", desc: "Saying hello in Hebrew.", items: [["שָׁלוֹם", "Shalom", "Hello / Peace / Goodbye"], ["בֹּקֶר טוֹב", "Boker Tov", "Good Morning"], ["עֶרֶב טוֹב", "Erev Tov", "Good Evening"], ["לַיְלָה טוֹב", "Laila Tov", "Good Night"], ["תּוֹדָה", "Toda", "Thank you"], ["סְלִיחָה", "Slicha", "Excuse me / Sorry"]] },
+        2: { title: "Family (Mishpacha)", desc: "Words for family members.", items: [["אַבָּא", "Abba", "Father"], ["אִמָּא", "Ima", "Mother"], ["בֵּן", "Ben", "Son"], ["בַּת", "Bat", "Daughter"], ["אָח", "Ach", "Brother"], ["אָחוֹת", "Achot", "Sister"], ["סָבָּא", "Saba", "Grandfather"], ["סָבְתָא", "Savta", "Grandmother"]] },
+        3: { title: "Food & Drink", desc: "Essential words for eating.", items: [["לֶחֶם", "Lechem", "Bread"], ["מַיִם", "Mayim", "Water"], ["חָלָב", "Chalav", "Milk"], ["בָּשָׂר", "Basar", "Meat"], ["תַּפּוּחַ", "Tapuach", "Apple"], ["יַיִן", "Yayin", "Wine"]] },
+        4: { title: "Animals", desc: "Common animals.", items: [["כֶּלֶב", "Kelev", "Dog"], ["חָתוּל", "Chatul", "Cat"], ["סוּס", "Sus", "Horse"], ["צִפּוֹר", "Tzipor", "Bird"], ["דָּג", "Dag", "Fish"]] },
+        5: { title: "House & Home", desc: "Objects around the house.", items: [["בַּיִת", "Bayit", "House"], ["דֶּלֶת", "Delet", "Door"], ["חַלּוֹן", "Chalon", "Window"], ["שֻׁלְחָן", "Shulchan", "Table"], ["כִּסֵּא", "Kise", "Chair"]] },
+        6: { title: "City & Travel", desc: "Navigating the town.", items: [["עִיר", "Ir", "City"], ["רְחוֹב", "Rechov", "Street"], ["רַכֶּבֶת", "Rakevet", "Train"], ["אוֹטוֹבּוּס", "Otobus", "Bus"], ["חֲנוּת", "Chanut", "Store/Shop"]] },
+        7: { title: "Body Parts", desc: "Anatomy vocabulary.", items: [["רֹאשׁ", "Rosh", "Head"], ["עֵינַיִם", "Einayim", "Eyes"], ["אָזְנַיִם", "Oznayim", "Ears"], ["פֶּה", "Peh", "Mouth"], ["יָדַיִם", "Yadayim", "Hands"]] },
+        8: { title: "Time & Days", desc: "Understanding time.", items: [["יוֹם", "Yom", "Day"], ["שָׁבוּעַ", "Shavua", "Week"], ["חֹדֶשׁ", "Chodesh", "Month"], ["שָׁנָה", "Shana", "Year"], ["מָחָר", "Machar", "Tomorrow"]] },
+        9: { title: "Colors", desc: "Describing colors.", items: [["אָדֹם", "Adom", "Red"], ["כָּחֹל", "Kachol", "Blue"], ["יָרוֹק", "Yarok", "Green"], ["צָהֹב", "Tzahov", "Yellow"], ["שָׁחוֹר", "Shachor", "Black"], ["לָבָן", "Lavan", "White"]] },
+        10: { title: "Nature", desc: "The great outdoors.", items: [["עֵץ", "Etz", "Tree"], ["פֶּרַח", "Perach", "Flower"], ["שֶׁמֶשׁ", "Shemesh", "Sun"], ["יָרֵחַ", "Yare'ach", "Moon"], ["כּוֹכָב", "Kochav", "Star"]] },
+        11: { title: "Clothing", desc: "What you wear.", items: [["בֶּגֶד", "Beged", "Garment"], ["חֻלְצָה", "Chultza", "Shirt"], ["מִכְנָסַיִם", "Michnasayim", "Pants"], ["נַעֲלַיִם", "Na'alayim", "Shoes"], ["כּוֹבַע", "Kova", "Hat"]] },
+        12: { title: "Weather", desc: "Outside conditions.", items: [["גֶּשֶׁם", "Geshem", "Rain"], ["שֶׁלֶג", "Sheleg", "Snow"], ["רוּחַ", "Ruach", "Wind"], ["חַם", "Cham", "Hot"], ["קַר", "Kar", "Cold"]] }
+      },
+      advanced: {
+        1: { title: "Pronouns", desc: "Who is doing the action?", items: [["אֲנִי", "Ani", "I"], ["אַתָּה", "Ata", "You (M)"], ["הוּא", "Hu", "He"], ["הִיא", "Hi", "She"], ["אֲנַחְנוּ", "Anachnu", "We"]] },
+        2: { title: "Basic Verbs 1 (Present)", desc: "Action words.", items: [["אוֹכֵל", "Ochel", "Eating (m)"], ["שׁוֹתֶה", "Shoteh", "Drinking (m)"], ["הוֹלֵךְ", "Holech", "Walking (m)"], ["יוֹשֵׁב", "Yoshev", "Sitting (m)"]] },
+        3: { title: "Basic Verbs 2 (Motion)", desc: "Moving around.", items: [["רָץ", "Ratz", "Running (m)"], ["קָם", "Kam", "Getting up / Standing (m)"], ["יָשֵׁן", "Yashen", "Sleeping (m)"], ["נוֹסֵעַ", "Nose'a", "Traveling/Driving (m)"], ["טָס", "Tas", "Flying (m)"]] },
+        4: { title: "Basic Verbs 3 (Senses)", desc: "Perception and feeling.", items: [["רוֹאֶה", "Ro'eh", "Seeing (m)"], ["שׁוֹמֵעַ", "Shome'a", "Hearing (m)"], ["מַרְגִּישׁ", "Margish", "Feeling (m)"], ["טוֹעֵם", "To'em", "Tasting (m)"], ["מֵרִיחַ", "Meri'ach", "Smelling (m)"]] },
+        5: { title: "Prepositions", desc: "Positional words.", items: [["בִּפְנִים", "Bifnim", "Inside"], ["בַּחוּץ", "Bachutz", "Outside"], ["עַל", "Al", "On / About"], ["תַּחַת", "Tachat", "Under"], ["לִפְנֵי", "Lifnei", "Before / In front of"]] },
+        6: { title: "Question Words", desc: "Asking questions.", items: [["מִי", "Mi", "Who"], ["מָה", "Ma", "What"], ["לָמָּה", "Lama", "Why"], ["אֵיפֹה", "Eifo", "Where"], ["מָתַי", "Matai", "When"], ["אֵיךְ", "Eich", "How"]] },
+        7: { title: "Adjectives (Emotions)", desc: "Feelings.", items: [["שָׂמֵחַ", "Same'ach", "Happy (m)"], ["עָצוּב", "Atzuv", "Sad (m)"], ["כּוֹעֵס", "Ko'es", "Angry (m)"], ["עָיֵף", "Ayef", "Tired (m)"], ["רָעֵב", "Ra'ev", "Hungry (m)"]] },
+        8: { title: "Adjectives (Sizes & Traits)", desc: "Descriptive words.", items: [["גָּדוֹל", "Gadol", "Big (m)"], ["קָטָן", "Katan", "Small (m)"], ["אָרֹךְ", "Aroch", "Long (m)"], ["קָצָר", "Katzar", "Short (m)"], ["כָּבֵד", "Kaved", "Heavy (m)"]] },
+        9: { title: "Connectors", desc: "Linking ideas.", items: [["וְ", "Ve", "And"], ["אֲבָל", "Aval", "But"], ["אוֹ", "O", "Or"], ["כִּי", "Ki", "Because"], ["אִם", "Im", "If"]] },
+        10: { title: "Advanced Numbers", desc: "Counting past ten.", items: [["אַחַת עֶשְׂרֵה", "Achat-esre", "Eleven (f)"], ["שְׁתֵּים עֶשְׂרֵה", "Shteim-esre", "Twelve (f)"], ["עֶשְׂרִים", "Esrim", "Twenty"], ["שְׁלוֹשִׁים", "Shloshim", "Thirty"], ["מֵאָה", "Me'a", "One Hundred"]] },
+        11: { title: "Time Phrases", desc: "When things happen.", items: [["עַכְשָׁו", "Achshav", "Now"], ["אַחַר כָּךְ", "Achar-kach", "Later / Afterwards"], ["אֶתְמוֹל", "Etmol", "Yesterday"], ["מָחָר", "Machar", "Tomorrow"], ["הַיּוֹם", "Hayom", "Today"]] },
+        12: { title: "Conversational Fluency", desc: "Putting it together.", items: [["בְּבַקָּשָׁה", "Bevakasha", "Please / You're welcome"], ["אֵין בְּעָיָה", "Ein be'aya", "No problem"], ["בְּהַצְלָחָה", "Be'hatzlacha", "Good luck"], ["נָעִים מְאוֹד", "Na'im me'od", "Nice to meet you"], ["מָה קוֹרֶה", "Ma koreh", "What's happening?"]] }
+      }
+    };
+    const DEFAULT_TRAINING = { title: "Combat Ready!", desc: "You have learned the basics. Rely on your wits!", items: [["⚔️", "Prepare", "Get ready for battle!"]] };
+
+    // --- State Management ---
+    const DB_KEY = 'aleph_rpg_users_db';
+    let usersDB = JSON.parse(localStorage.getItem(DB_KEY)) || {};
+    let currentUser = null;
+    let gameQuestions = [];
+    
+    // Engine State
+    let activeQuestion = null;
+    let currentEnemyLevel = 1;
+    let currentEnemyMaxHP = 1;
+    let currentEnemyHP = 1;
+    let inBattle = false;
+    let inTown = false;
+    let inCastle = false;
+    
+    let townNPCs = {};
+    let castleMonsters = {};
+    let activeCastleEnemyKey = null;
+    
+    let inWizardQuiz = false;
+    let wizardStreak = 0;
+
+    function saveDB() {
+      if (currentUser) usersDB[currentUser.name] = currentUser;
+      localStorage.setItem(DB_KEY, JSON.stringify(usersDB));
+    }
+
+    function initAuth() {
+      const savedUser = localStorage.getItem('aleph_rpg_active_user');
+      if (savedUser && usersDB[savedUser]) loginUser(savedUser);
+      else showLoginModal();
+    }
+
+    function showLoginModal() {
+      const listContainer = document.getElementById('user-list-container');
+      listContainer.innerHTML = '';
+      const userNames = Object.keys(usersDB);
+      if (userNames.length === 0) listContainer.innerHTML = '<span style="color:#A0AEC0;">No accounts found. Create one!</span>';
+      else {
+        userNames.forEach(name => {
+          const row = document.createElement('div');
+          row.className = 'user-row';
+          row.innerHTML = `👤 ${name} (Lvl ${usersDB[name].level || 1} - ❤️ ${usersDB[name].hp}/${usersDB[name].maxHp} - 🪙 ${usersDB[name].coins})`;
+          row.onclick = () => loginUser(name);
+          listContainer.appendChild(row);
+        });
+      }
+      document.getElementById('login-modal').classList.add('active');
+    }
+
+    function createNewUser() {
+      const input = document.getElementById('new-username');
+      const name = input.value.trim();
+      if (!name) return showAlert("Please enter a username.");
+      if (usersDB[name]) return showAlert("Username already exists!");
+
+      usersDB[name] = {
+        name: name, coins: 0, track: 'beginner',
+        hp: 50, maxHp: 50, level: 1, xp: 0,
+        x: 0, y: 11, townX: 5, townY: 10, castleX: 10, castleY: 11,
+        avatar: '🦁', unlockedAvatars: ['🦁'],
+        inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null,
+        hasSeenIntro: false
+      };
+      saveDB();
+      input.value = '';
+      loginUser(name);
+    }
+
+    function loginUser(name) {
+      currentUser = usersDB[name];
+      if (!currentUser.consumables) currentUser.consumables = {};
+      if (currentUser.level === undefined) currentUser.level = 1;
+      if (currentUser.xp === undefined) currentUser.xp = 0;
+      if (currentUser.townX === undefined) { currentUser.townX = 5; currentUser.townY = 10; }
+      if (currentUser.castleX === undefined) { currentUser.castleX = 10; currentUser.castleY = 11; }
+      
+      localStorage.setItem('aleph_rpg_active_user', name);
+      document.getElementById('login-modal').classList.remove('active');
+      
+      if (currentUser.hp <= 0) currentUser.hp = currentUser.maxHp;
+      inTown = false;
+      inCastle = false; 
+      
+      loadQuestionBank(); 
+      openIntro();
+    }
+    
+    // --- Dynamic Intro Engine ---
+    let introSequence = [];
+    let currentIntroIndex = 0;
+
+    const HEBREW_LETTERS_DATA = [
+      { l: "א", n: "Aleph", s: "Silent", m: "An Apple waiting for a sound to drop on it." },
+      { l: "בּ", n: "Bet", s: "B", m: "Has a Bellybutton dot in the middle!" },
+      { l: "ב", n: "Vet", s: "V", m: "Void of a dot." },
+      { l: "ג", n: "Gimel", s: "G", m: "Looks like a Girl walking in a high-heeled boot." },
+      { l: "ד", n: "Dalet", s: "D", m: "Looks like an open Door frame." },
+      { l: "ה", n: "Hei", s: "H", m: "Has a Hole in the roof to let the hot air out." },
+      { l: "ו", n: "Vav", s: "V/O/U", m: "A simple Vertical line." },
+      { l: "ז", n: "Zayin", s: "Z", m: "A Zig-zag sword." },
+      { l: "ח", n: "Chet", s: "Ch", m: "Choking on a hairball! (Closed roof, no gap)." },
+      { l: "ט", n: "Tet", s: "T", m: "Looks like a Tea cup." },
+      { l: "י", n: "Yod", s: "Y", m: "A Yummy tiny drop floating in the air." },
+      { l: "כּ", n: "Kaf", s: "K", m: "A Kitten Curled up with a dot." },
+      { l: "כ", n: "Chaf", s: "Ch", m: "Curled up without a dot." },
+      { l: "ל", n: "Lamed", s: "L", m: "A Lightning bolt reaching up high." },
+      { l: "מ", n: "Mem", s: "M", m: "A Mountain with a little cliff." },
+      { l: "נ", n: "Nun", s: "N", m: "A Noodle standing straight up." },
+      { l: "ס", n: "Samech", s: "S", m: "A circle like a Sun." },
+      { l: "ע", n: "Ayin", s: "Silent", m: "Two Eyes looking up (a silent watcher)." },
+      { l: "פ", n: "Peh", s: "P", m: "A face with a tongue (dot) inside." },
+      { l: "צ", n: "Tzadi", s: "Tz", m: "A Tree branch pointing up." },
+      { l: "ק", n: "Kof", s: "K", m: "A Keyhole." },
+      { l: "ר", n: "Resh", s: "R", m: "A Rounded roof." },
+      { l: "שׁ", n: "Shin", s: "Sh", m: "Three flames. Dot on the right! (Sheesh!)" },
+      { l: "שׂ", n: "Sin", s: "S", m: "Three flames. Dot on the left! (Sinister left!)" },
+      { l: "ת", n: "Tav", s: "T", m: "A foot with the Toe pointing out." }
+    ];
+
+    const INTERMEDIATE_VOCAB_DATA = [
+      { w: "שָׁלוֹם", t: "Shalom", m: "Hello / Peace", hint: "The most famous Hebrew greeting!" },
+      { w: "תּוֹדָה", t: "Toda", m: "Thank you", hint: "Show your gratitude." },
+      { w: "בֹּקֶר טוֹב", t: "Boker Tov", m: "Good Morning", hint: "Used to greet someone early in the day." },
+      { w: "אַבָּא", t: "Abba", m: "Father", hint: "A loving term for dad." },
+      { w: "אִמָּא", t: "Ima", m: "Mother", hint: "A loving term for mom." },
+      { w: "בֵּן", t: "Ben", m: "Son", hint: "A male child." },
+      { w: "בַּת", t: "Bat", m: "Daughter", hint: "A female child." }
+    ];
+
+    const ADVANCED_VOCAB_DATA = [
+      { w: "אֲנִי", t: "Ani", m: "I / Me", hint: "Talking about yourself." },
+      { w: "אַתָּה", t: "Ata", m: "You (M)", hint: "Talking to a male." },
+      { w: "אוֹכֵל", t: "Ochel", m: "Eating", hint: "Action of consuming food." },
+      { w: "שׁוֹתֶה", t: "Shoteh", m: "Drinking", hint: "Action of consuming liquids." },
+      { w: "הוֹלֵךְ", t: "Holech", m: "Walking", hint: "Traveling on foot." }
+    ];
+
+    function openIntro() {
+      const TRACK_STORIES = {
+        beginner: {
+          bossName: "Sir Nibbles", bossIcon: "🐹",
+          title1: "🐹 The Hamster's Reign",
+          content1: `Once upon a time, a beloved classroom pet named Sir Nibbles escaped into ${currentUser.name}'s backyard garden...<br><br>He ate a glowing, radioactive heirloom tomato... transforming into a 50-foot-tall Giant Mean Hamster wearing a stretchy top hat!<br><br>Now, he has recruited a union of wild monsters to protest low wages by trampling houses. As a result, property taxes and HOA fees are through the roof!`,
+          title2: "⚔️ A Hero is Needed",
+          content2: `Hero <b>${currentUser.name}</b>, you are our only hope! Drive this evil from the realm and restore our quality of life.<br><br>Your journey will take you east across dangerous lands, into a walled town to buy supplies, and finally into the dark labyrinth to defeat Sir Nibbles!`
+        },
+        intermediate: {
+          bossName: "Prof. Squeaks", bossIcon: "🐭",
+          title1: "🐭 The Wi-Fi Crisis",
+          content1: `Following the defeat of Sir Nibbles, peace was restored... until his vengeful cousin, Professor Squeaks, arrived!<br><br>Prof. Squeaks has stolen the realm's main Wi-Fi router and retreated to a fortified fortress further east. He is using it to mine 'HamsterCoin', causing widespread lag, astronomical electricity bills, and buffered Netflix streams across the villages!`,
+          title2: "⚔️ The Lag Must End",
+          content2: `Hero <b>${currentUser.name}</b>, the villagers can't even stream their favorite shows! We need you to venture through an even longer, more perilous land.<br><br>Master your vocabulary, gear up in the town, and defeat Professor Squeaks to restore our broadband!`
+        },
+        advanced: {
+          bossName: "Emp. Fluffypants", bossIcon: "👑",
+          title1: "👑 The Doomsday Wheel",
+          content1: `The Wi-Fi was saved, but the Hamster Syndicate isn't finished. The mastermind, Emperor Fluffypants, has constructed a colossal Doomsday Hamster Wheel!<br><br>He plans to spin the earth backward, reversing time to a point before his veterinarian put him on a strict pellet diet! This temporal anomaly is already causing villagers to un-eat their dinners!`,
+          title2: "⚔️ Save Time Itself",
+          content2: `Hero <b>${currentUser.name}</b>, this is your ultimate test. You must traverse the longest and deadliest path yet.<br><br>Achieve total Hebrew fluency to survive, breach his temporal stronghold, and stop Emperor Fluffypants before it's too late!`
+        }
+      };
+
+      const story = TRACK_STORIES[currentUser.track];
+      
+      introSequence = [
+        { type: "story", title: story.title1, content: story.content1 },
+        { type: "story", title: story.title2, content: story.content2 },
+        { type: "mechanics", title: "🎮 How to Play", content: `<ul style="text-align: left; margin-left: 20px; line-height: 1.6;">
+          <li style="margin-bottom:8px;">Use the <b>D-Pad</b> or keyboard arrows to move.</li>
+          <li style="margin-bottom:8px;">Travel <b>East</b> (right) towards the dark castle.</li>
+          <li style="margin-bottom:8px;">Answer Hebrew questions correctly to deal damage. Wrong answers mean you take damage!</li>
+          </ul>` }
+      ];
+
+      if (currentUser.track === 'beginner') {
+        introSequence.push({ type: "story", title: "🔤 Hebrew Bootcamp", content: "Before you face the monsters, let's learn the Aleph-Bet! Hebrew is read from <b>Right to Left</b>.<br><br>We have prepared a grueling sequence of training and quizzes for every single letter so you are combat-ready!" });
+        HEBREW_LETTERS_DATA.forEach(letter => {
+          introSequence.push({ type: "lesson", letter: letter.l, name: letter.n, sound: letter.s, mnemonic: letter.m });
+          introSequence.push({ type: "practice", letter: letter.l, name: letter.n, sound: letter.s });
+        });
+      } else if (currentUser.track === 'intermediate') {
+        introSequence.push({ type: "story", title: "🔤 Vocab Bootcamp", content: "To survive the intermediate zones, you need to know basic vocabulary!<br><br>Let's review essential words before you embark so you are combat-ready." });
+        INTERMEDIATE_VOCAB_DATA.forEach(vocab => {
+          introSequence.push({ type: "vocab-lesson", word: vocab.w, trans: vocab.t, meaning: vocab.m, hint: vocab.hint });
+          introSequence.push({ type: "vocab-practice", word: vocab.w, meaning: vocab.m });
+        });
+      } else if (currentUser.track === 'advanced') {
+        introSequence.push({ type: "story", title: "🔤 Grammar Bootcamp", content: "Emperor Fluffypants requires advanced fluency to defeat!<br><br>Let's review your pronouns and action verbs before you step into the world." });
+        ADVANCED_VOCAB_DATA.forEach(vocab => {
+          introSequence.push({ type: "vocab-lesson", word: vocab.w, trans: vocab.t, meaning: vocab.m, hint: vocab.hint });
+          introSequence.push({ type: "vocab-practice", word: vocab.w, meaning: vocab.m });
+        });
+      }
+
+      introSequence.push({ type: "story", title: "🛡️ You are ready!", content: `Your training is complete. Step into the world, equip yourself in town, and defeat ${story.bossName}!` });
+
+      currentIntroIndex = 0;
+      renderIntroSlide();
+      document.getElementById('intro-modal').classList.add('active');
+    }
+
+    function renderIntroSlide() {
+      const container = document.getElementById('intro-card-content');
+      container.innerHTML = '';
+      
+      const skipBtn = document.createElement('button');
+      skipBtn.className = 'nav-btn';
+      skipBtn.style = 'position:absolute; top:10px; right:10px; font-size:0.75rem; padding:6px 12px; background:#FED7D7; border-color:#FC8181; color:#9B2C2C; z-index:10;';
+      skipBtn.textContent = 'Skip Intro ⏭️';
+      skipBtn.onclick = closeIntro;
+      container.appendChild(skipBtn);
+
+      const slide = introSequence[currentIntroIndex];
+      const slideDiv = document.createElement('div');
+      slideDiv.className = 'intro-slide-content';
+      slideDiv.style = 'display:flex; flex-direction:column; align-items:center; width:100%;';
+
+      if (slide.type === 'story' || slide.type === 'mechanics') {
+        slideDiv.innerHTML = `<h2 style="color:var(--primary-dark); font-size:2rem; margin: 15px 0;">${slide.title}</h2>
+                              <p style="text-align: left; color:#4A5568; line-height:1.6; font-size:1.1rem; padding: 0 15px;">${slide.content}</p>
+                              <button class="action-btn" onclick="nextSlide()" style="margin-top: 30px; width: 200px;">Next ➡️</button>`;
+      } 
+      else if (slide.type === 'lesson') {
+        slideDiv.innerHTML = `<div style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0; margin-bottom:5px;">COMBAT TRAINING</div>
+                              <h2 style="color:var(--primary-dark); font-size:1.5rem;">The Letter ${slide.name}</h2>
+                              <div style="font-family:'Rubik', sans-serif; font-size:6rem; color:var(--primary); font-weight:bold; margin: 10px 0; line-height: 1;">${slide.letter}</div>
+                              <div style="background:#EDF2F7; padding:15px; border-radius:12px; width:90%; font-size:1.05rem; line-height:1.5;">
+                                <b>Sound:</b> "${slide.sound}"<br><br>
+                                <b>Memory Trick:</b> ${slide.mnemonic}
+                              </div>
+                              <button class="action-btn" onclick="nextSlide()" style="margin-top: 25px; width: 200px;">Got it! ➡️</button>`;
+      }
+      else if (slide.type === 'vocab-lesson') {
+        slideDiv.innerHTML = `<div style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0; margin-bottom:5px;">COMBAT TRAINING</div>
+                              <h2 style="color:var(--primary-dark); font-size:1.5rem;">${slide.trans}</h2>
+                              <div style="font-family:'Rubik', sans-serif; font-size:4rem; color:var(--primary); font-weight:bold; margin: 10px 0; line-height: 1;">${slide.word}</div>
+                              <div style="background:#EDF2F7; padding:15px; border-radius:12px; width:90%; font-size:1.05rem; line-height:1.5;">
+                                <b>Meaning:</b> "${slide.meaning}"<br><br>
+                                <b>Hint:</b> ${slide.hint}
+                              </div>
+                              <button class="action-btn" onclick="nextSlide()" style="margin-top: 25px; width: 200px;">Got it! ➡️</button>`;
+      }
+      else if (slide.type === 'practice') {
+        slideDiv.innerHTML = `<div style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0; margin-bottom:5px;">POP QUIZ!</div>
+                              <div style="font-family:'Rubik', sans-serif; font-size:4rem; color:#2D3748; font-weight:bold; margin: 10px 0; line-height: 1;">${slide.letter}</div>
+                              <h2 style="font-size:1.3rem; margin-bottom:15px; color:#4A5568;">What sound does this letter make?</h2>
+                              <div class="options-grid" id="practice-options" style="width: 100%; max-width: 400px;"></div>`;
+        
+        container.appendChild(slideDiv);
+
+        let wrongSounds = HEBREW_LETTERS_DATA.filter(l => l.s !== slide.sound).map(l => l.s);
+        wrongSounds = shuffleArray(wrongSounds).slice(0, 3);
+        let options = shuffleArray([slide.sound, ...wrongSounds]);
+
+        const optsContainer = document.getElementById('practice-options');
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.textContent = opt;
+          btn.onclick = (e) => {
+            if (opt === slide.sound) {
+              sfx.win();
+              e.target.style.backgroundColor = '#48BB78'; e.target.style.color = 'white';
+              setTimeout(nextSlide, 400);
+            } else {
+              sfx.takeDamage();
+              e.target.style.backgroundColor = '#F56565'; e.target.style.color = 'white';
+              e.target.classList.add('bump-anim');
+              setTimeout(() => e.target.classList.remove('bump-anim'), 200);
+            }
+          };
+          optsContainer.appendChild(btn);
+        });
+        return; 
+      }
+      else if (slide.type === 'vocab-practice') {
+        slideDiv.innerHTML = `<div style="font-size:0.8rem; letter-spacing:1px; color:#A0AEC0; margin-bottom:5px;">POP QUIZ!</div>
+                              <div style="font-family:'Rubik', sans-serif; font-size:3.5rem; color:#2D3748; font-weight:bold; margin: 10px 0; line-height: 1;">${slide.word}</div>
+                              <h2 style="font-size:1.3rem; margin-bottom:15px; color:#4A5568;">What does this mean?</h2>
+                              <div class="options-grid" id="practice-options" style="width: 100%; max-width: 400px;"></div>`;
+        
+        container.appendChild(slideDiv);
+
+        let sourceData = currentUser.track === 'intermediate' ? INTERMEDIATE_VOCAB_DATA : ADVANCED_VOCAB_DATA;
+        let wrongMeanings = sourceData.filter(v => v.m !== slide.meaning).map(v => v.m);
+        
+        if (wrongMeanings.length < 3) {
+           wrongMeanings = wrongMeanings.concat(["House", "Apple", "Tree"]);
+        }
+        wrongMeanings = shuffleArray(wrongMeanings).slice(0, 3);
+        let options = shuffleArray([slide.meaning, ...wrongMeanings]);
+
+        const optsContainer = document.getElementById('practice-options');
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.textContent = opt;
+          btn.onclick = (e) => {
+            if (opt === slide.meaning) {
+              sfx.win();
+              e.target.style.backgroundColor = '#48BB78'; e.target.style.color = 'white';
+              setTimeout(nextSlide, 400);
+            } else {
+              sfx.takeDamage();
+              e.target.style.backgroundColor = '#F56565'; e.target.style.color = 'white';
+              e.target.classList.add('bump-anim');
+              setTimeout(() => e.target.classList.remove('bump-anim'), 200);
+            }
+          };
+          optsContainer.appendChild(btn);
+        });
+        return; 
+      }
+      container.appendChild(slideDiv);
+    }
+
+    function nextSlide() {
+      currentIntroIndex++;
+      if (currentIntroIndex >= introSequence.length) { closeIntro(); } else { renderIntroSlide(); }
+    }
+
+    function closeIntro() {
+      document.getElementById('intro-modal').classList.remove('active');
+      currentUser.hasSeenIntro = true;
+      saveDB();
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('aleph_rpg_active_user');
+      document.getElementById('hero-showcase').style.display = 'none';
+      showLoginModal();
+    }
+
+    async function loadQuestionBank() {
+      if (!currentUser) return;
+      const fileName = currentUser.track === 'advanced' ? 'questions3.json' : (currentUser.track === 'intermediate' ? 'questions2.json' : 'questions.json');
+      try {
+        const response = await fetch(fileName);
+        if (!response.ok) throw new Error(`Not found: ${fileName}`);
+        const data = await response.json();
+        gameQuestions = data.levels || [];
+      } catch (err) {
+        console.warn(`Could not load ${fileName}. Resetting to beginner.`);
+        if (currentUser.track !== 'beginner') {
+          currentUser.track = 'beginner';
+          loadQuestionBank();
+          return;
+        }
+      } finally {
+        renderCurrentScreen();
+        updateUI();
+      }
+    }
+
+    function openTrackSelector() { document.getElementById('track-modal').classList.add('active'); }
+    
+    function switchTrack(track) {
+      if (!currentUser) return;
+      currentUser.track = track;
+      currentUser.x = 0; currentUser.y = 11; 
+      inTown = false; inCastle = false;
+      
+      // Auto-boost player HP / baseline to handle new zone track scaling
+      if (track === 'intermediate') {
+         currentUser.maxHp = Math.max(currentUser.maxHp, 150);
+         currentUser.hp = currentUser.maxHp;
+      } else if (track === 'advanced') {
+         currentUser.maxHp = Math.max(currentUser.maxHp, 400);
+         currentUser.hp = currentUser.maxHp;
+      }
+      
+      saveDB();
+      closeModal('track-modal');
+      loadQuestionBank(); 
+      openIntro();
+    }
+
+    function getPlayerDamage() {
+      if (!currentUser.equippedWeapon) return 1;
+      const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon);
+      return w ? w.dmg : 1;
+    }
+    function getPlayerDefense() {
+      if (!currentUser.equippedArmor) return 0;
+      const a = SHOP_ITEMS.armor.find(x => x.id === currentUser.equippedArmor);
+      return a ? a.def : 0;
+    }
+    
+    function getCurrentZoneLevel() {
+      const dist = (currentUser.x - 0) + (11 - currentUser.y);
+      return Math.min(12, Math.floor(dist / 4) + 1);
+    }
+
+    function updateUI() {
+      if (!currentUser) return;
+      document.getElementById('hero-showcase').style.display = 'flex';
+      document.getElementById('top-lvl-display').textContent = `⭐ Lvl ${currentUser.level || 1}`;
+      document.getElementById('top-hp-display').textContent = `❤️ ${currentUser.hp}/${currentUser.maxHp}`;
+      document.getElementById('top-coin-display').textContent = `🪙 ${currentUser.coins}`;
+      
+      let tokenHTML = currentUser.avatar;
+      if (currentUser.equippedWeapon) {
+        const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon);
+        if (w) tokenHTML += `<span class="hero-equip weapon">${w.icon}</span>`;
+      }
+      if (currentUser.equippedArmor) {
+        const a = SHOP_ITEMS.armor.find(x => x.id === currentUser.equippedArmor);
+        if (a) tokenHTML += `<span class="hero-equip armor">${a.icon}</span>`;
+      }
+      
+      document.getElementById('hero-display-avatar').innerHTML = tokenHTML;
+      document.getElementById('hero-display-name').textContent = currentUser.name;
+      document.getElementById('hero-display-title').innerHTML = `${currentUser.track.charAt(0).toUpperCase() + currentUser.track.slice(1)} Track`;
+      
+      const hpPct = Math.max(0, (currentUser.hp / currentUser.maxHp) * 100);
+      let hpHTML = `<div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${hpPct}%; background:${hpPct>25?'#68D391':'#FC8181'}"></div></div>`;
+      document.getElementById('hero-display-title').innerHTML += hpHTML;
+
+      if (!inTown && !inCastle) { 
+        updateMapArrows(); 
+      } else { 
+        const leftArr = document.getElementById('map-arrow-left'); const rightArr = document.getElementById('map-arrow-right');
+        if (leftArr) leftArr.style.display = 'none'; if (rightArr) rightArr.style.display = 'none';
+      }
+    }
+
+    function setupTownNPCs(zoneLevel) {
+      townNPCs = {}; const trackData = TRAINING_DATA[currentUser.track] || {}; let concepts = [];
+      const l1 = trackData[zoneLevel] || DEFAULT_TRAINING; const l2 = trackData[zoneLevel + 1] || trackData[zoneLevel] || DEFAULT_TRAINING;
+      
+      l1.items.forEach(i => concepts.push(`I study ${l1.title}.\n\nDid you know '${i[0]}' (${i[1]}) means:\n${i[2]}?`));
+      if(l1.title !== l2.title) { l2.items.forEach(i => concepts.push(`Prepare yourself for the eastern zones!\n\nRemember '${i[0]}' (${i[1]}) means:\n${i[2]}.`)); }
+      
+      let genericTips = [
+        "Welcome to our town! The shop here sells medicine.", "Talk to the Teacher near the Wizard if you want a detailed vocabulary list for topics you have encountered!",
+        "The monsters get much stronger the further east you travel.", "Armor reduces the damage you take when you make a mistake.",
+        "A better weapon helps you defeat enemies in fewer turns!", "Don't forget to check your Backpack in the Profile menu to use your medicine.",
+        "The final boss awaits in the dark castle maze at the far east.", "Hebrew is read from right to left! Keep that in mind.",
+        "Look for the green arrows at the edge of the world map to travel to the next region."
+      ];
+      shuffleArray(genericTips);
+      while(concepts.length < 11) { concepts.push(genericTips.pop() || "Blessings on your journey, hero!"); }
+      shuffleArray(concepts);
+      const emojis = ['🧔', '👩', '👴', '👵', '💂', '🕵️', '👩‍🌾', '👨‍🍳', '🧝', '🥷', '🤴']; shuffleArray(emojis);
+      
+      let index = 0;
+      for (let y = 0; y < 12; y++) {
+        for (let x = 0; x < 12; x++) {
+          if (TOWN_LAYOUT[y][x] === 'N') { townNPCs[`${x},${y}`] = { emoji: emojis[index], text: concepts[index] }; index++; }
+        }
+      }
+    }
+
+    function setupCastle() {
+      castleMonsters = {};
+      for(let y=0; y<12; y++){
+        for(let x=0; x<12; x++){
+          let tile = CASTLE_LAYOUT[y][x];
+          if (tile === 'M') { let lvl = Math.random() < 0.5 ? 10 : 11; castleMonsters[`${x},${y}`] = { level: lvl, icon: ENEMY_TYPES[lvl].icon, isBoss: false }; } 
+          else if (tile === 'H') { 
+            const b = BOSS_DEFS[currentUser.track];
+            castleMonsters[`${x},${y}`] = { level: 12, icon: b.icon, isBoss: true }; 
+          }
+        }
+      }
+    }
+
+    function renderCurrentScreen() {
+      if (inCastle) renderCastleMap(); else if (inTown) renderTownMap(); else renderWorldMap();
+    }
+
+    function renderWorldMap() {
+      const map = document.getElementById('rpg-map'); map.innerHTML = '';
+      const currentLayout = MAPS[currentUser.track]; 
+      const mapWidth = currentLayout[0].length;
+      const mapSection = Math.floor(currentUser.x / 12); 
+      const startX = mapSection * 12;
+
+      for (let y = 0; y < 12; y++) {
+        for (let localX = 0; localX < 12; localX++) {
+          const globalX = startX + localX; 
+          if (globalX >= mapWidth) break;
+          const tileType = currentLayout[y][globalX];
+          const tile = document.createElement('div'); tile.className = 'tile';
+          
+          if (tileType === 'W') { tile.classList.add('water'); tile.innerHTML = '<span class="env-icon">🌊</span>'; } 
+          else if (tileType === 'M') { tile.classList.add('mountain'); tile.innerHTML = '<span class="env-icon">⛰️</span>'; } 
+          else if (tileType === '~') { tile.classList.add('swamp'); tile.innerHTML = '<span class="env-icon">🐸</span>'; } 
+          else if (tileType === '-') { tile.classList.add('bridge'); tile.innerHTML = '<span class="env-icon">🪵</span>'; } 
+          else {
+            const dist = (globalX - 0) + (11 - y); const level = Math.min(12, Math.floor(dist / 4) + 1); tile.classList.add(`terrain-${level}`);
+            if (tileType === '#') { tile.innerHTML = '<span class="castle-icon">🏰</span>'; } 
+            else if (tileType === 'T') { tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem; opacity: 1;">🏘️</span>'; }
+          }
+          tile.id = `world-cell-${globalX}-${y}`; map.appendChild(tile);
+        }
+      }
+
+      let leftArrow = document.createElement('div'); leftArrow.id = 'map-arrow-left'; leftArrow.className = 'map-arrow left';
+      leftArrow.innerHTML = '⬅️'; leftArrow.onclick = () => movePlayer(-1, 0); map.appendChild(leftArrow);
+      let rightArrow = document.createElement('div'); rightArrow.id = 'map-arrow-right'; rightArrow.className = 'map-arrow right';
+      rightArrow.innerHTML = '➡️'; rightArrow.onclick = () => movePlayer(1, 0); map.appendChild(rightArrow);
+      positionPlayerOnMap();
+    }
+
+    function renderTownMap() {
+      const map = document.getElementById('rpg-map'); map.innerHTML = '';
+      
+      for (let y = 0; y < 12; y++) {
+        for (let x = 0; x < 12; x++) {
+          const tileType = TOWN_LAYOUT[y][x]; const tile = document.createElement('div'); tile.className = 'tile'; tile.id = `town-cell-${x}-${y}`;
+          
+          if (tileType === 'O') { tile.classList.add('stone-wall'); tile.innerHTML = '<span class="env-icon">🧱</span>'; } 
+          else if (tileType === 'B') { tile.classList.add('town-building'); tile.innerHTML = '<span class="env-icon">🏠</span>'; } 
+          else if (tileType === 'T') { tile.classList.add('town-tree'); tile.innerHTML = '<span class="env-icon">🌲</span>'; } 
+          else if (tileType === '+') { tile.classList.add('brick-road'); } 
+          else if (tileType === '$' || tileType === 'S') { tile.classList.add('terrain-2'); tile.innerHTML = tileType === '$' ? '<span class="env-icon" style="font-size:1.6rem;">🧑‍💼</span>' : '<span class="env-icon">🛒</span>'; } 
+          else if (tileType === 'Z') { tile.classList.add('brick-road'); tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">🧙‍♂️</span>'; } 
+          else if (tileType === 'C') { tile.classList.add('brick-road'); tile.innerHTML = '<span class="env-icon" style="font-size:1.6rem;">👩‍🏫</span>'; } 
+          else if (tileType === 'E') { tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>'; } 
+          else if (tileType === 'N') {
+            tile.classList.add('terrain-1'); const npc = townNPCs[`${x},${y}`]; tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1;">${npc ? npc.emoji : '🧍'}</span>`;
+          } 
+          else { tile.classList.add('terrain-1'); }
+          map.appendChild(tile);
+        }
+      }
+      positionPlayerOnMap();
+    }
+
+    function renderCastleMap() {
+      const map = document.getElementById('rpg-map'); map.innerHTML = '';
+
+      for (let y = 0; y < 12; y++) {
+        for (let x = 0; x < 12; x++) {
+          const tileType = CASTLE_LAYOUT[y][x]; const tile = document.createElement('div'); tile.className = 'tile'; tile.id = `castle-cell-${x}-${y}`;
+
+          if (tileType === 'X') { tile.classList.add('castle-wall'); } 
+          else if (tileType === 'E') { tile.classList.add('town-exit'); tile.innerHTML = '<span class="env-icon">🔽</span>'; } 
+          else if (tileType === 'F' || tileType === '.') {
+            tile.classList.add('castle-floor');
+            if (castleMonsters[`${x},${y}`]) {
+              const m = castleMonsters[`${x},${y}`]; tile.innerHTML = `<span class="env-icon" style="font-size:1.6rem; opacity:1; filter: drop-shadow(0px 0px 8px rgba(252,129,129,0.9));">${m.icon}</span>`;
+            }
+          }
+          map.appendChild(tile);
+        }
+      }
+      positionPlayerOnMap();
+    }
+
+    function positionPlayerOnMap() {
+      const oldToken = document.getElementById('player-map-token'); if (oldToken) oldToken.remove();
+      const px = inCastle ? currentUser.castleX : (inTown ? currentUser.townX : currentUser.x);
+      const py = inCastle ? currentUser.castleY : (inTown ? currentUser.townY : currentUser.y);
+      const prefix = inCastle ? 'castle' : (inTown ? 'town' : 'world');
+
+      const tile = document.getElementById(`${prefix}-cell-${px}-${py}`); if (!tile) return;
+      const token = document.createElement('div'); token.id = 'player-map-token'; token.className = 'player-token';
+      
+      let tokenHTML = currentUser.avatar;
+      if (currentUser.equippedWeapon) {
+        const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon);
+        if (w) tokenHTML += `<span class="token-equip equip-w" style="font-size:0.6rem; bottom:-2px; right:-2px; width:16px; height:16px;">${w.icon}</span>`;
+      }
+      if (currentUser.equippedArmor) {
+        const a = SHOP_ITEMS.armor.find(x => x.id === currentUser.equippedArmor);
+        if (a) tokenHTML += `<span class="token-equip equip-a" style="font-size:0.6rem; top:-2px; left:-2px; width:16px; height:16px;">${a.icon}</span>`;
+      }
+      token.innerHTML = tokenHTML; tile.appendChild(token);
+    }
+
+    function updateMapArrows() {
+      const leftArrow = document.getElementById('map-arrow-left'); const rightArrow = document.getElementById('map-arrow-right');
+      if (!leftArrow || !rightArrow) return;
+      
+      const currentLayout = MAPS[currentUser.track]; let showLeft = false; let showRight = false;
+      if (currentUser.x % 12 === 0 && currentUser.x > 0) { const leftTile = currentLayout[currentUser.y][currentUser.x - 1]; if (leftTile !== 'W' && leftTile !== 'M') showLeft = true; }
+      if (currentUser.x % 12 === 11 && currentUser.x < currentLayout[0].length - 1) { const rightTile = currentLayout[currentUser.y][currentUser.x + 1]; if (rightTile !== 'W' && rightTile !== 'M') showRight = true; }
+      
+      leftArrow.style.display = showLeft ? 'flex' : 'none'; rightArrow.style.display = showRight ? 'flex' : 'none';
+    }
+
+
+    // --- TOWN TEACHER UI ---
+    function openTeacher() {
+      if(!currentUser) return;
+      document.getElementById('teacher-topics-view').style.display = 'block'; document.getElementById('teacher-lesson-view').style.display = 'none';
+      
+      const container = document.getElementById('teacher-topics-list'); container.innerHTML = '';
+      const trackData = TRAINING_DATA[currentUser.track] || {};
+      
+      for(let i = 1; i <= 12; i++) {
+        const lesson = trackData[i];
+        if (lesson) {
+          const btn = document.createElement('button'); btn.className = 'lesson-btn';
+          btn.innerHTML = `<span class="lesson-title">Zone ${i}: ${lesson.title}</span><span class="lesson-desc">${lesson.desc}</span>`;
+          btn.onclick = () => showTeacherLesson(i); container.appendChild(btn);
+        }
+      }
+      document.getElementById('teacher-modal').classList.add('active');
+    }
+
+    function showTeacherLesson(level) {
+      document.getElementById('teacher-topics-view').style.display = 'none'; document.getElementById('teacher-lesson-view').style.display = 'block';
+      const trackData = TRAINING_DATA[currentUser.track] || {}; const lesson = trackData[level] || DEFAULT_TRAINING; 
+      
+      document.getElementById('teacher-lesson-title').textContent = lesson.title;
+      const grid = document.getElementById('teacher-lesson-content'); grid.innerHTML = '';
+      
+      lesson.items.forEach(item => {
+        const card = document.createElement('div'); card.className = 'training-card';
+        card.innerHTML = `<div class="training-hebrew">${item[0]}</div><div class="training-name">${item[1]}</div><div class="training-desc">${item[2]}</div><button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>`;
+        grid.appendChild(card);
+      });
+    }
+
+    function backToTeacherTopics() { document.getElementById('teacher-topics-view').style.display = 'block'; document.getElementById('teacher-lesson-view').style.display = 'none'; }
+
+
+    // --- GLOBAL TRAINING ACADEMY UI (Manual Selection) ---
+    function openTrainingManual() { if(!currentUser) return; renderLessonList(); document.getElementById('training-modal').classList.add('active'); }
+
+    function renderLessonList() {
+      document.getElementById('training-view-list').style.display = 'block'; document.getElementById('training-view-content').style.display = 'none';
+      const container = document.getElementById('lesson-list-container'); container.innerHTML = '';
+      const trackData = TRAINING_DATA[currentUser.track] || {};
+      
+      for(let i = 1; i <= 12; i++) {
+        const lesson = trackData[i] || DEFAULT_TRAINING;
+        const btn = document.createElement('button'); btn.className = 'lesson-btn';
+        btn.innerHTML = `<span class="lesson-title">Zone Level ${i}: ${lesson.title}</span><span class="lesson-desc">${lesson.desc}</span>`;
+        btn.onclick = () => openLesson(i); container.appendChild(btn);
+      }
+    }
+
+    function openLesson(level) {
+      document.getElementById('training-view-list').style.display = 'none'; document.getElementById('training-view-content').style.display = 'block';
+      const trackData = TRAINING_DATA[currentUser.track] || {}; const lesson = trackData[level] || DEFAULT_TRAINING; 
+      
+      document.getElementById('train-level-title').textContent = `Zone Level ${level}: ${lesson.title}`;
+      document.getElementById('train-level-desc').textContent = lesson.desc;
+      const grid = document.getElementById('training-grid-container'); grid.innerHTML = '';
+      
+      lesson.items.forEach(item => {
+        const card = document.createElement('div'); card.className = 'training-card';
+        card.innerHTML = `<div class="training-hebrew">${item[0]}</div><div class="training-name">${item[1]}</div><div class="training-desc">${item[2]}</div><button class="mini-audio-btn" onclick="speakWord('${item[0]}')">🔊</button>`;
+        grid.appendChild(card);
+      });
+    }
+
+    function backToLessonList() { renderLessonList(); }
+
+
+    // --- MOVEMENT & ENCOUNTERS ---
+    function movePlayer(dx, dy) {
+      if (inBattle || document.querySelector('.modal-overlay.active')) return;
+      if (!currentUser) return;
+
+      if (inCastle) {
+        let nx = currentUser.castleX + dx;
+        let ny = currentUser.castleY + dy;
+
+        if (nx >= 0 && nx < 12 && ny >= 0 && ny < 12) {
+          const tile = CASTLE_LAYOUT[ny][nx];
+          
+          if (tile === 'X') {
+            sfx.bump();
+            const token = document.getElementById('player-map-token');
+            if (token) { token.classList.add('bump-anim'); setTimeout(() => token.classList.remove('bump-anim'), 200); }
+            return;
+          }
+          if (tile === 'E') {
+            sfx.step(); inCastle = false; renderCurrentScreen(); updateUI(); return;
+          }
+
+          if (castleMonsters[`${nx},${ny}`]) {
+            const m = castleMonsters[`${nx},${ny}`];
+            if (m.isBoss) {
+              const remainingMinions = Object.values(castleMonsters).filter(enemy => !enemy.isBoss).length;
+              if (remainingMinions > 0) {
+                 sfx.bump();
+                 const token = document.getElementById('player-map-token');
+                 if (token) { token.classList.add('bump-anim'); setTimeout(() => token.classList.remove('bump-anim'), 200); }
+                 showAlert(`🔒 A dark seal blocks the path!\n\nYou must defeat the remaining ${remainingMinions} Castle Defender(s) before facing ${BOSS_DEFS[currentUser.track].name}!`);
+                 return;
+              }
+            }
+
+            currentUser.castleX = nx; currentUser.castleY = ny;
+            activeCastleEnemyKey = `${nx},${ny}`;
+            positionPlayerOnMap();
+            triggerEncounter(m.isBoss, m.level);
+            return;
+          }
+
+          currentUser.castleX = nx; currentUser.castleY = ny;
+          sfx.step(); positionPlayerOnMap();
+        }
+        return;
+      }
+
+      if (inTown) {
+        let nx = currentUser.townX + dx;
+        let ny = currentUser.townY + dy;
+        
+        if (nx >= 0 && nx < 12 && ny >= 0 && ny < 12) {
+          const tile = TOWN_LAYOUT[ny][nx];
+          
+          if (tile === 'O' || tile === 'B' || tile === 'S' || tile === 'T') {
+            sfx.bump();
+            const token = document.getElementById('player-map-token');
+            if (token) { token.classList.add('bump-anim'); setTimeout(() => token.classList.remove('bump-anim'), 200); }
+            return;
+          }
+          if (tile === '$') { sfx.step(); openShop(); return; }
+          if (tile === 'Z') { sfx.step(); triggerWizardQuiz(); return; }
+          if (tile === 'C') { sfx.step(); openTeacher(); return; }
+          if (tile === 'N') {
+            sfx.encounter(); 
+            const npc = townNPCs[`${nx},${ny}`];
+            if(npc) showAlert(`${npc.emoji} says:\n\n"${npc.text}"`);
+            return;
+          }
+          if (tile === 'E') {
+            sfx.step(); inTown = false; renderCurrentScreen(); updateUI(); return;
+          }
+          
+          currentUser.townX = nx; currentUser.townY = ny;
+          sfx.step(); positionPlayerOnMap();
+        }
+        return;
+      }
+
+      let nx = currentUser.x + dx;
+      let ny = currentUser.y + dy;
+      const currentLayout = MAPS[currentUser.track];
+      
+      if (nx >= 0 && nx < currentLayout[0].length && ny >= 0 && ny < 12) {
+        const tileType = currentLayout[ny][nx];
+        
+        if (tileType === 'W' || tileType === 'M') {
+          sfx.bump();
+          const token = document.getElementById('player-map-token');
+          if (token) { token.classList.add('bump-anim'); setTimeout(() => token.classList.remove('bump-anim'), 200); }
+          return; 
+        }
+
+        const oldSection = Math.floor(currentUser.x / 12);
+        
+        currentUser.x = nx; currentUser.y = ny;
+        sfx.step(); saveDB();
+        
+        const newSection = Math.floor(currentUser.x / 12);
+        if (oldSection !== newSection) renderCurrentScreen(); else positionPlayerOnMap();
+        updateUI();
+        
+        if (tileType === 'T') {
+          sfx.heal(); inTown = true; currentUser.townX = 5; currentUser.townY = 10;
+          setupTownNPCs(getCurrentZoneLevel()); renderCurrentScreen(); return; 
+        }
+        
+        if (tileType === '#') {
+          sfx.step(); inCastle = true; currentUser.castleX = 10; currentUser.castleY = 11;
+          setupCastle(); renderCurrentScreen(); updateUI(); return;
+        } 
+        
+        if (tileType !== '-' && tileType !== '~' && (currentUser.x !== 0 || currentUser.y !== 11) && Math.random() < 0.35) {
+          triggerEncounter(false, null);
+        } else if (tileType === '~' && Math.random() < 0.50) { 
+          triggerEncounter(false, null);
+        }
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (inBattle || document.querySelector('.modal-overlay.active')) return;
+      if (e.key === 'ArrowUp') { movePlayer(0, -1); e.preventDefault(); }
+      if (e.key === 'ArrowDown') { movePlayer(0, 1); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { movePlayer(-1, 0); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { movePlayer(1, 0); e.preventDefault(); }
+    });
+
+
+    // --- BATTLE LOGIC ---
+    function triggerWizardQuiz() {
+      showConfirm("Greetings, traveler! I am the Town Wizard.\n\nWould you care for a harmless quiz? If you get 5 or 10 right in a row, I will reward you!", () => {
+        inWizardQuiz = true; inBattle = true; wizardStreak = 0;
+        currentEnemyLevel = getCurrentZoneLevel(); 
+        document.getElementById('combat-zone-label').textContent = "THE WIZARD'S CHALLENGE";
+        document.getElementById('boss-name').textContent = "Wizard Master";
+        document.getElementById('boss-avatar-icon').textContent = "🧙‍♂️";
+        document.getElementById('boss-hp-bar-container').style.display = 'none';
+        loadNextBattleQuestion();
+        document.getElementById('battle-modal').classList.add('active');
+      }, null);
+    }
+
+    function triggerEncounter(isBoss, overrideLevel = null) {
+      inWizardQuiz = false; inBattle = true; sfx.encounter();
+      currentEnemyLevel = overrideLevel !== null ? overrideLevel : getCurrentZoneLevel();
+      const enemyDef = ENEMY_TYPES[currentEnemyLevel] || ENEMY_TYPES[1];
+      
+      // Dynamic HP Scaling based on Track
+      let baseHp = Math.ceil(currentEnemyLevel / 3) + 1;
+      if (currentUser.track === 'intermediate') baseHp = (currentEnemyLevel * 3) + 10;
+      if (currentUser.track === 'advanced') baseHp = (currentEnemyLevel * 8) + 30;
+      
+      if (isBoss) {
+        const b = BOSS_DEFS[currentUser.track];
+        document.getElementById('boss-name').textContent = b.name;
+        document.getElementById('boss-avatar-icon').textContent = b.icon;
+        currentEnemyMaxHP = b.hp;
+      } else {
+        document.getElementById('boss-name').textContent = `Lvl ${currentEnemyLevel} ${enemyDef.name}`;
+        document.getElementById('boss-avatar-icon').textContent = enemyDef.icon;
+        currentEnemyMaxHP = baseHp;
+      }
+      
+      currentEnemyHP = currentEnemyMaxHP;
+      let label = isBoss ? "FINAL BOSS" : (inCastle ? "CASTLE DEFENDER" : `Danger Zone: Level ${currentEnemyLevel}`);
+      document.getElementById('combat-zone-label').textContent = label;
+      document.getElementById('boss-hp-bar-container').style.display = 'block';
+      updateEnemyHPBar();
+      loadNextBattleQuestion();
+      document.getElementById('battle-modal').classList.add('active');
+    }
+
+    function loadNextBattleQuestion() {
+      let lvlData = gameQuestions.find(l => l.level === currentEnemyLevel);
+      if (!lvlData) lvlData = gameQuestions[gameQuestions.length - 1]; 
+      
+      if (!lvlData || !lvlData.questions || lvlData.questions.length === 0) { showAlert("Error loading questions!", () => { endBattle(); }); return; }
+      
+      let newQuestion; let attempts = 0;
+      do { newQuestion = lvlData.questions[Math.floor(Math.random() * lvlData.questions.length)]; attempts++; } 
+      while (newQuestion === activeQuestion && lvlData.questions.length > 1 && attempts < 10);
+      activeQuestion = newQuestion;
+      
+      document.getElementById('q-prompt').textContent = activeQuestion.q;
+      const hasHebrew = /[\u0590-\u05FF]/.test(activeQuestion.q);
+      const hebrewElem = document.getElementById('q-hebrew');
+      if (hasHebrew) {
+        hebrewElem.textContent = activeQuestion.q.match(/[\u0590-\u05FF]+/)?.[0] || ''; hebrewElem.style.display = 'block';
+      } else { hebrewElem.style.display = 'none'; }
+
+      const container = document.getElementById('options-container'); container.innerHTML = '';
+      const randomizedOptions = shuffleArray(activeQuestion.opts);
+
+      randomizedOptions.forEach(opt => {
+        const btn = document.createElement('button'); btn.className = 'option-btn'; btn.textContent = opt;
+        btn.onclick = () => processAnswer(opt); container.appendChild(btn);
+      });
+    }
+
+    function processAnswer(selected) {
+      const buttons = document.querySelectorAll('.option-btn');
+      
+      buttons.forEach(b => {
+        b.disabled = true; 
+        if (b.textContent === activeQuestion.a) { b.style.backgroundColor = '#48BB78'; b.style.borderColor = '#2F855A'; b.style.color = 'white'; } 
+        else if (b.textContent === selected) { b.style.backgroundColor = '#F56565'; b.style.borderColor = '#C53030'; b.style.color = 'white'; } 
+        else { b.style.opacity = '0.5'; }
+      });
+
+      setTimeout(() => {
+        if (inWizardQuiz) {
+          if (selected === activeQuestion.a) {
+            sfx.win(); wizardStreak++;
+            let msg = `Correct! That's ${wizardStreak} in a row.`; let rewardMsg = "";
+            if (wizardStreak === 5) {
+              if (Math.random() < 0.5) { currentUser.coins += 50; rewardMsg = "\n\n🎁 You earned 50 coins!"; } else { currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; rewardMsg = "\n\n🎁 You earned a Medicine!"; }
+              saveDB(); updateUI();
+            } else if (wizardStreak === 10) {
+              if (Math.random() < 0.5) { currentUser.coins += 150; rewardMsg = "\n\n💎 Amazing! You earned 150 coins!"; } else { currentUser.consumables['i3'] = (currentUser.consumables['i3'] || 0) + 1; rewardMsg = "\n\n💎 Amazing! You earned an Elixir!"; }
+              saveDB(); updateUI();
+            }
+            showConfirm(msg + rewardMsg + "\n\nShall we continue the quiz?", () => { loadNextBattleQuestion(); }, () => { endBattle(); });
+          } else {
+            sfx.bump(); wizardStreak = 0; showConfirm(`Not quite! Your streak has reset. Shall we try again?`, () => { loadNextBattleQuestion(); }, () => { endBattle(); });
+          }
+          return;
+        }
+
+        if (selected === activeQuestion.a) {
+          sfx.hitEnemy(); const pDmg = getPlayerDamage(); currentEnemyHP -= pDmg; showFloatText(`-${pDmg}`, 'dmg-text'); updateEnemyHPBar();
+
+          if (currentEnemyHP <= 0) {
+            setTimeout(() => {
+              const goldEarned = (currentEnemyLevel * 5) + Math.floor(Math.random() * 5); 
+              currentUser.coins += goldEarned;
+              
+              // XP & Level-Up Logic
+              const xpEarned = currentEnemyLevel * 15;
+              currentUser.xp += xpEarned;
+              
+              let leveledUp = false;
+              let xpNeeded = currentUser.level * 60;
+              while (currentUser.xp >= xpNeeded) {
+                currentUser.xp -= xpNeeded;
+                currentUser.level++;
+                leveledUp = true;
+                
+                // Track-proportional Max HP boost on level-up
+                let hpGain = 15;
+                if (currentUser.track === 'intermediate') hpGain = 35;
+                if (currentUser.track === 'advanced') hpGain = 80;
+                
+                currentUser.maxHp += hpGain;
+                currentUser.hp = currentUser.maxHp; // Full heal on level up
+                xpNeeded = currentUser.level * 60;
+              }
+
+              let victoryMsg = `🎉 Victory! Earned ${goldEarned} coins & ${xpEarned} XP.`;
+              if (leveledUp) {
+                victoryMsg += `\n\n⭐ LEVEL UP! You reached Level ${currentUser.level}!\nMax HP increased and HP fully restored!`;
+              }
+              if (Math.random() < 0.25) { 
+                currentUser.consumables['i1'] = (currentUser.consumables['i1'] || 0) + 1; 
+                victoryMsg += `\n\n🧪 The enemy dropped Medicine! Check your Backpack.`; 
+              }
+              
+              if (inCastle && currentEnemyLevel === 12 && activeCastleEnemyKey && castleMonsters[activeCastleEnemyKey] && castleMonsters[activeCastleEnemyKey].isBoss) {
+                  triggerVictorySequence();
+              } else {
+                  sfx.win();
+                  showAlert(victoryMsg, () => {
+                    if (inCastle && activeCastleEnemyKey) { delete castleMonsters[activeCastleEnemyKey]; activeCastleEnemyKey = null; renderCurrentScreen(); }
+                    endBattle();
+                  });
+              }
+            }, 300);
+          } else { loadNextBattleQuestion(); }
+        } else {
+          sfx.takeDamage(); 
+          
+          // Dynamic Enemy Damage Scaling based on Track
+          let eDmg = currentEnemyLevel * 2;
+          if (currentUser.track === 'intermediate') eDmg = (currentEnemyLevel * 4) + 5;
+          if (currentUser.track === 'advanced') eDmg = (currentEnemyLevel * 8) + 15;
+          
+          const pDef = getPlayerDefense(); 
+          const dmgTaken = Math.max(1, eDmg - pDef); 
+          currentUser.hp -= dmgTaken; 
+          
+          updateUI(); showFloatText(`-${dmgTaken}`, 'dmg-text');
+          showAlert(`❌ Incorrect!\n\nThe enemy strikes back for ${dmgTaken} damage.`, () => {
+            if (currentUser.hp <= 0) {
+              showAlert("💀 YOU HAVE FALLEN IN BATTLE.\nYour journey restarts at the village.", () => {
+                currentUser.hp = currentUser.maxHp; currentUser.x = 0; currentUser.y = 11; inCastle = false; activeCastleEnemyKey = null; renderCurrentScreen(); updateUI(); endBattle();
+              });
+            } else { loadNextBattleQuestion(); }
+          });
+        }
+      }, 1200);
+    }
+    
+    function triggerVictorySequence() {
+      endBattle(); sfx.victoryFanfare();
+      var duration = 4000; var end = Date.now() + duration;
+      (function frame() {
+        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } }); confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+        if (Date.now() < end) { requestAnimationFrame(frame); }
+      }());
+      
+      const VICTORY_STORIES = {
+        beginner: "With Sir Nibbles defeated, his minions have scattered. The trampled crops are regrowing, housing costs have stabilized, and the villagers can rebuild without fear of giant footprints!",
+        intermediate: "You unplugged Professor Squeaks' mining rig! The Wi-Fi router is returned, pings are back under 20ms, and the villagers can finally resume their streaming binges uninterrupted!",
+        advanced: "The Doomsday Wheel is shattered! Emperor Fluffypants has surrendered and accepted his pellet diet. Time flows normally once again. You are the ultimate savior of the realm!"
+      };
+      
+      document.getElementById('victory-story-text').innerHTML = `You did it, <b>${currentUser.name}</b>!<br><br>${VICTORY_STORIES[currentUser.track]}`;
+      document.getElementById('victory-modal').classList.add('active');
+    }
+
+    function closeVictory() {
+      document.getElementById('victory-modal').classList.remove('active');
+      currentUser.x = 0; currentUser.y = 11; inCastle = false; activeCastleEnemyKey = null; renderCurrentScreen(); updateUI();
+      if(sfx.musicOn) sfx.startBGM(); 
+    }
+
+    function updateEnemyHPBar() { const pct = Math.max(0, (currentEnemyHP / currentEnemyMaxHP) * 100); document.getElementById('boss-hp-fill').style.width = `${pct}%`; }
+    function endBattle() { inBattle = false; inWizardQuiz = false; document.getElementById('battle-modal').classList.remove('active'); saveDB(); updateUI(); }
+    
+    function showFloatText(text, cssClass) {
+      const popup = document.createElement('div'); popup.className = `combat-popup ${cssClass}`; popup.textContent = text;
+      document.getElementById('battle-modal').appendChild(popup); setTimeout(() => popup.remove(), 1500);
+    }
+
+    function speakCurrentQuestion() {
+      if ('speechSynthesis' in window && activeQuestion) {
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(activeQuestion.a || activeQuestion.q); utt.lang = 'he-IL'; utt.rate = 0.85; window.speechSynthesis.speak(utt);
+      }
+    }
+
+    // --- Profile UI ---
+    function openProfile() {
+      if (!currentUser) return;
+      const pDmg = getPlayerDamage(); const pDef = getPlayerDefense();
+      const xpNeeded = currentUser.level * 60;
+      
+      document.getElementById('profile-name-display-modal').innerHTML = `${currentUser.avatar} ${currentUser.name}`;
+      document.getElementById('profile-stats-detailed').innerHTML = `⭐ Level: ${currentUser.level} &nbsp;|&nbsp; 📈 XP: ${currentUser.xp}/${xpNeeded}<br>❤️ HP: ${currentUser.hp}/${currentUser.maxHp} &nbsp;|&nbsp; ⚔️ Attack: ${pDmg} &nbsp;|&nbsp; 🛡️ Defense: ${pDef}<br><span style="font-size:0.8rem; color:#718096; font-weight:normal;">Weapons deal more damage per correct answer. Armor reduces damage taken on mistakes.</span>`;
+      
+      const wSlot = document.getElementById('equip-slot-weapon'); const aSlot = document.getElementById('equip-slot-armor');
+      if (currentUser.equippedWeapon) { const w = SHOP_ITEMS.weapons.find(x => x.id === currentUser.equippedWeapon); wSlot.innerHTML = `<div class="slot-icon">${w.icon}</div><div style="color:var(--primary-dark)">${w.name}</div>`; } else wSlot.innerHTML = `<div class="slot-icon" style="opacity:0.3">🗡️</div><div>No Weapon</div>`;
+      if (currentUser.equippedArmor) { const a = SHOP_ITEMS.armor.find(x => x.id === currentUser.equippedArmor); aSlot.innerHTML = `<div class="slot-icon">${a.icon}</div><div style="color:var(--primary-dark)">${a.name}</div>`; } else aSlot.innerHTML = `<div class="slot-icon" style="opacity:0.3">🛡️</div><div>No Armor</div>`;
+
+      const grid = document.getElementById('inventory-grid'); grid.innerHTML = '';
+      if (!currentUser.inventory || currentUser.inventory.length === 0) { grid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">Your inventory is empty.</span>'; } 
+      else {
+        currentUser.inventory.forEach(itemId => {
+          const isWeapon = SHOP_ITEMS.weapons.find(i => i.id === itemId); const isArmor = SHOP_ITEMS.armor.find(i => i.id === itemId); const item = isWeapon || isArmor;
+          const type = isWeapon ? 'weapon' : 'armor'; const isEquipped = (currentUser.equippedWeapon === item.id || currentUser.equippedArmor === item.id);
+          const card = document.createElement('div'); card.className = `item-card ${isEquipped ? 'equipped' : ''}`;
+          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span><span style="font-size:0.8rem; font-weight:700; text-align:center;">${item.name}</span><span style="font-size:0.7rem; color:var(--success);">${isEquipped ? 'Equipped' : 'Equip'}</span>`;
+          card.onclick = () => {
+            if (isEquipped) { if(type === 'weapon') currentUser.equippedWeapon = null; if(type === 'armor') currentUser.equippedArmor = null; } 
+            else { if(type === 'weapon') currentUser.equippedWeapon = item.id; if(type === 'armor') currentUser.equippedArmor = item.id; }
+            saveDB(); positionPlayerOnMap(); updateUI(); openProfile();
+          };
+          grid.appendChild(card);
+        });
+      }
+
+      const consGrid = document.getElementById('consumables-grid'); consGrid.innerHTML = ''; let hasItems = false;
+      Object.keys(currentUser.consumables).forEach(itemId => {
+        const count = currentUser.consumables[itemId];
+        if (count > 0) {
+          hasItems = true; const item = SHOP_ITEMS.items.find(i => i.id === itemId);
+          const card = document.createElement('div'); card.className = 'item-card';
+          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span><span style="font-size:0.8rem; font-weight:700; text-align:center;">${item.name}</span><span style="font-size:0.7rem; font-weight:bold; color:var(--primary);">x${count}</span><span style="font-size:0.7rem; color:var(--success);">USE</span>`;
+          card.onclick = () => {
+            if (currentUser.hp >= currentUser.maxHp) { showAlert("Your HP is already full!"); return; }
+            currentUser.hp = Math.min(currentUser.maxHp, currentUser.hp + item.heal); currentUser.consumables[itemId]--; sfx.heal(); saveDB(); updateUI(); openProfile();
+          };
+          consGrid.appendChild(card);
+        }
+      });
+      if (!hasItems) { consGrid.innerHTML = '<span style="grid-column: 1/-1; color:#A0AEC0;">No items. Buy medicine in a Town shop!</span>'; }
+      document.getElementById('profile-modal').classList.add('active');
+    }
+
+    // --- Town Shop UI ---
+    function openShop() { if(!currentUser || !inTown) return; renderShop('items'); document.getElementById('shop-modal').classList.add('active'); }
+    function renderShop(category) {
+      ['avatars', 'weapons', 'armor', 'items'].forEach(t => document.getElementById(`tab-${t}`).classList.toggle('active', t === category));
+      const container = document.getElementById('shop-items-container'); container.innerHTML = '';
+
+      if (category === 'avatars') {
+        AVATARS.forEach(av => {
+          const isUnlocked = currentUser.unlockedAvatars.includes(av.icon); const isEquipped = currentUser.avatar === av.icon;
+          const card = document.createElement('div'); card.className = `item-card ${isEquipped ? 'equipped' : (isUnlocked ? 'owned' : '')}`;
+          card.innerHTML = `<span style="font-size:2rem;">${av.icon}</span><span style="font-size:0.85rem; font-weight:700;">${isEquipped ? 'Equipped' : (isUnlocked ? 'Owned' : `🪙 ${av.price}`)}</span>`;
+          card.onclick = () => handleBuyAvatar(av); container.appendChild(card);
+        });
+      } else {
+        SHOP_ITEMS[category].forEach(item => {
+          let isOwned = false; let countText = ''; let actionText = `🪙 ${item.price}`;
+          if (category === 'items') {
+             const count = currentUser.consumables[item.id] || 0; if (count > 0) countText = `<span style="color:var(--success); font-weight:bold;">Owned: ${count}</span>`;
+          } else {
+             isOwned = currentUser.inventory.includes(item.id); if (isOwned) actionText = 'Owned';
+          }
+          const card = document.createElement('div'); card.className = `item-card ${isOwned ? 'owned' : ''}`;
+          card.innerHTML = `<span style="font-size:2rem;">${item.icon}</span><strong style="font-size:0.8rem; text-align:center;">${item.name}</strong><span style="font-size:0.7rem; color:#718096;">${item.desc}</span><span style="font-size:0.85rem; font-weight:700; margin-top:4px;">${actionText}</span>${countText}`;
+          card.onclick = () => handleBuyItem(item, category); container.appendChild(card);
+        });
+      }
+    }
+
+    function handleBuyAvatar(av) {
+      if (currentUser.unlockedAvatars.includes(av.icon)) { currentUser.avatar = av.icon; saveDB(); positionPlayerOnMap(); updateUI(); renderShop('avatars'); } 
+      else if (currentUser.coins >= av.price) { currentUser.coins -= av.price; currentUser.unlockedAvatars.push(av.icon); currentUser.avatar = av.icon; saveDB(); positionPlayerOnMap(); updateUI(); renderShop('avatars'); } 
+      else showAlert('Not enough coins!');
+    }
+
+    function handleBuyItem(item, category) {
+      if (category === 'items') {
+        if (currentUser.coins >= item.price) { currentUser.coins -= item.price; currentUser.consumables[item.id] = (currentUser.consumables[item.id] || 0) + 1; sfx.heal(); saveDB(); updateUI(); renderShop(category); } 
+        else { showAlert('Not enough coins!'); }
+      } else {
+        if (currentUser.inventory.includes(item.id)) showAlert("Already owned! Check Profile to equip.");
+        else if (currentUser.coins >= item.price) { currentUser.coins -= item.price; currentUser.inventory.push(item.id); saveDB(); updateUI(); renderShop(category); showAlert(`Purchased ${item.name}!`); } 
+        else showAlert('Not enough coins!');
+      }
+    }
+
+    function closeModal(id) { if (id === 'login-modal' && !currentUser) return; document.getElementById(id).classList.remove('active'); }
+    document.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>
