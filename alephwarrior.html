@@ -715,19 +715,32 @@
         { id: 'w2', name: 'Iron Dagger', icon: '🗡️', price: 150, dmg: 2, desc: "Damage: 2" },
         { id: 'w3', name: 'Knight Sword', icon: '⚔️', price: 400, dmg: 3, desc: "Damage: 3" },
         { id: 'w4', name: 'Magic Staff', icon: '🪄', price: 800, dmg: 4, desc: "Damage: 4" },
-        { id: 'w5', name: 'Aleph Blade', icon: '⚡', price: 1500, dmg: 5, desc: "Damage: 5" }
+        { id: 'w5', name: 'Aleph Blade', icon: '⚡', price: 1500, dmg: 5, desc: "Damage: 5" },
+        { id: 'w6', name: 'Silver Mace', icon: '🔨', price: 3000, dmg: 8, desc: "Damage: 8" },
+        { id: 'w7', name: 'David\'s Sling', icon: '☄️', price: 5000, dmg: 12, desc: "Damage: 12" },
+        { id: 'w8', name: 'Gideon\'s Sword', icon: '🗡️', price: 9000, dmg: 18, desc: "Damage: 18" },
+        { id: 'w9', name: 'Samson\'s Pillar', icon: '🏛️', price: 15000, dmg: 26, desc: "Damage: 26" },
+        { id: 'w10', name: 'Blade of Light', icon: '✨', price: 25000, dmg: 40, desc: "Damage: 40" }
       ],
       armor: [
         { id: 'a1', name: 'Cloth Tunic', icon: '👕', price: 50, def: 1, desc: "Def: 1" },
         { id: 'a2', name: 'Leather Vest', icon: '🧥', price: 150, def: 2, desc: "Def: 2" },
         { id: 'a3', name: 'Chainmail', icon: '⛓️', price: 400, def: 4, desc: "Def: 4" },
         { id: 'a4', name: 'Steel Plate', icon: '🛡️', price: 800, def: 6, desc: "Def: 6" },
-        { id: 'a5', name: 'Wisdom Crown', icon: '👑', price: 1500, def: 10, desc: "Def: 10" }
+        { id: 'a5', name: 'Wisdom Crown', icon: '👑', price: 1500, def: 10, desc: "Def: 10" },
+        { id: 'a6', name: 'Bronze Mail', icon: '🎽', price: 3000, def: 14, desc: "Def: 14" },
+        { id: 'a7', name: 'Royal Robes', icon: '🧥', price: 5000, def: 20, desc: "Def: 20" },
+        { id: 'a8', name: 'Titanium Vest', icon: '🦺', price: 9000, def: 28, desc: "Def: 28" },
+        { id: 'a9', name: 'Prophet\'s Cloak', icon: '🧣', price: 15000, def: 38, desc: "Def: 38" },
+        { id: 'a10', name: 'Aura of Peace', icon: '🕊️', price: 25000, def: 55, desc: "Def: 55" }
       ],
       items: [
         { id: 'i1', name: 'Medicine', icon: '🧪', price: 30, heal: 20, desc: "Heals 20 HP" },
         { id: 'i2', name: 'Hi-Potion', icon: '💊', price: 80, heal: 50, desc: "Heals 50 HP" },
-        { id: 'i3', name: 'Elixir', icon: '🏺', price: 200, heal: 999, desc: "Full Heal" }
+        { id: 'i3', name: 'Elixir', icon: '🏺', price: 200, heal: 999, desc: "Full Heal" },
+        { id: 'i4', name: 'Miracle Fruit', icon: '🍇', price: 500, heal: 150, desc: "Heals 150 HP" },
+        { id: 'i5', name: 'Manna', icon: '🍞', price: 1200, heal: 400, desc: "Heals 400 HP" },
+        { id: 'i6', name: 'Tree of Life', icon: '🌳', price: 2500, heal: 9999, desc: "Full Heal" }
       ]
     };
 
@@ -739,9 +752,9 @@
     };
 
     const BOSS_DEFS = {
-      beginner: { name: "Sir Nibbles", icon: "🐹", hp: 20 },
-      intermediate: { name: "Prof. Squeaks", icon: "🐭", hp: 35 },
-      advanced: { name: "Emp. Fluffypants", icon: "👑", hp: 50 }
+      beginner: { name: "Sir Nibbles", icon: "🐹", hp: 30 },
+      intermediate: { name: "Prof. Squeaks", icon: "🐭", hp: 150 },
+      advanced: { name: "Emp. Fluffypants", icon: "👑", hp: 500 }
     };
 
     const TRAINING_DATA = {
@@ -1131,6 +1144,16 @@
       currentUser.track = track;
       currentUser.x = 0; currentUser.y = 11; 
       inTown = false; inCastle = false;
+      
+      // Auto-boost player HP to handle the new zone damage scaling
+      if (track === 'intermediate') {
+         currentUser.maxHp = Math.max(currentUser.maxHp, 150);
+         currentUser.hp = currentUser.maxHp;
+      } else if (track === 'advanced') {
+         currentUser.maxHp = Math.max(currentUser.maxHp, 400);
+         currentUser.hp = currentUser.maxHp;
+      }
+      
       saveDB();
       closeModal('track-modal');
       loadQuestionBank(); 
@@ -1562,6 +1585,11 @@
       currentEnemyLevel = overrideLevel !== null ? overrideLevel : getCurrentZoneLevel();
       const enemyDef = ENEMY_TYPES[currentEnemyLevel] || ENEMY_TYPES[1];
       
+      // Dynamic HP Scaling based on Track
+      let baseHp = Math.ceil(currentEnemyLevel / 3) + 1;
+      if (currentUser.track === 'intermediate') baseHp = (currentEnemyLevel * 3) + 10;
+      if (currentUser.track === 'advanced') baseHp = (currentEnemyLevel * 8) + 30;
+      
       if (isBoss) {
         const b = BOSS_DEFS[currentUser.track];
         document.getElementById('boss-name').textContent = b.name;
@@ -1570,7 +1598,7 @@
       } else {
         document.getElementById('boss-name').textContent = `Lvl ${currentEnemyLevel} ${enemyDef.name}`;
         document.getElementById('boss-avatar-icon').textContent = enemyDef.icon;
-        currentEnemyMaxHP = Math.ceil(currentEnemyLevel / 3) + 1;
+        currentEnemyMaxHP = baseHp;
       }
       
       currentEnemyHP = currentEnemyMaxHP;
@@ -1659,8 +1687,18 @@
             }, 300);
           } else { loadNextBattleQuestion(); }
         } else {
-          sfx.takeDamage(); const eDmg = currentEnemyLevel * 2; const pDef = getPlayerDefense(); const dmgTaken = Math.max(1, eDmg - pDef); 
-          currentUser.hp -= dmgTaken; updateUI(); showFloatText(`-${dmgTaken}`, 'dmg-text');
+          sfx.takeDamage(); 
+          
+          // Dynamic Enemy Damage Scaling based on Track
+          let eDmg = currentEnemyLevel * 2;
+          if (currentUser.track === 'intermediate') eDmg = (currentEnemyLevel * 4) + 5;
+          if (currentUser.track === 'advanced') eDmg = (currentEnemyLevel * 8) + 15;
+          
+          const pDef = getPlayerDefense(); 
+          const dmgTaken = Math.max(1, eDmg - pDef); 
+          currentUser.hp -= dmgTaken; 
+          
+          updateUI(); showFloatText(`-${dmgTaken}`, 'dmg-text');
           showAlert(`❌ Incorrect!\n\nThe enemy strikes back for ${dmgTaken} damage.`, () => {
             if (currentUser.hp <= 0) {
               showAlert("💀 YOU HAVE FALLEN IN BATTLE.\nYour journey restarts at the village.", () => {
