@@ -623,7 +623,7 @@
       else { btn.textContent = "🎵 OFF"; btn.classList.remove('active'); }
     }
 
-    // --- GAME MAP DATA ---
+    // --- GAME MAP DATA (Progressive Scale) ---
     const MAPS = {
       beginner: [
         "......M..W-.....MMM.......~....WWWW#",
@@ -640,32 +640,32 @@
         "@..M................................"
       ],
       intermediate: [
-        "...MMM...W-.....MMM..W....~....WWWW#",
-        ".M..MM.M.W-.......M..W....~~...WW...",
-        ".MM..M.M.WW.......M..W...T..........",
-        "..MM...MM.W...MM...M.W.......M......",
-        "W..MMMM...W......MM..W--W...........",
-        "WW..T...M.W--W.......W..W..M...T....",
-        "WWWW.WWWW.W..W.W...M...MM........M..",
-        "~....M....W...W.................M...",
-        "~MMM.M.MMMM....MMM...M.......MMM....",
-        "...M.M...........M...M.......~......",
-        "MM.....MMMM.M..M...M.M......M.......",
-        "@..M......M........................."
+        "......M..W-.....MMM.......~.......MMM.......WWWW#",
+        ".........W-.....M.........~.......M.........WW...",
+        "..MM.....WW....M.........~~..M...M...............",
+        "......MM..WW.......M.....~......MM......M........",
+        "W..MM.....W......MM.............MMMM.............",
+        "WW..~.....W....WW..T...........T....M.......T....",
+        "W...T..M..W--W.W........M......WWWW.....W--W..M..",
+        "..........W..WW.................M.......W..WW....",
+        ".MMM...M.......M.......~.....MMM........W....M...",
+        ".......M.........M.....~................W........",
+        "M.......M...M.......M.......M......MM...W........",
+        "@..M........................M...........W........"
       ],
       advanced: [
-        "M.MMMMM..MW-..MM.MM..M.......MMMWWW#",
-        "M...M....MW-..M...M..M....~..MWWW...",
-        "M.M.M.MMMM.W....M.M..M...T~..M......",
-        "..M...M...W-..M...M..M.......M......",
-        "WM.MMMM.M.W-..MMMM...M..............",
-        "WW......M.W-.......M.M.MM..M...T....",
-        "WWWW.WWWW.W-..WWWW...M...MM......M..",
-        "..T..M....WW...T..M....M..M.......M.",
-        ".MMMMM.MMMM..MMM.MM.MM.......MMM....",
-        "...M.M.........M..M..M..............",
-        "MM.M...MMMM.MM...M...M......M.......",
-        "@..M.M....M..M..M....M.............."
+        "......M..W-.....MMM.......~.......MMM.......W-......WWWW#",
+        ".........W-.....M.........~.......M.........W-......WW...",
+        "..MM.....WW....M.........~~..M...M........WW.............",
+        "......MM..WW.......M.....~......MM......M....W...........",
+        "W..MM.....W......MM.............MMMM.........W...........",
+        "WW..~.....W....WW..T...........T....M........W--W...T....",
+        "W...T..M..W--W.W........M......WWWW..........W..W.....M..",
+        "..........W..WW.................M............W...WW......",
+        ".MMM...M.......M.......~.....MMM........M.......M........",
+        ".......M.........M.....~.................................",
+        "M.......M...M.......M.......M......MM.......M............",
+        "@..M........................M............................"
       ]
     };
 
@@ -684,10 +684,8 @@
       "OOOO+EE+OOOO"
     ];
 
-    // Castle Map (Corrected)
+    // Castle Map
     // F (Floor Spawn) is at X: 10, Y: 11
-    // E (Exit Spawn) is at X: 11, Y: 11
-    // This perfectly lines up with the '.' opening at X: 10, Y: 10
     const CASTLE_LAYOUT = [
       "XXXXXXXXXXXX",
       "XH........FX",
@@ -737,7 +735,13 @@
       1: { name: 'Green Slime', icon: '💧' }, 2: { name: 'Red Slime', icon: '🩸' }, 3: { name: 'Angry Shroom', icon: '🍄' },
       4: { name: 'Forest Goblin', icon: '👺' }, 5: { name: 'Wild Boar', icon: '🐗' }, 6: { name: 'Dire Wolf', icon: '🐺' },
       7: { name: 'Rock Golem', icon: '🪨' }, 8: { name: 'Mountain Troll', icon: '🧌' }, 9: { name: 'Gargoyle', icon: '🦇' },
-      10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Giant Hamster', icon: '🐹' }
+      10: { name: 'Fire Elemental', icon: '🔥' }, 11: { name: 'Dark Knight', icon: '🤺' }, 12: { name: 'Boss', icon: '🐹' }
+    };
+
+    const BOSS_DEFS = {
+      beginner: { name: "Sir Nibbles", icon: "🐹", hp: 20 },
+      intermediate: { name: "Prof. Squeaks", icon: "🐭", hp: 35 },
+      advanced: { name: "Emp. Fluffypants", icon: "👑", hp: 50 }
     };
 
     const TRAINING_DATA = {
@@ -825,7 +829,7 @@
       usersDB[name] = {
         name: name, coins: 0, track: 'beginner',
         hp: 50, maxHp: 50,
-        x: 0, y: 11, townX: 5, townY: 10, castleX: 10, castleY: 11, // Spawn Corrected to X:10
+        x: 0, y: 11, townX: 5, townY: 10, castleX: 10, castleY: 11,
         avatar: '🦁', unlockedAvatars: ['🦁'],
         inventory: [], consumables: {}, equippedWeapon: null, equippedArmor: null,
         hasSeenIntro: false
@@ -849,10 +853,7 @@
       inCastle = false; 
       
       loadQuestionBank(); 
-      
-      if (!currentUser.hasSeenIntro) {
-        openIntro();
-      }
+      openIntro();
     }
     
     // --- Dynamic Intro Engine ---
@@ -888,9 +889,35 @@
     ];
 
     function openIntro() {
+      const TRACK_STORIES = {
+        beginner: {
+          bossName: "Sir Nibbles", bossIcon: "🐹",
+          title1: "🐹 The Hamster's Reign",
+          content1: `Once upon a time, a beloved classroom pet named Sir Nibbles escaped into ${currentUser.name}'s backyard garden...<br><br>He ate a glowing, radioactive heirloom tomato... transforming into a 50-foot-tall Giant Mean Hamster wearing a stretchy top hat!<br><br>Now, he has recruited a union of wild monsters to protest low wages by trampling houses. As a result, property taxes and HOA fees are through the roof!`,
+          title2: "⚔️ A Hero is Needed",
+          content2: `Hero <b>${currentUser.name}</b>, you are our only hope! Drive this evil from the realm and restore our quality of life.<br><br>Your journey will take you east across dangerous lands, into a walled town to buy supplies, and finally into the dark labyrinth to defeat Sir Nibbles!`
+        },
+        intermediate: {
+          bossName: "Prof. Squeaks", bossIcon: "🐭",
+          title1: "🐭 The Wi-Fi Crisis",
+          content1: `Following the defeat of Sir Nibbles, peace was restored... until his vengeful cousin, Professor Squeaks, arrived!<br><br>Prof. Squeaks has stolen the realm's main Wi-Fi router and retreated to a fortified fortress further east. He is using it to mine 'HamsterCoin', causing widespread lag, astronomical electricity bills, and buffered Netflix streams across the villages!`,
+          title2: "⚔️ The Lag Must End",
+          content2: `Hero <b>${currentUser.name}</b>, the villagers can't even stream their favorite shows! We need you to venture through an even longer, more perilous land.<br><br>Master your vocabulary, gear up in the town, and defeat Professor Squeaks to restore our broadband!`
+        },
+        advanced: {
+          bossName: "Emp. Fluffypants", bossIcon: "👑",
+          title1: "👑 The Doomsday Wheel",
+          content1: `The Wi-Fi was saved, but the Hamster Syndicate isn't finished. The mastermind, Emperor Fluffypants, has constructed a colossal Doomsday Hamster Wheel!<br><br>He plans to spin the earth backward, reversing time to a point before his veterinarian put him on a strict pellet diet! This temporal anomaly is already causing villagers to un-eat their dinners!`,
+          title2: "⚔️ Save Time Itself",
+          content2: `Hero <b>${currentUser.name}</b>, this is your ultimate test. You must traverse the longest and deadliest path yet.<br><br>Achieve total Hebrew fluency to survive, breach his temporal stronghold, and stop Emperor Fluffypants before it's too late!`
+        }
+      };
+
+      const story = TRACK_STORIES[currentUser.track];
+      
       introSequence = [
-        { type: "story", title: "🐹 The Hamster's Reign", content: `Once upon a time, a beloved classroom pet named Sir Nibbles escaped into ${currentUser.name}'s backyard garden...<br><br>He ate a glowing, radioactive heirloom tomato that had fallen from the neighbor's experimental compost bin. It transformed him into a 50-foot-tall Giant Mean Hamster wearing a stretchy top hat!<br><br>Now, he has recruited a union of wild monsters (goblins, slimes, and trolls) to protest low wages by trampling houses. As a result, property taxes and HOA fees are through the roof!` },
-        { type: "story", title: "⚔️ A Hero is Needed", content: `Hero <b>${currentUser.name}</b>, you are our only hope! Drive this evil from the realm and restore our quality of life.<br><br>Your journey will take you east across dangerous lands, into a walled town to buy supplies, and finally into the dark labyrinth to defeat Sir Nibbles!` },
+        { type: "story", title: story.title1, content: story.content1 },
+        { type: "story", title: story.title2, content: story.content2 },
         { type: "mechanics", title: "🎮 How to Play", content: `<ul style="text-align: left; margin-left: 20px; line-height: 1.6;">
           <li style="margin-bottom:8px;">Use the <b>D-Pad</b> or keyboard arrows to move.</li>
           <li style="margin-bottom:8px;">Travel <b>East</b> (right) towards the dark castle.</li>
@@ -898,14 +925,17 @@
           </ul>` }
       ];
 
-      introSequence.push({ type: "story", title: "🔤 Hebrew Bootcamp", content: "Before you face the monsters, let's learn the Aleph-Bet! Hebrew is read from <b>Right to Left</b>.<br><br>We have prepared a grueling sequence of training and quizzes for every single letter so you are combat-ready!" });
-      
-      HEBREW_LETTERS_DATA.forEach(letter => {
-        introSequence.push({ type: "lesson", letter: letter.l, name: letter.n, sound: letter.s, mnemonic: letter.m });
-        introSequence.push({ type: "practice", letter: letter.l, name: letter.n, sound: letter.s });
-      });
+      if (currentUser.track === 'beginner') {
+        introSequence.push({ type: "story", title: "🔤 Hebrew Bootcamp", content: "Before you face the monsters, let's learn the Aleph-Bet! Hebrew is read from <b>Right to Left</b>.<br><br>We have prepared a grueling sequence of training and quizzes for every single letter so you are combat-ready!" });
+        HEBREW_LETTERS_DATA.forEach(letter => {
+          introSequence.push({ type: "lesson", letter: letter.l, name: letter.n, sound: letter.s, mnemonic: letter.m });
+          introSequence.push({ type: "practice", letter: letter.l, name: letter.n, sound: letter.s });
+        });
+      } else {
+        introSequence.push({ type: "story", title: "🔤 Advanced Bootcamp", content: "You've survived this far! Remember, your questions will now cover advanced vocabulary and grammar.<br><br>Visit the Town Teacher or check your Training Manual to study the new material." });
+      }
 
-      introSequence.push({ type: "story", title: "🛡️ You are ready!", content: "Your training is complete. Step into the world, equip yourself in town, and defeat the Giant Hamster!" });
+      introSequence.push({ type: "story", title: "🛡️ You are ready!", content: `Your training is complete. Step into the world, equip yourself in town, and defeat ${story.bossName}!` });
 
       currentIntroIndex = 0;
       renderIntroSlide();
@@ -1028,6 +1058,7 @@
       saveDB();
       closeModal('track-modal');
       loadQuestionBank(); 
+      openIntro();
     }
 
     function getPlayerDamage() {
@@ -1089,7 +1120,7 @@
         "Welcome to our town! The shop here sells medicine.", "Talk to the Teacher near the Wizard if you want a detailed vocabulary list for topics you have encountered!",
         "The monsters get much stronger the further east you travel.", "Armor reduces the damage you take when you make a mistake.",
         "A better weapon helps you defeat enemies in fewer turns!", "Don't forget to check your Backpack in the Profile menu to use your medicine.",
-        "The Giant Hamster awaits in the dark castle maze at the far east.", "Hebrew is read from right to left! Keep that in mind.",
+        "The final boss awaits in the dark castle maze at the far east.", "Hebrew is read from right to left! Keep that in mind.",
         "Look for the green arrows at the edge of the world map to travel to the next region."
       ];
       shuffleArray(genericTips);
@@ -1111,7 +1142,10 @@
         for(let x=0; x<12; x++){
           let tile = CASTLE_LAYOUT[y][x];
           if (tile === 'M') { let lvl = Math.random() < 0.5 ? 10 : 11; castleMonsters[`${x},${y}`] = { level: lvl, icon: ENEMY_TYPES[lvl].icon, isBoss: false }; } 
-          else if (tile === 'H') { castleMonsters[`${x},${y}`] = { level: 12, icon: ENEMY_TYPES[12].icon, isBoss: true }; }
+          else if (tile === 'H') { 
+            const b = BOSS_DEFS[currentUser.track];
+            castleMonsters[`${x},${y}`] = { level: 12, icon: b.icon, isBoss: true }; 
+          }
         }
       }
     }
@@ -1122,11 +1156,16 @@
 
     function renderWorldMap() {
       const map = document.getElementById('rpg-map'); map.innerHTML = '';
-      const currentLayout = MAPS[currentUser.track]; const mapSection = Math.floor(currentUser.x / 12); const startX = mapSection * 12;
+      const currentLayout = MAPS[currentUser.track]; 
+      const mapWidth = currentLayout[0].length;
+      const mapSection = Math.floor(currentUser.x / 12); 
+      const startX = mapSection * 12;
 
       for (let y = 0; y < 12; y++) {
         for (let localX = 0; localX < 12; localX++) {
-          const globalX = startX + localX; const tileType = currentLayout[y][globalX];
+          const globalX = startX + localX; 
+          if (globalX >= mapWidth) break;
+          const tileType = currentLayout[y][globalX];
           const tile = document.createElement('div'); tile.className = 'tile';
           
           if (tileType === 'W') { tile.classList.add('water'); tile.innerHTML = '<span class="env-icon">🌊</span>'; } 
@@ -1222,7 +1261,7 @@
       
       const currentLayout = MAPS[currentUser.track]; let showLeft = false; let showRight = false;
       if (currentUser.x % 12 === 0 && currentUser.x > 0) { const leftTile = currentLayout[currentUser.y][currentUser.x - 1]; if (leftTile !== 'W' && leftTile !== 'M') showLeft = true; }
-      if (currentUser.x % 12 === 11 && currentUser.x < 35) { const rightTile = currentLayout[currentUser.y][currentUser.x + 1]; if (rightTile !== 'W' && rightTile !== 'M') showRight = true; }
+      if (currentUser.x % 12 === 11 && currentUser.x < currentLayout[0].length - 1) { const rightTile = currentLayout[currentUser.y][currentUser.x + 1]; if (rightTile !== 'W' && rightTile !== 'M') showRight = true; }
       
       leftArrow.style.display = showLeft ? 'flex' : 'none'; rightArrow.style.display = showRight ? 'flex' : 'none';
     }
@@ -1328,7 +1367,7 @@
                  sfx.bump();
                  const token = document.getElementById('player-map-token');
                  if (token) { token.classList.add('bump-anim'); setTimeout(() => token.classList.remove('bump-anim'), 200); }
-                 showAlert(`🔒 A dark seal blocks the path!\n\nYou must defeat the remaining ${remainingMinions} Castle Defender(s) before facing the Giant Hamster!`);
+                 showAlert(`🔒 A dark seal blocks the path!\n\nYou must defeat the remaining ${remainingMinions} Castle Defender(s) before facing ${BOSS_DEFS[currentUser.track].name}!`);
                  return;
               }
             }
@@ -1380,9 +1419,9 @@
 
       let nx = currentUser.x + dx;
       let ny = currentUser.y + dy;
+      const currentLayout = MAPS[currentUser.track];
       
-      if (nx >= 0 && nx < 36 && ny >= 0 && ny < 12) {
-        const currentLayout = MAPS[currentUser.track];
+      if (nx >= 0 && nx < currentLayout[0].length && ny >= 0 && ny < 12) {
         const tileType = currentLayout[ny][nx];
         
         if (tileType === 'W' || tileType === 'M') {
@@ -1446,13 +1485,21 @@
       inWizardQuiz = false; inBattle = true; sfx.encounter();
       currentEnemyLevel = overrideLevel !== null ? overrideLevel : getCurrentZoneLevel();
       const enemyDef = ENEMY_TYPES[currentEnemyLevel] || ENEMY_TYPES[1];
-      currentEnemyMaxHP = Math.ceil(currentEnemyLevel / 3);
-      currentEnemyHP = currentEnemyMaxHP;
       
+      if (isBoss) {
+        const b = BOSS_DEFS[currentUser.track];
+        document.getElementById('boss-name').textContent = b.name;
+        document.getElementById('boss-avatar-icon').textContent = b.icon;
+        currentEnemyMaxHP = b.hp;
+      } else {
+        document.getElementById('boss-name').textContent = `Lvl ${currentEnemyLevel} ${enemyDef.name}`;
+        document.getElementById('boss-avatar-icon').textContent = enemyDef.icon;
+        currentEnemyMaxHP = Math.ceil(currentEnemyLevel / 3) + 1;
+      }
+      
+      currentEnemyHP = currentEnemyMaxHP;
       let label = isBoss ? "FINAL BOSS" : (inCastle ? "CASTLE DEFENDER" : `Danger Zone: Level ${currentEnemyLevel}`);
       document.getElementById('combat-zone-label').textContent = label;
-      document.getElementById('boss-name').textContent = isBoss ? "Giant Hamster" : `Lvl ${currentEnemyLevel} ${enemyDef.name}`;
-      document.getElementById('boss-avatar-icon').textContent = enemyDef.icon;
       document.getElementById('boss-hp-bar-container').style.display = 'block';
       updateEnemyHPBar();
       loadNextBattleQuestion();
@@ -1557,7 +1604,13 @@
         if (Date.now() < end) { requestAnimationFrame(frame); }
       }());
       
-      document.getElementById('victory-story-text').innerHTML = `You did it, <b>${currentUser.name}</b>!<br><br>With the Giant Hamster defeated, his minions have scattered. The trampled crops are regrowing, housing costs have miraculously stabilized, and the villagers can safely rebuild their homes without fear of giant footprints!<br><br>You are a true hero to the realm.`;
+      const VICTORY_STORIES = {
+        beginner: "With Sir Nibbles defeated, his minions have scattered. The trampled crops are regrowing, housing costs have stabilized, and the villagers can rebuild without fear of giant footprints!",
+        intermediate: "You unplugged Professor Squeaks' mining rig! The Wi-Fi router is returned, pings are back under 20ms, and the villagers can finally resume their streaming binges uninterrupted!",
+        advanced: "The Doomsday Wheel is shattered! Emperor Fluffypants has surrendered and accepted his pellet diet. Time flows normally once again. You are the ultimate savior of the realm!"
+      };
+      
+      document.getElementById('victory-story-text').innerHTML = `You did it, <b>${currentUser.name}</b>!<br><br>${VICTORY_STORIES[currentUser.track]}`;
       document.getElementById('victory-modal').classList.add('active');
     }
 
