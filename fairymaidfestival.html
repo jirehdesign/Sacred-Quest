@@ -1,556 +1,332 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fairy-Maid Festival V17</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fairy-Maid Festival</title>
+    <!-- Tailwind CSS for modern, cute styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
         body {
-            font-family: 'Nunito', sans-serif;
-            touch-action: manipulation;
+            font-family: 'Fredoka', cursive, sans-serif;
             user-select: none;
+            background: linear-gradient(135deg, #fbcfe8 0%, #fed7aa 50%, #bae6fd 100%);
+            min-height: 100vh;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
+        .bounce-slow {
+            animation: bounce 3s infinite ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-8px); }
         }
-        .animate-float {
-            animation: float 3s ease-in-out infinite;
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
         }
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 15px rgba(244, 114, 182, 0.6); }
-            50% { box-shadow: 0 0 25px rgba(244, 114, 182, 0.9); }
-        .animate-glow {
-            animation: pulse-glow 2s infinite;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #f472b6;
-            border-radius: 9999px;
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 5px rgba(244, 114, 182, 0.6)); }
+            50% { filter: drop-shadow(0 0 15px rgba(244, 114, 182, 1)); }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-pink-100 via-purple-100 to-yellow-100 min-h-screen text-slate-700 flex flex-col items-center justify-between p-2 sm:p-4">
+<body class="flex flex-col items-center justify-start p-3 sm:p-6 text-slate-700">
 
-    <!-- Universal Header / Hero Showcase Banner -->
-    <header id="game-header" class="w-full max-w-4xl bg-white/80 backdrop-blur-md rounded-3xl shadow-lg p-3 sm:p-4 mb-3 flex items-center justify-between border-2 border-pink-200">
-        <div class="flex items-center space-x-3">
-            <div id="header-avatar-container" class="w-14 h-14 bg-pink-50 rounded-2xl border-2 border-pink-300 overflow-hidden flex items-center justify-center shadow-inner">
-                <!-- Avatar SVG injected here -->
-            </div>
-            <div>
-                <h1 id="header-username" class="text-lg sm:text-xl font-black text-pink-600 tracking-wide">Fairy Guest</h1>
-                <div class="flex items-center space-x-2 text-xs sm:text-sm font-bold text-slate-500">
-                    <span id="header-level-badge" class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200">Level 1</span>
-                    <span class="flex items-center text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">🪙 <span id="header-gold-count" class="ml-1">50</span></span>
-                </div>
-            </div>
-        </div>
-        <div class="flex items-center space-x-2">
-            <button id="btn-audio-toggle" onclick="toggleAudio()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-2 rounded-2xl font-bold text-sm shadow transition active:scale-95 flex items-center space-x-1">
-                <span>🎵</span><span id="audio-status" class="hidden sm:inline">Music On</span>
+    <!-- Universal Top Banner -->
+    <div id="game-header" class="w-full max-w-4xl bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-3 sm:p-4 mb-4 flex flex-wrap items-center justify-between gap-3 border-4 border-pink-200 hidden">
+        <div class="flex items-center gap-3">
+            <button onclick="goToMenu()" id="btn-header-home" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow flex items-center gap-1">
+                🏠 Menu
             </button>
-            <button id="btn-header-home" onclick="goToMenu()" class="bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-2 rounded-2xl font-bold text-sm shadow transition active:scale-95 flex items-center space-x-1">
-                <span>🏠</span><span class="hidden sm:inline">Menu</span>
+            <div class="flex items-center gap-2">
+                <div id="header-avatar-preview" class="w-10 h-10 rounded-full bg-pink-50 border-2 border-pink-300 overflow-hidden flex items-center justify-center shadow-inner"></div>
+                <div>
+                    <h3 id="header-user-name" class="font-bold text-pink-600 text-sm sm:text-base leading-tight">Hero</h3>
+                    <p id="header-user-level" class="text-xs text-purple-600 font-semibold">Level 1</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
+            <div class="bg-amber-100 border-2 border-amber-300 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-inner">
+                <span class="text-amber-600 font-bold text-sm">🪙</span>
+                <span id="header-gold-count" class="font-bold text-amber-800 text-sm">0</span>
+            </div>
+            <div class="bg-purple-100 border-2 border-purple-300 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-inner">
+                <span class="text-purple-600 font-bold text-sm">✨</span>
+                <span id="header-stardust-count" class="font-bold text-purple-800 text-sm">0</span>
+            </div>
+            <button onclick="toggleAudio()" id="btn-audio-toggle" class="bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow">
+                🎵 Music: OFF
             </button>
         </div>
-    </header>
+    </div>
 
-    <!-- Main App Container -->
-    <main id="app-container" class="w-full max-w-4xl flex-grow flex flex-col items-center justify-center">
+    <!-- MAIN CONTAINER -->
+    <main class="w-full max-w-4xl flex flex-col items-center">
 
-        <!-- SCREEN: MAIN MENU -->
-        <div id="screen-menu" class="w-full bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 border-4 border-pink-300 flex flex-col items-center text-center">
-            <div class="text-5xl sm:text-6xl mb-2 animate-float">🧚‍♀️✨🏰</div>
-            <h2 class="text-3xl sm:text-5xl font-black text-pink-600 mb-2 drop-shadow">Fairy-Maid Festival</h2>
-            <p class="text-slate-500 font-bold mb-6 text-sm sm:text-base">Build rainbow bridges & castles with your magical friends!</p>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md mb-8">
-                <button onclick="startGame()" class="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-xl font-black py-4 px-6 rounded-2xl shadow-lg transform transition active:scale-95 border-b-4 border-pink-700">
-                    🎮 Start Festival!
-                </button>
-                <button onclick="openDressUp()" class="bg-gradient-to-r from-purple-400 to-indigo-400 hover:from-purple-500 hover:to-indigo-500 text-white text-xl font-black py-4 px-6 rounded-2xl shadow-lg transform transition active:scale-95 border-b-4 border-purple-600">
-                    👗 Dress-Up Room
-                </button>
-                <button onclick="openShop()" class="bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-800 text-xl font-black py-4 px-6 rounded-2xl shadow-lg transform transition active:scale-95 border-b-4 border-amber-600">
-                    🛍️ Glitter Boutique
-                </button>
-                <button onclick="openAvatarCustomizer()" class="bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-500 hover:to-emerald-500 text-white text-xl font-black py-4 px-6 rounded-2xl shadow-lg transform transition active:scale-95 border-b-4 border-teal-600">
-                    ✨ Edit Avatar
+        <!-- 1. MAIN MENU SCREEN -->
+        <div id="screen-menu" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 flex flex-col items-center text-center border-4 border-pink-300">
+            <div class="text-5xl sm:text-6xl mb-2 bounce-slow">🏰✨</div>
+            <h1 class="text-3xl sm:text-5xl font-bold text-pink-600 mb-2 drop-shadow">Fairy-Maid Festival</h1>
+            <p class="text-slate-500 text-sm sm:text-base mb-6 max-w-md">Build magical places, gather sparkling resources, solve fun math & spelling puzzles, and dress up your hero!</p>
+
+            <!-- Profile Selector / Creator Area -->
+            <div class="w-full max-w-md bg-pink-50/80 rounded-2xl p-4 sm:p-6 mb-6 border-2 border-pink-200 shadow-inner">
+                <h2 class="text-lg font-bold text-purple-700 mb-3">Choose Your Hero Profile</h2>
+                <div id="profile-list" class="flex flex-col gap-2 max-h-48 overflow-y-auto mb-4 pr-1">
+                    <!-- Populated by JS -->
+                </div>
+                <button onclick="openProfileCreator()" class="w-full bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition transform hover:scale-105 text-base">
+                    ✨ Create New Custom Hero
                 </button>
             </div>
 
-            <!-- Profile Switcher / Reset -->
-            <div class="flex items-center justify-center space-x-3 bg-pink-50 px-4 py-2 rounded-2xl border border-pink-200">
-                <span class="text-xs font-bold text-slate-500">Player Profile:</span>
-                <span id="menu-current-user-name" class="font-extrabold text-pink-600">Fairy Guest</span>
-                <button onclick="switchProfile()" class="text-xs bg-white text-pink-500 hover:bg-pink-100 px-2 py-1 rounded-xl font-bold border border-pink-300 shadow-sm transition">Switch</button>
+            <div id="menu-actions" class="w-full max-w-md flex flex-col gap-3 hidden">
+                <button onclick="startGame()" class="w-full bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-bold py-4 px-8 rounded-2xl shadow-xl transition transform hover:scale-105 text-xl">
+                    🌟 Start Adventure!
+                </button>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="openWardrobe()" class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-3 px-4 rounded-2xl shadow transition transform hover:scale-105 flex items-center justify-center gap-2">
+                        👗 Dress-Up & Shop
+                    </button>
+                    <button onclick="openAchievements()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-3 px-4 rounded-2xl shadow transition transform hover:scale-105 flex items-center justify-center gap-2">
+                        🏆 Badges & Stats
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- SCREEN: GAME BOARD -->
-        <div id="screen-game" class="hidden w-full flex flex-col items-center">
-            <!-- Top Game HUD -->
-            <div class="w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-3 mb-4 flex flex-wrap items-center justify-between border-2 border-purple-200 gap-2">
-                <div class="flex items-center space-x-4">
-                    <div class="bg-purple-100 text-purple-700 font-black px-3 py-1.5 rounded-xl text-sm border border-purple-200">
-                        Level <span id="game-level-display">1</span> / 5
-                    </div>
-                    <div class="bg-amber-100 text-amber-700 font-black px-3 py-1.5 rounded-xl text-sm border border-amber-200 flex items-center space-x-1">
-                        <span>⏳ Sunset Clocks:</span>
-                        <span id="game-clocks-display" class="text-lg">20</span>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button onclick="openWishingWell()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-sm shadow transition border border-indigo-200">
-                        ⛲ Wishing Well
-                    </button>
-                    <button onclick="openMathChallenge()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold px-3 py-1.5 rounded-xl text-sm shadow transition border border-emerald-200">
-                        🪄 Math Wand (<span id="math-charges">4</span>)
-                    </button>
-                    <button onclick="openSpellingChallenge()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold px-3 py-1.5 rounded-xl text-sm shadow transition border border-rose-200">
-                        📜 Spelling Scroll (<span id="spelling-charges">4</span>)
-                    </button>
-                </div>
-            </div>
+        <!-- 2. PROFILE CREATOR / CUSTOMIZER SCREEN -->
+        <div id="screen-creator" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col items-center text-center border-4 border-purple-300 hidden">
+            <h2 class="text-2xl sm:text-3xl font-bold text-purple-600 mb-2">Design Your Hero</h2>
+            <p class="text-slate-500 text-sm mb-4">Customize your hero's look before the adventure begins!</p>
 
-            <!-- Main Interactive Playing Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-                <!-- Left: Resource Inventory & Spinner -->
-                <div class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl p-4 border-3 border-pink-200 flex flex-col justify-between">
+            <div class="w-full max-w-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-purple-50/50 p-4 sm:p-6 rounded-2xl border-2 border-purple-200 mb-6">
+                <!-- Preview Canvas -->
+                <div class="flex flex-col items-center justify-center bg-white p-4 rounded-2xl shadow-inner border-2 border-purple-100">
+                    <div id="creator-preview-container" class="w-40 h-56 flex items-center justify-center mb-2"></div>
+                    <input type="text" id="input-hero-name" placeholder="Hero Name" class="w-full text-center font-bold text-lg px-3 py-2 bg-pink-50 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-pink-400" maxlength="12" value="Princess">
+                </div>
+
+                <!-- Controls -->
+                <div class="flex flex-col gap-3 text-left">
                     <div>
-                        <h3 class="font-black text-pink-600 text-lg mb-3 text-center">🎒 Magic Backpack</h3>
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            <div class="bg-pink-50 p-2 rounded-2xl border border-pink-200 flex items-center justify-between">
-                                <span class="text-xl">🌸</span>
-                                <div class="text-right">
-                                    <div class="text-xs text-slate-400 font-bold">Pixie Dust</div>
-                                    <div id="res-dust" class="font-black text-pink-600 text-lg">0</div>
-                                </div>
-                            </div>
-                            <div class="bg-teal-50 p-2 rounded-2xl border border-teal-200 flex items-center justify-between">
-                                <span class="text-xl">🐚</span>
-                                <div class="text-right">
-                                    <div class="text-xs text-slate-400 font-bold">Pearls</div>
-                                    <div id="res-pearls" class="font-black text-teal-600 text-lg">0</div>
-                                </div>
-                            </div>
-                            <div class="bg-rose-50 p-2 rounded-2xl border border-rose-200 flex items-center justify-between">
-                                <span class="text-xl">🍓</span>
-                                <div class="text-right">
-                                    <div class="text-xs text-slate-400 font-bold">Strawberries</div>
-                                    <div id="res-berries" class="font-black text-rose-600 text-lg">0</div>
-                                </div>
-                            </div>
-                            <div class="bg-amber-50 p-2 rounded-2xl border border-amber-200 flex items-center justify-between">
-                                <span class="text-xl">💎</span>
-                                <div class="text-right">
-                                    <div class="text-xs text-slate-400 font-bold">Shiny Gems</div>
-                                    <div id="res-gems" class="font-black text-amber-600 text-lg">0</div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Golden Stardust -->
-                        <div class="bg-gradient-to-r from-yellow-100 to-amber-100 p-3 rounded-2xl border-2 border-amber-300 flex items-center justify-between mb-4 shadow-sm">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-2xl">🌟</span>
-                                <div>
-                                    <div class="text-xs text-amber-800 font-extrabold">Golden Stardust</div>
-                                    <div class="text-[10px] text-amber-700">Required for Grand Palaces</div>
-                                </div>
-                            </div>
-                            <div id="res-stardust" class="font-black text-amber-700 text-xl">0</div>
-                        </div>
+                        <label class="text-xs font-bold text-purple-700 uppercase tracking-wide">Skin Tone</label>
+                        <div id="palette-skin" class="flex gap-2 mt-1 flex-wrap"></div>
                     </div>
+                    <div>
+                        <label class="text-xs font-bold text-purple-700 uppercase tracking-wide">Eye Style</label>
+                        <div id="palette-eyes" class="flex gap-2 mt-1 flex-wrap"></div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-purple-700 uppercase tracking-wide">Hairstyle</label>
+                        <div id="palette-hair" class="flex gap-2 mt-1 flex-wrap max-h-24 overflow-y-auto"></div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-purple-700 uppercase tracking-wide">Hair Color</label>
+                        <div id="palette-hair-color" class="flex gap-2 mt-1 flex-wrap"></div>
+                    </div>
+                </div>
+            </div>
 
-                    <!-- Spinner / Compass Action -->
-                    <div class="bg-purple-50 p-4 rounded-2xl border-2 border-purple-200 text-center">
-                        <h4 class="font-black text-purple-700 mb-2">🧭 Magic Compass Spinner</h4>
-                        <div id="spinner-result-box" class="bg-white py-3 rounded-xl shadow-inner font-black text-purple-600 text-lg mb-3 border border-purple-100">
-                            Spin the compass!
-                        </div>
-                        <button onclick="spinCompass()" id="btn-spin" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-black py-3 rounded-xl shadow-md transition active:scale-95 border-b-4 border-purple-700">
-                            ✨ Spin for Resources!
-                        </button>
+            <div class="flex gap-3 w-full max-w-md">
+                <button onclick="cancelCreator()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-2xl transition">Cancel</button>
+                <button onclick="saveNewProfile()" class="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-3 rounded-2xl shadow-lg transition">Save & Play!</button>
+            </div>
+        </div>
+
+        <!-- 3. GAMEPLAY SCREEN -->
+        <div id="screen-game" class="w-full flex flex-col gap-4 hidden">
+            <!-- Top Status Bar / HUD -->
+            <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-4 border-4 border-emerald-200 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="bg-emerald-50 border-2 border-emerald-300 px-3 py-1.5 rounded-xl">
+                        <span class="text-xs font-bold text-emerald-600 uppercase block">Level</span>
+                        <span id="game-level-num" class="font-bold text-emerald-800 text-lg">1</span>
+                    </div>
+                    <div class="bg-amber-50 border-2 border-amber-300 px-3 py-1.5 rounded-xl">
+                        <span class="text-xs font-bold text-amber-600 uppercase block">Sunset Clocks</span>
+                        <span id="game-clocks-left" class="font-bold text-amber-800 text-lg">20</span>
                     </div>
                 </div>
 
-                <!-- Center: The Hex Map & Grumpy Raincloud -->
-                <div class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl p-4 border-3 border-purple-200 flex flex-col items-center justify-between relative overflow-hidden">
-                    <div class="absolute top-2 right-2 text-xs font-extrabold bg-pink-100 text-pink-600 px-2.5 py-1 rounded-full border border-pink-200">
-                        🗺️ Festival Grounds
-                    </div>
+                <!-- Quick Bonus Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button onclick="openMathModal()" class="bg-sky-400 hover:bg-sky-500 text-white font-bold px-3 py-2 rounded-xl shadow transition transform hover:scale-105 flex items-center gap-1.5 text-sm">
+                        🪄 Math Wand <span id="math-charges-badge" class="bg-sky-600 text-white text-xs px-1.5 py-0.5 rounded-full">4</span>
+                    </button>
+                    <button onclick="openSpellingModal()" class="bg-pink-400 hover:bg-pink-500 text-white font-bold px-3 py-2 rounded-xl shadow transition transform hover:scale-105 flex items-center gap-1.5 text-sm">
+                        📜 Spelling Scroll <span id="spell-charges-badge" class="bg-pink-600 text-white text-xs px-1.5 py-0.5 rounded-full">4</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Interactive Play Area -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Left: Resource Board & Spinner -->
+                <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-5 border-4 border-pink-200 flex flex-col items-center justify-between">
+                    <h3 class="font-bold text-pink-600 text-lg mb-2">✨ Magic Compass</h3>
                     
-                    <h3 class="font-black text-purple-700 text-lg mb-2">Enchanted Hexes</h3>
+                    <!-- Raincloud Banner if Active -->
+                    <div id="raincloud-banner" class="hidden w-full bg-slate-700 text-white text-xs p-2 rounded-xl mb-3 flex items-center justify-between shadow animate-pulse">
+                        <span>🌧️ Raincloud blocking! (1 🍓 to clear)</span>
+                        <button onclick="clearRaincloud()" class="bg-pink-500 hover:bg-pink-600 px-2 py-1 rounded font-bold">Cheer Up</button>
+                    </div>
 
-                    <!-- Grumpy Raincloud Banner -->
-                    <div id="raincloud-banner" class="hidden w-full bg-indigo-50 border-2 border-indigo-200 p-2.5 rounded-2xl mb-3 flex items-center justify-between animate-pulse">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-2xl">🌧️</span>
-                            <div class="text-left">
-                                <div class="text-xs font-black text-indigo-700">Grumpy Raincloud is blocking a hex!</div>
-                                <div class="text-[10px] text-indigo-500">Spend 1 🍓 Strawberry to cheer it up.</div>
+                    <!-- Spinner Wheel / Visual Compass -->
+                    <div class="relative w-40 h-40 rounded-full border-4 border-purple-300 bg-purple-50 flex items-center justify-center shadow-inner mb-4 cursor-pointer overflow-hidden" onclick="spinCompass()">
+                        <div id="spinner-needle" class="absolute w-1.5 h-16 bg-pink-500 rounded-full origin-bottom transition-all duration-700" style="bottom: 50%; transform: rotate(0deg);"></div>
+                        <div class="absolute w-12 h-12 bg-white rounded-full border-2 border-purple-300 flex items-center justify-center font-bold text-purple-600 shadow">Spin!</div>
+                    </div>
+
+                    <button onclick="spinCompass()" class="w-full bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl shadow-lg transition transform hover:scale-105 text-base mb-4">
+                        🧭 Spin Compass
+                    </button>
+
+                    <!-- Inventory Display -->
+                    <div class="w-full bg-pink-50/80 p-3 rounded-xl border-2 border-pink-200">
+                        <h4 class="text-xs font-bold text-purple-700 uppercase mb-2">My Commodities</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm font-bold">
+                            <div class="bg-white p-2 rounded-lg shadow-sm flex items-center justify-between border border-pink-100">
+                                <span>🍓 Strawberries</span>
+                                <span id="res-strawberries" class="text-pink-600">0</span>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg shadow-sm flex items-center justify-between border border-pink-100">
+                                <span>🐚 Pearls</span>
+                                <span id="res-pearls" class="text-teal-600">0</span>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg shadow-sm flex items-center justify-between border border-pink-100">
+                                <span>✨ Pixie Dust</span>
+                                <span id="res-dust" class="text-amber-600">0</span>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg shadow-sm flex items-center justify-between border border-pink-100">
+                                <span>💎 Gems</span>
+                                <span id="res-gems" class="text-purple-600">0</span>
                             </div>
                         </div>
-                        <button onclick="cheerRaincloud()" class="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow transition">
-                            🍓 Cheer Up!
-                        </button>
-                    </div>
-
-                    <!-- Hex Grid Container -->
-                    <div class="grid grid-cols-2 gap-3 w-full my-auto">
-                        <div id="hex-0" class="hex-tile bg-pink-50 border-2 border-pink-300 p-3 rounded-2xl text-center shadow-sm relative transition">
-                            <div class="text-3xl mb-1">🌲</div>
-                            <div class="font-black text-xs text-pink-700">Enchanted Forest</div>
-                            <div class="text-[10px] text-slate-400 font-bold">Produces Pixie Dust</div>
-                        </div>
-                        <div id="hex-1" class="hex-tile bg-teal-50 border-2 border-teal-300 p-3 rounded-2xl text-center shadow-sm relative transition">
-                            <div class="text-3xl mb-1">🌊</div>
-                            <div class="font-black text-xs text-teal-700">Coral Lagoon</div>
-                            <div class="text-[10px] text-slate-400 font-bold">Produces Pearls</div>
-                        </div>
-                        <div id="hex-2" class="hex-tile bg-rose-50 border-2 border-rose-300 p-3 rounded-2xl text-center shadow-sm relative transition">
-                            <div class="text-3xl mb-1">🍓</div>
-                            <div class="font-black text-xs text-rose-700">Strawberry Patch</div>
-                            <div class="text-[10px] text-slate-400 font-bold">Produces Strawberries</div>
-                        </div>
-                        <div id="hex-3" class="hex-tile bg-amber-50 border-2 border-amber-300 p-3 rounded-2xl text-center shadow-sm relative transition">
-                            <div class="text-3xl mb-1">✨</div>
-                            <div class="font-black text-xs text-amber-700">Glitter Cave</div>
-                            <div class="text-[10px] text-slate-400 font-bold">Produces Shiny Gems</div>
-                        </div>
-                    </div>
-
-                    <div class="text-xs text-slate-400 font-bold mt-3 text-center">
-                        Spin the compass to gather resources from these magical hexes!
                     </div>
                 </div>
 
-                <!-- Right: Festival Building Goals (Sequential) -->
-                <div class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl p-4 border-3 border-pink-200 flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-black text-pink-600 text-lg mb-3 text-center">🏰 Festival Build Queue</h3>
-                        <div id="building-list" class="space-y-3">
-                            <!-- Buildings injected here dynamically -->
+                <!-- Right / Center: Buildings & Wishing Well -->
+                <div class="md:col-span-2 flex flex-col gap-4">
+                    <!-- Sequential Buildings Tracker -->
+                    <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-5 border-4 border-purple-200">
+                        <h3 class="font-bold text-purple-600 text-lg mb-3">🏰 Festival Build Track</h3>
+                        <div id="building-track" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <!-- Populated dynamically -->
                         </div>
                     </div>
-                    <div class="bg-pink-50 p-3 rounded-2xl border border-pink-200 text-center mt-4">
-                        <div class="text-xs text-slate-500 font-bold">Goal: Complete all buildings in order before sunset!</div>
+
+                    <!-- Wishing Well (Trading Center) -->
+                    <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-5 border-4 border-teal-200">
+                        <h3 class="font-bold text-teal-600 text-lg mb-2">💧 Wishing Well Trading</h3>
+                        <p class="text-xs text-slate-500 mb-3">Trade 2 of any commodity for 1 of another, or 3 Stardust for 1 standard resource (and vice-versa)!</p>
+                        <div class="flex flex-wrap items-center gap-2 justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold">Give:</span>
+                                <select id="trade-give-select" class="bg-teal-50 border-2 border-teal-200 rounded-lg p-1.5 text-xs font-bold text-teal-800">
+                                    <option value="strawberries">🍓 Strawberry</option>
+                                    <option value="pearls">🐚 Pearl</option>
+                                    <option value="dust">✨ Pixie Dust</option>
+                                    <option value="gems">💎 Gem</option>
+                                    <option value="stardust">🌟 Stardust</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold">Get:</span>
+                                <select id="trade-get-select" class="bg-teal-50 border-2 border-teal-200 rounded-lg p-1.5 text-xs font-bold text-teal-800">
+                                    <option value="strawberries">🍓 Strawberry</option>
+                                    <option value="pearls">🐚 Pearl</option>
+                                    <option value="dust">✨ Pixie Dust</option>
+                                    <option value="gems">💎 Gem</option>
+                                    <option value="stardust">🌟 Stardust</option>
+                                </select>
+                            </div>
+                            <button onclick="executeTrade()" class="bg-teal-500 hover:bg-teal-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow transition transform hover:scale-105">
+                                Make Wish 💧
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SCREEN: DRESS-UP ROOM -->
-        <div id="screen-dressup" class="hidden w-full bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-6 border-4 border-purple-300 flex flex-col items-center">
-            <div class="flex items-center justify-between w-full mb-4">
-                <h2 class="text-2xl sm:text-3xl font-black text-purple-600">👗 Magical Dress-Up Room</h2>
-                <button onclick="goToMenu()" class="bg-purple-100 hover:bg-purple-200 text-purple-700 px-4 py-2 rounded-2xl font-bold shadow transition">Back to Menu</button>
+        <!-- 4. WARDROBE & BOUTIQUE SCREEN -->
+        <div id="screen-wardrobe" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col items-center border-4 border-pink-300 hidden">
+            <div class="w-full flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-pink-600">👗 Glitter Boutique & Wardrobe</h2>
+                <button onclick="goToMenu()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-4 py-2 rounded-xl text-sm shadow">Back to Menu</button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-                <!-- Avatar Preview -->
-                <div class="bg-pink-50 p-6 rounded-3xl border-2 border-pink-200 flex flex-col items-center justify-center shadow-inner">
-                    <div id="dressup-preview-container" class="w-40 h-56 bg-white rounded-2xl shadow-md border-2 border-pink-300 p-2 mb-4 flex items-center justify-center">
-                        <!-- Large Doll SVG -->
-                    </div>
-                    <h3 id="dressup-username" class="font-black text-pink-600 text-lg">My Hero</h3>
+            <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Character Doll Preview -->
+                <div class="bg-pink-50/60 p-4 rounded-2xl border-2 border-pink-200 flex flex-col items-center justify-center">
+                    <h3 class="font-bold text-purple-700 text-sm mb-2">Hero Showcase</h3>
+                    <div id="wardrobe-doll-preview" class="w-48 h-64 flex items-center justify-center bg-white rounded-2xl shadow-inner border border-pink-100 mb-4"></div>
+                    <div class="text-xs text-slate-500 text-center">Click items below to wear or buy!</div>
                 </div>
 
-                <!-- Wardrobe Tabs & Items -->
-                <div class="md:col-span-2 bg-purple-50 p-4 rounded-3xl border-2 border-purple-200 flex flex-col">
-                    <div class="flex flex-wrap gap-2 mb-4 border-b border-purple-200 pb-2">
-                        <button onclick="switchWardrobeTab('all')" class="wardrobe-tab bg-purple-600 text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow">All</button>
-                        <button onclick="switchWardrobeTab('tops')" class="wardrobe-tab bg-white text-purple-600 px-3 py-1.5 rounded-xl font-bold text-xs border border-purple-300 shadow-sm">Tops</button>
-                        <button onclick="switchWardrobeTab('bottoms')" class="wardrobe-tab bg-white text-purple-600 px-3 py-1.5 rounded-xl font-bold text-xs border border-purple-300 shadow-sm">Bottoms</button>
-                        <button onclick="switchWardrobeTab('body')" class="wardrobe-tab bg-white text-purple-600 px-3 py-1.5 rounded-xl font-bold text-xs border border-purple-300 shadow-sm">Dresses</button>
-                        <button onclick="switchWardrobeTab('feet')" class="wardrobe-tab bg-white text-purple-600 px-3 py-1.5 rounded-xl font-bold text-xs border border-purple-300 shadow-sm">Shoes</button>
-                        <button onclick="switchWardrobeTab('head')" class="wardrobe-tab bg-white text-purple-600 px-3 py-1.5 rounded-xl font-bold text-xs border border-purple-300 shadow-sm">Tiaras</button>
-                        <button onclick="switchWardrobeTab('hand')" class="wardrobe-tab bg-white text-purple-600 px-3 py-1.5 rounded-xl font-bold text-xs border border-purple-300 shadow-sm">Wands</button>
+                <!-- Inventory & Shop Tabs -->
+                <div class="md:col-span-2 flex flex-col gap-4">
+                    <div class="flex gap-2 border-b-2 border-pink-100 pb-2">
+                        <button onclick="switchShopTab('dresses')" id="tab-dresses" class="px-4 py-2 font-bold text-sm rounded-xl bg-pink-500 text-white shadow">Dresses & Tails</button>
+                        <button onclick="switchShopTab('tops')" id="tab-tops" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Tops</button>
+                        <button onclick="switchShopTab('bottoms')" id="tab-bottoms" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Bottoms</button>
+                        <button onclick="switchShopTab('shoes')" id="tab-shoes" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Shoes</button>
+                        <button onclick="switchShopTab('tiaras')" id="tab-tiaras" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Tiaras</button>
+                        <button onclick="switchShopTab('wands')" id="tab-wands" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Wands</button>
                     </div>
 
-                    <div id="wardrobe-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-3 overflow-y-auto max-h-72 p-2 custom-scrollbar">
-                        <!-- Wardrobe items injected here -->
+                    <div id="shop-items-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-1">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SCREEN: GLITTER BOUTIQUE -->
-        <div id="screen-shop" class="hidden w-full bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-6 border-4 border-amber-300 flex flex-col items-center">
-            <div class="flex items-center justify-between w-full mb-4">
-                <div class="flex items-center space-x-3">
-                    <h2 class="text-2xl sm:text-3xl font-black text-amber-600">🛍️ Glitter Boutique</h2>
-                    <div class="bg-amber-100 text-amber-700 font-black px-3 py-1 rounded-full text-sm border border-amber-300">
-                        🪙 <span id="shop-gold-display">50</span> Coins
-                    </div>
-                </div>
-                <button onclick="goToMenu()" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-4 py-2 rounded-2xl font-bold shadow transition">Back to Menu</button>
+        <!-- 5. ACHIEVEMENTS & STATS SCREEN -->
+        <div id="screen-achievements" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col items-center border-4 border-amber-300 hidden">
+            <div class="w-full flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-amber-700">🏆 Badges & Accomplishments</h2>
+                <button onclick="goToMenu()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold px-4 py-2 rounded-xl text-sm shadow">Back to Menu</button>
             </div>
-
-            <div id="shop-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full overflow-y-auto max-h-96 p-2 custom-scrollbar">
-                <!-- Shop items injected here -->
-            </div>
-        </div>
-
-        <!-- SCREEN: AVATAR CUSTOMIZER -->
-        <div id="screen-avatar" class="hidden w-full bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-6 border-4 border-teal-300 flex flex-col items-center">
-            <div class="flex items-center justify-between w-full mb-4">
-                <h2 class="text-2xl sm:text-3xl font-black text-teal-600">✨ Create Your Hero</h2>
-                <button onclick="goToMenu()" class="bg-teal-100 hover:bg-teal-200 text-teal-700 px-4 py-2 rounded-2xl font-bold shadow transition">Back</button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
-                <div class="flex flex-col items-center justify-center bg-teal-50 p-6 rounded-3xl border-2 border-teal-200">
-                    <div id="avatar-custom-preview" class="w-40 h-56 bg-white rounded-2xl shadow-md border-2 border-teal-300 p-2 mb-4 flex items-center justify-center">
-                        <!-- Preview SVG -->
-                    </div>
-                    <input type="text" id="input-username" placeholder="Enter your name" class="w-full bg-white border-2 border-teal-300 px-4 py-2 rounded-2xl font-black text-center text-teal-600 shadow-inner focus:outline-none mb-3">
-                </div>
-
-                <div class="flex flex-col space-y-4 bg-purple-50 p-6 rounded-3xl border-2 border-purple-200">
-                    <div>
-                        <label class="block text-xs font-black text-purple-700 mb-1">Hair Style</label>
-                        <select id="select-hairstyle" onchange="updateCustomAvatarDef()" class="w-full bg-white border-2 border-purple-200 p-2.5 rounded-xl font-bold text-purple-600">
-                            <option value="long">Long Flowing Hair</option>
-                            <option value="pigtails">Cute Pigtails</option>
-                            <option value="buns">Double Buns</option>
-                            <option value="curly">Curly Puffs</option>
-                            <option value="bob">Short Bob</option>
-                            <option value="braids">Twin Braids</option>
-                            <option value="highpony">High Ponytail</option>
-                            <option value="curlysweep">Curly Sweep</option>
-                            <option value="afropuff">Afro Puff</option>
-                            <option value="twinbuns">Twin Space Buns</option>
-                            <option value="sidebraid">Side Braid</option>
-                            <option value="pixie">Pixie Cut</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-black text-purple-700 mb-1">Hair Color</label>
-                        <div class="flex space-x-2">
-                            <button onclick="setHairColor('#fde047')" class="w-8 h-8 rounded-full bg-yellow-300 border-2 border-white shadow"></button>
-                            <button onclick="setHairColor('#f43f5e')" class="w-8 h-8 rounded-full bg-rose-500 border-2 border-white shadow"></button>
-                            <button onclick="setHairColor('#a855f7')" class="w-8 h-8 rounded-full bg-purple-500 border-2 border-white shadow"></button>
-                            <button onclick="setHairColor('#3b82f6')" class="w-8 h-8 rounded-full bg-blue-500 border-2 border-white shadow"></button>
-                            <button onclick="setHairColor('#78350f')" class="w-8 h-8 rounded-full bg-amber-900 border-2 border-white shadow"></button>
-                            <button onclick="setHairColor('#1e293b')" class="w-8 h-8 rounded-full bg-slate-800 border-2 border-white shadow"></button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-black text-purple-700 mb-1">Skin Tone</label>
-                        <div class="flex space-x-2">
-                            <button onclick="setSkinTone('#FFF0E5')" class="w-8 h-8 rounded-full border-2 border-white shadow" style="background-color: #FFF0E5;"></button>
-                            <button onclick="setSkinTone('#FCE4D6')" class="w-8 h-8 rounded-full border-2 border-white shadow" style="background-color: #FCE4D6;"></button>
-                            <button onclick="setSkinTone('#F3C6AB')" class="w-8 h-8 rounded-full border-2 border-white shadow" style="background-color: #F3C6AB;"></button>
-                            <button onclick="setSkinTone('#D89871')" class="w-8 h-8 rounded-full border-2 border-white shadow" style="background-color: #D89871;"></button>
-                            <button onclick="setSkinTone('#A06544')" class="w-8 h-8 rounded-full border-2 border-white shadow" style="background-color: #A06544;"></button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-black text-purple-700 mb-1">Eye Style</label>
-                        <select id="select-eyestyle" onchange="updateCustomAvatarDef()" class="w-full bg-white border-2 border-purple-200 p-2.5 rounded-xl font-bold text-purple-600">
-                            <option value="classic">Classic Sparkle</option>
-                            <option value="starry">Starry Eyes</option>
-                            <option value="winking">Winking</option>
-                            <option value="gentle">Gentle Smiles</option>
-                        </select>
-                    </div>
-
-                    <button onclick="saveCustomAvatar()" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-black py-3 rounded-2xl shadow-lg transition active:scale-95 border-b-4 border-teal-700 mt-2">
-                        ✨ Save & Start Playing!
-                    </button>
-                </div>
+            <div id="badges-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+                <!-- Populated by JS -->
             </div>
         </div>
 
     </main>
 
-    <!-- MODAL: WISHING WELL -->
-    <div id="modal-well" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border-4 border-indigo-300 text-center relative">
-            <h3 class="text-2xl font-black text-indigo-600 mb-2">⛲ Wishing Well</h3>
-            <p class="text-xs font-bold text-slate-400 mb-4">Trade 2 commodities for 1 of your choice, or trade 3 Stardust for 1 commodity!</p>
-            
-            <div class="mb-4">
-                <div class="text-xs font-black text-slate-500 mb-2">1. Select item to give away:</div>
-                <div id="well-give-grid" class="grid grid-cols-5 gap-2">
-                    <!-- Injected options -->
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <div class="text-xs font-black text-slate-500 mb-2">2. Select item to wish for:</div>
-                <div id="well-want-grid" class="grid grid-cols-5 gap-2">
-                    <!-- Injected options -->
-                </div>
-            </div>
-
-            <div id="well-status" class="text-xs font-bold text-indigo-600 mb-4 h-6"></div>
-
-            <div class="flex space-x-3">
-                <button onclick="executeTrade()" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 rounded-2xl shadow transition">Make Wish ✨</button>
-                <button onclick="closeModal('modal-well')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-3 rounded-2xl shadow transition">Cancel</button>
+    <!-- MODALS: MATH WAND & SPELLING SCROLL -->
+    <div id="modal-math" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center border-4 border-sky-300 shadow-2xl">
+            <div class="text-4xl mb-2">🪄✨</div>
+            <h3 class="text-2xl font-bold text-sky-600 mb-2">Magic Math Wand</h3>
+            <p id="math-question-text" class="text-xl font-bold text-slate-700 mb-4">3 + 2 = ?</p>
+            <input type="number" id="math-answer-input" class="w-32 text-center text-2xl font-bold p-3 bg-sky-50 border-2 border-sky-200 rounded-2xl mb-4 focus:outline-none focus:border-sky-400" placeholder="?">
+            <div class="flex gap-2">
+                <button onclick="closeMathModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl transition">Cancel</button>
+                <button onclick="submitMathAnswer()" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl shadow-lg transition">Cast Spell! ✨</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: MATH WAND -->
-    <div id="modal-math" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-emerald-300 text-center relative">
-            <div class="text-4xl mb-2">🪄</div>
-            <h3 class="text-2xl font-black text-emerald-600 mb-1">Magic Math Wand</h3>
-            <p id="math-tries-left" class="text-xs font-bold text-slate-400 mb-4">Tries Left: 4</p>
-            
-            <div id="math-question-box" class="text-2xl font-black text-slate-700 bg-emerald-50 py-4 rounded-2xl border border-emerald-200 mb-4">
-                3 + 2 = ?
-            </div>
-
-            <input type="number" id="math-answer-input" placeholder="Answer" class="w-full bg-slate-50 border-2 border-emerald-300 text-center text-xl font-black py-3 rounded-2xl mb-4 focus:outline-none text-emerald-600">
-
-            <div class="flex space-x-3">
-                <button onclick="submitMathAnswer()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-2xl shadow transition">Cast Spell! ✨</button>
-                <button onclick="closeModal('modal-math')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-3 rounded-2xl shadow transition">Close</button>
+    <div id="modal-spelling" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center border-4 border-pink-300 shadow-2xl">
+            <div class="text-4xl mb-2" id="spell-emoji-hint">🐱</div>
+            <h3 class="text-2xl font-bold text-pink-600 mb-2">Magic Spelling Scroll</h3>
+            <button onclick="speakCurrentWord()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-4 py-2 rounded-xl text-sm mb-4 shadow transition">🔊 Hear Word Again</button>
+            <input type="text" id="spell-answer-input" spellcheck="false" autocorrect="off" autocomplete="off" class="w-full text-center text-2xl font-bold p-3 bg-pink-50 border-2 border-pink-200 rounded-2xl mb-4 focus:outline-none focus:border-pink-400 uppercase tracking-widest" placeholder="TYPE WORD">
+            <div class="flex gap-2">
+                <button onclick="closeSpellingModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl transition">Cancel</button>
+                <button onclick="submitSpellingAnswer()" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-xl shadow-lg transition">Cast Spell! 📜</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: SPELLING SCROLL -->
-    <div id="modal-spelling" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-rose-300 text-center relative">
-            <div class="text-4xl mb-2">📜</div>
-            <h3 class="text-2xl font-black text-rose-600 mb-1">Magic Spelling Scroll</h3>
-            <p id="spelling-tries-left" class="text-xs font-bold text-slate-400 mb-4">Tries Left: 4</p>
-            
-            <div class="flex items-center justify-center space-x-3 bg-rose-50 p-4 rounded-2xl border border-rose-200 mb-4">
-                <span id="spelling-emoji-hint" class="text-4xl">🐱</span>
-                <button onclick="speakSpellingWord()" class="bg-rose-500 hover:bg-rose-600 text-white p-3 rounded-xl font-bold shadow flex items-center space-x-1 text-xs">
-                    <span>🔊 Hear Word</span>
-                </button>
-            </div>
-
-            <input type="text" id="spelling-answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Spell it here" class="w-full bg-slate-50 border-2 border-rose-300 text-center text-xl font-black py-3 rounded-2xl mb-4 focus:outline-none text-rose-600">
-
-            <div class="flex space-x-3">
-                <button onclick="submitSpellingAnswer()" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-black py-3 rounded-2xl shadow transition">Cast Spell! ✨</button>
-                <button onclick="closeModal('modal-spelling')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-3 rounded-2xl shadow transition">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: VICTORY / DEFEAT -->
-    <div id="modal-result" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border-4 border-pink-300 text-center relative">
-            <div id="result-emoji" class="text-6xl mb-3 animate-float">🎉</div>
-            <h3 id="result-title" class="text-3xl font-black text-pink-600 mb-2">Festival Complete!</h3>
-            <p id="result-message" class="text-slate-600 font-bold mb-6">You built all the festival structures just in time!</p>
-            <div id="result-rewards" class="bg-pink-50 p-4 rounded-2xl border border-pink-200 mb-6 font-bold text-sm text-pink-700">
-                <!-- Rewards injected here -->
-            </div>
-            <button onclick="goToMenu()" class="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-black py-4 rounded-2xl shadow-lg text-lg">
-                Hooray! Return to Menu
-            </button>
-        </div>
-    </div>
-
+    <!-- AUDIO & GAME SCRIPT -->
     <script>
-        // --- ITEM DATABASE (38+ Items) ---
-        const ITEMS = {
-            // Tops
-            'top_star': { name: 'Starry Tee', type: 'top', price: 30, svg: '<rect x="33" y="55" width="34" height="25" rx="3" fill="#fde047"/><circle cx="50" cy="67" r="4" fill="#ca8a04"/>' },
-            'top_heart': { name: 'Heart Shirt', type: 'top', price: 30, svg: '<rect x="33" y="55" width="34" height="25" rx="3" fill="#f43f5e"/><path d="M 50 70 Q 47 65 45 67 Q 43 65 40 68 L 50 75 L 60 68 Q 57 65 55 67 Q 53 65 50 70 Z" fill="#ffe4e6"/>' },
-            'top_rainbow': { name: 'Rainbow Top', type: 'top', price: 40, svg: '<path d="M 33 55 L 67 55 L 66 80 L 34 80 Z" fill="#a855f7"/><path d="M 33 62 L 67 62 L 67 68 L 33 68 Z" fill="#38bdf8"/>' },
-            'top_mermaid': { name: 'Shell Tank', type: 'top', price: 35, svg: '<rect x="33" y="55" width="34" height="25" rx="3" fill="#2dd4bf"/><path d="M 45 65 Q 50 60 55 65 Z" fill="#ffffff"/>' },
-            'top_fairy': { name: 'Petal Top', type: 'top', price: 35, svg: '<rect x="33" y="55" width="34" height="25" rx="3" fill="#ec4899"/><path d="M 33 65 Q 50 75 67 65 Z" fill="#fbcfe8"/>' },
-            'top_stripe': { name: 'Striped Tee', type: 'top', price: 25, svg: '<rect x="33" y="55" width="34" height="25" rx="3" fill="#ffffff"/><path d="M 33 59 L 67 59 L 67 63 L 33 63 Z M 33 69 L 67 69 L 67 73 L 33 73 Z" fill="#f43f5e"/>' },
-            'top_cloud': { name: 'Cloud Sweater', type: 'top', price: 35, svg: '<rect x="33" y="55" width="34" height="25" rx="3" fill="#e0f2fe"/><circle cx="45" cy="67" r="5" fill="#ffffff"/><circle cx="55" cy="67" r="5" fill="#ffffff"/>' },
-            'top_sun': { name: 'Sunny Top', type: 'top', price: 30, svg: '<rect x="33" y="55" width="34" height="25" rx="3" fill="#fef08a"/><circle cx="50" cy="67" r="6" fill="#f59e0b"/>' },
-            'top_berry': { name: 'Berry Tee', type: 'top', price: 30, svg: '<rect x="33" y="55" width="34" height="25" rx="3" fill="#ffe4e6"/><circle cx="50" cy="67" r="5" fill="#e11d48"/>' },
-            'top_galaxy': { name: 'Galaxy Top', type: 'top', price: 50, svg: '<rect x="33" y="55" width="34" height="25" rx="3" fill="#312e81"/><circle cx="42" cy="62" r="1.5" fill="#fde047"/><circle cx="58" cy="72" r="1.5" fill="#fde047"/>' },
-
-            // Bottoms
-            'bot_shorts': { name: 'Denim Shorts', type: 'bottom', price: 30, svg: '<path d="M 34 78 L 66 78 L 65 98 L 52 98 L 50 86 L 48 98 L 35 98 Z" fill="#3b82f6"/>' },
-            'bot_skirt_pink': { name: 'Pink Skirt', type: 'bottom', price: 35, svg: '<path d="M 32 78 L 68 78 L 74 96 L 26 96 Z" fill="#f43f5e"/>' },
-            'bot_skirt_purple': { name: 'Purple Skirt', type: 'bottom', price: 35, svg: '<path d="M 32 78 L 68 78 L 74 96 L 26 96 Z" fill="#c084fc"/>' },
-            'bot_shorts_white': { name: 'White Shorts', type: 'bottom', price: 25, svg: '<path d="M 34 78 L 66 78 L 65 98 L 52 98 L 50 86 L 48 98 L 35 98 Z" fill="#ffffff"/>' },
-            'bot_skirt_yellow': { name: 'Sunshine Skirt', type: 'bottom', price: 35, svg: '<path d="M 32 78 L 68 78 L 74 96 L 26 96 Z" fill="#fde047"/>' },
-            'bot_pants_teal': { name: 'Teal Leggings', type: 'bottom', price: 35, svg: '<path d="M 34 78 L 66 78 L 65 125 L 53 125 L 50 100 L 47 125 L 35 125 Z" fill="#14b8a6"/>' },
-            'bot_skirt_rainbow': { name: 'Rainbow Skirt', type: 'bottom', price: 50, svg: '<path d="M 30 78 L 70 78 L 78 98 L 22 98 Z" fill="#ec4899"/><path d="M 33 84 L 67 84 L 71 94 L 29 94 Z" fill="#fde047"/>' },
-            'bot_pants_purple': { name: 'Purple Pants', type: 'bottom', price: 35, svg: '<path d="M 34 78 L 66 78 L 65 125 L 53 125 L 50 100 L 47 125 L 35 125 Z" fill="#8b5cf6"/>' },
-            'bot_shorts_star': { name: 'Star Shorts', type: 'bottom', price: 40, svg: '<path d="M 34 78 L 66 78 L 65 98 L 52 98 L 50 86 L 48 98 L 35 98 Z" fill="#60a5fa"/><circle cx="50" cy="88" r="3" fill="#fde047"/>' },
-            'bot_skirt_flower': { name: 'Petal Skirt', type: 'bottom', price: 40, svg: '<path d="M 32 78 L 68 78 L 75 96 L 25 96 Z" fill="#fb7185"/>' },
-
-            // Dresses (Full Body)
-            'body_fairy': { name: 'Fairy Queen Gown', type: 'body', price: 100, rare: true, svg: '<path d="M 33 55 L 67 55 L 76 125 L 24 125 Z" fill="#f472b6"/><path d="M 50 55 L 60 125 L 40 125 Z" fill="#fbcfe8"/>' },
-            'body_mermaid': { name: 'Mermaid Tail Dress', type: 'body', price: 100, rare: true, svg: '<path d="M 34 55 L 66 55 L 62 110 L 72 130 L 50 120 L 28 130 L 38 110 Z" fill="#06b6d4"/>' },
-            'body_galaxy': { name: 'Galaxy Gown', type: 'body', price: 120, rare: true, svg: '<path d="M 33 55 L 67 55 L 75 125 L 25 125 Z" fill="#312e81"/><circle cx="40" cy="70" r="2" fill="#fde047"/><circle cx="60" cy="95" r="2" fill="#fde047"/><circle cx="50" cy="110" r="2" fill="#fde047"/>' },
-            'body_ballgown': { name: 'Royal Ballgown', type: 'body', price: 110, rare: true, svg: '<path d="M 33 55 L 67 55 L 82 125 L 18 125 Z" fill="#c084fc"/>' },
-            'body_rose': { name: 'Rose Petal Dress', type: 'body', price: 100, svg: '<path d="M 33 55 L 67 55 L 75 125 L 25 125 Z" fill="#fb7185"/>' },
-
-            // Shoes
-            'feet_slippers': { name: 'Glass Slippers', type: 'feet', price: 30, svg: '<path d="M 32 125 L 48 125 L 48 135 L 32 135 Z M 52 125 L 68 125 L 68 135 L 52 135 Z" fill="#e0f2fe" opacity="0.8"/>' },
-            'feet_boots': { name: 'Winged Boots', type: 'feet', price: 40, rare: true, svg: '<path d="M 32 122 L 48 122 L 48 135 L 32 135 Z M 52 122 L 68 122 L 68 135 L 52 135 Z" fill="#f59e0b"/><path d="M 28 122 Q 24 118 32 120 Z M 72 122 Q 76 118 68 120 Z" fill="#ffffff"/>' },
-            'feet_flats_pink': { name: 'Pink Flats', type: 'feet', price: 20, svg: '<path d="M 34 125 L 46 125 L 46 134 L 34 134 Z M 54 125 L 66 125 L 66 134 L 54 134 Z" fill="#f43f5e"/>' },
-            'feet_flats_purple': { name: 'Purple Flats', type: 'feet', price: 20, svg: '<path d="M 34 125 L 46 125 L 46 134 L 34 134 Z M 54 125 L 66 125 L 66 134 L 54 134 Z" fill="#a855f7"/>' },
-            'feet_sandals': { name: 'Leaf Sandals', type: 'feet', price: 25, svg: '<path d="M 34 125 L 46 125 L 46 134 L 34 134 Z M 54 125 L 66 125 L 66 134 L 54 134 Z" fill="#22c55e"/>' },
-            'feet_sneakers': { name: 'Sparkle Sneakers', type: 'feet', price: 35, svg: '<path d="M 32 124 L 48 124 L 48 135 L 32 135 Z M 52 124 L 68 124 L 68 135 L 52 135 Z" fill="#ffffff"/><path d="M 38 128 L 42 128 Z M 58 128 L 62 128 Z" stroke="#3b82f6" stroke-width="2"/>' },
-            'feet_boots_winter': { name: 'Snow Boots', type: 'feet', price: 35, svg: '<path d="M 32 120 L 48 120 L 48 135 L 32 135 Z M 52 120 L 68 120 L 68 135 L 52 135 Z" fill="#93c5fd"/>' },
-            'feet_maryjanes': { name: 'Mary Janes', type: 'feet', price: 30, svg: '<path d="M 33 125 L 47 125 L 47 134 L 33 134 Z M 53 125 L 67 125 L 67 134 L 53 134 Z" fill="#1e293b"/>' },
-
-            // Tiaras / Headwear
-            'head_crown': { name: 'Diamond Crown', type: 'head', price: 50, rare: true, svg: '<polygon points="35,18 40,8 45,16 50,5 55,16 60,8 65,18" fill="#fde047"/><rect x="35" y="18" width="30" height="4" fill="#f59e0b"/>' },
-            'head_tiara': { name: 'Pearl Diadem', type: 'head', price: 40, svg: '<path d="M 35 18 Q 50 10 65 18" fill="none" stroke="#e0f2fe" stroke-width="4"/><circle cx="50" cy="12" r="3" fill="#ffffff"/>' },
-            'head_flowers': { name: 'Flower Wreath', type: 'head', price: 35, svg: '<circle cx="38" cy="16" r="4" fill="#f43f5e"/><circle cx="50" cy="13" r="4" fill="#fde047"/><circle cx="62" cy="16" r="4" fill="#38bdf8"/>' },
-            'head_star': { name: 'Star Headband', type: 'head', price: 35, svg: '<path d="M 35 18 Q 50 12 65 18" fill="none" stroke="#fde047" stroke-width="3"/><polygon points="50,6 52,10 56,11 53,14 54,18 50,16 46,18 47,14 44,11 48,10" fill="#f59e0b"/>' },
-            'head_bow': { name: 'Pink Hair Bow', type: 'head', price: 30, svg: '<path d="M 42 12 Q 50 5 58 12 Q 55 20 50 15 Q 45 20 42 12 Z" fill="#f43f5e"/>' },
-            'head_cat': { name: 'Kitty Ears', type: 'head', price: 40, svg: '<polygon points="36,22 38,8 44,16" fill="#f472b6"/><polygon points="64,22 62,8 56,16" fill="#f472b6"/>' },
-            'head_fairy': { name: 'Fairy Antennae', type: 'head', price: 35, svg: '<path d="M 46 15 Q 40 5 35 8" fill="none" stroke="#a855f7" stroke-width="2"/><circle cx="34" cy="8" r="3" fill="#fde047"/><path d="M 54 15 Q 60 5 65 8" fill="none" stroke="#a855f7" stroke-width="2"/><circle cx="66" cy="8" r="3" fill="#fde047"/>' },
-            'head_unicorn': { name: 'Unicorn Horn', type: 'head', price: 50, rare: true, svg: '<polygon points="50,2 47,18 53,18" fill="#fde047"/><path d="M 48 8 L 52 10 M 48 13 L 52 15" stroke="#f59e0b" stroke-width="1.5"/>' },
-
-            // Wands / Handheld
-            'hand_wand': { name: 'Rainbow Wand', type: 'hand', price: 50, rare: true, svg: '<line x1="68" y1="95" x2="82" y2="75" stroke="#78350f" stroke-width="3"/><polygon points="82,70 85,76 91,77 87,81 88,87 82,84 77,87 78,81 74,77 80,76" fill="#fde047"/>' },
-            'hand_staff': { name: 'Moon Staff', type: 'hand', price: 45, svg: '<line x1="68" y1="100" x2="85" y2="70" stroke="#a855f7" stroke-width="3"/><path d="M 85 62 A 6 6 0 1 0 85 78 A 7 7 0 1 1 85 62 Z" fill="#fde047"/>' },
-            'hand_bubble': { name: 'Bubble Scepter', type: 'hand', price: 40, svg: '<line x1="68" y1="100" x2="80" y2="80" stroke="#06b6d4" stroke-width="3"/><circle cx="82" cy="74" r="5" fill="none" stroke="#06b6d4" stroke-width="2"/>' },
-            'hand_heart': { name: 'Heart Wand', type: 'hand', price: 40, svg: '<line x1="68" y1="100" x2="80" y2="80" stroke="#f43f5e" stroke-width="3"/><path d="M 80 72 Q 77 67 75 70 Q 73 67 70 73 L 80 82 L 90 73 Q 87 67 85 70 Q 83 67 80 72 Z" fill="#f43f5e"/>' }
-        };
-
-        // --- GAME STATE ---
-        const STORAGE_KEY = 'fairy_maid_v17_users';
-        const CURRENT_USER_KEY = 'fairy_maid_v17_current';
-        let allUsers = {};
-        let currentUser = null;
-        let userData = {
-            avatar: { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' },
-            wins: 0,
-            level: 1,
-            gold: 50,
-            inventory: ['top_star', 'bot_shorts', 'feet_flats_pink', 'head_bow', 'hand_heart'],
-            equipped: { head: 'head_bow', body: null, top: 'top_star', bottom: 'bot_shorts', feet: 'feet_flats_pink', hand: 'hand_heart' },
-            badges: []
-        };
-
-        let gameState = {
-            clocks: 20,
-            resources: { dust: 2, pearls: 2, berries: 2, gems: 2, stardust: 0 },
-            buildings: [],
-            currentBuildingIndex: 0,
-            raincloudActive: false,
-            raincloudHex: 0,
-            mathCharges: 4,
-            spellingCharges: 4,
-            currentMath: { q: '', ans: 0 },
-            currentSpelling: { word: '', emoji: '' }
-        };
-
-        // --- AUDIO ENGINE (Web Audio API) ---
+        /* --- AUDIO ENGINE (Web Audio API & Speech Synthesis) --- */
         let audioCtx = null;
         let isMusicPlaying = false;
         let musicTimer = null;
@@ -564,907 +340,1004 @@
             }
         }
 
-        function playSound(type) {
+        function playBeep(freq, type, duration, vol = 0.1) {
             try {
                 initAudio();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
-                const now = audioCtx.currentTime;
-
-                if (type === 'spin') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(300, now);
-                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.3);
-                    gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
-                } else if (type === 'build') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, now);
-                    osc.frequency.setValueAtTime(554.37, now + 0.1);
-                    osc.frequency.setValueAtTime(659.25, now + 0.2);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
-                    osc.start(now);
-                    osc.stop(now + 0.4);
-                } else if (type === 'success') {
-                    osc.type = 'sine';
-                    [523.25, 659.25, 783.99, 1046.50].forEach((f, idx) => {
-                        osc.frequency.setValueAtTime(f, now + idx * 0.1);
-                    });
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
-                    osc.start(now);
-                    osc.stop(now + 0.5);
-                } else if (type === 'error') {
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(200, now);
-                    osc.frequency.setValueAtTime(150, now + 0.15);
-                    gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
-                }
-            } catch(e) {
-                console.error("Audio error", e);
-            }
-        }
-
-        // Procedural Waltz Music Loop
-        function toggleAudio() {
-            initAudio();
-            isMusicPlaying = !isMusicPlaying;
-            const statusEl = document.getElementById('audio-status');
-            if (isMusicPlaying) {
-                if(statusEl) statusEl.innerText = "Music On";
-                startMusicWaltz();
-            } else {
-                if(statusEl) statusEl.innerText = "Music Off";
-                stopMusicWaltz();
-            }
-        }
-
-        function startMusicWaltz() {
-            if (musicTimer) clearInterval(musicTimer);
-            const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
-            let step = 0;
-            musicTimer = setInterval(() => {
-                if (!isMusicPlaying || !audioCtx) return;
-                try {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.4);
-                    step++;
-                } catch(e) {}
-            }, 500);
-        }
-
-        function stopMusicWaltz() {
-            if (musicTimer) {
-                clearInterval(musicTimer);
-                musicTimer = null;
-            }
-        }
-
-        function playVictoryFanfare() {
-            try {
-                initAudio();
-                const notes = [523.25, 523.25, 523.25, 659.25, 783.99, 1046.50];
-                const times = [0, 0.2, 0.4, 0.6, 0.8, 1.2];
-                notes.forEach((freq, idx) => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + times[idx]);
-                    gain.gain.setValueAtTime(0.25, audioCtx.currentTime + times[idx]);
-                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + times[idx] + 0.4);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(audioCtx.currentTime + times[idx]);
-                    osc.stop(audioCtx.currentTime + times[idx] + 0.4);
-                });
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
             } catch(e) {}
         }
 
-        // --- STORAGE & INITIALIZATION ---
-        window.addEventListener('DOMContentLoaded', () => {
+        function playSoundWin() {
+            playBeep(523.25, 'triangle', 0.15, 0.15);
+            setTimeout(() => playBeep(659.25, 'triangle', 0.15, 0.15), 150);
+            setTimeout(() => playBeep(783.99, 'triangle', 0.15, 0.15), 300);
+            setTimeout(() => playBeep(1046.50, 'triangle', 0.4, 0.2), 450);
+        }
+
+        function playSoundSpin() {
+            playBeep(330, 'sine', 0.1, 0.1);
+            setTimeout(() => playBeep(440, 'sine', 0.1, 0.1), 100);
+            setTimeout(() => playBeep(550, 'sine', 0.15, 0.1), 200);
+        }
+
+        function playSoundBuy() {
+            playBeep(587.33, 'triangle', 0.1, 0.1);
+            setTimeout(() => playBeep(880, 'triangle', 0.2, 0.15), 100);
+        }
+
+        function toggleAudio() {
+            isMusicPlaying = !isMusicPlaying;
+            const btn = document.getElementById('btn-audio-toggle');
+            if (isMusicPlaying) {
+                btn.textContent = "🎵 Music: ON";
+                btn.className = "bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow";
+                startMusicLoop();
+            } else {
+                btn.textContent = "🎵 Music: OFF";
+                btn.className = "bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow";
+                stopMusicLoop();
+            }
+        }
+
+        function startMusicLoop() {
+            initAudio();
+            if (musicTimer) clearInterval(musicTimer);
+            const melody = [
+                523.25, 659.25, 783.99, 1046.50, 783.99, 659.25,
+                587.33, 698.46, 880.00, 1174.66, 880.00, 698.46,
+                493.88, 587.33, 739.99, 987.77, 739.99, 587.33,
+                523.25, 659.25, 783.99, 1046.50, 1174.66, 1046.50
+            ];
+            let step = 0;
+            musicTimer = setInterval(() => {
+                if (!isMusicPlaying) return;
+                playBeep(melody[step % melody.length], 'sine', 0.3, 0.05);
+                step++;
+            }, 350);
+        }
+
+        function stopMusicLoop() {
+            if (musicTimer) clearInterval(musicTimer);
+            musicTimer = null;
+        }
+
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance("Spell the word: " + word);
+                utter.pitch = 1.6;
+                utter.rate = 0.85;
+                const voices = window.speechSynthesis.getVoices();
+                const cuteVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Zira'));
+                if (cuteVoice) utter.voice = cuteVoice;
+                window.speechSynthesis.speak(utter);
+            }
+        }
+
+        /* --- DATA & STATE MANAGEMENT --- */
+        const STORAGE_KEY = 'fairy_maid_v18_users';
+
+        // 38 Unique Wardrobe Items Database
+        const WARDROBE_ITEMS = [
+            // Dresses & Tails (Type: dress)
+            { id: 'd_pink', name: 'Pink Fairy Frock', type: 'dress', price: 100, rare: false, svg: `<path d="M60 135 L100 135 L115 210 L45 210 Z" fill="#f472b6"/><path d="M45 210 L115 210 L130 225 L30 225 Z" fill="#db2777"/>` },
+            { id: 'd_galaxy', name: 'Galaxy Gown ✨', type: 'dress', price: 150, rare: true, svg: `<path d="M60 135 L100 135 L120 210 L40 210 Z" fill="#4c1d95"/><circle cx="70" cy="160" r="2" fill="#fde047"/><circle cx="90" cy="180" r="2" fill="#fde047"/>` },
+            { id: 'd_rose', name: 'Rose Petal Dress', type: 'dress', price: 100, rare: false, svg: `<path d="M60 135 L100 135 L115 210 L45 210 Z" fill="#fb7185"/><path d="M45 210 Q80 230 115 210 Z" fill="#e11d48"/>` },
+            { id: 'd_mermaid', name: 'Sunset Mermaid Tail', type: 'dress', price: 120, rare: false, svg: `<path d="M65 135 L95 135 L105 220 L55 220 Z" fill="#0d9488"/><path d="M55 220 L80 250 L105 220 Z" fill="#14b8a6"/>` },
+            { id: 'd_ballgown', name: 'Royal Ballgown', type: 'dress', price: 140, rare: false, svg: `<path d="M60 135 L100 135 L135 220 L25 220 Z" fill="#c084fc"/>` },
+            { id: 'd_mint', name: 'Mint Fairy Tunic', type: 'dress', price: 90, rare: false, svg: `<path d="M60 135 L100 135 L110 210 L50 210 Z" fill="#34d399"/>` },
+            { id: 'd_sunflower', name: 'Sunflower Dress', type: 'dress', price: 100, rare: false, svg: `<path d="M60 135 L100 135 L115 210 L45 210 Z" fill="#facc15"/>` },
+            { id: 'd_lavender', name: 'Lavender Dress', type: 'dress', price: 100, rare: false, svg: `<path d="M60 135 L100 135 L115 210 L45 210 Z" fill="#a78bfa"/>` },
+            { id: 'd_ruby', name: 'Ruby Princess Gown', type: 'dress', price: 130, rare: false, svg: `<path d="M60 135 L100 135 L120 215 L40 215 Z" fill="#e11d48"/>` },
+            { id: 'd_sapphire', name: 'Sapphire Mermaid Tail', type: 'dress', price: 130, rare: false, svg: `<path d="M65 135 L95 135 L105 220 L55 220 Z" fill="#2563eb"/><path d="M55 220 L80 250 L105 220 Z" fill="#3b82f6"/>` },
+            { id: 'd_starlight', name: 'Starlight Gown ✨', type: 'dress', price: 160, rare: true, svg: `<path d="M60 135 L100 135 L125 220 L35 220 Z" fill="#818cf8"/><circle cx="75" cy="170" r="3" fill="#fef08a"/>` },
+            { id: 'd_rainbow', name: 'Rainbow Dress', type: 'dress', price: 140, rare: false, svg: `<path d="M60 135 L100 135 L120 210 L40 210 Z" fill="url(#rainbow-grad)"/>` },
+            { id: 'd_golden', name: 'Golden Empress Gown ✨', type: 'dress', price: 180, rare: true, svg: `<path d="M60 135 L100 135 L130 220 L30 220 Z" fill="#eab308"/>` },
+
+            // Tops (Type: top)
+            { id: 't_pink', name: 'Pink Tee', type: 'top', price: 50, rare: false, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#f472b6"/>` },
+            { id: 't_blue', name: 'Sky Blue Blouse', type: 'top', price: 50, rare: false, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#38bdf8"/>` },
+            { id: 't_yellow', name: 'Sunny Tank Top', type: 'top', price: 50, rare: false, svg: `<path d="M60 135 L100 135 L105 180 L55 180 Z" fill="#facc15"/>` },
+            { id: 't_purple', name: 'Purple Hoodie', type: 'top', price: 60, rare: false, svg: `<path d="M58 135 L102 135 L112 185 L48 185 Z" fill="#a78bfa"/>` },
+            { id: 't_stripe', name: 'Rainbow Stripe Tee', type: 'top', price: 70, rare: false, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#ec4899"/><rect x="50" y="145" width="60" height="5" fill="#38bdf8"/><rect x="50" y="160" width="60" height="5" fill="#facc15"/>` },
+            { id: 't_mint', name: 'Mint Crop Top', type: 'top', price: 55, rare: false, svg: `<path d="M60 135 L100 135 L108 175 L52 175 Z" fill="#34d399"/>` },
+            { id: 't_star', name: 'Starry Shirt ✨', type: 'top', price: 80, rare: true, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#6366f1"/><circle cx="80" cy="155" r="3" fill="#fef08a"/>` },
+            { id: 't_heart', name: 'Heart Knit Sweater', type: 'top', price: 75, rare: false, svg: `<path d="M58 135 L102 135 L112 185 L48 185 Z" fill="#fb7185"/>` },
+            { id: 't_white', name: 'Puffy Sleeved Blouse', type: 'top', price: 60, rare: false, svg: `<path d="M58 135 L102 135 L112 180 L48 180 Z" fill="#f8fafc"/>` },
+            { id: 't_sparkle', name: 'Sparkle Sequin Top ✨', type: 'top', price: 90, rare: true, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#c084fc"/><circle cx="70" cy="150" r="2" fill="#fff"/><circle cx="90" cy="165" r="2" fill="#fff"/>` },
+
+            // Bottoms (Type: bottom)
+            { id: 'b_denim', name: 'Denim Shorts', type: 'bottom', price: 50, rare: false, svg: `<path d="M52 180 L108 180 L105 220 L82 220 L80 195 L78 220 L55 220 Z" fill="#3b82f6"/>` },
+            { id: 'b_pinkskirt', name: 'Pink Pleated Skirt', type: 'bottom', price: 60, rare: false, svg: `<path d="M50 180 L110 180 L120 220 L40 220 Z" fill="#f472b6"/>` },
+            { id: 'b_purpleskirt', name: 'Purple Skirt', type: 'bottom', price: 60, rare: false, svg: `<path d="M50 180 L110 180 L120 220 L40 220 Z" fill="#c084fc"/>` },
+            { id: 'b_leggings', name: 'Sparkly Leggings', type: 'bottom', price: 55, rare: false, svg: `<path d="M54 180 L106 180 L102 225 L79 225 L80 195 L81 225 L58 225 Z" fill="#6366f1"/>` },
+            { id: 'b_mintpants', name: 'Mint Capris', type: 'bottom', price: 50, rare: false, svg: `<path d="M53 180 L107 180 L104 220 L81 220 L80 195 L79 220 L56 220 Z" fill="#34d399"/>` },
+            { id: 'b_yellowskirt', name: 'Sunshine Skirt', type: 'bottom', price: 60, rare: false, svg: `<path d="M50 180 L110 180 L120 220 L40 220 Z" fill="#facc15"/>` },
+            { id: 'b_rainbowskirt', name: 'Rainbow Skirt', type: 'bottom', price: 80, rare: true, svg: `<path d="M50 180 L110 180 L125 220 L35 220 Z" fill="url(#rainbow-grad)"/>` },
+            { id: 'b_whitepants', name: 'White Summer Shorts', type: 'bottom', price: 50, rare: false, svg: `<path d="M52 180 L108 180 L105 220 L82 220 L80 195 L78 220 L55 220 Z" fill="#f1f5f9"/>` },
+            { id: 'b_starskirt', name: 'Starry Tutu ✨', type: 'bottom', price: 85, rare: true, svg: `<path d="M45 180 L115 180 L125 220 L35 220 Z" fill="#ec4899"/><circle cx="60" cy="200" r="2" fill="#fff"/><circle cx="100" cy="205" r="2" fill="#fff"/>` },
+            { id: 'b_cargo', name: 'Cute Cargo Pants', type: 'bottom', price: 60, rare: false, svg: `<path d="M52 180 L108 180 L105 225 L82 225 L80 195 L78 225 L55 225 Z" fill="#14b8a6"/>` },
+
+            // Shoes (Type: shoes)
+            { id: 's_pink', name: 'Pink Sneakers', type: 'shoes', price: 30, rare: false, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#ec4899"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#ec4899"/>` },
+            { id: 's_glass', name: 'Glass Slippers ✨', type: 'shoes', price: 50, rare: true, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#e0f2fe"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#e0f2fe"/>` },
+            { id: 's_leaf', name: 'Leaf Sandals', type: 'shoes', price: 30, rare: false, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#22c55e"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#22c55e"/>` },
+            { id: 's_boots', name: 'Winged Boots', type: 'shoes', price: 40, rare: false, svg: `<ellipse cx="68" cy="235" rx="11" ry="6" fill="#fbbf24"/><path d="M55 230 L62 225 L60 235 Z" fill="#fff"/><ellipse cx="92" cy="235" rx="11" ry="6" fill="#fbbf24"/><path d="M105 230 L98 225 L100 235 Z" fill="#fff"/>` },
+            { id: 's_ballet', name: 'Pink Ballet Slippers', type: 'shoes', price: 35, rare: false, svg: `<ellipse cx="68" cy="235" rx="9" ry="5" fill="#f472b6"/><path d="M58 235 L78 235" stroke="#db2777" stroke-width="2"/><ellipse cx="92" cy="235" rx="9" ry="5" fill="#f472b6"/><path d="M82 235 L102 235" stroke="#db2777" stroke-width="2"/>` },
+            { id: 's_purple', name: 'Purple Loafers', type: 'shoes', price: 30, rare: false, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#a855f7"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#a855f7"/>` },
+            { id: 's_gold', name: 'Golden Shoes ✨', type: 'shoes', price: 60, rare: true, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#facc15"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#facc15"/>` },
+            { id: 's_sparkle', name: 'Sparkle Flats', type: 'shoes', price: 40, rare: false, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#f43f5e"/><circle cx="68" cy="235" r="3" fill="#fde047"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#f43f5e"/><circle cx="92" cy="235" r="3" fill="#fde047"/>` },
+
+            // Tiaras (Type: tiara)
+            { id: 'tiara_gold', name: 'Gold Tiara', type: 'tiara', price: 50, rare: false, svg: `<path d="M68 60 L74 45 L80 55 L86 45 L92 60 Z" fill="#eab308"/>` },
+            { id: 'tiara_star', name: 'Star Crown ✨', type: 'tiara', price: 70, rare: true, svg: `<circle cx="80" cy="42" r="6" fill="#fde047"/><path d="M68 58 L92 58" stroke="#eab308" stroke-width="3"/>` },
+            { id: 'tiara_flower', name: 'Flower Wreath', type: 'tiara', price: 45, rare: false, svg: `<circle cx="70" cy="50" r="4" fill="#fb7185"/><circle cx="80" cy="46" r="4" fill="#facc15"/><circle cx="90" cy="50" r="4" fill="#38bdf8"/>` },
+            { id: 'tiara_pearl', name: 'Pearl Diadem', type: 'tiara', price: 55, rare: false, svg: `<circle cx="72" cy="52" r="3" fill="#fff"/><circle cx="80" cy="46" r="4" fill="#fff"/><circle cx="88" cy="52" r="3" fill="#fff"/>` },
+            { id: 'tiara_crystal', name: 'Crystal Tiara ✨', type: 'tiara', price: 75, rare: true, svg: `<path d="M70 55 L80 40 L90 55 Z" fill="#38bdf8"/><path d="M65 58 L95 58" stroke="#0284c7" stroke-width="2"/>` },
+            { id: 'tiara_rainbow', name: 'Rainbow Crown', type: 'tiara', price: 65, rare: false, svg: `<path d="M68 55 Q80 35 92 55 Z" fill="url(#rainbow-grad)"/>` },
+            { id: 'tiara_ruby', name: 'Ruby Diadem', type: 'tiara', price: 60, rare: false, svg: `<circle cx="80" cy="46" r="5" fill="#e11d48"/><path d="M68 56 L92 56" stroke="#9f1239" stroke-width="3"/>` },
+            { id: 'tiara_moon', name: 'Crescent Moon Tiara ✨', type: 'tiara', price: 80, rare: true, svg: `<path d="M76 42 A 6 6 0 1 1 84 48 A 7 7 0 1 0 76 42 Z" fill="#fde047"/>` },
+
+            // Wands (Type: wand)
+            { id: 'wand_star', name: 'Star Wand', type: 'wand', price: 75, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><polygon points="140,95 144,105 155,107 147,115 149,125 140,120 131,125 133,115 125,107 136,105" fill="#facc15"/>` },
+            { id: 'wand_heart', name: 'Heart Wand', type: 'wand', price: 75, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><path d="M140 100 Q135 90 140 85 Q145 90 140 100 Z" fill="#f43f5e"/>` },
+            { id: 'wand_moon', name: 'Moon Staff ✨', type: 'wand', price: 100, rare: true, svg: `<line x1="125" y1="140" x2="140" y2="90" stroke="#854d0e" stroke-width="3"/><circle cx="143" cy="85" r="8" fill="#fde047"/>` },
+            { id: 'wand_bubble', name: 'Bubble Scepter', type: 'wand', price: 80, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><circle cx="142" cy="98" r="7" fill="none" stroke="#38bdf8" stroke-width="3"/>` },
+            { id: 'wand_rainbow', name: 'Rainbow Wand ✨', type: 'wand', price: 120, rare: true, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><circle cx="142" cy="98" r="8" fill="url(#rainbow-grad)"/>` },
+            { id: 'wand_flower', name: 'Blossom Wand', type: 'wand', price: 70, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><circle cx="142" cy="98" r="7" fill="#fb7185"/><circle cx="142" cy="98" r="3" fill="#facc15"/>` },
+            { id: 'wand_crystal', name: 'Crystal Staff', type: 'wand', price: 90, rare: false, svg: `<line x1="125" y1="140" x2="140" y2="90" stroke="#854d0e" stroke-width="3"/><polygon points="140,80 147,95 133,95" fill="#38bdf8"/>` },
+            { id: 'wand_magic', name: 'Sparkle Wand ✨', type: 'wand', price: 85, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><polygon points="140,92 143,100 151,102 145,108 147,116 140,112 133,116 135,108 129,102 137,100" fill="#c084fc"/>` }
+        ];
+
+        // 12 Detailed Hairstyle Options
+        const HAIRSTYLES = [
+            { id: 'pigtails', name: 'Cute Pigtails', svg: `<path d="M50 70 Q80 30 110 70 Q115 50 125 45 Q125 70 115 75 Z M50 70 Q45 50 35 45 Q35 70 45 75 Z" fill="{COLOR}"/>` },
+            { id: 'buns', name: 'Space Buns', svg: `<circle cx="50" cy="45" r="14" fill="{COLOR}"/><circle cx="110" cy="45" r="14" fill="{COLOR}"/><path d="M52 65 Q80 35 108 65 Z" fill="{COLOR}"/>` },
+            { id: 'curls', name: 'Curly Puffs', svg: `<circle cx="48" cy="55" r="16" fill="{COLOR}"/><circle cx="112" cy="55" r="16" fill="{COLOR}"/><path d="M52 68 Q80 40 108 68 Z" fill="{COLOR}"/>` },
+            { id: 'long', name: 'Long Wavy', svg: `<path d="M48 65 Q80 30 112 65 Q120 110 110 140 Q80 145 50 140 Q40 110 48 65 Z" fill="{COLOR}"/>` },
+            { id: 'bob', name: 'Short Bob', svg: `<path d="M48 65 Q80 30 112 65 Q115 95 100 105 Q80 100 60 105 Q45 95 48 65 Z" fill="{COLOR}"/>` },
+            { id: 'braids', name: 'Twin Braids', svg: `<path d="M50 68 Q80 35 110 68 Z" fill="{COLOR}"/><path d="M45 70 Q35 100 48 130 Q52 110 48 70 Z" fill="{COLOR}"/><path d="M115 70 Q125 100 112 130 Q108 110 112 70 Z" fill="{COLOR}"/>` },
+            { id: 'ponytail', name: 'High Ponytail', svg: `<path d="M50 70 Q80 35 110 70 Z" fill="{COLOR}"/><path d="M85 45 Q110 20 120 50 Q110 60 85 45 Z" fill="{COLOR}"/>` },
+            { id: 'curlsweep', name: 'Curly Sweep', svg: `<path d="M48 65 Q80 30 112 65 Q125 80 110 95 Q90 85 70 95 Q55 80 48 65 Z" fill="{COLOR}"/>` },
+            { id: 'afropuff', name: 'Afro Puffs', svg: `<circle cx="45" cy="50" r="18" fill="{COLOR}"/><circle cx="115" cy="50" r="18" fill="{COLOR}"/><path d="M50 65 Q80 45 110 65 Z" fill="{COLOR}"/>` },
+            { id: 'twinbuns', name: 'Braided Buns', svg: `<circle cx="48" cy="42" r="15" fill="{COLOR}" stroke="#00000015" stroke-width="2"/><circle cx="112" cy="42" r="15" fill="{COLOR}" stroke="#00000015" stroke-width="2"/><path d="M52 65 Q80 35 108 65 Z" fill="{COLOR}"/>` },
+            { id: 'sidebraid', name: 'Side Braid', svg: `<path d="M48 65 Q80 30 112 65 Q120 90 125 120 Q110 125 100 100 Q90 80 48 65 Z" fill="{COLOR}"/>` },
+            { id: 'pixie', name: 'Headband Pixie', svg: `<path d="M50 68 Q80 38 110 68 Z" fill="{COLOR}"/><rect x="52" y="55" width="56" height="8" rx="4" fill="#ec4899"/>` },
+        ];
+
+        // 4 Adorable Eye Styles
+        const EYE_STYLES = [
+            { id: 'classic', name: 'Classic', svg: `<circle cx="68" cy="78" r="4" fill="#334155"/><circle cx="92" cy="78" r="4" fill="#334155"/><circle cx="67" cy="77" r="1.5" fill="#fff"/><circle cx="91" cy="77" r="1.5" fill="#fff"/>` },
+            { id: 'starry', name: 'Starry ✨', svg: `<polygon points="68,72 70,76 74,77 71,80 72,84 68,82 64,84 65,80 62,77 66,76" fill="#f59e0b"/><polygon points="92,72 94,76 98,77 95,80 96,84 92,82 88,84 89,80 86,77 90,76" fill="#f59e0b"/><circle cx="67" cy="77" r="1" fill="#fff"/><circle cx="91" cy="77" r="1" fill="#fff"/>` },
+            { id: 'winking', name: 'Winking 😉', svg: `<circle cx="68" cy="78" r="4" fill="#334155"/><circle cx="67" cy="77" r="1.5" fill="#fff"/><path d="M88 78 Q92 72 96 78" stroke="#334155" stroke-width="2.5" fill="none" stroke-linecap="round"/>` },
+            { id: 'gentle', name: 'Gentle 😊', svg: `<path d="M64 78 Q68 83 72 78" stroke="#334155" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M88 78 Q92 83 96 78" stroke="#334155" stroke-width="2.5" fill="none" stroke-linecap="round"/>` }
+        ];
+
+        const SKIN_TONES = ['#ffdbac', '#f1c27d', '#e0ac69', '#c68642', '#8d5524', '#ffefd5', '#ffe0bd', '#eac086'];
+        const HAIR_COLORS = ['#271c19', '#4a3525', '#b55239', '#e6aa32', '#d1603d', '#a855f7', '#3b82f6', '#ec4899', '#ffffff', '#cbd5e1'];
+
+        // Global Game State
+        let db = {
+            profiles: [],
+            activeProfileId: null
+        };
+
+        let activeGame = null;
+        let currentShopTab = 'dresses';
+
+        // Load DB from localStorage
+        function loadDB() {
             try {
-                const savedUsers = localStorage.getItem(STORAGE_KEY);
-                if (savedUsers) {
-                    allUsers = JSON.parse(savedUsers);
-                }
-                const savedCurr = localStorage.getItem(CURRENT_USER_KEY);
-                if (savedCurr && allUsers[savedCurr]) {
-                    currentUser = savedCurr;
-                    userData = allUsers[currentUser];
+                const data = localStorage.getItem(STORAGE_KEY);
+                if (data) {
+                    db = JSON.parse(data);
                 } else {
-                    currentUser = 'Fairy Guest';
-                    allUsers[currentUser] = userData;
-                    saveUserData();
+                    db = { profiles: [], activeProfileId: null };
                 }
             } catch(e) {
-                console.error("Storage initialization error:", e);
-                currentUser = 'Fairy Guest';
-                allUsers[currentUser] = userData;
+                db = { profiles: [], activeProfileId: null };
             }
-            updateHeader();
-            goToMenu();
-        });
+        }
 
-        function saveUserData() {
+        function saveDB() {
             try {
-                if (currentUser) {
-                    allUsers[currentUser] = userData;
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers));
-                    localStorage.setItem(CURRENT_USER_KEY, currentUser);
-                }
-            } catch(e) {
-                console.error("Storage save error:", e);
-            }
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+            } catch(e) {}
         }
 
-        function updateHeader() {
-            try {
-                const nameEl = document.getElementById('header-username');
-                const levelEl = document.getElementById('header-level-badge');
-                const goldEl = document.getElementById('header-gold-count');
-                const menuNameEl = document.getElementById('menu-current-user-name');
-                const avatarCont = document.getElementById('header-avatar-container');
+        // --- HANDCRAFTED PAPERCRAFT SVG RENDERER ---
+        function renderDollSVG(profile, width = 140, height = 200) {
+            const skin = profile.skin || '#ffdbac';
+            const hairColor = profile.hairColor || '#4a3525';
+            const hairObj = HAIRSTYLES.find(h => h.id === profile.hair) || HAIRSTYLES[0];
+            const eyeObj = EYE_STYLES.find(e => e.id === profile.eyes) || EYE_STYLES[0];
+            
+            const dressItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedDress);
+            const topItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedTop);
+            const bottomItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedBottom);
+            const shoesItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedShoes);
+            const tiaraItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedTiara);
+            const wandItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedWand);
 
-                if(nameEl) nameEl.innerText = currentUser;
-                if(levelEl) levelEl.innerText = `Level ${userData.level}`;
-                if(goldEl) goldEl.innerText = userData.gold;
-                if(menuNameEl) menuNameEl.innerText = currentUser;
-                if(avatarCont) avatarCont.innerHTML = generateDollSVG(userData.avatar, userData.equipped);
-            } catch(e) {
-                console.error("Header update error:", e);
-            }
+            const hairSvg = hairObj.svg.replace(/\{COLOR\}/g, hairColor);
+
+            return `
+            <svg width="${width}" height="${height}" viewBox="0 0 160 230" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="rainbow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#f472b6"/>
+                        <stop offset="33%" stop-color="#facc15"/>
+                        <stop offset="66%" stop-color="#34d399"/>
+                        <stop offset="100%" stop-color="#38bdf8"/>
+                    </linearGradient>
+                    <!-- Handcrafted Papercraft Drop Shadow Filter -->
+                    <filter id="paper-shadow" x="-10%" y="-10%" width="125%" height="125%">
+                        <feDropShadow dx="1" dy="3" stdDeviation="2" flood-color="#000" flood-opacity="0.18"/>
+                    </filter>
+                </defs>
+
+                <!-- Wand (Behind or beside hand) -->
+                <g filter="url(#paper-shadow)">
+                    ${wandItem ? wandItem.svg : ''}
+                </g>
+
+                <!-- Body Group with Paper Shadow -->
+                <g filter="url(#paper-shadow)">
+                    <!-- Legs & Feet -->
+                    <rect x="68" y="145" width="10" height="85" rx="5" fill="${skin}"/>
+                    <rect x="82" y="145" width="10" height="85" rx="5" fill="${skin}"/>
+
+                    <!-- Default Modesty Shorts (Ensures lower body coverage) -->
+                    <path d="M64 180 L96 180 L94 205 L81 205 L80 190 L79 205 L66 205 Z" fill="#93c5fd"/>
+
+                    <!-- Torso -->
+                    <rect x="60" y="105" width="40" height="45" rx="10" fill="${skin}"/>
+
+                    <!-- Arms -->
+                    <rect x="45" y="110" width="12" height="40" rx="6" fill="${skin}"/>
+                    <rect x="103" y="110" width="12" height="40" rx="6" fill="${skin}"/>
+
+                    <!-- Clothes Layer: Tops / Bottoms OR Dress -->
+                    ${dressItem ? dressItem.svg : (
+                        (topItem ? topItem.svg : '<path d="M60 105 L100 105 L105 150 L55 150 Z" fill="#f472b6"/>') +
+                        (bottomItem ? bottomItem.svg : '')
+                    )}
+
+                    <!-- Shoes -->
+                    ${shoesItem ? shoesItem.svg : '<ellipse cx="73" cy="228" rx="8" ry="4" fill="#f472b6"/><ellipse cx="87" cy="228" rx="8" ry="4" fill="#f472b6"/>'}
+
+                    <!-- Head & Neck -->
+                    <rect x="74" y="95" width="12" height="15" fill="${skin}"/>
+                    <circle cx="80" cy="75" r="24" fill="${skin}"/>
+
+                    <!-- Face Details -->
+                    <circle cx="68" cy="84" r="4" fill="#fda4af" opacity="0.6"/>
+                    <circle cx="92" cy="84" r="4" fill="#fda4af" opacity="0.6"/>
+                    ${eyeObj.svg}
+                    <path d="M78 85 Q80 88 82 85" stroke="#e11d48" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                    <!-- Hair Back / Base -->
+                    ${hairSvg}
+
+                    <!-- Tiara / Headpiece -->
+                    ${tiaraItem ? tiaraItem.svg : ''}
+                </g>
+            </svg>
+            `;
         }
 
-        function switchProfile() {
-            const newName = prompt("Enter your fairy profile name:", currentUser);
-            if (newName && newName.trim() !== '') {
-                currentUser = newName.trim();
-                if (!allUsers[currentUser]) {
-                    userData = {
-                        avatar: { style: 'long', hairColor: '#fde047', skin: '#FFF0E5', eyes: 'classic' },
-                        wins: 0, level: 1, gold: 50,
-                        inventory: ['top_star', 'bot_shorts', 'feet_flats_pink', 'head_bow', 'hand_heart'],
-                        equipped: { head: 'head_bow', body: null, top: 'top_star', bottom: 'bot_shorts', feet: 'feet_flats_pink', hand: 'hand_heart' },
-                        badges: []
-                    };
-                    allUsers[currentUser] = userData;
-                } else {
-                    userData = allUsers[currentUser];
-                }
-                saveUserData();
-                updateHeader();
-                goToMenu();
-            }
-        }
+        /* --- INITIALIZATION & ROUTING --- */
+        window.onload = function() {
+            loadDB();
+            renderProfileList();
+            showScreen('screen-menu');
+        };
 
-        // --- NAVIGATION ---
-        function hideAllScreens() {
-            ['screen-menu', 'screen-game', 'screen-dressup', 'screen-shop', 'screen-avatar'].forEach(id => {
+        function showScreen(screenId) {
+            ['screen-menu', 'screen-creator', 'screen-game', 'screen-wardrobe', 'screen-achievements'].forEach(id => {
                 const el = document.getElementById(id);
-                if(el) el.classList.add('hidden');
+                if (el) el.classList.add('hidden');
             });
+            const target = document.getElementById(screenId);
+            if (target) target.classList.remove('hidden');
+
+            const header = document.getElementById('game-header');
+            if (screenId === 'screen-menu' || screenId === 'screen-creator') {
+                if (header) header.classList.add('hidden');
+            } else {
+                if (header) header.classList.remove('hidden');
+                updateHeaderHUD();
+            }
         }
 
         function goToMenu() {
-            hideAllScreens();
-            const el = document.getElementById('screen-menu');
-            if(el) el.classList.remove('hidden');
-            updateHeader();
+            stopMusicLoop();
+            isMusicPlaying = false;
+            const btn = document.getElementById('btn-audio-toggle');
+            if (btn) {
+                btn.textContent = "🎵 Music: OFF";
+                btn.className = "bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow";
+            }
+            renderProfileList();
+            showScreen('screen-menu');
         }
 
-        function openDressUp() {
-            hideAllScreens();
-            const el = document.getElementById('screen-dressup');
-            if(el) el.classList.remove('hidden');
-            renderDressUpPreview();
-            renderWardrobeGrid('all');
+        function updateHeaderHUD() {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            if (!profile) return;
+
+            document.getElementById('header-user-name').textContent = profile.name;
+            document.getElementById('header-user-level').textContent = `Level ${profile.level || 1}`;
+            document.getElementById('header-gold-count').textContent = profile.gold || 0;
+            document.getElementById('header-stardust-count').textContent = profile.stardust || 0;
+
+            const preview = document.getElementById('header-avatar-preview');
+            preview.innerHTML = renderDollSVG(profile, 40, 40);
         }
 
-        function openShop() {
-            hideAllScreens();
-            const el = document.getElementById('screen-shop');
-            if(el) el.classList.remove('hidden');
-            const goldDisp = document.getElementById('shop-gold-display');
-            if(goldDisp) goldDisp.innerText = userData.gold;
-            renderShopGrid();
-        }
+        /* --- PROFILE MANAGEMENT & CREATOR --- */
+        function renderProfileList() {
+            const listEl = document.getElementById('profile-list');
+            const actionsEl = document.getElementById('menu-actions');
+            listEl.innerHTML = '';
 
-        function openAvatarCustomizer() {
-            hideAllScreens();
-            const el = document.getElementById('screen-avatar');
-            if(el) el.classList.remove('hidden');
-            const nameInput = document.getElementById('input-username');
-            if(nameInput) nameInput.value = currentUser;
-            renderCustomAvatarPreview();
-        }
-
-        // --- AVATAR SVG ENGINE ---
-        function generateDollSVG(avatarDef, equipped) {
-            let skin = avatarDef.skin || '#FFF0E5'; 
-            let hairColor = avatarDef.hairColor || '#fde047';
-            let eyeStyle = avatarDef.eyes || 'classic';
-            let hairBack = '', hairFront = '';
-            
-            const hl = `<path d="M 22 45 Q 22 -5 50 0 Q 78 -5 78 45" fill="none" stroke="#ffffff" stroke-width="3" stroke-opacity="0.25" stroke-linecap="round"/>`;
-            const baseFrontHair = (color) => `<path d="M 22 45 Q 22 -5 50 0 Q 78 -5 78 45 Q 65 20 50 20 Q 35 20 22 45 Z" fill="${color}"/>${hl}`;
-            hairFront = baseFrontHair(hairColor);
-
-            switch(avatarDef.style) {
-                case 'long':
-                    hairBack = `<path d="M 20 40 Q 10 90 25 125 L 40 125 Q 30 90 35 50 Z" fill="${hairColor}"/><path d="M 80 40 Q 90 90 75 125 L 60 125 Q 70 90 65 50 Z" fill="${hairColor}"/>`;
-                    break;
-                case 'pigtails':
-                    hairBack = `<path d="M 15 40 Q -5 70 10 95 L 25 90 Q 15 70 25 45 Z" fill="${hairColor}"/><path d="M 85 40 Q 105 70 90 95 L 75 90 Q 85 70 75 45 Z" fill="${hairColor}"/>`;
-                    break;
-                case 'buns':
-                    hairBack = `<circle cx="25" cy="25" r="14" fill="${hairColor}"/><circle cx="75" cy="25" r="14" fill="${hairColor}"/>`;
-                    break;
-                case 'curly':
-                    hairBack = `<path d="M 15 35 Q 0 65 20 95 Q 40 65 30 45 Z" fill="${hairColor}"/><path d="M 85 35 Q 100 65 80 95 Q 60 65 70 45 Z" fill="${hairColor}"/>`;
-                    break;
-                case 'bob':
-                    hairBack = `<path d="M 20 40 Q 15 75 30 85 L 70 85 Q 85 75 80 40 Z" fill="${hairColor}"/>`;
-                    break;
-                case 'braids':
-                    hairBack = `<path d="M 20 45 Q 10 80 22 120 L 32 120 Q 25 80 32 45 Z" fill="${hairColor}"/><path d="M 80 45 Q 90 80 78 120 L 68 120 Q 75 80 68 45 Z" fill="${hairColor}"/>`;
-                    break;
-                case 'highpony':
-                    hairBack = `<path d="M 50 15 Q 80 -5 75 35 Q 65 40 50 35 Z" fill="${hairColor}"/>`;
-                    break;
-                case 'curlysweep':
-                    hairBack = `<path d="M 15 30 Q 0 50 25 85 Q 35 60 25 35 Z" fill="${hairColor}"/>`;
-                    break;
-                case 'afropuff':
-                    hairBack = `<circle cx="50" cy="30" r="32" fill="${hairColor}"/>`;
-                    break;
-                case 'twinbuns':
-                    hairBack = `<circle cx="20" cy="20" r="12" fill="${hairColor}"/><circle cx="80" cy="20" r="12" fill="${hairColor}"/>`;
-                    break;
-                case 'sidebraid':
-                    hairBack = `<path d="M 75 35 Q 95 65 85 115 L 75 115 Q 82 75 68 45 Z" fill="${hairColor}"/>`;
-                    break;
-                case 'pixie':
-                default:
-                    hairBack = `<path d="M 22 35 Q 50 15 78 35 Z" fill="${hairColor}"/>`;
-                    break;
+            if (db.profiles.length === 0) {
+                listEl.innerHTML = `<p class="text-sm text-slate-400 italic py-2">No hero profiles yet. Create one below!</p>`;
+                actionsEl.classList.add('hidden');
+                return;
             }
 
-            let bodySvg = '';
-            let topSvg = '';
-            let bottomSvg = '';
+            db.profiles.forEach(p => {
+                const isSelected = p.id === db.activeProfileId;
+                const div = document.createElement('div');
+                div.className = `flex items-center justify-between p-3 rounded-2xl border-2 cursor-pointer transition ${isSelected ? 'bg-pink-100 border-pink-400 shadow' : 'bg-white border-slate-100 hover:bg-pink-50'}`;
+                div.onclick = () => selectProfile(p.id);
 
-            let baseTop = `<rect x="34" y="55" width="32" height="25" rx="2" fill="#fff"/>`;
-            let baseModestyShorts = (!equipped.bottom && !equipped.body) ? `<path d="M 35 78 L 65 78 L 65 96 L 52 96 L 50 84 L 48 96 L 35 96 Z" fill="#93c5fd"/>` : '';
-
-            if (equipped.body) {
-                bodySvg = ITEMS[equipped.body].svg;
-            } else {
-                topSvg = equipped.top ? ITEMS[equipped.top].svg : baseTop;
-                bottomSvg = equipped.bottom ? ITEMS[equipped.bottom].svg : baseModestyShorts;
-            }
-
-            let headSvg = equipped.head ? ITEMS[equipped.head].svg : '';
-            let feetSvg = equipped.feet ? ITEMS[equipped.feet].svg : `<path d="M 34 125 L 46 125 L 46 135 L 34 135 Z M 54 125 L 66 125 L 66 135 L 54 135 Z" fill="#fbcfe8"/>`; 
-            let handSvg = equipped.hand ? ITEMS[equipped.hand].svg : '';
-
-            let eyesMarkup = '';
-            if (eyeStyle === 'starry') {
-                eyesMarkup = `<polygon points="41,33 42.5,36 45,36.5 43,38.5 43.5,41 41,39.5 38.5,41 39,38.5 37,36.5 39.5,36" fill="#fbbf24"/><polygon points="59,33 60.5,36 63,36.5 61,38.5 61.5,41 59,39.5 56.5,41 57,38.5 55,36.5 57.5,36" fill="#fbbf24"/>`;
-            } else if (eyeStyle === 'winking') {
-                eyesMarkup = `<path d="M 38 37 Q 41 33 44 37" fill="none" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/><circle cx="59" cy="36" r="3" fill="#334155"/><circle cx="60" cy="35" r="1" fill="#fff"/>`;
-            } else if (eyeStyle === 'gentle') {
-                eyesMarkup = `<path d="M 38 35 Q 41 39 44 35" fill="none" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/><path d="M 56 35 Q 59 39 62 35" fill="none" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>`;
-            } else {
-                eyesMarkup = `<circle cx="41" cy="36" r="3.5" fill="#334155"/><circle cx="42" cy="35" r="1.2" fill="#fff"/><circle cx="59" cy="36" r="3.5" fill="#334155"/><circle cx="60" cy="35" r="1.2" fill="#fff"/>`;
-            }
-
-            return `<svg viewBox="0 0 100 140" class="w-full h-full drop-shadow-md">
-                ${hairBack}
-                <rect x="44" y="48" width="12" height="12" fill="${skin}"/>
-                <path d="M 34 55 L 66 55 L 68 98 L 62 125 L 38 125 L 32 98 Z" fill="${skin}"/>
-                ${baseModestyShorts}
-                ${bodySvg}
-                ${bottomSvg}
-                ${topSvg}
-                <circle cx="50" cy="35" r="18" fill="${skin}"/>
-                <path d="M 39 28 Q 41 26 43 28" fill="none" stroke="#334155" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M 57 28 Q 59 26 61 28" fill="none" stroke="#334155" stroke-width="1.5" stroke-linecap="round"/>
-                ${eyesMarkup}
-                <ellipse cx="36" cy="40" rx="3" ry="1.5" fill="#fda4af" opacity="0.6"/>
-                <ellipse cx="64" cy="40" rx="3" ry="1.5" fill="#fda4af" opacity="0.6"/>
-                <path d="M 47 43 Q 50 46 53 43" fill="none" stroke="#e11d48" stroke-width="2" stroke-linecap="round"/>
-                ${hairFront}
-                ${feetSvg}
-                ${handSvg}
-                ${headSvg}
-            </svg>`;
-        }
-
-        // --- DRESS-UP ROOM LOGIC ---
-        function renderDressUpPreview() {
-            const container = document.getElementById('dressup-preview-container');
-            const nameEl = document.getElementById('dressup-username');
-            if(container) container.innerHTML = generateDollSVG(userData.avatar, userData.equipped);
-            if(nameEl) nameEl.innerText = currentUser;
-        }
-
-        function renderWardrobeGrid(filter) {
-            const grid = document.getElementById('wardrobe-grid');
-            if(!grid) return;
-            grid.innerHTML = '';
-
-            userData.inventory.forEach(itemId => {
-                const item = ITEMS[itemId];
-                if (!item) return;
-                if (filter !== 'all' && item.type !== filter) return;
-
-                const isEquipped = Object.values(userData.equipped).includes(itemId);
-
-                const card = document.createElement('div');
-                card.className = `bg-white p-3 rounded-2xl border-2 ${isEquipped ? 'border-pink-500 bg-pink-50/50' : 'border-purple-200'} flex flex-col items-center justify-between shadow-sm cursor-pointer hover:scale-105 transition`;
-                card.onclick = () => toggleEquipItem(itemId);
-
-                card.innerHTML = `
-                    <div class="w-12 h-16 flex items-center justify-center mb-2">
-                        <svg viewBox="0 0 100 140" class="w-full h-full">${item.svg}</svg>
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white overflow-hidden flex items-center justify-center border border-pink-200 shadow-inner">
+                            ${renderDollSVG(p, 40, 40)}
+                        </div>
+                        <div class="text-left">
+                            <h4 class="font-bold text-pink-700 text-sm">${p.name}</h4>
+                            <p class="text-xs text-slate-500">Level ${p.level || 1} • 🪙 ${p.gold || 0}</p>
+                        </div>
                     </div>
-                    <div class="text-[10px] font-black text-purple-700 text-center mb-1">${item.name}</div>
-                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${isEquipped ? 'bg-pink-500 text-white' : 'bg-purple-100 text-purple-600'}">
-                        ${isEquipped ? 'Equipped' : 'Equip'}
-                    </span>
+                    <span class="text-xs font-bold px-3 py-1 rounded-xl ${isSelected ? 'bg-pink-500 text-white' : 'bg-slate-100 text-slate-600'}">${isSelected ? 'Active' : 'Select'}</span>
                 `;
-                grid.appendChild(card);
+                listEl.appendChild(div);
             });
-        }
 
-        function switchWardrobeTab(tab) {
-            document.querySelectorAll('.wardrobe-tab').forEach(btn => {
-                btn.className = 'wardrobe-tab bg-white text-purple-600 px-3 py-1.5 rounded-xl font-bold text-xs border border-purple-300 shadow-sm';
-            });
-            event.target.className = 'wardrobe-tab bg-purple-600 text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow';
-            renderWardrobeGrid(tab);
-        }
-
-        function toggleEquipItem(itemId) {
-            const item = ITEMS[itemId];
-            if (!item) return;
-
-            if (userData.equipped[item.type] === itemId) {
-                userData.equipped[item.type] = null;
+            if (db.activeProfileId) {
+                actionsEl.classList.remove('hidden');
             } else {
-                if (item.type === 'body') {
-                    userData.equipped.top = null;
-                    userData.equipped.bottom = null;
-                } else if (item.type === 'top' || item.type === 'bottom') {
-                    userData.equipped.body = null;
-                }
-                userData.equipped[item.type] = itemId;
-            }
-            saveUserData();
-            renderDressUpPreview();
-            renderWardrobeGrid('all');
-            updateHeader();
-        }
-
-        // --- GLITTER BOUTIQUE SHOP LOGIC ---
-        function renderShopGrid() {
-            const grid = document.getElementById('shop-grid');
-            if(!grid) return;
-            grid.innerHTML = '';
-
-            Object.keys(ITEMS).forEach(itemId => {
-                const item = ITEMS[itemId];
-                const owned = userData.inventory.includes(itemId);
-
-                const card = document.createElement('div');
-                card.className = `bg-white p-3 rounded-2xl border-2 ${owned ? 'border-emerald-300 bg-emerald-50/30' : 'border-amber-200'} flex flex-col items-center justify-between shadow-sm`;
-
-                card.innerHTML = `
-                    <div class="w-12 h-16 flex items-center justify-center mb-2">
-                        <svg viewBox="0 0 100 140" class="w-full h-full">${item.svg}</svg>
-                    </div>
-                    <div class="text-[11px] font-black text-slate-700 text-center mb-1">${item.name}</div>
-                    <div class="text-xs font-black text-amber-600 mb-2">🪙 ${item.price}</div>
-                    <button onclick="buyShopItem('${itemId}')" class="w-full py-1.5 rounded-xl font-bold text-xs shadow transition ${owned ? 'bg-emerald-100 text-emerald-700 cursor-default' : 'bg-amber-400 hover:bg-amber-500 text-slate-900'}">
-                        ${owned ? 'Owned ✓' : 'Buy'}
-                    </button>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function buyShopItem(itemId) {
-            if (userData.inventory.includes(itemId)) return;
-            const item = ITEMS[itemId];
-            if (userData.gold >= item.price) {
-                userData.gold -= item.price;
-                userData.inventory.push(itemId);
-                saveUserData();
-                playSound('success');
-                renderShopGrid();
-                const goldDisp = document.getElementById('shop-gold-display');
-                if(goldDisp) goldDisp.innerText = userData.gold;
-                updateHeader();
-            } else {
-                playSound('error');
-                alert("Not enough gold coins! Complete buildings or play mini-games to earn more.");
+                actionsEl.classList.add('hidden');
             }
         }
 
-        // --- AVATAR CUSTOMIZER LOGIC ---
-        function renderCustomAvatarPreview() {
-            const container = document.getElementById('avatar-custom-preview');
-            if(container) container.innerHTML = generateDollSVG(userData.avatar, userData.equipped);
+        function selectProfile(id) {
+            db.activeProfileId = id;
+            saveDB();
+            renderProfileList();
         }
 
-        function updateCustomAvatarDef() {
-            const style = document.getElementById('select-hairstyle').value;
-            const eyes = document.getElementById('select-eyestyle').value;
-            userData.avatar.style = style;
-            userData.avatar.eyes = eyes;
-            renderCustomAvatarPreview();
+        let creatorState = {
+            skin: SKIN_TONES[0],
+            eyes: EYE_STYLES[0].id,
+            hair: HAIRSTYLES[0].id,
+            hairColor: HAIR_COLORS[0]
+        };
+
+        function openProfileCreator() {
+            creatorState = {
+                skin: SKIN_TONES[0],
+                eyes: EYE_STYLES[0].id,
+                hair: HAIRSTYLES[0].id,
+                hairColor: HAIR_COLORS[0]
+            };
+            document.getElementById('input-hero-name').value = "Princess";
+            buildCreatorPalettes();
+            updateCreatorPreview();
+            showScreen('screen-creator');
         }
 
-        function setHairColor(color) {
-            userData.avatar.hairColor = color;
-            renderCustomAvatarPreview();
+        function cancelCreator() {
+            showScreen('screen-menu');
         }
 
-        function setSkinTone(color) {
-            userData.avatar.skin = color;
-            renderCustomAvatarPreview();
+        function buildCreatorPalettes() {
+            // Skin
+            const skinEl = document.getElementById('palette-skin');
+            skinEl.innerHTML = SKIN_TONES.map(c => `<div onclick="setCreatorAttr('skin', '${c}')" class="w-8 h-8 rounded-full border-2 cursor-pointer transition transform hover:scale-110 ${creatorState.skin === c ? 'border-purple-600 scale-110 shadow-lg' : 'border-white'}" style="background-color: ${c};"></div>`).join('');
+
+            // Eyes
+            const eyesEl = document.getElementById('palette-eyes');
+            eyesEl.innerHTML = EYE_STYLES.map(e => `<button onclick="setCreatorAttr('eyes', '${e.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 transition ${creatorState.eyes === e.id ? 'bg-purple-500 text-white border-purple-600' : 'bg-white text-slate-600 border-purple-200'}">${e.name}</button>`).join('');
+
+            // Hair
+            const hairEl = document.getElementById('palette-hair');
+            hairEl.innerHTML = HAIRSTYLES.map(h => `<button onclick="setCreatorAttr('hair', '${h.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 transition ${creatorState.hair === h.id ? 'bg-pink-500 text-white border-pink-600' : 'bg-white text-slate-600 border-pink-200'}">${h.name}</button>`).join('');
+
+            // Hair Color
+            const hairColorEl = document.getElementById('palette-hair-color');
+            hairColorEl.innerHTML = HAIR_COLORS.map(c => `<div onclick="setCreatorAttr('hairColor', '${c}')" class="w-8 h-8 rounded-full border-2 cursor-pointer transition transform hover:scale-110 ${creatorState.hairColor === c ? 'border-purple-600 scale-110 shadow-lg' : 'border-white'}" style="background-color: ${c};"></div>`).join('');
         }
 
-        function saveCustomAvatar() {
-            const nameInput = document.getElementById('input-username');
-            if (nameInput && nameInput.value.trim() !== '') {
-                const newName = nameInput.value.trim();
-                if (newName !== currentUser) {
-                    delete allUsers[currentUser];
-                    currentUser = newName;
-                }
-            }
-            saveUserData();
-            updateHeader();
+        function setCreatorAttr(attr, val) {
+            creatorState[attr] = val;
+            buildCreatorPalettes();
+            updateCreatorPreview();
+        }
+
+        function updateCreatorPreview() {
+            const container = document.getElementById('creator-preview-container');
+            container.innerHTML = renderDollSVG(creatorState, 120, 170);
+        }
+
+        function saveNewProfile() {
+            const name = document.getElementById('input-hero-name').value.trim() || "Hero";
+            const newProfile = {
+                id: 'profile_' + Date.now(),
+                name: name,
+                level: 1,
+                gold: 50,
+                stardust: 0,
+                skin: creatorState.skin,
+                eyes: creatorState.eyes,
+                hair: creatorState.hair,
+                hairColor: creatorState.hairColor,
+                equippedDress: 'd_pink',
+                equippedTop: null,
+                equippedBottom: null,
+                equippedShoes: null,
+                equippedTiara: null,
+                equippedWand: null,
+                inventory: ['d_pink'],
+                badges: []
+            };
+            db.profiles.push(newProfile);
+            db.activeProfileId = newProfile.id;
+            saveDB();
             goToMenu();
         }
 
-        // --- GAMEPLAY ENGINE ---
-        const BUILDING_POOL = [
-            { name: 'Rainbow Bridge', icon: '🌈', cost: { dust: 2, pearls: 1, berries: 0, gems: 0, stardust: 0 }, baseValue: 2 },
-            { name: 'Fairy Treehouse', icon: '🏡', cost: { dust: 3, pearls: 0, berries: 2, gems: 0, stardust: 0 }, baseValue: 4 },
-            { name: 'Mermaid Stage', icon: '🐚', cost: { dust: 0, pearls: 3, berries: 1, gems: 0, stardust: 0 }, baseValue: 5 },
-            { name: 'Crystal Fountain', icon: '⛲', cost: { dust: 2, pearls: 2, berries: 0, gems: 2, stardust: 0 }, baseValue: 7 },
-            { name: 'Hello Kitty Gazebo', icon: '🎀', cost: { dust: 2, pearls: 2, berries: 3, gems: 0, stardust: 0 }, baseValue: 8 },
-            { name: 'Starry Observatory', icon: '🔭', cost: { dust: 3, pearls: 0, berries: 0, gems: 3, stardust: 0 }, baseValue: 10 },
-            { name: 'Magical Carousel', icon: '🎠', cost: { dust: 3, pearls: 3, berries: 2, gems: 2, stardust: 0 }, baseValue: 14 },
-            { name: 'Grand Palace', icon: '🏰', cost: { dust: 2, pearls: 2, berries: 2, gems: 2, stardust: 1 }, baseValue: 20 }
+        /* --- GAME ENGINE & STATE --- */
+        const ALL_BUILDINGS_POOL = [
+            { id: 'b1', name: 'Rainbow Bridge', cost: { strawberries: 2, pearls: 1 }, rewardCoins: 20 },
+            { id: 'b2', name: 'Fairy Treehouse', cost: { dust: 2, strawberries: 1 }, rewardCoins: 30 },
+            { id: 'b3', name: 'Coral Gazebo', cost: { pearls: 2, gems: 1 }, rewardCoins: 35 },
+            { id: 'b4', name: 'Magic Castle', cost: { dust: 2, gems: 2 }, rewardCoins: 50 },
+            { id: 'b5', name: 'Mermaid Cove Stage', cost: { pearls: 3, strawberries: 2 }, rewardCoins: 45 },
+            { id: 'b6', name: 'Starlight Tower', cost: { dust: 3, gems: 2 }, rewardCoins: 60 },
+            { id: 'b7', name: 'Crystal Fountain', cost: { gems: 3, pearls: 2 }, rewardCoins: 55 },
+            { id: 'b8', name: 'Grand Palace', cost: { stardust: 1, gems: 2, dust: 2 }, rewardCoins: 100 }
         ];
 
         function startGame() {
-            hideAllScreens();
-            const el = document.getElementById('screen-game');
-            if(el) el.classList.remove('hidden');
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            if (!profile) return;
 
-            // Level configuration
-            const level = userData.level || 1;
-            const requiredCount = level >= 3 ? 4 : 3;
-            
-            // Pick random buildings, ensure last requires stardust on level 3+
-            let shuffled = [...BUILDING_POOL].sort(() => 0.5 - Math.random());
-            gameState.buildings = shuffled.slice(0, requiredCount);
+            const level = profile.level || 1;
+            const targetBuildCount = level >= 5 ? 5 : (level >= 3 ? 4 : 3);
+            const totalClocks = level >= 4 ? 15 : 20;
+
+            // Pick random buildings for this game (Sequential: last one requires stardust in higher levels)
+            let shuffled = [...ALL_BUILDINGS_POOL].sort(() => 0.5 - Math.random());
+            let selectedBuildings = shuffled.slice(0, targetBuildCount - 1);
             if (level >= 3) {
-                gameState.buildings[gameState.buildings.length - 1] = BUILDING_POOL[BUILDING_POOL.length - 1]; // Grand Palace
+                const palace = ALL_BUILDINGS_POOL.find(b => b.id === 'b8');
+                selectedBuildings.push(palace);
+            } else {
+                selectedBuildings.push(shuffled[targetBuildCount - 1]);
             }
 
-            gameState.currentBuildingIndex = 0;
-            gameState.clocks = level === 4 ? 15 : 20;
-            gameState.resources = { dust: 3, pearls: 3, berries: 3, gems: 3, stardust: level >= 2 ? 1 : 0 };
-            gameState.raincloudActive = false;
-            gameState.mathCharges = 4;
-            gameState.spellingCharges = 4;
+            activeGame = {
+                level: level,
+                clocksLeft: totalClocks,
+                resources: { strawberries: 2, pearls: 2, dust: 2, gems: 1, stardust: 0 },
+                mathCharges: 4,
+                spellCharges: 4,
+                raincloudActive: false,
+                raincloudSlot: null,
+                buildings: selectedBuildings.map((b, idx) => ({ ...b, built: false, index: idx }))
+            };
 
-            updateGameUI();
+            showScreen('screen-game');
+            updateGameHUD();
         }
 
-        function updateGameUI() {
-            try {
-                document.getElementById('game-level-display').innerText = userData.level;
-                document.getElementById('game-clocks-display').innerText = gameState.clocks;
+        function updateGameHUD() {
+            if (!activeGame) return;
+            document.getElementById('game-level-num').textContent = activeGame.level;
+            document.getElementById('game-clocks-left').textContent = activeGame.clocksLeft;
+            document.getElementById('math-charges-badge').textContent = activeGame.mathCharges;
+            document.getElementById('spell-charges-badge').textContent = activeGame.spellCharges;
 
-                document.getElementById('res-dust').innerText = gameState.resources.dust;
-                document.getElementById('res-pearls').innerText = gameState.resources.pearls;
-                document.getElementById('res-berries').innerText = gameState.resources.berries;
-                document.getElementById('res-gems').innerText = gameState.resources.gems;
-                document.getElementById('res-stardust').innerText = gameState.resources.stardust;
+            // Resources
+            document.getElementById('res-strawberries').textContent = activeGame.resources.strawberries;
+            document.getElementById('res-pearls').textContent = activeGame.resources.pearls;
+            document.getElementById('res-dust').textContent = activeGame.resources.dust;
+            document.getElementById('res-gems').textContent = activeGame.resources.gems;
 
-                document.getElementById('math-charges').innerText = gameState.mathCharges;
-                document.getElementById('spelling-charges').innerText = gameState.spellingCharges;
-
-                // Raincloud banner
-                const banner = document.getElementById('raincloud-banner');
-                if (gameState.raincloudActive) {
-                    banner.classList.remove('hidden');
-                    document.getElementById(`hex-${gameState.raincloudHex}`).style.opacity = '0.4';
-                } else {
-                    banner.classList.add('hidden');
-                    for(let i=0; i<4; i++) document.getElementById(`hex-${i}`).style.opacity = '1';
-                }
-
-                // Render buildings
-                const list = document.getElementById('building-list');
-                list.innerHTML = '';
-                gameState.buildings.forEach((b, idx) => {
-                    const isCurrent = idx === gameState.currentBuildingIndex;
-                    const isCompleted = idx < gameState.currentBuildingIndex;
-
-                    let costStr = [];
-                    if(b.cost.dust) costStr.push(`${b.cost.dust} 🌸`);
-                    if(b.cost.pearls) costStr.push(`${b.cost.pearls} 🐚`);
-                    if(b.cost.berries) costStr.push(`${b.cost.berries} 🍓`);
-                    if(b.cost.gems) costStr.push(`${b.cost.gems} 💎`);
-                    if(b.cost.stardust) costStr.push(`${b.cost.stardust} 🌟`);
-
-                    const card = document.createElement('div');
-                    card.className = `p-3 rounded-2xl border-2 flex items-center justify-between ${isCompleted ? 'bg-emerald-50 border-emerald-300' : isCurrent ? 'bg-pink-50 border-pink-400 shadow-md animate-glow' : 'bg-slate-50 border-slate-200 opacity-60'}`;
-
-                    card.innerHTML = `
-                        <div class="flex items-center space-x-3">
-                            <span class="text-3xl">${b.icon}</span>
-                            <div>
-                                <div class="font-black text-xs sm:text-sm text-slate-700">${b.name}</div>
-                                <div class="text-[10px] font-bold text-slate-400">${costStr.join(' • ')}</div>
-                            </div>
-                        </div>
-                        <div>
-                            ${isCompleted ? '<span class="text-xs bg-emerald-500 text-white px-2.5 py-1 rounded-full font-bold">Built ✓</span>' : isCurrent ? `<button onclick="buildStructure(${idx})" class="bg-pink-500 hover:bg-pink-600 text-white font-black text-xs px-3 py-2 rounded-xl shadow transition">Build!</button>` : '<span class="text-xs font-bold text-slate-400">Locked</span>'}
-                        </div>
-                    `;
-                    list.appendChild(card);
-                });
-            } catch(e) {
-                console.error("Game UI update error:", e);
+            // Raincloud banner
+            const rainBanner = document.getElementById('raincloud-banner');
+            if (activeGame.raincloudActive) {
+                rainBanner.classList.remove('hidden');
+            } else {
+                rainBanner.classList.add('hidden');
             }
+
+            // Building track
+            const trackEl = document.getElementById('building-track');
+            trackEl.innerHTML = '';
+            activeGame.buildings.forEach((b, i) => {
+                const isNext = activeGame.buildings.slice(0, i).every(item => item.built);
+                const canAfford = checkCanAfford(b.cost);
+                
+                let costStr = Object.entries(b.cost).map(([k, v]) => `${v} ${getResourceEmoji(k)}`).join(', ');
+
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-2xl border-2 flex flex-col justify-between transition ${b.built ? 'bg-emerald-50 border-emerald-300' : (isNext ? 'bg-pink-50 border-pink-300 shadow-lg' : 'bg-slate-50 border-slate-200 opacity-60')}`;
+                
+                div.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-slate-400">Step ${i+1}</span>
+                            <span class="text-xs font-bold text-amber-600">🪙 +${b.rewardCoins * activeGame.level}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">${b.name}</h4>
+                        <p class="text-xs text-slate-500 mb-3">${costStr}</p>
+                    </div>
+                    ${b.built ? '<div class="text-center font-bold text-emerald-600 text-sm py-2 bg-emerald-100 rounded-xl">✨ Built!</div>' : 
+                      (isNext ? `<button onclick="buildStructure(${i})" class="w-full py-2 rounded-xl font-bold text-sm shadow transition transform hover:scale-105 ${canAfford ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}">Build Now</button>` : 
+                      '<div class="text-center font-bold text-slate-400 text-xs py-2">Locked</div>')}
+                `;
+                trackEl.appendChild(div);
+            });
+        }
+
+        function getResourceEmoji(res) {
+            if (res === 'strawberries') return '🍓';
+            if (res === 'pearls') return '🐚';
+            if (res === 'dust') return '✨';
+            if (res === 'gems') return '💎';
+            if (res === 'stardust') return '🌟';
+            return '';
+        }
+
+        function checkCanAfford(cost) {
+            for (let [res, amt] of Object.entries(cost)) {
+                if ((activeGame.resources[res] || 0) < amt) return false;
+            }
+            return true;
         }
 
         function spinCompass() {
-            playSound('spin');
-            const resultBox = document.getElementById('spinner-result-box');
-            resultBox.innerText = "Spinning compass... 🧭";
+            if (activeGame.clocksLeft <= 0) return;
+            playSoundSpin();
+            activeGame.clocksLeft--;
+
+            const needle = document.getElementById('spinner-needle');
+            const randomDeg = Math.floor(Math.random() * 360) + 720;
+            needle.style.transform = `rotate(${randomDeg}deg)`;
 
             setTimeout(() => {
-                const hexRolled = Math.floor(Math.random() * 4);
-                const keys = ['dust', 'pearls', 'berries', 'gems'];
-                const resKey = keys[hexRolled];
-                const resNames = { dust: 'Pixie Dust 🌸', pearls: 'Pearls 🐚', berries: 'Strawberries 🍓', gems: 'Shiny Gems 💎' };
+                // Determine resource gained
+                const resList = ['strawberries', 'pearls', 'dust', 'gems'];
+                const wonRes = resList[Math.floor(Math.random() * resList.length)];
 
-                // Check raincloud
-                if (gameState.raincloudActive && gameState.raincloudHex === hexRolled) {
-                    resultBox.innerText = `🌧️ Raincloud blocked the ${resNames[resKey]}!`;
+                // Check raincloud trigger
+                if (!activeGame.raincloudActive && Math.random() < 0.3) {
+                    activeGame.raincloudActive = true;
+                    activeGame.raincloudSlot = wonRes;
+                }
+
+                if (activeGame.raincloudActive && activeGame.raincloudSlot === wonRes) {
+                    // Blocked by raincloud
+                    alert(`🌧️ The Grumpy Raincloud blocked your ${wonRes} harvest this turn!`);
                 } else {
-                    gameState.resources[resKey]++;
-                    resultBox.innerText = `✨ Gathered +1 ${resNames[resKey]}!`;
+                    activeGame.resources[wonRes]++;
                 }
 
-                gameState.clocks--;
-                if (gameState.clocks <= 0) {
-                    triggerGameOver(false);
-                    return;
+                // Check win/lose conditions
+                if (activeGame.buildings.every(b => b.built)) {
+                    triggerVictory();
+                } else if (activeGame.clocksLeft <= 0) {
+                    alert("⏰ Sunset reached! Try again to finish the festival!");
+                    goToMenu();
+                } else {
+                    updateGameHUD();
                 }
-
-                // Random chance for raincloud
-                if (!gameState.raincloudActive && Math.random() < 0.35) {
-                    gameState.raincloudActive = true;
-                    gameState.raincloudHex = Math.floor(Math.random() * 4);
-                }
-
-                updateGameUI();
-            }, 600);
+            }, 750);
         }
 
-        function cheerRaincloud() {
-            if (gameState.resources.berries >= 1) {
-                gameState.resources.berries--;
-                gameState.raincloudActive = false;
-                playSound('success');
-                updateGameUI();
+        function clearRaincloud() {
+            if (activeGame.resources.strawberries >= 1) {
+                activeGame.resources.strawberries--;
+                activeGame.raincloudActive = false;
+                updateGameHUD();
             } else {
-                playSound('error');
                 alert("You need 1 Strawberry 🍓 to cheer up the raincloud!");
             }
         }
 
-        function buildStructure(idx) {
-            if (idx !== gameState.currentBuildingIndex) return;
-            const b = gameState.buildings[idx];
+        function buildStructure(index) {
+            const building = activeGame.buildings[index];
+            if (!checkCanAfford(building.cost)) return;
 
-            // Check resources
-            if (gameState.resources.dust >= b.cost.dust &&
-                gameState.resources.pearls >= b.cost.pearls &&
-                gameState.resources.berries >= b.cost.berries &&
-                gameState.resources.gems >= b.cost.gems &&
-                gameState.resources.stardust >= b.cost.stardust) {
+            // Deduct cost
+            for (let [res, amt] of Object.entries(building.cost)) {
+                activeGame.resources[res] -= amt;
+            }
 
-                // Deduct
-                gameState.resources.dust -= b.cost.dust;
-                gameState.resources.pearls -= b.cost.pearls;
-                gameState.resources.berries -= b.cost.berries;
-                gameState.resources.gems -= b.cost.gems;
-                gameState.resources.stardust -= b.cost.stardust;
+            building.built = true;
 
-                playSound('build');
-                
-                // Earn gold coins weighted by difficulty and level
-                const earnedGold = b.baseValue * userData.level;
-                userData.gold += earnedGold;
+            // Award coins
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const earnedCoins = building.rewardCoins * activeGame.level;
+            profile.gold = (profile.gold || 0) + earnedCoins;
+            saveDB();
 
-                gameState.currentBuildingIndex++;
+            playSoundBuy();
 
-                if (gameState.currentBuildingIndex >= gameState.buildings.length) {
-                    triggerGameOver(true);
-                } else {
-                    updateGameUI();
-                }
+            if (activeGame.buildings.every(b => b.built)) {
+                triggerVictory();
             } else {
-                playSound('error');
-                alert("You don't have enough resources to build this yet! Spin the compass or use the Wishing Well.");
+                updateGameHUD();
             }
         }
 
-        function triggerGameOver(won) {
-            const modal = document.getElementById('modal-result');
-            const title = document.getElementById('result-title');
-            const msg = document.getElementById('result-message');
-            const rewards = document.getElementById('result-rewards');
-            const emoji = document.getElementById('result-emoji');
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-
-            if (won) {
-                playVictoryFanfare();
-                emoji.innerText = '🎉🧚‍♀️✨';
-                title.innerText = 'Festival Complete!';
-                userData.wins++;
-
-                let rewardText = `Level ${userData.level} Completed! Earned Gold Coins!`;
-                if (gameState.clocks > 8) {
-                    userData.gold += 50;
-                    rewardText += ' + 50 Speed Bonus Gold! 🌟';
-                }
-
-                if (userData.level < 5) {
-                    userData.level++;
-                    rewardText += ` 🎉 Advanced to Level ${userData.level}!`;
-                }
-
-                msg.innerText = 'You successfully built all the festival structures!';
-                rewards.innerText = rewardText;
-                saveUserData();
-            } else {
-                playSound('error');
-                emoji.innerText = '🌙💤';
-                title.innerText = 'Sunset Reached!';
-                msg.innerText = 'The sun went down before the festival was finished. Try again!';
-                rewards.innerText = 'No worries! Practice makes perfect.';
-            }
-            updateHeader();
-        }
-
-        // --- WISHING WELL LOGIC ---
-        let wellGiveItem = 'dust';
-        let wellWantItem = 'pearls';
-
-        function openWishingWell() {
-            const modal = document.getElementById('modal-well');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            renderWellGrids();
-        }
-
-        function renderWellGrids() {
-            const giveGrid = document.getElementById('well-give-grid');
-            const wantGrid = document.getElementById('well-want-grid');
-            giveGrid.innerHTML = '';
-            wantGrid.innerHTML = '';
-
-            const resList = [
-                { id: 'dust', icon: '🌸', name: 'Dust' },
-                { id: 'pearls', icon: '🐚', name: 'Pearls' },
-                { id: 'berries', icon: '🍓', name: 'Berries' },
-                { id: 'gems', icon: '💎', name: 'Gems' },
-                { id: 'stardust', icon: '🌟', name: 'Stardust' }
-            ];
-
-            resList.forEach(r => {
-                const btn1 = document.createElement('button');
-                btn1.className = `p-2 rounded-xl border-2 flex flex-col items-center justify-center font-bold text-xs ${wellGiveItem === r.id ? 'bg-indigo-100 border-indigo-500 text-indigo-700' : 'bg-slate-50 border-slate-200'}`;
-                btn1.innerHTML = `<span class="text-xl">${r.icon}</span><span>${gameState.resources[r.id]}</span>`;
-                btn1.onclick = () => { wellGiveItem = r.id; renderWellGrids(); };
-                giveGrid.appendChild(btn1);
-
-                const btn2 = document.createElement('button');
-                btn2.className = `p-2 rounded-xl border-2 flex flex-col items-center justify-center font-bold text-xs ${wellWantItem === r.id ? 'bg-indigo-100 border-indigo-500 text-indigo-700' : 'bg-slate-50 border-slate-200'}`;
-                btn2.innerHTML = `<span class="text-xl">${r.icon}</span><span>${r.name}</span>`;
-                btn2.onclick = () => { wellWantItem = r.id; renderWellGrids(); };
-                wantGrid.appendChild(btn2);
-            });
-
-            const status = document.getElementById('well-status');
-            if (wellGiveItem === wellWantItem) {
-                status.innerText = "Select different items to trade.";
-            } else if (wellGiveItem === 'stardust') {
-                status.innerText = "Trade 3 🌟 Stardust for 1 commodity.";
-            } else if (wellWantItem === 'stardust') {
-                status.innerText = "Trade 3 commodities for 1 🌟 Stardust.";
-            } else {
-                status.innerText = "Trade 2 commodities for 1 of your choice.";
-            }
-        }
-
+        /* --- TRADING / WISHING WELL --- */
         function executeTrade() {
-            if (wellGiveItem === wellWantItem) return;
+            const give = document.getElementById('trade-give-select').value;
+            const get = document.getElementById('trade-get-select').value;
 
-            let cost = (wellGiveItem === 'stardust' || wellWantItem === 'stardust') ? 3 : 2;
-
-            if (gameState.resources[wellGiveItem] >= cost) {
-                gameState.resources[wellGiveItem] -= cost;
-                gameState.resources[wellWantItem]++;
-                playSound('success');
-                closeModal('modal-well');
-                updateGameUI();
-            } else {
-                playSound('error');
-                document.getElementById('well-status').innerText = `Not enough items! Need ${cost}.`;
-            }
-        }
-
-        // --- MATH WAND LOGIC ---
-        function openMathChallenge() {
-            if (gameState.mathCharges <= 0) {
-                alert("No math wand charges left for this game!");
+            if (give === get) {
+                alert("Choose two different commodities to trade!");
                 return;
             }
-            const modal = document.getElementById('modal-math');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            generateMathProblem();
+
+            // 3 to 1 Stardust trade rules
+            if (give === 'stardust' && get !== 'stardust') {
+                if (activeGame.resources.stardust >= 3) {
+                    activeGame.resources.stardust -= 3;
+                    activeGame.resources[get] += 1;
+                    playSoundBuy();
+                    updateGameHUD();
+                } else {
+                    alert("You need at least 3 Star Stardust 🌟 for this trade!");
+                }
+            } else if (give !== 'stardust' && get === 'stardust') {
+                if (activeGame.resources[give] >= 3) {
+                    activeGame.resources[give] -= 3;
+                    activeGame.resources.stardust += 1;
+                    playSoundBuy();
+                    updateGameHUD();
+                } else {
+                    alert(`You need at least 3 ${give} for 1 Stardust 🌟!`);
+                }
+            } else {
+                // Standard 2 to 1 trade
+                if (activeGame.resources[give] >= 2) {
+                    activeGame.resources[give] -= 2;
+                    activeGame.resources[get] += 1;
+                    playSoundBuy();
+                    updateGameHUD();
+                } else {
+                    alert(`You need at least 2 ${give} to trade!`);
+                }
+            }
         }
 
-        function generateMathProblem() {
-            const level = userData.level || 1;
-            let num1, num2, op, ans;
+        /* --- MATH WAND & SPELLING SCROLL MODALS --- */
+        let currentMathAnswer = 0;
+        let currentSpellingWord = '';
 
-            if (level >= 3 && Math.random() < 0.5) {
-                // Missing addend or subtraction up to 15
-                num1 = Math.floor(Math.random() * 10) + 5;
-                num2 = Math.floor(Math.random() * 5) + 1;
-                ans = num1 - num2;
-                document.getElementById('math-question-box').innerText = `${num1} - ${num2} = ?`;
-            } else {
-                num1 = Math.floor(Math.random() * 6) + 1;
-                num2 = Math.floor(Math.random() * 5) + 1;
-                ans = num1 + num2;
-                document.getElementById('math-question-box').innerText = `${num1} + ${num2} = ?`;
+        function openMathModal() {
+            if (activeGame.mathCharges <= 0) {
+                alert("No Math Wand charges left this game!");
+                return;
             }
-            gameState.currentMath.ans = ans;
+            // Generate math question based on level
+            const level = activeGame.level;
+            let num1, num2, op, ans;
+            if (level >= 3 && Math.random() < 0.5) {
+                // Missing addend or numbers up to 15
+                num1 = Math.floor(Math.random() * 8) + 2;
+                ans = Math.floor(Math.random() * 6) + num1 + 1;
+                num2 = ans - num1;
+                currentMathAnswer = num2;
+                document.getElementById('math-question-text').textContent = `${num1} + ? = ${ans}`;
+            } else {
+                num1 = Math.floor(Math.random() * 5) + 1;
+                num2 = Math.floor(Math.random() * 5) + 1;
+                if (Math.random() < 0.5 || level === 1) {
+                    currentMathAnswer = num1 + num2;
+                    document.getElementById('math-question-text').textContent = `${num1} + ${num2} = ?`;
+                } else {
+                    if (num1 < num2) [num1, num2] = [num2, num1];
+                    currentMathAnswer = num1 - num2;
+                    document.getElementById('math-question-text').textContent = `${num1} - ${num2} = ?`;
+                }
+            }
+
             document.getElementById('math-answer-input').value = '';
-            document.getElementById('math-tries-left').innerText = `Tries Left: ${gameState.mathCharges}`;
+            document.getElementById('modal-math').classList.remove('hidden');
+        }
+
+        function closeMathModal() {
+            document.getElementById('modal-math').classList.add('hidden');
         }
 
         function submitMathAnswer() {
-            const userAns = parseInt(document.getElementById('math-answer-input').value);
-            if (userAns === gameState.currentMath.ans) {
-                playSound('success');
-                userData.gold += 5;
-                gameState.resources.stardust++;
-                const keys = ['dust', 'pearls', 'berries', 'gems'];
-                gameState.resources[keys[Math.floor(Math.random()*4)]] += 2;
-                closeModal('modal-math');
-                updateGameUI();
-                alert("Correct! ✨ You earned +1 Stardust and commodities!");
+            const val = parseInt(document.getElementById('math-answer-input').value);
+            activeGame.mathCharges--;
+
+            if (val === currentMathAnswer) {
+                playSoundBuy();
+                activeGame.resources.stardust++;
+                activeGame.resources.strawberries += 2;
+                alert("✨ Correct! You earned 1 Star Stardust and 2 Strawberries!");
+                closeMathModal();
+                updateGameHUD();
             } else {
-                playSound('error');
-                gameState.mathCharges -= 2; // Penalty rule
-                if (gameState.mathCharges < 0) gameState.mathCharges = 0;
-                document.getElementById('math-tries-left').innerText = `Tries Left: ${gameState.mathCharges}`;
-                alert("Incorrect! You lost an extra charge. Try again!");
-                if (gameState.mathCharges <= 0) closeModal('modal-math');
+                activeGame.mathCharges--; // Penalty charge
+                alert("❌ Incorrect! You lost an extra charge. Try again next time!");
+                closeMathModal();
+                updateGameHUD();
             }
-            updateGameUI();
         }
 
-        // --- SPELLING SCROLL LOGIC ---
         const SPELLING_WORDS_EASY = [
-            { word: 'cat', emoji: '🐱' }, { word: 'dog', emoji: '🐶' }, { word: 'sun', emoji: '☀️' },
-            { word: 'bug', emoji: '🐛' }, { word: 'pig', emoji: '🐷' }, { word: 'red', emoji: '🔴' }
-        ];
-        const SPELLING_WORDS_HARD = [
-            { word: 'star', emoji: '⭐' }, { word: 'fish', emoji: '🐠' }, { word: 'moon', emoji: '🌙' },
-            { word: 'tree', emoji: '🌲' }, { word: 'pink', emoji: '🎀' }, { word: 'wand', emoji: '🪄' }
+            { word: 'CAT', emoji: '🐱' },
+            { word: 'DOG', emoji: '🐶' },
+            { word: 'SUN', emoji: '☀️' },
+            { word: 'BUG', emoji: '🐞' },
+            { word: 'PIG', emoji: '🐷' },
+            { word: 'RED', emoji: '🔴' }
         ];
 
-        function openSpellingChallenge() {
-            if (gameState.spellingCharges <= 0) {
-                alert("No spelling scroll charges left for this game!");
+        const SPELLING_WORDS_HARD = [
+            { word: 'STAR', emoji: '⭐' },
+            { word: 'FISH', emoji: '🐠' },
+            { word: 'MOON', emoji: '🌙' },
+            { word: 'TREE', emoji: '🌳' },
+            { word: 'PINK', emoji: '🌸' },
+            { word: 'WAND', emoji: '🪄' }
+        ];
+
+        function openSpellingModal() {
+            if (activeGame.spellCharges <= 0) {
+                alert("No Spelling Scroll charges left this game!");
                 return;
             }
-            const modal = document.getElementById('modal-spelling');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            generateSpellingProblem();
+            const pool = activeGame.level >= 3 ? SPELLING_WORDS_HARD : SPELLING_WORDS_EASY;
+            const chosen = pool[Math.floor(Math.random() * pool.length)];
+            currentSpellingWord = chosen.word;
+            document.getElementById('spell-emoji-hint').textContent = chosen.emoji;
+            document.getElementById('spell-answer-input').value = '';
+            document.getElementById('modal-spelling').classList.remove('hidden');
+            speakWord(currentSpellingWord);
         }
 
-        function generateSpellingProblem() {
-            const level = userData.level || 1;
-            const pool = level >= 3 ? SPELLING_WORDS_HARD : SPELLING_WORDS_EASY;
-            gameState.currentSpelling = pool[Math.floor(Math.random() * pool.length)];
-            
-            document.getElementById('spelling-emoji-hint').innerText = gameState.currentSpelling.emoji;
-            document.getElementById('spelling-answer-input').value = '';
-            document.getElementById('spelling-tries-left').innerText = `Tries Left: ${gameState.spellingCharges}`;
+        function speakCurrentWord() {
+            speakWord(currentSpellingWord);
         }
 
-        function speakSpellingWord() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(`Spell the word: ${gameState.currentSpelling.word}`);
-                utterance.pitch = 1.6;
-                utterance.rate = 0.85;
-                
-                const voices = window.speechSynthesis.getVoices();
-                const cuteVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Victoria') || v.lang.includes('en'));
-                if (cuteVoice) utterance.voice = cuteVoice;
-
-                window.speechSynthesis.speak(utterance);
-            }
+        function closeSpellingModal() {
+            document.getElementById('modal-spelling').classList.add('hidden');
         }
 
         function submitSpellingAnswer() {
-            const userAns = document.getElementById('spelling-answer-input').value.trim().toLowerCase();
-            if (userAns === gameState.currentSpelling.word) {
-                playSound('success');
-                userData.gold += 5;
-                gameState.resources.stardust++;
-                const keys = ['dust', 'pearls', 'berries', 'gems'];
-                gameState.resources[keys[Math.floor(Math.random()*4)]] += 2;
-                closeModal('modal-spelling');
-                updateGameUI();
-                alert("Correct spelling! ✨ You earned +1 Stardust and commodities!");
+            const val = document.getElementById('spell-answer-input').value.trim().toUpperCase();
+            activeGame.spellCharges--;
+
+            if (val === currentSpellingWord) {
+                playSoundBuy();
+                activeGame.resources.stardust++;
+                activeGame.resources.pearls += 2;
+                alert("📜 Correct! You earned 1 Star Stardust and 2 Pearls!");
+                closeSpellingModal();
+                updateGameHUD();
             } else {
-                playSound('error');
-                gameState.spellingCharges -= 2; // Penalty rule
-                if (gameState.spellingCharges < 0) gameState.spellingCharges = 0;
-                document.getElementById('spelling-tries-left').innerText = `Tries Left: ${gameState.spellingCharges}`;
-                alert("Incorrect spelling! You lost an extra charge. Try again!");
-                if (gameState.spellingCharges <= 0) closeModal('modal-spelling');
+                activeGame.spellCharges--; // Penalty charge
+                alert(`❌ Incorrect! The correct spelling was ${currentSpellingWord}. You lost an extra charge.`);
+                closeSpellingModal();
+                updateGameHUD();
             }
-            updateGameUI();
         }
 
-        // --- UTILITY MODAL CLOSING ---
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if(modal) {
-                modal.classList.remove('flex');
-                modal.classList.add('hidden');
+        /* --- VICTORY & ACHIEVEMENTS --- */
+        function triggerVictory() {
+            playSoundWin();
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const speedBonus = activeGame.clocksLeft > 8;
+
+            let coinReward = 100 * activeGame.level;
+            if (speedBonus) coinReward += 50;
+
+            profile.gold = (profile.gold || 0) + coinReward;
+
+            // Speed bonus rare reward check
+            if (speedBonus) {
+                const rareItems = WARDROBE_ITEMS.filter(i => i.rare && !profile.inventory.includes(i.id));
+                if (rareItems.length > 0) {
+                    const wonRare = rareItems[Math.floor(Math.random() * rareItems.length)];
+                    profile.inventory.push(wonRare.id);
+                    alert(`🌟 SPEED BONUS! You beat the festival with ${activeGame.clocksLeft} clocks left and unlocked the rare item: ${wonRare.name}! Plus 🪙 ${coinReward} coins!`);
+                } else {
+                    alert(`🎉 Victory! Festival completed successfully! You earned 🪙 ${coinReward} coins!`);
+                }
+            } else {
+                alert(`🎉 Victory! Festival completed successfully! You earned 🪙 ${coinReward} coins!`);
             }
+
+            // Advance level
+            if (profile.level < 5) {
+                profile.level++;
+            }
+
+            saveDB();
+            goToMenu();
+        }
+
+        /* --- WARDROBE & GLITTER BOUTIQUE --- */
+        function openWardrobe() {
+            showScreen('screen-wardrobe');
+            updateWardrobeDoll();
+            renderShopGrid();
+        }
+
+        function updateWardrobeDoll() {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const container = document.getElementById('wardrobe-doll-preview');
+            container.innerHTML = renderDollSVG(profile, 160, 220);
+        }
+
+        function switchShopTab(tab) {
+            currentShopTab = tab;
+            ['dresses', 'tops', 'bottoms', 'shoes', 'tiaras', 'wands'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    btn.className = t === tab ? 'px-4 py-2 font-bold text-sm rounded-xl bg-pink-500 text-white shadow' : 'px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600';
+                }
+            });
+            renderShopGrid();
+        }
+
+        function renderShopGrid() {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const grid = document.getElementById('shop-items-grid');
+            grid.innerHTML = '';
+
+            const items = WARDROBE_ITEMS.filter(i => i.type === currentShopTab);
+
+            items.forEach(item => {
+                const owned = profile.inventory.includes(item.id);
+                let equipped = false;
+                if (item.type === 'dress') equipped = profile.equippedDress === item.id;
+                if (item.type === 'top') equipped = profile.equippedTop === item.id;
+                if (item.type === 'bottom') equipped = profile.equippedBottom === item.id;
+                if (item.type === 'shoes') equipped = profile.equippedShoes === item.id;
+                if (item.type === 'tiara') equipped = profile.equippedTiara === item.id;
+                if (item.type === 'wand') equipped = profile.equippedWand === item.id;
+
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border-2 flex flex-col items-center justify-between transition bg-white ${equipped ? 'border-pink-500 bg-pink-50/50 shadow-md' : 'border-slate-100'}`;
+                
+                card.innerHTML = `
+                    <div class="w-16 h-20 flex items-center justify-center mb-1">
+                        <svg width="60" height="70" viewBox="40 135 80 100" xmlns="http://www.w3.org/2000/svg">${item.svg}</svg>
+                    </div>
+                    <h5 class="font-bold text-slate-700 text-xs text-center mb-1">${item.name}</h5>
+                    <div class="w-full">
+                        ${owned ? 
+                          `<button onclick="equipItem('${item.id}', '${item.type}')" class="w-full py-1.5 rounded-xl text-xs font-bold shadow transition ${equipped ? 'bg-pink-500 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">${equipped ? 'Equipped' : 'Wear'}</button>` :
+                          `<button onclick="buyItem('${item.id}')" class="w-full py-1.5 rounded-xl text-xs font-bold shadow bg-amber-400 hover:bg-amber-500 text-amber-900">🪙 ${item.price}</button>`
+                        }
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function buyItem(itemId) {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const item = WARDROBE_ITEMS.find(i => i.id === itemId);
+            if (!item) return;
+
+            if ((profile.gold || 0) >= item.price) {
+                profile.gold -= item.price;
+                profile.inventory.push(item.id);
+                // Auto equip upon purchase
+                if (item.type === 'dress') { profile.equippedDress = item.id; profile.equippedTop = null; profile.equippedBottom = null; }
+                else if (item.type === 'top') { profile.equippedTop = item.id; profile.equippedDress = null; }
+                else if (item.type === 'bottom') { profile.equippedBottom = item.id; profile.equippedDress = null; }
+                else if (item.type === 'shoes') profile.equippedShoes = item.id;
+                else if (item.type === 'tiara') profile.equippedTiara = item.id;
+                else if (item.type === 'wand') profile.equippedWand = item.id;
+
+                saveDB();
+                playSoundBuy();
+                updateHeaderHUD();
+                updateWardrobeDoll();
+                renderShopGrid();
+            } else {
+                alert("Not enough Gold Coins 🪙! Win more games or complete buildings to earn coins.");
+            }
+        }
+
+        function equipItem(itemId, type) {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            if (type === 'dress') {
+                if (profile.equippedDress === itemId) {
+                    profile.equippedDress = null;
+                } else {
+                    profile.equippedDress = itemId;
+                    profile.equippedTop = null;
+                    profile.equippedBottom = null;
+                }
+            } else if (type === 'top') {
+                if (profile.equippedTop === itemId) {
+                    profile.equippedTop = null;
+                } else {
+                    profile.equippedTop = itemId;
+                    profile.equippedDress = null;
+                }
+            } else if (type === 'bottom') {
+                if (profile.equippedBottom === itemId) {
+                    profile.equippedBottom = null;
+                } else {
+                    profile.equippedBottom = itemId;
+                    profile.equippedDress = null;
+                }
+            } else if (type === 'shoes') {
+                profile.equippedShoes = profile.equippedShoes === itemId ? null : itemId;
+            } else if (type === 'tiara') {
+                profile.equippedTiara = profile.equippedTiara === itemId ? null : itemId;
+            } else if (type === 'wand') {
+                profile.equippedWand = profile.equippedWand === itemId ? null : itemId;
+            }
+
+            saveDB();
+            updateWardrobeDoll();
+            renderShopGrid();
+        }
+
+        function openAchievements() {
+            showScreen('screen-achievements');
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const grid = document.getElementById('badges-grid');
+            grid.innerHTML = '';
+
+            const stats = [
+                { title: 'Current Hero Level', val: `Level ${profile.level || 1} 🌟`, desc: 'Advances as you complete festivals.' },
+                { title: 'Glitter Gold', val: `🪙 ${profile.gold || 0} Coins`, desc: 'Earned from building and victory bonuses.' },
+                { title: 'Star Stardust', val: `🌟 ${profile.stardust || 0} Stardust`, desc: 'Collected from Math and Spelling challenges.' },
+                { title: 'Wardrobe Collection', val: `${profile.inventory.length} / ${WARDROBE_ITEMS.length} Items`, desc: 'Unlocked dresses, tops, bottoms, and accessories.' }
+            ];
+
+            stats.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'bg-amber-50/60 border-2 border-amber-200 p-4 rounded-2xl flex flex-col justify-between shadow-sm';
+                div.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-amber-800 text-sm mb-1">${s.title}</h4>
+                        <p class="text-xs text-slate-500 mb-2">${s.desc}</p>
+                    </div>
+                    <div class="font-bold text-purple-700 text-base">${s.val}</div>
+                `;
+                grid.appendChild(div);
+            });
         }
     </script>
 </body>
