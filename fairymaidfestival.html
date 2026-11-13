@@ -68,7 +68,7 @@
         <div id="screen-menu" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 flex flex-col items-center text-center border-4 border-pink-300">
             <div class="text-5xl sm:text-6xl mb-2 bounce-slow">🏰✨</div>
             <h1 class="text-3xl sm:text-5xl font-bold text-pink-600 mb-2 drop-shadow">Fairy-Maid Festival</h1>
-            <p class="text-slate-500 text-sm sm:text-base mb-6 max-w-md">Build magical places, gather sparkling resources, solve fun math & spelling puzzles, and dress up your hero!</p>
+            <p class="text-slate-500 text-sm sm:text-base mb-6 max-w-md">Build magical places, gather sparkling resources, solve fun math & spelling puzzles, and dress up your fine-art hero!</p>
 
             <!-- Profile Selector / Creator Area -->
             <div class="w-full max-w-md bg-pink-50/80 rounded-2xl p-4 sm:p-6 mb-6 border-2 border-pink-200 shadow-inner">
@@ -99,7 +99,7 @@
         <!-- 2. PROFILE CREATOR / CUSTOMIZER SCREEN -->
         <div id="screen-creator" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col items-center text-center border-4 border-purple-300 hidden">
             <h2 class="text-2xl sm:text-3xl font-bold text-purple-600 mb-2">Design Your Hero</h2>
-            <p class="text-slate-500 text-sm mb-4">Customize your hero's look before the adventure begins!</p>
+            <p class="text-slate-500 text-sm mb-4">Customize your semi-realistic vector hero before the adventure begins!</p>
 
             <div class="w-full max-w-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-purple-50/50 p-4 sm:p-6 rounded-2xl border-2 border-purple-200 mb-6">
                 <!-- Preview Canvas -->
@@ -424,7 +424,7 @@
         }
 
         /* --- DATA & STATE MANAGEMENT --- */
-        const STORAGE_KEY = 'fairy_maid_v20_users';
+        const STORAGE_KEY = 'fairy_maid_v21_users';
 
         // 38 Unique Wardrobe Items Database
         const WARDROBE_ITEMS = [
@@ -554,7 +554,7 @@
             } catch(e) {}
         }
 
-        // --- ORIGINAL VIBRANT CARTOON VECTOR SVG RENDERER ---
+        // --- FINE-ART FANTASY PORTRAIT STYLE SVG RENDERER ---
         function renderDollSVG(profile, width = 140, height = 200) {
             const skin = profile.skin || '#ffdbac';
             const hairColor = profile.hairColor || '#4a3525';
@@ -568,58 +568,77 @@
             const tiaraItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedTiara);
             const wandItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedWand);
 
-            const hairSvg = hairObj.svg.replace(/\{COLOR\}/g, hairColor);
+            const hairSvg = hairObj.svg.replace(/\{COLOR\}/g, 'url(#fineHairGrad)');
 
             return `
             <svg width="${width}" height="${height}" viewBox="0 0 160 230" xmlns="http://www.w3.org/2000/svg">
                 <defs>
+                    <radialGradient id="fineSkinGrad" cx="40%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+                        <stop offset="50%" stop-color="${skin}"/>
+                        <stop offset="100%" stop-color="#b47846" stop-opacity="0.4"/>
+                    </radialGradient>
+                    <linearGradient id="fineHairGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+                        <stop offset="40%" stop-color="${hairColor}"/>
+                        <stop offset="100%" stop-color="#111111"/>
+                    </linearGradient>
                     <linearGradient id="rainbow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#f472b6"/>
                         <stop offset="33%" stop-color="#facc15"/>
                         <stop offset="66%" stop-color="#34d399"/>
                         <stop offset="100%" stop-color="#38bdf8"/>
                     </linearGradient>
+                    <filter id="fine-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#000" flood-opacity="0.2"/>
+                    </filter>
                 </defs>
 
                 <!-- Wand -->
-                ${wandItem ? wandItem.svg : ''}
+                <g filter="url(#fine-shadow)">
+                    ${wandItem ? wandItem.svg : ''}
+                </g>
 
-                <!-- Body Group -->
-                <g>
-                    <!-- Legs -->
-                    <rect x="68" y="145" width="10" height="85" rx="5" fill="${skin}"/>
-                    <rect x="82" y="145" width="10" height="85" rx="5" fill="${skin}"/>
+                <!-- Elegant Semi-Realistic Vector Body Group -->
+                <g filter="url(#fine-shadow)">
+                    <!-- Graceful Slender Legs -->
+                    <rect x="70" y="145" width="8" height="85" rx="4" fill="url(#fineSkinGrad)"/>
+                    <rect x="82" y="145" width="8" height="85" rx="4" fill="url(#fineSkinGrad)"/>
 
-                    <!-- Default Modesty Shorts -->
-                    <path d="M64 180 L96 180 L94 205 L81 205 L80 190 L79 205 L66 205 Z" fill="#93c5fd"/>
+                    <!-- Modesty Shorts -->
+                    <path d="M64 180 L96 180 L94 205 L82 205 L80 190 L78 205 L66 205 Z" fill="#60a5fa"/>
 
-                    <!-- Torso -->
-                    <rect x="60" y="105" width="40" height="45" rx="10" fill="${skin}"/>
+                    <!-- Slender Torso -->
+                    <rect x="62" y="105" width="36" height="45" rx="8" fill="url(#fineSkinGrad)"/>
 
-                    <!-- Arms -->
-                    <rect x="45" y="110" width="12" height="40" rx="6" fill="${skin}"/>
-                    <rect x="103" y="110" width="12" height="40" rx="6" fill="${skin}"/>
+                    <!-- Graceful Arms -->
+                    <rect x="48" y="110" width="10" height="40" rx="5" fill="url(#fineSkinGrad)"/>
+                    <rect x="102" y="110" width="10" height="40" rx="5" fill="url(#fineSkinGrad)"/>
 
                     <!-- Clothes Layer -->
                     ${dressItem ? dressItem.svg : (
-                        (topItem ? topItem.svg : '<path d="M60 105 L100 105 L105 150 L55 150 Z" fill="#f472b6"/>') +
+                        (topItem ? topItem.svg : '<path d="M62 105 L98 105 L102 150 L58 150 Z" fill="#f472b6"/>') +
                         (bottomItem ? bottomItem.svg : '')
                     )}
 
                     <!-- Shoes -->
-                    ${shoesItem ? shoesItem.svg : '<ellipse cx="73" cy="228" rx="8" ry="4" fill="#f472b6"/><ellipse cx="87" cy="228" rx="8" ry="4" fill="#f472b6"/>'}
+                    ${shoesItem ? shoesItem.svg : '<ellipse cx="74" cy="228" rx="7" ry="4" fill="#f472b6"/><ellipse cx="86" cy="228" rx="7" ry="4" fill="#f472b6"/>'}
 
-                    <!-- Head & Neck -->
-                    <rect x="74" y="95" width="12" height="15" fill="${skin}"/>
-                    <circle cx="80" cy="75" r="24" fill="${skin}"/>
+                    <!-- Neck & Fine Oval Head -->
+                    <rect x="74" y="95" width="12" height="15" fill="url(#fineSkinGrad)"/>
+                    <ellipse cx="80" cy="74" rx="21" ry="24" fill="url(#fineSkinGrad)"/>
 
-                    <!-- Face Details -->
-                    <circle cx="68" cy="84" r="4" fill="#fda4af" opacity="0.6"/>
-                    <circle cx="92" cy="84" r="4" fill="#fda4af" opacity="0.6"/>
+                    <!-- Soft Blush -->
+                    <circle cx="68" cy="83" r="4" fill="#e11d48" opacity="0.3"/>
+                    <circle cx="92" cy="83" r="4" fill="#e11d48" opacity="0.3"/>
+
+                    <!-- Detailed Eyes & Eyelashes -->
                     ${eyeObj.svg}
-                    <path d="M78 85 Q80 88 82 85" stroke="#e11d48" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M63 73 Q68 70 73 73" stroke="#1e293b" stroke-width="1.2" fill="none"/>
+                    <path d="M87 73 Q92 70 97 73" stroke="#1e293b" stroke-width="1.2" fill="none"/>
+                    <path d="M77 84 Q80 87 83 84" stroke="#be123c" stroke-width="2" fill="none" stroke-linecap="round"/>
 
-                    <!-- Hair Back / Base -->
+                    <!-- Flowing Hair -->
                     ${hairSvg}
 
                     <!-- Tiara -->
