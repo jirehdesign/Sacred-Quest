@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fairy-Maid Festival</title>
+    <!-- Tailwind CSS for modern, cute styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            user-select: none;
+            background: linear-gradient(135deg, #fbcfe8 0%, #fed7aa 50%, #bae6fd 100%);
+            min-height: 100vh;
+        }
+        .bounce-slow {
+            animation: bounce 3s infinite ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start p-3 sm:p-6 text-slate-700">
+
+    <!-- Universal Top Banner -->
+    <div id="game-header" class="w-full max-w-4xl bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-3 sm:p-4 mb-4 flex flex-wrap items-center justify-between gap-3 border-4 border-pink-200 hidden">
+        <div class="flex items-center gap-3">
+            <button onclick="goToMenu()" id="btn-header-home" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow flex items-center gap-1">
+                🏠 Menu
+            </button>
+            <div class="flex items-center gap-2">
+                <div id="header-avatar-preview" class="w-10 h-10 rounded-full bg-pink-50 border-2 border-pink-300 overflow-hidden flex items-center justify-center shadow-inner"></div>
+                <div>
+                    <h3 id="header-user-name" class="font-bold text-pink-600 text-sm sm:text-base leading-tight">Hero</h3>
+                    <p id="header-user-level" class="text-xs text-purple-600 font-semibold">Level 1</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
+            <div class="bg-amber-100 border-2 border-amber-300 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-inner">
+                <span class="text-amber-600 font-bold text-sm">🪙</span>
+                <span id="header-gold-count" class="font-bold text-amber-800 text-sm">0</span>
+            </div>
+            <div class="bg-purple-100 border-2 border-purple-300 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-inner">
+                <span class="text-purple-600 font-bold text-sm">✨</span>
+                <span id="header-stardust-count" class="font-bold text-purple-800 text-sm">0</span>
+            </div>
+            <button onclick="toggleAudio()" id="btn-audio-toggle" class="bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow">
+                🎵 Music: OFF
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="w-full max-w-4xl flex flex-col items-center">
+
+        <!-- 1. MAIN MENU SCREEN -->
+        <div id="screen-menu" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 flex flex-col items-center text-center border-4 border-pink-300">
+            <div class="text-5xl sm:text-6xl mb-2 bounce-slow">🏰✨</div>
+            <h1 class="text-3xl sm:text-5xl font-bold text-pink-600 mb-2 drop-shadow">Fairy-Maid Festival</h1>
+            <p class="text-slate-500 text-sm sm:text-base mb-6 max-w-md">Build magical places, gather sparkling resources, solve fun math & spelling puzzles, and dress up your custom hero!</p>
+
+            <!-- Profile Selector / Creator Area -->
+            <div class="w-full max-w-md bg-pink-50/80 rounded-2xl p-4 sm:p-6 mb-6 border-2 border-pink-200 shadow-inner">
+                <h2 class="text-lg font-bold text-purple-700 mb-3">Choose Your Hero Profile</h2>
+                <div id="profile-list" class="flex flex-col gap-2 max-h-48 overflow-y-auto mb-4 pr-1">
+                    <!-- Populated by JS -->
+                </div>
+                <button onclick="openProfileCreator()" class="w-full bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition transform hover:scale-105 text-base">
+                    ✨ Create New Custom Hero
+                </button>
+            </div>
+
+            <div id="menu-actions" class="w-full max-w-md flex flex-col gap-3 hidden">
+                <button onclick="startGame()" class="w-full bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-bold py-4 px-8 rounded-2xl shadow-xl transition transform hover:scale-105 text-xl">
+                    🌟 Start Adventure!
+                </button>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="openWardrobe()" class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-3 px-4 rounded-2xl shadow transition transform hover:scale-105 flex items-center justify-center gap-2">
+                        👗 Dress-Up & Shop
+                    </button>
+                    <button onclick="openAchievements()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-3 px-4 rounded-2xl shadow transition transform hover:scale-105 flex items-center justify-center gap-2">
+                        🏆 Badges & Stats
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. PROFILE CREATOR / CUSTOMIZER SCREEN -->
+        <div id="screen-creator" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col items-center text-center border-4 border-purple-300 hidden">
+            <h2 class="text-2xl sm:text-3xl font-bold text-purple-600 mb-2">Design Your Hero</h2>
+            <p class="text-slate-500 text-sm mb-4">Customize your custom hero before the adventure begins!</p>
+
+            <div class="w-full max-w-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-purple-50/50 p-4 sm:p-6 rounded-2xl border-2 border-purple-200 mb-6">
+                <!-- Preview Canvas -->
+                <div class="flex flex-col items-center justify-center bg-white p-4 rounded-2xl shadow-inner border-2 border-purple-100">
+                    <div id="creator-preview-container" class="w-40 h-56 flex items-center justify-center mb-2"></div>
+                    <input type="text" id="input-hero-name" placeholder="Hero Name" class="w-full text-center font-bold text-lg px-3 py-2 bg-pink-50 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-pink-400" maxlength="12" value="Princess">
+                </div>
+
+                <!-- Controls -->
+                <div class="flex flex-col gap-3 text-left">
+                    <div>
+                        <label class="text-xs font-bold text-purple-700 uppercase tracking-wide">Skin Tone</label>
+                        <div id="palette-skin" class="flex gap-2 mt-1 flex-wrap"></div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-purple-700 uppercase tracking-wide">Eye Style</label>
+                        <div id="palette-eyes" class="flex gap-2 mt-1 flex-wrap"></div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-purple-700 uppercase tracking-wide">Hairstyle</label>
+                        <div id="palette-hair" class="flex gap-2 mt-1 flex-wrap max-h-24 overflow-y-auto"></div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-purple-700 uppercase tracking-wide">Hair Color</label>
+                        <div id="palette-hair-color" class="flex gap-2 mt-1 flex-wrap"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 w-full max-w-md">
+                <button onclick="cancelCreator()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-2xl transition">Cancel</button>
+                <button onclick="saveNewProfile()" class="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-3 rounded-2xl shadow-lg transition">Save & Play!</button>
+            </div>
+        </div>
+
+        <!-- 3. GAMEPLAY SCREEN -->
+        <div id="screen-game" class="w-full flex flex-col gap-4 hidden">
+            <!-- Top Status Bar / HUD -->
+            <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-4 border-4 border-emerald-200 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="bg-emerald-50 border-2 border-emerald-300 px-3 py-1.5 rounded-xl">
+                        <span class="text-xs font-bold text-emerald-600 uppercase block">Level</span>
+                        <span id="game-level-num" class="font-bold text-emerald-800 text-lg">1</span>
+                    </div>
+                    <div class="bg-amber-50 border-2 border-amber-300 px-3 py-1.5 rounded-xl">
+                        <span class="text-xs font-bold text-amber-600 uppercase block">Sunset Clocks</span>
+                        <span id="game-clocks-left" class="font-bold text-amber-800 text-lg">20</span>
+                    </div>
+                </div>
+
+                <!-- Quick Bonus Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button onclick="openMathModal()" class="bg-sky-400 hover:bg-sky-500 text-white font-bold px-3 py-2 rounded-xl shadow transition transform hover:scale-105 flex items-center gap-1.5 text-sm">
+                        🪄 Math Wand <span id="math-charges-badge" class="bg-sky-600 text-white text-xs px-1.5 py-0.5 rounded-full">4</span>
+                    </button>
+                    <button onclick="openSpellingModal()" class="bg-pink-400 hover:bg-pink-500 text-white font-bold px-3 py-2 rounded-xl shadow transition transform hover:scale-105 flex items-center gap-1.5 text-sm">
+                        📜 Spelling Scroll <span id="spell-charges-badge" class="bg-pink-600 text-white text-xs px-1.5 py-0.5 rounded-full">4</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Interactive Play Area -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Left: Resource Board & Spinner -->
+                <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-5 border-4 border-pink-200 flex flex-col items-center justify-between">
+                    <h3 class="font-bold text-pink-600 text-lg mb-2">✨ Magic Compass</h3>
+                    
+                    <!-- Raincloud Banner if Active -->
+                    <div id="raincloud-banner" class="hidden w-full bg-slate-700 text-white text-xs p-2 rounded-xl mb-3 flex items-center justify-between shadow animate-pulse">
+                        <span>🌧️ Raincloud blocking! (1 🍓 to clear)</span>
+                        <button onclick="clearRaincloud()" class="bg-pink-500 hover:bg-pink-600 px-2 py-1 rounded font-bold">Cheer Up</button>
+                    </div>
+
+                    <!-- Spinner Wheel / Visual Compass -->
+                    <div class="relative w-40 h-40 rounded-full border-4 border-purple-300 bg-purple-50 flex items-center justify-center shadow-inner mb-4 cursor-pointer overflow-hidden" onclick="spinCompass()">
+                        <div id="spinner-needle" class="absolute w-1.5 h-16 bg-pink-500 rounded-full origin-bottom transition-all duration-700" style="bottom: 50%; transform: rotate(0deg);"></div>
+                        <div class="absolute w-12 h-12 bg-white rounded-full border-2 border-purple-300 flex items-center justify-center font-bold text-purple-600 shadow">Spin!</div>
+                    </div>
+
+                    <button onclick="spinCompass()" class="w-full bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl shadow-lg transition transform hover:scale-105 text-base mb-4">
+                        🧭 Spin Compass
+                    </button>
+
+                    <!-- Inventory Display -->
+                    <div class="w-full bg-pink-50/80 p-3 rounded-xl border-2 border-pink-200">
+                        <h4 class="text-xs font-bold text-purple-700 uppercase mb-2">My Commodities</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm font-bold">
+                            <div class="bg-white p-2 rounded-lg shadow-sm flex items-center justify-between border border-pink-100">
+                                <span>🍓 Strawberries</span>
+                                <span id="res-strawberries" class="text-pink-600">0</span>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg shadow-sm flex items-center justify-between border border-pink-100">
+                                <span>🐚 Pearls</span>
+                                <span id="res-pearls" class="text-teal-600">0</span>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg shadow-sm flex items-center justify-between border border-pink-100">
+                                <span>✨ Pixie Dust</span>
+                                <span id="res-dust" class="text-amber-600">0</span>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg shadow-sm flex items-center justify-between border border-pink-100">
+                                <span>💎 Gems</span>
+                                <span id="res-gems" class="text-purple-600">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right / Center: Buildings & Wishing Well -->
+                <div class="md:col-span-2 flex flex-col gap-4">
+                    <!-- Sequential Buildings Tracker -->
+                    <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-5 border-4 border-purple-200">
+                        <h3 class="font-bold text-purple-600 text-lg mb-3">🏰 Festival Build Track</h3>
+                        <div id="building-track" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Wishing Well (Trading Center) -->
+                    <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-5 border-4 border-teal-200">
+                        <h3 class="font-bold text-teal-600 text-lg mb-2">💧 Wishing Well Trading</h3>
+                        <p class="text-xs text-slate-500 mb-3">Trade 2 of any commodity for 1 of another, or 3 Stardust for 1 standard resource (and vice-versa)!</p>
+                        <div class="flex flex-wrap items-center gap-2 justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold">Give:</span>
+                                <select id="trade-give-select" class="bg-teal-50 border-2 border-teal-200 rounded-lg p-1.5 text-xs font-bold text-teal-800">
+                                    <option value="strawberries">🍓 Strawberry</option>
+                                    <option value="pearls">🐚 Pearl</option>
+                                    <option value="dust">✨ Pixie Dust</option>
+                                    <option value="gems">💎 Gem</option>
+                                    <option value="stardust">🌟 Stardust</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold">Get:</span>
+                                <select id="trade-get-select" class="bg-teal-50 border-2 border-teal-200 rounded-lg p-1.5 text-xs font-bold text-teal-800">
+                                    <option value="strawberries">🍓 Strawberry</option>
+                                    <option value="pearls">🐚 Pearl</option>
+                                    <option value="dust">✨ Pixie Dust</option>
+                                    <option value="gems">💎 Gem</option>
+                                    <option value="stardust">🌟 Stardust</option>
+                                </select>
+                            </div>
+                            <button onclick="executeTrade()" class="bg-teal-500 hover:bg-teal-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow transition transform hover:scale-105">
+                                Make Wish 💧
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. WARDROBE & BOUTIQUE SCREEN -->
+        <div id="screen-wardrobe" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col items-center border-4 border-pink-300 hidden">
+            <div class="w-full flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-pink-600">👗 Glitter Boutique & Wardrobe</h2>
+                <button onclick="goToMenu()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-4 py-2 rounded-xl text-sm shadow">Back to Menu</button>
+            </div>
+
+            <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Character Doll Preview -->
+                <div class="bg-pink-50/60 p-4 rounded-2xl border-2 border-pink-200 flex flex-col items-center justify-center">
+                    <h3 class="font-bold text-purple-700 text-sm mb-2">Hero Showcase</h3>
+                    <div id="wardrobe-doll-preview" class="w-48 h-64 flex items-center justify-center bg-white rounded-2xl shadow-inner border border-pink-100 mb-4"></div>
+                    <div class="text-xs text-slate-500 text-center">Click items below to wear or buy!</div>
+                </div>
+
+                <!-- Inventory & Shop Tabs -->
+                <div class="md:col-span-2 flex flex-col gap-4">
+                    <div class="flex gap-2 border-b-2 border-pink-100 pb-2">
+                        <button onclick="switchShopTab('dresses')" id="tab-dresses" class="px-4 py-2 font-bold text-sm rounded-xl bg-pink-500 text-white shadow">Dresses & Tails</button>
+                        <button onclick="switchShopTab('tops')" id="tab-tops" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Tops</button>
+                        <button onclick="switchShopTab('bottoms')" id="tab-bottoms" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Bottoms</button>
+                        <button onclick="switchShopTab('shoes')" id="tab-shoes" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Shoes</button>
+                        <button onclick="switchShopTab('tiaras')" id="tab-tiaras" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Tiaras</button>
+                        <button onclick="switchShopTab('wands')" id="tab-wands" class="px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600">Wands</button>
+                    </div>
+
+                    <div id="shop-items-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-1">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. ACHIEVEMENTS & STATS SCREEN -->
+        <div id="screen-achievements" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col items-center border-4 border-amber-300 hidden">
+            <div class="w-full flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-amber-700">🏆 Badges & Accomplishments</h2>
+                <button onclick="goToMenu()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold px-4 py-2 rounded-xl text-sm shadow">Back to Menu</button>
+            </div>
+            <div id="badges-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODALS: MATH WAND & SPELLING SCROLL -->
+    <div id="modal-math" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center border-4 border-sky-300 shadow-2xl">
+            <div class="text-4xl mb-2">🪄✨</div>
+            <h3 class="text-2xl font-bold text-sky-600 mb-2">Magic Math Wand</h3>
+            <p id="math-question-text" class="text-xl font-bold text-slate-700 mb-4">3 + 2 = ?</p>
+            <input type="number" id="math-answer-input" class="w-32 text-center text-2xl font-bold p-3 bg-sky-50 border-2 border-sky-200 rounded-2xl mb-4 focus:outline-none focus:border-sky-400" placeholder="?">
+            <div class="flex gap-2">
+                <button onclick="closeMathModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl transition">Cancel</button>
+                <button onclick="submitMathAnswer()" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl shadow-lg transition">Cast Spell! ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-spelling" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center border-4 border-pink-300 shadow-2xl">
+            <div class="text-4xl mb-2" id="spell-emoji-hint">🐱</div>
+            <h3 class="text-2xl font-bold text-pink-600 mb-2">Magic Spelling Scroll</h3>
+            <button onclick="speakCurrentWord()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-4 py-2 rounded-xl text-sm mb-4 shadow transition">🔊 Hear Word Again</button>
+            <input type="text" id="spell-answer-input" spellcheck="false" autocorrect="off" autocomplete="off" class="w-full text-center text-2xl font-bold p-3 bg-pink-50 border-2 border-pink-200 rounded-2xl mb-4 focus:outline-none focus:border-pink-400 uppercase tracking-widest" placeholder="TYPE WORD">
+            <div class="flex gap-2">
+                <button onclick="closeSpellingModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl transition">Cancel</button>
+                <button onclick="submitSpellingAnswer()" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-xl shadow-lg transition">Cast Spell! 📜</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO & GAME SCRIPT -->
+    <script>
+        /* --- AUDIO ENGINE (Web Audio API & Speech Synthesis) --- */
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let musicTimer = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playBeep(freq, type, duration, vol = 0.1) {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function playSoundWin() {
+            playBeep(523.25, 'triangle', 0.15, 0.15);
+            setTimeout(() => playBeep(659.25, 'triangle', 0.15, 0.15), 150);
+            setTimeout(() => playBeep(783.99, 'triangle', 0.15, 0.15), 300);
+            setTimeout(() => playBeep(1046.50, 'triangle', 0.4, 0.2), 450);
+        }
+
+        function playSoundSpin() {
+            playBeep(330, 'sine', 0.1, 0.1);
+            setTimeout(() => playBeep(440, 'sine', 0.1, 0.1), 100);
+            setTimeout(() => playBeep(550, 'sine', 0.15, 0.1), 200);
+        }
+
+        function playSoundBuy() {
+            playBeep(587.33, 'triangle', 0.1, 0.1);
+            setTimeout(() => playBeep(880, 'triangle', 0.2, 0.15), 100);
+        }
+
+        function toggleAudio() {
+            isMusicPlaying = !isMusicPlaying;
+            const btn = document.getElementById('btn-audio-toggle');
+            if (isMusicPlaying) {
+                btn.textContent = "🎵 Music: ON";
+                btn.className = "bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow";
+                startMusicLoop();
+            } else {
+                btn.textContent = "🎵 Music: OFF";
+                btn.className = "bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow";
+                stopMusicLoop();
+            }
+        }
+
+        function startMusicLoop() {
+            initAudio();
+            if (musicTimer) clearInterval(musicTimer);
+            const melody = [
+                523.25, 659.25, 783.99, 1046.50, 783.99, 659.25,
+                587.33, 698.46, 880.00, 1174.66, 880.00, 698.46,
+                493.88, 587.33, 739.99, 987.77, 739.99, 587.33,
+                523.25, 659.25, 783.99, 1046.50, 1174.66, 1046.50
+            ];
+            let step = 0;
+            musicTimer = setInterval(() => {
+                if (!isMusicPlaying) return;
+                playBeep(melody[step % melody.length], 'sine', 0.3, 0.05);
+                step++;
+            }, 350);
+        }
+
+        function stopMusicLoop() {
+            if (musicTimer) clearInterval(musicTimer);
+            musicTimer = null;
+        }
+
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance("Spell the word: " + word);
+                utter.pitch = 1.6;
+                utter.rate = 0.85;
+                const voices = window.speechSynthesis.getVoices();
+                const cuteVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Zira'));
+                if (cuteVoice) utter.voice = cuteVoice;
+                window.speechSynthesis.speak(utter);
+            }
+        }
+
+        /* --- DATA & STATE MANAGEMENT --- */
+        const STORAGE_KEY = 'fairy_maid_v14_users';
+
+        // 38 Unique Wardrobe Items Database
+        const WARDROBE_ITEMS = [
+            // Dresses & Tails (Type: dress)
+            { id: 'd_pink', name: 'Pink Fairy Frock', type: 'dress', price: 100, rare: false, svg: `<path d="M60 135 L100 135 L115 210 L45 210 Z" fill="#f472b6"/><path d="M45 210 L115 210 L130 225 L30 225 Z" fill="#db2777"/>` },
+            { id: 'd_galaxy', name: 'Galaxy Gown ✨', type: 'dress', price: 150, rare: true, svg: `<path d="M60 135 L100 135 L120 210 L40 210 Z" fill="#4c1d95"/><circle cx="70" cy="160" r="2" fill="#fde047"/><circle cx="90" cy="180" r="2" fill="#fde047"/>` },
+            { id: 'd_rose', name: 'Rose Petal Dress', type: 'dress', price: 100, rare: false, svg: `<path d="M60 135 L100 135 L115 210 L45 210 Z" fill="#fb7185"/><path d="M45 210 Q80 230 115 210 Z" fill="#e11d48"/>` },
+            { id: 'd_mermaid', name: 'Sunset Mermaid Tail', type: 'dress', price: 120, rare: false, svg: `<path d="M65 135 L95 135 L105 220 L55 220 Z" fill="#0d9488"/><path d="M55 220 L80 250 L105 220 Z" fill="#14b8a6"/>` },
+            { id: 'd_ballgown', name: 'Royal Ballgown', type: 'dress', price: 140, rare: false, svg: `<path d="M60 135 L100 135 L135 220 L25 220 Z" fill="#c084fc"/>` },
+            { id: 'd_mint', name: 'Mint Fairy Tunic', type: 'dress', price: 90, rare: false, svg: `<path d="M60 135 L100 135 L110 210 L50 210 Z" fill="#34d399"/>` },
+            { id: 'd_sunflower', name: 'Sunflower Dress', type: 'dress', price: 100, rare: false, svg: `<path d="M60 135 L100 135 L115 210 L45 210 Z" fill="#facc15"/>` },
+            { id: 'd_lavender', name: 'Lavender Dress', type: 'dress', price: 100, rare: false, svg: `<path d="M60 135 L100 135 L115 210 L45 210 Z" fill="#a78bfa"/>` },
+            { id: 'd_ruby', name: 'Ruby Princess Gown', type: 'dress', price: 130, rare: false, svg: `<path d="M60 135 L100 135 L120 215 L40 215 Z" fill="#e11d48"/>` },
+            { id: 'd_sapphire', name: 'Sapphire Mermaid Tail', type: 'dress', price: 130, rare: false, svg: `<path d="M65 135 L95 135 L105 220 L55 220 Z" fill="#2563eb"/><path d="M55 220 L80 250 L105 220 Z" fill="#3b82f6"/>` },
+            { id: 'd_starlight', name: 'Starlight Gown ✨', type: 'dress', price: 160, rare: true, svg: `<path d="M60 135 L100 135 L125 220 L35 220 Z" fill="#818cf8"/><circle cx="75" cy="170" r="3" fill="#fef08a"/>` },
+            { id: 'd_rainbow', name: 'Rainbow Dress', type: 'dress', price: 140, rare: false, svg: `<path d="M60 135 L100 135 L120 210 L40 210 Z" fill="url(#rainbow-grad)"/>` },
+            { id: 'd_golden', name: 'Golden Empress Gown ✨', type: 'dress', price: 180, rare: true, svg: `<path d="M60 135 L100 135 L130 220 L30 220 Z" fill="#eab308"/>` },
+
+            // Tops (Type: top)
+            { id: 't_pink', name: 'Pink Tee', type: 'top', price: 50, rare: false, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#f472b6"/>` },
+            { id: 't_blue', name: 'Sky Blue Blouse', type: 'top', price: 50, rare: false, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#38bdf8"/>` },
+            { id: 't_yellow', name: 'Sunny Tank Top', type: 'top', price: 50, rare: false, svg: `<path d="M60 135 L100 135 L105 180 L55 180 Z" fill="#facc15"/>` },
+            { id: 't_purple', name: 'Purple Hoodie', type: 'top', price: 60, rare: false, svg: `<path d="M58 135 L102 135 L112 185 L48 185 Z" fill="#a78bfa"/>` },
+            { id: 't_stripe', name: 'Rainbow Stripe Tee', type: 'top', price: 70, rare: false, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#ec4899"/><rect x="50" y="145" width="60" height="5" fill="#38bdf8"/><rect x="50" y="160" width="60" height="5" fill="#facc15"/>` },
+            { id: 't_mint', name: 'Mint Crop Top', type: 'top', price: 55, rare: false, svg: `<path d="M60 135 L100 135 L108 175 L52 175 Z" fill="#34d399"/>` },
+            { id: 't_star', name: 'Starry Shirt ✨', type: 'top', price: 80, rare: true, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#6366f1"/><circle cx="80" cy="155" r="3" fill="#fef08a"/>` },
+            { id: 't_heart', name: 'Heart Knit Sweater', type: 'top', price: 75, rare: false, svg: `<path d="M58 135 L102 135 L112 185 L48 185 Z" fill="#fb7185"/>` },
+            { id: 't_white', name: 'Puffy Sleeved Blouse', type: 'top', price: 60, rare: false, svg: `<path d="M58 135 L102 135 L112 180 L48 180 Z" fill="#f8fafc"/>` },
+            { id: 't_sparkle', name: 'Sparkle Sequin Top ✨', type: 'top', price: 90, rare: true, svg: `<path d="M60 135 L100 135 L110 180 L50 180 Z" fill="#c084fc"/><circle cx="70" cy="150" r="2" fill="#fff"/><circle cx="90" cy="165" r="2" fill="#fff"/>` },
+
+            // Bottoms (Type: bottom)
+            { id: 'b_denim', name: 'Denim Shorts', type: 'bottom', price: 50, rare: false, svg: `<path d="M52 180 L108 180 L105 220 L82 220 L80 195 L78 220 L55 220 Z" fill="#3b82f6"/>` },
+            { id: 'b_pinkskirt', name: 'Pink Pleated Skirt', type: 'bottom', price: 60, rare: false, svg: `<path d="M50 180 L110 180 L120 220 L40 220 Z" fill="#f472b6"/>` },
+            { id: 'b_purpleskirt', name: 'Purple Skirt', type: 'bottom', price: 60, rare: false, svg: `<path d="M50 180 L110 180 L120 220 L40 220 Z" fill="#c084fc"/>` },
+            { id: 'b_leggings', name: 'Sparkly Leggings', type: 'bottom', price: 55, rare: false, svg: `<path d="M54 180 L106 180 L102 225 L79 225 L80 195 L81 225 L58 225 Z" fill="#6366f1"/>` },
+            { id: 'b_mintpants', name: 'Mint Capris', type: 'bottom', price: 50, rare: false, svg: `<path d="M53 180 L107 180 L104 220 L81 220 L80 195 L79 220 L56 220 Z" fill="#34d399"/>` },
+            { id: 'b_yellowskirt', name: 'Sunshine Skirt', type: 'bottom', price: 60, rare: false, svg: `<path d="M50 180 L110 180 L120 220 L40 220 Z" fill="#facc15"/>` },
+            { id: 'b_rainbowskirt', name: 'Rainbow Skirt', type: 'bottom', price: 80, rare: true, svg: `<path d="M50 180 L110 180 L125 220 L35 220 Z" fill="url(#rainbow-grad)"/>` },
+            { id: 'b_whitepants', name: 'White Summer Shorts', type: 'bottom', price: 50, rare: false, svg: `<path d="M52 180 L108 180 L105 220 L82 220 L80 195 L78 220 L55 220 Z" fill="#f1f5f9"/>` },
+            { id: 'b_starskirt', name: 'Starry Tutu ✨', type: 'bottom', price: 85, rare: true, svg: `<path d="M45 180 L115 180 L125 220 L35 220 Z" fill="#ec4899"/><circle cx="60" cy="200" r="2" fill="#fff"/><circle cx="100" cy="205" r="2" fill="#fff"/>` },
+            { id: 'b_cargo', name: 'Cute Cargo Pants', type: 'bottom', price: 60, rare: false, svg: `<path d="M52 180 L108 180 L105 225 L82 225 L80 195 L78 225 L55 225 Z" fill="#14b8a6"/>` },
+
+            // Shoes (Type: shoes)
+            { id: 's_pink', name: 'Pink Sneakers', type: 'shoes', price: 30, rare: false, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#ec4899"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#ec4899"/>` },
+            { id: 's_glass', name: 'Glass Slippers ✨', type: 'shoes', price: 50, rare: true, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#e0f2fe"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#e0f2fe"/>` },
+            { id: 's_leaf', name: 'Leaf Sandals', type: 'shoes', price: 30, rare: false, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#22c55e"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#22c55e"/>` },
+            { id: 's_boots', name: 'Winged Boots', type: 'shoes', price: 40, rare: false, svg: `<ellipse cx="68" cy="235" rx="11" ry="6" fill="#fbbf24"/><path d="M55 230 L62 225 L60 235 Z" fill="#fff"/><ellipse cx="92" cy="235" rx="11" ry="6" fill="#fbbf24"/><path d="M105 230 L98 225 L100 235 Z" fill="#fff"/>` },
+            { id: 's_ballet', name: 'Pink Ballet Slippers', type: 'shoes', price: 35, rare: false, svg: `<ellipse cx="68" cy="235" rx="9" ry="5" fill="#f472b6"/><path d="M58 235 L78 235" stroke="#db2777" stroke-width="2"/><ellipse cx="92" cy="235" rx="9" ry="5" fill="#f472b6"/><path d="M82 235 L102 235" stroke="#db2777" stroke-width="2"/>` },
+            { id: 's_purple', name: 'Purple Loafers', type: 'shoes', price: 30, rare: false, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#a855f7"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#a855f7"/>` },
+            { id: 's_gold', name: 'Golden Shoes ✨', type: 'shoes', price: 60, rare: true, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#facc15"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#facc15"/>` },
+            { id: 's_sparkle', name: 'Sparkle Flats', type: 'shoes', price: 40, rare: false, svg: `<ellipse cx="68" cy="235" rx="10" ry="6" fill="#f43f5e"/><circle cx="68" cy="235" r="3" fill="#fde047"/><ellipse cx="92" cy="235" rx="10" ry="6" fill="#f43f5e"/><circle cx="92" cy="235" r="3" fill="#fde047"/>` },
+
+            // Tiaras (Type: tiara)
+            { id: 'tiara_gold', name: 'Gold Tiara', type: 'tiara', price: 50, rare: false, svg: `<path d="M68 60 L74 45 L80 55 L86 45 L92 60 Z" fill="#eab308"/>` },
+            { id: 'tiara_star', name: 'Star Crown ✨', type: 'tiara', price: 70, rare: true, svg: `<circle cx="80" cy="42" r="6" fill="#fde047"/><path d="M68 58 L92 58" stroke="#eab308" stroke-width="3"/>` },
+            { id: 'tiara_flower', name: 'Flower Wreath', type: 'tiara', price: 45, rare: false, svg: `<circle cx="70" cy="50" r="4" fill="#fb7185"/><circle cx="80" cy="46" r="4" fill="#facc15"/><circle cx="90" cy="50" r="4" fill="#38bdf8"/>` },
+            { id: 'tiara_pearl', name: 'Pearl Diadem', type: 'tiara', price: 55, rare: false, svg: `<circle cx="72" cy="52" r="3" fill="#fff"/><circle cx="80" cy="46" r="4" fill="#fff"/><circle cx="88" cy="52" r="3" fill="#fff"/>` },
+            { id: 'tiara_crystal', name: 'Crystal Tiara ✨', type: 'tiara', price: 75, rare: true, svg: `<path d="M70 55 L80 40 L90 55 Z" fill="#38bdf8"/><path d="M65 58 L95 58" stroke="#0284c7" stroke-width="2"/>` },
+            { id: 'tiara_rainbow', name: 'Rainbow Crown', type: 'tiara', price: 65, rare: false, svg: `<path d="M68 55 Q80 35 92 55 Z" fill="url(#rainbow-grad)"/>` },
+            { id: 'tiara_ruby', name: 'Ruby Diadem', type: 'tiara', price: 60, rare: false, svg: `<circle cx="80" cy="46" r="5" fill="#e11d48"/><path d="M68 56 L92 56" stroke="#9f1239" stroke-width="3"/>` },
+            { id: 'tiara_moon', name: 'Crescent Moon Tiara ✨', type: 'tiara', price: 80, rare: true, svg: `<path d="M76 42 A 6 6 0 1 1 84 48 A 7 7 0 1 0 76 42 Z" fill="#fde047"/>` },
+
+            // Wands (Type: wand)
+            { id: 'wand_star', name: 'Star Wand', type: 'wand', price: 75, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><polygon points="140,95 144,105 155,107 147,115 149,125 140,120 131,125 133,115 125,107 136,105" fill="#facc15"/>` },
+            { id: 'wand_heart', name: 'Heart Wand', type: 'wand', price: 75, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><path d="M140 100 Q135 90 140 85 Q145 90 140 100 Z" fill="#f43f5e"/>` },
+            { id: 'wand_moon', name: 'Moon Staff ✨', type: 'wand', price: 100, rare: true, svg: `<line x1="125" y1="140" x2="140" y2="90" stroke="#854d0e" stroke-width="3"/><circle cx="143" cy="85" r="8" fill="#fde047"/>` },
+            { id: 'wand_bubble', name: 'Bubble Scepter', type: 'wand', price: 80, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><circle cx="142" cy="98" r="7" fill="none" stroke="#38bdf8" stroke-width="3"/>` },
+            { id: 'wand_rainbow', name: 'Rainbow Wand ✨', type: 'wand', price: 120, rare: true, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><circle cx="142" cy="98" r="8" fill="url(#rainbow-grad)"/>` },
+            { id: 'wand_flower', name: 'Blossom Wand', type: 'wand', price: 70, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><circle cx="142" cy="98" r="7" fill="#fb7185"/><circle cx="142" cy="98" r="3" fill="#facc15"/>` },
+            { id: 'wand_crystal', name: 'Crystal Staff', type: 'wand', price: 90, rare: false, svg: `<line x1="125" y1="140" x2="140" y2="90" stroke="#854d0e" stroke-width="3"/><polygon points="140,80 147,95 133,95" fill="#38bdf8"/>` },
+            { id: 'wand_magic', name: 'Sparkle Wand ✨', type: 'wand', price: 85, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><polygon points="140,92 143,100 151,102 145,108 147,116 140,112 133,116 135,108 129,102 137,100" fill="#c084fc"/>` }
+        ];
+
+        // 12 Detailed Hairstyle Options (Original v14 Fantasy Style)
+        const HAIRSTYLES = [
+            { id: 'pigtails', name: 'Cute Pigtails', svg: `<path d="M48 68 Q80 25 112 68 Q118 45 128 40 Q124 72 112 78 Z M48 68 Q42 45 32 40 Q36 72 48 78 Z" fill="url(#hairGrad)"/>` },
+            { id: 'buns', name: 'Space Buns', svg: `<circle cx="48" cy="42" r="15" fill="url(#hairGrad)"/><circle cx="112" cy="42" r="15" fill="url(#hairGrad)"/><path d="M50 65 Q80 32 110 65 Z" fill="url(#hairGrad)"/>` },
+            { id: 'curls', name: 'Curly Puffs', svg: `<circle cx="46" cy="52" r="17" fill="url(#hairGrad)"/><circle cx="114" cy="52" r="17" fill="url(#hairGrad)"/><path d="M50 68 Q80 38 110 68 Z" fill="url(#hairGrad)"/>` },
+            { id: 'long', name: 'Long Wavy', svg: `<path d="M46 65 Q80 25 114 65 Q122 115 112 145 Q80 150 48 145 Q38 115 46 65 Z" fill="url(#hairGrad)"/>` },
+            { id: 'bob', name: 'Short Bob', svg: `<path d="M46 65 Q80 25 114 65 Q118 95 102 105 Q80 100 58 105 Q42 95 46 65 Z" fill="url(#hairGrad)"/>` },
+            { id: 'braids', name: 'Twin Braids', svg: `<path d="M48 68 Q80 32 112 68 Z" fill="url(#hairGrad)"/><path d="M44 70 Q32 100 46 130 Q50 110 46 70 Z" fill="url(#hairGrad)"/><path d="M116 70 Q128 100 114 130 Q110 110 114 70 Z" fill="url(#hairGrad)"/>` },
+            { id: 'ponytail', name: 'High Ponytail', svg: `<path d="M48 68 Q80 32 112 68 Z" fill="url(#hairGrad)"/><path d="M88 42 Q118 18 126 48 Q118 58 88 42 Z" fill="url(#hairGrad)"/>` },
+            { id: 'curlsweep', name: 'Curly Sweep', svg: `<path d="M46 65 Q80 25 114 65 Q128 85 112 100 Q92 88 72 100 Q52 85 46 65 Z" fill="url(#hairGrad)"/>` },
+            { id: 'afropuff', name: 'Afro Puffs', svg: `<circle cx="44" cy="48" r="19" fill="url(#hairGrad)"/><circle cx="116" cy="48" r="19" fill="url(#hairGrad)"/><path d="M48 65 Q80 42 112 65 Z" fill="url(#hairGrad)"/>` },
+            { id: 'twinbuns', name: 'Braided Buns', svg: `<circle cx="46" cy="38" r="16" fill="url(#hairGrad)"/><circle cx="114" cy="38" r="16" fill="url(#hairGrad)"/><path d="M50 65 Q80 32 110 65 Z" fill="url(#hairGrad)"/>` },
+            { id: 'sidebraid', name: 'Side Braid', svg: `<path d="M46 65 Q80 25 114 65 Q122 95 128 125 Q112 130 102 100 Q92 80 46 65 Z" fill="url(#hairGrad)"/>` },
+            { id: 'pixie', name: 'Headband Pixie', svg: `<path d="M48 68 Q80 35 112 68 Z" fill="url(#hairGrad)"/><rect x="50" y="55" width="60" height="8" rx="4" fill="#ec4899"/>` },
+        ];
+
+        // 4 Adorable Eye Styles
+        const EYE_STYLES = [
+            { id: 'classic', name: 'Classic', svg: `<circle cx="68" cy="76" r="4" fill="#1e293b"/><circle cx="92" cy="76" r="4" fill="#1e293b"/><circle cx="67" cy="75" r="1.5" fill="#fff"/><circle cx="91" cy="75" r="1.5" fill="#fff"/>` },
+            { id: 'starry', name: 'Starry ✨', svg: `<polygon points="68,70 70,75 75,76 71,79 73,84 68,81 63,84 65,79 61,76 66,75" fill="#f59e0b"/><polygon points="92,70 94,75 99,76 95,79 97,84 92,81 87,84 89,79 85,76 90,75" fill="#f59e0b"/><circle cx="67" cy="75" r="1" fill="#fff"/><circle cx="91" cy="75" r="1" fill="#fff"/>` },
+            { id: 'winking', name: 'Winking 😉', svg: `<circle cx="68" cy="76" r="4" fill="#1e293b"/><circle cx="67" cy="75" r="1.5" fill="#fff"/><path d="M88 76 Q92 70 96 76" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>` },
+            { id: 'gentle', name: 'Gentle 😊', svg: `<path d="M64 76 Q68 82 72 76" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M88 76 Q92 82 96 76" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>` }
+        ];
+
+        const SKIN_TONES = ['#ffdbac', '#f1c27d', '#e0ac69', '#c68642', '#8d5524', '#ffefd5', '#ffe0bd', '#eac086'];
+        const HAIR_COLORS = ['#271c19', '#4a3525', '#b55239', '#e6aa32', '#d1603d', '#a855f7', '#3b82f6', '#ec4899', '#ffffff', '#cbd5e1'];
+
+        // Global Game State
+        let db = {
+            profiles: [],
+            activeProfileId: null
+        };
+
+        let activeGame = null;
+        let currentShopTab = 'dresses';
+
+        // Load DB from localStorage
+        function loadDB() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                if (data) {
+                    db = JSON.parse(data);
+                } else {
+                    db = { profiles: [], activeProfileId: null };
+                }
+            } catch(e) {
+                db = { profiles: [], activeProfileId: null };
+            }
+        }
+
+        function saveDB() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+            } catch(e) {}
+        }
+
+        // --- ORIGINAL V14 SVG DOLL RENDERER ---
+        function renderDollSVG(profile, width = 140, height = 200) {
+            const skin = profile.skin || '#ffdbac';
+            const hairColor = profile.hairColor || '#4a3525';
+            const hairObj = HAIRSTYLES.find(h => h.id === profile.hair) || HAIRSTYLES[0];
+            const eyeObj = EYE_STYLES.find(e => e.id === profile.eyes) || EYE_STYLES[0];
+            
+            const dressItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedDress);
+            const topItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedTop);
+            const bottomItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedBottom);
+            const shoesItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedShoes);
+            const tiaraItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedTiara);
+            const wandItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedWand);
+
+            const hairSvg = hairObj.svg; // Uses #hairGrad
+
+            return `
+            <svg width="${width}" height="${height}" viewBox="0 0 160 230" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="hairGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="${hairColor}"/>
+                        <stop offset="100%" stop-color="#1a110f"/>
+                    </linearGradient>
+                    <linearGradient id="rainbow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#f472b6"/>
+                        <stop offset="33%" stop-color="#facc15"/>
+                        <stop offset="66%" stop-color="#34d399"/>
+                        <stop offset="100%" stop-color="#38bdf8"/>
+                    </linearGradient>
+                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/>
+                    </filter>
+                </defs>
+
+                <!-- Wand -->
+                <g filter="url(#shadow)">
+                    ${wandItem ? wandItem.svg : ''}
+                </g>
+
+                <!-- Body Group -->
+                <g filter="url(#shadow)">
+                    <!-- Legs -->
+                    <rect x="70" y="145" width="8" height="85" rx="4" fill="${skin}"/>
+                    <rect x="82" y="145" width="8" height="85" rx="4" fill="${skin}"/>
+
+                    <!-- Modesty Shorts -->
+                    <path d="M64 180 L96 180 L94 205 L82 205 L80 190 L78 205 L66 205 Z" fill="#60a5fa"/>
+
+                    <!-- Torso -->
+                    <rect x="62" y="105" width="36" height="45" rx="8" fill="${skin}"/>
+
+                    <!-- Arms -->
+                    <rect x="48" y="110" width="10" height="40" rx="5" fill="${skin}"/>
+                    <rect x="102" y="110" width="10" height="40" rx="5" fill="${skin}"/>
+
+                    <!-- Clothes Layer -->
+                    ${dressItem ? dressItem.svg : (
+                        (topItem ? topItem.svg : '<path d="M62 105 L98 105 L102 150 L58 150 Z" fill="#f472b6"/>') +
+                        (bottomItem ? bottomItem.svg : '')
+                    )}
+
+                    <!-- Shoes -->
+                    ${shoesItem ? shoesItem.svg : '<ellipse cx="74" cy="228" rx="7" ry="4" fill="#f472b6"/><ellipse cx="86" cy="228" rx="7" ry="4" fill="#f472b6"/>'}
+
+                    <!-- Neck & Head -->
+                    <rect x="74" y="95" width="12" height="15" fill="${skin}"/>
+                    <circle cx="80" cy="72" r="21" fill="${skin}"/>
+
+                    <!-- Blush & Smile -->
+                    <circle cx="69" cy="78" r="3.5" fill="#f43f5e" opacity="0.3"/>
+                    <circle cx="91" cy="78" r="3.5" fill="#f43f5e" opacity="0.3"/>
+                    <path d="M76 81 Q80 85 84 81" stroke="#e11d48" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                    <!-- Eyes -->
+                    ${eyeObj.svg}
+
+                    <!-- Hair -->
+                    ${hairSvg}
+
+                    <!-- Tiara -->
+                    ${tiaraItem ? tiaraItem.svg : ''}
+                </g>
+            </svg>
+            `;
+        }
+
+        /* --- INITIALIZATION & ROUTING --- */
+        window.onload = function() {
+            loadDB();
+            renderProfileList();
+            showScreen('screen-menu');
+        };
+
+        function showScreen(screenId) {
+            ['screen-menu', 'screen-creator', 'screen-game', 'screen-wardrobe', 'screen-achievements'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(screenId);
+            if (target) target.classList.remove('hidden');
+
+            const header = document.getElementById('game-header');
+            if (screenId === 'screen-menu' || screenId === 'screen-creator') {
+                if (header) header.classList.add('hidden');
+            } else {
+                if (header) header.classList.remove('hidden');
+                updateHeaderHUD();
+            }
+        }
+
+        function goToMenu() {
+            stopMusicLoop();
+            isMusicPlaying = false;
+            const btn = document.getElementById('btn-audio-toggle');
+            if (btn) {
+                btn.textContent = "🎵 Music: OFF";
+                btn.className = "bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold px-3 py-2 rounded-xl text-sm transition transform hover:scale-105 shadow";
+            }
+            renderProfileList();
+            showScreen('screen-menu');
+        }
+
+        function updateHeaderHUD() {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            if (!profile) return;
+
+            document.getElementById('header-user-name').textContent = profile.name;
+            document.getElementById('header-user-level').textContent = `Level ${profile.level || 1}`;
+            document.getElementById('header-gold-count').textContent = profile.gold || 0;
+            document.getElementById('header-stardust-count').textContent = profile.stardust || 0;
+
+            const preview = document.getElementById('header-avatar-preview');
+            preview.innerHTML = renderDollSVG(profile, 40, 40);
+        }
+
+        /* --- PROFILE MANAGEMENT & CREATOR --- */
+        function renderProfileList() {
+            const listEl = document.getElementById('profile-list');
+            const actionsEl = document.getElementById('menu-actions');
+            listEl.innerHTML = '';
+
+            if (db.profiles.length === 0) {
+                listEl.innerHTML = `<p class="text-sm text-slate-400 italic py-2">No hero profiles yet. Create one below!</p>`;
+                actionsEl.classList.add('hidden');
+                return;
+            }
+
+            db.profiles.forEach(p => {
+                const isSelected = p.id === db.activeProfileId;
+                const div = document.createElement('div');
+                div.className = `flex items-center justify-between p-3 rounded-2xl border-2 cursor-pointer transition ${isSelected ? 'bg-pink-100 border-pink-400 shadow' : 'bg-white border-slate-100 hover:bg-pink-50'}`;
+                div.onclick = () => selectProfile(p.id);
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white overflow-hidden flex items-center justify-center border border-pink-200 shadow-inner">
+                            ${renderDollSVG(p, 40, 40)}
+                        </div>
+                        <div class="text-left">
+                            <h4 class="font-bold text-pink-700 text-sm">${p.name}</h4>
+                            <p class="text-xs text-slate-500">Level ${p.level || 1} • 🪙 ${p.gold || 0}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1 rounded-xl ${isSelected ? 'bg-pink-500 text-white' : 'bg-slate-100 text-slate-600'}">${isSelected ? 'Active' : 'Select'}</span>
+                `;
+                listEl.appendChild(div);
+            });
+
+            if (db.activeProfileId) {
+                actionsEl.classList.remove('hidden');
+            } else {
+                actionsEl.classList.add('hidden');
+            }
+        }
+
+        function selectProfile(id) {
+            db.activeProfileId = id;
+            saveDB();
+            renderProfileList();
+        }
+
+        let creatorState = {
+            skin: SKIN_TONES[0],
+            eyes: EYE_STYLES[0].id,
+            hair: HAIRSTYLES[0].id,
+            hairColor: HAIR_COLORS[0]
+        };
+
+        function openProfileCreator() {
+            creatorState = {
+                skin: SKIN_TONES[0],
+                eyes: EYE_STYLES[0].id,
+                hair: HAIRSTYLES[0].id,
+                hairColor: HAIR_COLORS[0]
+            };
+            document.getElementById('input-hero-name').value = "Princess";
+            buildCreatorPalettes();
+            updateCreatorPreview();
+            showScreen('screen-creator');
+        }
+
+        function cancelCreator() {
+            showScreen('screen-menu');
+        }
+
+        function buildCreatorPalettes() {
+            const skinEl = document.getElementById('palette-skin');
+            skinEl.innerHTML = SKIN_TONES.map(c => `<div onclick="setCreatorAttr('skin', '${c}')" class="w-8 h-8 rounded-full border-2 cursor-pointer transition transform hover:scale-110 ${creatorState.skin === c ? 'border-purple-600 scale-110 shadow-lg' : 'border-white'}" style="background-color: ${c};"></div>`).join('');
+
+            const eyesEl = document.getElementById('palette-eyes');
+            eyesEl.innerHTML = EYE_STYLES.map(e => `<button onclick="setCreatorAttr('eyes', '${e.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 transition ${creatorState.eyes === e.id ? 'bg-purple-500 text-white border-purple-600' : 'bg-white text-slate-600 border-purple-200'}">${e.name}</button>`).join('');
+
+            const hairEl = document.getElementById('palette-hair');
+            hairEl.innerHTML = HAIRSTYLES.map(h => `<button onclick="setCreatorAttr('hair', '${h.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 transition ${creatorState.hair === h.id ? 'bg-pink-500 text-white border-pink-600' : 'bg-white text-slate-600 border-pink-200'}">${h.name}</button>`).join('');
+
+            const hairColorEl = document.getElementById('palette-hair-color');
+            hairColorEl.innerHTML = HAIR_COLORS.map(c => `<div onclick="setCreatorAttr('hairColor', '${c}')" class="w-8 h-8 rounded-full border-2 cursor-pointer transition transform hover:scale-110 ${creatorState.hairColor === c ? 'border-purple-600 scale-110 shadow-lg' : 'border-white'}" style="background-color: ${c};"></div>`).join('');
+        }
+
+        function setCreatorAttr(attr, val) {
+            creatorState[attr] = val;
+            buildCreatorPalettes();
+            updateCreatorPreview();
+        }
+
+        function updateCreatorPreview() {
+            const container = document.getElementById('creator-preview-container');
+            container.innerHTML = renderDollSVG(creatorState, 120, 170);
+        }
+
+        function saveNewProfile() {
+            const name = document.getElementById('input-hero-name').value.trim() || "Hero";
+            const newProfile = {
+                id: 'profile_' + Date.now(),
+                name: name,
+                level: 1,
+                gold: 50,
+                stardust: 0,
+                skin: creatorState.skin,
+                eyes: creatorState.eyes,
+                hair: creatorState.hair,
+                hairColor: creatorState.hairColor,
+                equippedDress: 'd_pink',
+                equippedTop: null,
+                equippedBottom: null,
+                equippedShoes: null,
+                equippedTiara: null,
+                equippedWand: null,
+                inventory: ['d_pink'],
+                badges: []
+            };
+            db.profiles.push(newProfile);
+            db.activeProfileId = newProfile.id;
+            saveDB();
+            goToMenu();
+        }
+
+        /* --- GAME ENGINE & STATE --- */
+        const ALL_BUILDINGS_POOL = [
+            { id: 'b1', name: 'Rainbow Bridge', cost: { strawberries: 2, pearls: 1 }, rewardCoins: 20 },
+            { id: 'b2', name: 'Fairy Treehouse', cost: { dust: 2, strawberries: 1 }, rewardCoins: 30 },
+            { id: 'b3', name: 'Coral Gazebo', cost: { pearls: 2, gems: 1 }, rewardCoins: 35 },
+            { id: 'b4', name: 'Magic Castle', cost: { dust: 2, gems: 2 }, rewardCoins: 50 },
+            { id: 'b5', name: 'Mermaid Cove Stage', cost: { pearls: 3, strawberries: 2 }, rewardCoins: 45 },
+            { id: 'b6', name: 'Starlight Tower', cost: { dust: 3, gems: 2 }, rewardCoins: 60 },
+            { id: 'b7', name: 'Crystal Fountain', cost: { gems: 3, pearls: 2 }, rewardCoins: 55 },
+            { id: 'b8', name: 'Grand Palace', cost: { stardust: 1, gems: 2, dust: 2 }, rewardCoins: 100 }
+        ];
+
+        function startGame() {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            if (!profile) return;
+
+            const level = profile.level || 1;
+            const targetBuildCount = level >= 5 ? 5 : (level >= 3 ? 4 : 3);
+            const totalClocks = level >= 4 ? 15 : 20;
+
+            let shuffled = [...ALL_BUILDINGS_POOL].sort(() => 0.5 - Math.random());
+            let selectedBuildings = shuffled.slice(0, targetBuildCount - 1);
+            if (level >= 3) {
+                const palace = ALL_BUILDINGS_POOL.find(b => b.id === 'b8');
+                selectedBuildings.push(palace);
+            } else {
+                selectedBuildings.push(shuffled[targetBuildCount - 1]);
+            }
+
+            activeGame = {
+                level: level,
+                clocksLeft: totalClocks,
+                resources: { strawberries: 2, pearls: 2, dust: 2, gems: 1, stardust: 0 },
+                mathCharges: 4,
+                spellCharges: 4,
+                raincloudActive: false,
+                raincloudSlot: null,
+                buildings: selectedBuildings.map((b, idx) => ({ ...b, built: false, index: idx }))
+            };
+
+            showScreen('screen-game');
+            updateGameHUD();
+        }
+
+        function updateGameHUD() {
+            if (!activeGame) return;
+            document.getElementById('game-level-num').textContent = activeGame.level;
+            document.getElementById('game-clocks-left').textContent = activeGame.clocksLeft;
+            document.getElementById('math-charges-badge').textContent = activeGame.mathCharges;
+            document.getElementById('spell-charges-badge').textContent = activeGame.spellCharges;
+
+            document.getElementById('res-strawberries').textContent = activeGame.resources.strawberries;
+            document.getElementById('res-pearls').textContent = activeGame.resources.pearls;
+            document.getElementById('res-dust').textContent = activeGame.resources.dust;
+            document.getElementById('res-gems').textContent = activeGame.resources.gems;
+
+            const rainBanner = document.getElementById('raincloud-banner');
+            if (activeGame.raincloudActive) {
+                rainBanner.classList.remove('hidden');
+            } else {
+                rainBanner.classList.add('hidden');
+            }
+
+            const trackEl = document.getElementById('building-track');
+            trackEl.innerHTML = '';
+            activeGame.buildings.forEach((b, i) => {
+                const isNext = activeGame.buildings.slice(0, i).every(item => item.built);
+                const canAfford = checkCanAfford(b.cost);
+                
+                let costStr = Object.entries(b.cost).map(([k, v]) => `${v} ${getResourceEmoji(k)}`).join(', ');
+
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-2xl border-2 flex flex-col justify-between transition ${b.built ? 'bg-emerald-50 border-emerald-300' : (isNext ? 'bg-pink-50 border-pink-300 shadow-lg' : 'bg-slate-50 border-slate-200 opacity-60')}`;
+                
+                div.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-slate-400">Step ${i+1}</span>
+                            <span class="text-xs font-bold text-amber-600">🪙 +${b.rewardCoins * activeGame.level}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">${b.name}</h4>
+                        <p class="text-xs text-slate-500 mb-3">${costStr}</p>
+                    </div>
+                    ${b.built ? '<div class="text-center font-bold text-emerald-600 text-sm py-2 bg-emerald-100 rounded-xl">✨ Built!</div>' : 
+                      (isNext ? `<button onclick="buildStructure(${i})" class="w-full py-2 rounded-xl font-bold text-sm shadow transition transform hover:scale-105 ${canAfford ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}">Build Now</button>` : 
+                      '<div class="text-center font-bold text-slate-400 text-xs py-2">Locked</div>')}
+                `;
+                trackEl.appendChild(div);
+            });
+        }
+
+        function getResourceEmoji(res) {
+            if (res === 'strawberries') return '🍓';
+            if (res === 'pearls') return '🐚';
+            if (res === 'dust') return '✨';
+            if (res === 'gems') return '💎';
+            if (res === 'stardust') return '🌟';
+            return '';
+        }
+
+        function checkCanAfford(cost) {
+            for (let [res, amt] of Object.entries(cost)) {
+                if ((activeGame.resources[res] || 0) < amt) return false;
+            }
+            return true;
+        }
+
+        function spinCompass() {
+            if (activeGame.clocksLeft <= 0) return;
+            playSoundSpin();
+            activeGame.clocksLeft--;
+
+            const needle = document.getElementById('spinner-needle');
+            const randomDeg = Math.floor(Math.random() * 360) + 720;
+            needle.style.transform = `rotate(${randomDeg}deg)`;
+
+            setTimeout(() => {
+                const resList = ['strawberries', 'pearls', 'dust', 'gems'];
+                const wonRes = resList[Math.floor(Math.random() * resList.length)];
+
+                if (!activeGame.raincloudActive && Math.random() < 0.3) {
+                    activeGame.raincloudActive = true;
+                    activeGame.raincloudSlot = wonRes;
+                }
+
+                if (activeGame.raincloudActive && activeGame.raincloudSlot === wonRes) {
+                    alert(`🌧️ The Grumpy Raincloud blocked your ${wonRes} harvest this turn!`);
+                } else {
+                    activeGame.resources[wonRes]++;
+                }
+
+                if (activeGame.buildings.every(b => b.built)) {
+                    triggerVictory();
+                } else if (activeGame.clocksLeft <= 0) {
+                    alert("⏰ Sunset reached! Try again to finish the festival!");
+                    goToMenu();
+                } else {
+                    updateGameHUD();
+                }
+            }, 750);
+        }
+
+        function clearRaincloud() {
+            if (activeGame.resources.strawberries >= 1) {
+                activeGame.resources.strawberries--;
+                activeGame.raincloudActive = false;
+                updateGameHUD();
+            } else {
+                alert("You need 1 Strawberry 🍓 to cheer up the raincloud!");
+            }
+        }
+
+        function buildStructure(index) {
+            const building = activeGame.buildings[index];
+            if (!checkCanAfford(building.cost)) return;
+
+            for (let [res, amt] of Object.entries(building.cost)) {
+                activeGame.resources[res] -= amt;
+            }
+
+            building.built = true;
+
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const earnedCoins = building.rewardCoins * activeGame.level;
+            profile.gold = (profile.gold || 0) + earnedCoins;
+            saveDB();
+
+            playSoundBuy();
+
+            if (activeGame.buildings.every(b => b.built)) {
+                triggerVictory();
+            } else {
+                updateGameHUD();
+            }
+        }
+
+        /* --- TRADING / WISHING WELL --- */
+        function executeTrade() {
+            const give = document.getElementById('trade-give-select').value;
+            const get = document.getElementById('trade-get-select').value;
+
+            if (give === get) {
+                alert("Choose two different commodities to trade!");
+                return;
+            }
+
+            if (give === 'stardust' && get !== 'stardust') {
+                if (activeGame.resources.stardust >= 3) {
+                    activeGame.resources.stardust -= 3;
+                    activeGame.resources[get] += 1;
+                    playSoundBuy();
+                    updateGameHUD();
+                } else {
+                    alert("You need at least 3 Star Stardust 🌟 for this trade!");
+                }
+            } else if (give !== 'stardust' && get === 'stardust') {
+                if (activeGame.resources[give] >= 3) {
+                    activeGame.resources[give] -= 3;
+                    activeGame.resources.stardust += 1;
+                    playSoundBuy();
+                    updateGameHUD();
+                } else {
+                    alert(`You need at least 3 ${give} for 1 Stardust 🌟!`);
+                }
+            } else {
+                if (activeGame.resources[give] >= 2) {
+                    activeGame.resources[give] -= 2;
+                    activeGame.resources[get] += 1;
+                    playSoundBuy();
+                    updateGameHUD();
+                } else {
+                    alert(`You need at least 2 ${give} to trade!`);
+                }
+            }
+        }
+
+        /* --- MATH WAND & SPELLING SCROLL MODALS --- */
+        let currentMathAnswer = 0;
+        let currentSpellingWord = '';
+
+        function openMathModal() {
+            if (activeGame.mathCharges <= 0) {
+                alert("No Math Wand charges left this game!");
+                return;
+            }
+            const level = activeGame.level;
+            let num1, num2, ans;
+            if (level >= 3 && Math.random() < 0.5) {
+                num1 = Math.floor(Math.random() * 8) + 2;
+                ans = Math.floor(Math.random() * 6) + num1 + 1;
+                num2 = ans - num1;
+                currentMathAnswer = num2;
+                document.getElementById('math-question-text').textContent = `${num1} + ? = ${ans}`;
+            } else {
+                num1 = Math.floor(Math.random() * 5) + 1;
+                num2 = Math.floor(Math.random() * 5) + 1;
+                if (Math.random() < 0.5 || level === 1) {
+                    currentMathAnswer = num1 + num2;
+                    document.getElementById('math-question-text').textContent = `${num1} + ${num2} = ?`;
+                } else {
+                    if (num1 < num2) [num1, num2] = [num2, num1];
+                    currentMathAnswer = num1 - num2;
+                    document.getElementById('math-question-text').textContent = `${num1} - ${num2} = ?`;
+                }
+            }
+
+            document.getElementById('math-answer-input').value = '';
+            document.getElementById('modal-math').classList.remove('hidden');
+        }
+
+        function closeMathModal() {
+            document.getElementById('modal-math').classList.add('hidden');
+        }
+
+        function submitMathAnswer() {
+            const val = parseInt(document.getElementById('math-answer-input').value);
+            activeGame.mathCharges--;
+
+            if (val === currentMathAnswer) {
+                playSoundBuy();
+                activeGame.resources.stardust++;
+                activeGame.resources.strawberries += 2;
+                alert("✨ Correct! You earned 1 Star Stardust and 2 Strawberries!");
+                closeMathModal();
+                updateGameHUD();
+            } else {
+                activeGame.mathCharges--;
+                alert("❌ Incorrect! You lost an extra charge. Try again next time!");
+                closeMathModal();
+                updateGameHUD();
+            }
+        }
+
+        const SPELLING_WORDS_EASY = [
+            { word: 'CAT', emoji: '🐱' },
+            { word: 'DOG', emoji: '🐶' },
+            { word: 'SUN', emoji: '☀️' },
+            { word: 'BUG', emoji: '🐞' },
+            { word: 'PIG', emoji: '🐷' },
+            { word: 'RED', emoji: '🔴' }
+        ];
+
+        const SPELLING_WORDS_HARD = [
+            { word: 'STAR', emoji: '⭐' },
+            { word: 'FISH', emoji: '🐠' },
+            { word: 'MOON', emoji: '🌙' },
+            { word: 'TREE', emoji: '🌳' },
+            { word: 'PINK', emoji: '🌸' },
+            { word: 'WAND', emoji: '🪄' }
+        ];
+
+        function openSpellingModal() {
+            if (activeGame.spellCharges <= 0) {
+                alert("No Spelling Scroll charges left this game!");
+                return;
+            }
+            const pool = activeGame.level >= 3 ? SPELLING_WORDS_HARD : SPELLING_WORDS_EASY;
+            const chosen = pool[Math.floor(Math.random() * pool.length)];
+            currentSpellingWord = chosen.word;
+            document.getElementById('spell-emoji-hint').textContent = chosen.emoji;
+            document.getElementById('spell-answer-input').value = '';
+            document.getElementById('modal-spelling').classList.remove('hidden');
+            speakWord(currentSpellingWord);
+        }
+
+        function speakCurrentWord() {
+            speakWord(currentSpellingWord);
+        }
+
+        function closeSpellingModal() {
+            document.getElementById('modal-spelling').classList.add('hidden');
+        }
+
+        function submitSpellingAnswer() {
+            const val = document.getElementById('spell-answer-input').value.trim().toUpperCase();
+            activeGame.spellCharges--;
+
+            if (val === currentSpellingWord) {
+                playSoundBuy();
+                activeGame.resources.stardust++;
+                activeGame.resources.pearls += 2;
+                alert("📜 Correct! You earned 1 Star Stardust and 2 Pearls!");
+                closeSpellingModal();
+                updateGameHUD();
+            } else {
+                activeGame.spellCharges--;
+                alert(`❌ Incorrect! The correct spelling was ${currentSpellingWord}. You lost an extra charge.`);
+                closeSpellingModal();
+                updateGameHUD();
+            }
+        }
+
+        /* --- VICTORY & ACHIEVEMENTS --- */
+        function triggerVictory() {
+            playSoundWin();
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const speedBonus = activeGame.clocksLeft > 8;
+
+            let coinReward = 100 * activeGame.level;
+            if (speedBonus) coinReward += 50;
+
+            profile.gold = (profile.gold || 0) + coinReward;
+
+            if (speedBonus) {
+                const rareItems = WARDROBE_ITEMS.filter(i => i.rare && !profile.inventory.includes(i.id));
+                if (rareItems.length > 0) {
+                    const wonRare = rareItems[Math.floor(Math.random() * rareItems.length)];
+                    profile.inventory.push(wonRare.id);
+                    alert(`🌟 SPEED BONUS! You beat the festival with ${activeGame.clocksLeft} clocks left and unlocked the rare item: ${wonRare.name}! Plus 🪙 ${coinReward} coins!`);
+                } else {
+                    alert(`🎉 Victory! Festival completed successfully! You earned 🪙 ${coinReward} coins!`);
+                }
+            } else {
+                alert(`🎉 Victory! Festival completed successfully! You earned 🪙 ${coinReward} coins!`);
+            }
+
+            if (profile.level < 5) {
+                profile.level++;
+            }
+
+            saveDB();
+            goToMenu();
+        }
+
+        /* --- WARDROBE & GLITTER BOUTIQUE --- */
+        function openWardrobe() {
+            showScreen('screen-wardrobe');
+            updateWardrobeDoll();
+            renderShopGrid();
+        }
+
+        function updateWardrobeDoll() {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const container = document.getElementById('wardrobe-doll-preview');
+            container.innerHTML = renderDollSVG(profile, 160, 220);
+        }
+
+        function switchShopTab(tab) {
+            currentShopTab = tab;
+            ['dresses', 'tops', 'bottoms', 'shoes', 'tiaras', 'wands'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    btn.className = t === tab ? 'px-4 py-2 font-bold text-sm rounded-xl bg-pink-500 text-white shadow' : 'px-4 py-2 font-bold text-sm rounded-xl bg-slate-100 text-slate-600';
+                }
+            });
+            renderShopGrid();
+        }
+
+        function renderShopGrid() {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const grid = document.getElementById('shop-items-grid');
+            grid.innerHTML = '';
+
+            const items = WARDROBE_ITEMS.filter(i => i.type === currentShopTab);
+
+            items.forEach(item => {
+                const owned = profile.inventory.includes(item.id);
+                let equipped = false;
+                if (item.type === 'dress') equipped = profile.equippedDress === item.id;
+                if (item.type === 'top') equipped = profile.equippedTop === item.id;
+                if (item.type === 'bottom') equipped = profile.equippedBottom === item.id;
+                if (item.type === 'shoes') equipped = profile.equippedShoes === item.id;
+                if (item.type === 'tiara') equipped = profile.equippedTiara === item.id;
+                if (item.type === 'wand') equipped = profile.equippedWand === item.id;
+
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border-2 flex flex-col items-center justify-between transition bg-white ${equipped ? 'border-pink-500 bg-pink-50/50 shadow-md' : 'border-slate-100'}`;
+                
+                card.innerHTML = `
+                    <div class="w-16 h-20 flex items-center justify-center mb-1">
+                        <svg width="60" height="70" viewBox="40 135 80 100" xmlns="http://www.w3.org/2000/svg">${item.svg}</svg>
+                    </div>
+                    <h5 class="font-bold text-slate-700 text-xs text-center mb-1">${item.name}</h5>
+                    <div class="w-full">
+                        ${owned ? 
+                          `<button onclick="equipItem('${item.id}', '${item.type}')" class="w-full py-1.5 rounded-xl text-xs font-bold shadow transition ${equipped ? 'bg-pink-500 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">${equipped ? 'Equipped' : 'Wear'}</button>` :
+                          `<button onclick="buyItem('${item.id}')" class="w-full py-1.5 rounded-xl text-xs font-bold shadow bg-amber-400 hover:bg-amber-500 text-amber-900">🪙 ${item.price}</button>`
+                        }
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function buyItem(itemId) {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const item = WARDROBE_ITEMS.find(i => i.id === itemId);
+            if (!item) return;
+
+            if ((profile.gold || 0) >= item.price) {
+                profile.gold -= item.price;
+                profile.inventory.push(item.id);
+                if (item.type === 'dress') { profile.equippedDress = item.id; profile.equippedTop = null; profile.equippedBottom = null; }
+                else if (item.type === 'top') { profile.equippedTop = item.id; profile.equippedDress = null; }
+                else if (item.type === 'bottom') { profile.equippedBottom = item.id; profile.equippedDress = null; }
+                else if (item.type === 'shoes') profile.equippedShoes = item.id;
+                else if (item.type === 'tiara') profile.equippedTiara = item.id;
+                else if (item.type === 'wand') profile.equippedWand = item.id;
+
+                saveDB();
+                playSoundBuy();
+                updateHeaderHUD();
+                updateWardrobeDoll();
+                renderShopGrid();
+            } else {
+                alert("Not enough Gold Coins 🪙! Win more games or complete buildings to earn coins.");
+            }
+        }
+
+        function equipItem(itemId, type) {
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            if (type === 'dress') {
+                if (profile.equippedDress === itemId) {
+                    profile.equippedDress = null;
+                } else {
+                    profile.equippedDress = itemId;
+                    profile.equippedTop = null;
+                    profile.equippedBottom = null;
+                }
+            } else if (type === 'top') {
+                if (profile.equippedTop === itemId) {
+                    profile.equippedTop = null;
+                } else {
+                    profile.equippedTop = itemId;
+                    profile.equippedDress = null;
+                }
+            } else if (type === 'bottom') {
+                if (profile.equippedBottom === itemId) {
+                    profile.equippedBottom = null;
+                } else {
+                    profile.equippedBottom = itemId;
+                    profile.equippedDress = null;
+                }
+            } else if (type === 'shoes') {
+                profile.equippedShoes = profile.equippedShoes === itemId ? null : itemId;
+            } else if (type === 'tiara') {
+                profile.equippedTiara = profile.equippedTiara === itemId ? null : itemId;
+            } else if (type === 'wand') {
+                profile.equippedWand = profile.equippedWand === itemId ? null : itemId;
+            }
+
+            saveDB();
+            updateWardrobeDoll();
+            renderShopGrid();
+        }
+
+        function openAchievements() {
+            showScreen('screen-achievements');
+            const profile = db.profiles.find(p => p.id === db.activeProfileId);
+            const grid = document.getElementById('badges-grid');
+            grid.innerHTML = '';
+
+            const stats = [
+                { title: 'Current Hero Level', val: `Level ${profile.level || 1} 🌟`, desc: 'Advances as you complete festivals.' },
+                { title: 'Glitter Gold', val: `🪙 ${profile.gold || 0} Coins`, desc: 'Earned from building and victory bonuses.' },
+                { title: 'Star Stardust', val: `🌟 ${profile.stardust || 0} Stardust`, desc: 'Collected from Math and Spelling challenges.' },
+                { title: 'Wardrobe Collection', val: `${profile.inventory.length} / ${WARDROBE_ITEMS.length} Items`, desc: 'Unlocked dresses, tops, bottoms, and accessories.' }
+            ];
+
+            stats.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'bg-amber-50/60 border-2 border-amber-200 p-4 rounded-2xl flex flex-col justify-between shadow-sm';
+                div.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-amber-800 text-sm mb-1">${s.title}</h4>
+                        <p class="text-xs text-slate-500 mb-2">${s.desc}</p>
+                    </div>
+                    <div class="font-bold text-purple-700 text-base">${s.val}</div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
