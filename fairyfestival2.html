@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Fairy-Festival ✨ Magical Fantasy Adventure</title>
-  <!-- Google Fonts: Fredoka for friendly, rounded child-accessible typography -->
+  <!-- Google Fonts: Fredoka for warm, rounded child-friendly typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -19,27 +19,22 @@
             fredoka: ['Fredoka', 'Comic Sans MS', 'cursive', 'sans-serif'],
           },
           animation: {
-            'float-slow': 'floatSlow 4s ease-in-out infinite',
-            'sparkle-pulse': 'sparklePulse 2s ease-in-out infinite',
-            'bounce-gentle': 'bounceGentle 2.2s infinite',
-            'shimmer': 'shimmer 2.5s linear infinite',
+            'float-slow': 'floatSlow 3.8s ease-in-out infinite',
+            'bounce-gentle': 'bounceGentle 2.1s infinite',
+            'wave-bar': 'waveBar 0.7s ease-in-out infinite',
           },
           keyframes: {
             floatSlow: {
               '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-8px)' },
-            },
-            sparklePulse: {
-              '0%, 100%': { opacity: '1', transform: 'scale(1)' },
-              '50%': { opacity: '0.65', transform: 'scale(1.08)' },
+              '50%': { transform: 'translateY(-7px)' },
             },
             bounceGentle: {
               '0%, 100%': { transform: 'translateY(0)' },
               '50%': { transform: 'translateY(-5px)' },
             },
-            shimmer: {
-              '0%': { backgroundPosition: '-200% 0' },
-              '100%': { backgroundPosition: '200% 0' },
+            waveBar: {
+              '0%, 100%': { transform: 'scaleY(0.35)' },
+              '50%': { transform: 'scaleY(1.15)' },
             }
           }
         }
@@ -47,7 +42,6 @@
     };
   </script>
   <style>
-    /* Base typography & touch responsiveness */
     * {
       font-family: 'Fredoka', sans-serif;
       -webkit-tap-highlight-color: transparent;
@@ -67,7 +61,7 @@
       height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.45);
       border-radius: 999px;
     }
     ::-webkit-scrollbar-thumb {
@@ -75,10 +69,10 @@
       border-radius: 999px;
     }
 
-    /* Tactile 3D-style candy buttons for kids */
+    /* Tactile 3D candy buttons for 6-7 year olds */
     .fairy-btn {
       transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s ease, filter 0.14s ease;
-      box-shadow: 0 4px 0 rgba(109, 40, 217, 0.25), 0 8px 16px rgba(168, 85, 247, 0.18);
+      box-shadow: 0 4px 0 rgba(109, 40, 217, 0.24), 0 8px 16px rgba(168, 85, 247, 0.16);
     }
     .fairy-btn:hover:not(:disabled) {
       transform: translateY(-2px);
@@ -86,7 +80,7 @@
     }
     .fairy-btn:active:not(:disabled) {
       transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(109, 40, 217, 0.25), 0 3px 8px rgba(168, 85, 247, 0.15);
+      box-shadow: 0 1px 0 rgba(109, 40, 217, 0.24), 0 3px 8px rgba(168, 85, 247, 0.14);
     }
     .fairy-btn:disabled {
       opacity: 0.55;
@@ -94,22 +88,22 @@
       box-shadow: none;
     }
 
-    /* Rare item golden shimmer card border */
+    /* Rare boutique item golden shimmer card */
     .rare-card {
       background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fce7f3 100%);
       border: 2.5px solid #f59e0b;
-      box-shadow: 0 0 18px rgba(245, 158, 11, 0.32);
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.34);
     }
 
-    /* Floating sparkle particles on equip/win */
+    /* Floating sparkle burst animation on equip/win */
     @keyframes popStar {
       0% {
         opacity: 1;
-        transform: translate(0, 0) scale(0.4) rotate(0deg);
+        transform: translate(0, 0) scale(0.45) rotate(0deg);
       }
       100% {
         opacity: 0;
-        transform: translate(var(--dx), var(--dy)) scale(1.3) rotate(180deg);
+        transform: translate(var(--dx), var(--dy)) scale(1.35) rotate(180deg);
       }
     }
     .sparkle-burst {
@@ -121,10 +115,10 @@
 
     /* Glassmorphic fairy panel */
     .fairy-panel {
-      background: rgba(255, 255, 255, 0.86);
+      background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 2px solid rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(255, 255, 255, 0.95);
       box-shadow: 0 10px 30px -5px rgba(147, 51, 234, 0.12), 0 4px 10px -2px rgba(236, 72, 153, 0.08);
     }
   </style>
@@ -161,19 +155,17 @@
     /**
      * ============================================================================
      * FAIRY-FESTIVAL: WHIMSICAL EDUCATIONAL FANTASY ADVENTURE
-     * Complete single-file engine containing:
-     *  1. Procedural Web Audio API Music-Box & SFX Synthesizer
-     *  2. Browser Speech Synthesis Voice Engine (Spelling Scroll)
-     *  3. Game Data Catalog (8 Festival Structures, 38 Boutique Items, 56 Words, 8 Badges)
-     *  4. Procedural SVG Character Renderer (`renderDollSVG`) & Structure Artwork
-     *  5. LocalStorage Persistence Manager
-     *  6. Interactive Views: Menu, Creator, Festival Build Track, Math Wand,
-     *     Spelling Scroll, Glitter Boutique, and Achievements & Badges
+     * Complete Single-File Engine:
+     *  1. Upbeat 132 BPM 16-Bar 3-Voice Web Audio API Music & SFX Synthesizer
+     *  2. Bulletproof Browser Speech Synthesis Engine (`window._fairyUtterance`)
+     *  3. Game Data Catalog (8 Festival Structures, 38 Boutique Items, 54 Words, 8 Badges)
+     *  4. Redesigned Storybook Chibi Fairy SVG Character Renderer (`renderDollSVG`)
+     *  5. LocalStorage Persistence & Interactive Screens
      * ============================================================================
      */
 
     /* --------------------------------------------------------------------------
-     * 1. PROCEDURAL WEB AUDIO API SOUND ENGINE
+     * 1. UPBEAT 132 BPM 16-BAR 3-VOICE WEB AUDIO API SOUND ENGINE
      * -------------------------------------------------------------------------- */
     const SoundEngine = (() => {
       let ctx = null;
@@ -181,25 +173,127 @@
       let bgmTimer = null;
       let stepIndex = 0;
 
-      // Enchanted 3/4 Music-Box Waltz melody (MIDI note numbers, 0 = rest)
-      // Gentle major-pentatonic / lullaby progression in F/C major
-      const waltzSequence = [
-        // Measure 1 (Fmaj)
-        65, 72, 77,   69, 72, 77,
-        // Measure 2 (Cmaj)
-        60, 72, 76,   67, 72, 76,
-        // Measure 3 (Dm)
-        62, 69, 74,   65, 69, 74,
-        // Measure 4 (Bb -> C)
-        58, 70, 74,   60, 72, 79,
-        // Measure 5 (Fmaj)
-        65, 74, 77,   69, 76, 79,
-        // Measure 6 (Am)
-        57, 69, 76,   64, 72, 76,
-        // Measure 7 (Bb)
-        58, 69, 74,   62, 70, 74,
-        // Measure 8 (C -> F)
-        60, 67, 76,   65, 72, 0
+      // 132 BPM -> 1 quarter note = 454.5ms -> 1 eighth-note step = 227ms
+      const EIGHTH_MS = 227;
+
+      // 16-Bar (128 eighth-note steps) Bouncy Fairy-Tale Celesta Lead Melody in C Major / G Major
+      // 0 = rest, MIDI numbers: C5=72, D5=74, E5=76, F5=77, G5=79, A5=81, B5=83, C6=84, D6=86, E6=88
+      const leadMelody16Bars = [
+        // Bar 1 (C): Bouncy fairytale opening hook!
+        72, 76, 79, 84,   83, 79, 76, 74,
+        // Bar 2 (G): Playful skipping response
+        74, 79, 83, 86,   84, 83, 79, 0,
+        // Bar 3 (Am): Twirling up
+        81, 84, 88, 84,   79, 81, 76, 72,
+        // Bar 4 (F -> G): Cheerful turnaround
+        77, 76, 74, 72,   74, 0,  79, 0,
+
+        // Bar 5 (C): Hook reprise with high sparkle
+        72, 76, 79, 84,   86, 84, 83, 79,
+        // Bar 6 (G): Joyful leap
+        79, 83, 86, 88,   86, 83, 79, 74,
+        // Bar 7 (F/G): Bright cascading stairs
+        77, 81, 84, 81,   79, 83, 86, 83,
+        // Bar 8 (C): Happy phrase resolution!
+        84, 0,  79, 76,   72, 0,  0,  0,
+
+        // Bar 9 (Am): Whimsical B-section woodland dance
+        81, 0,  84, 81,   76, 79, 81, 84,
+        // Bar 10 (Em): Light tiptoe
+        79, 0,  83, 79,   76, 74, 76, 79,
+        // Bar 11 (F): Heartwarming lift
+        77, 76, 77, 81,   84, 81, 77, 76,
+        // Bar 12 (C): Sweet landing
+        76, 79, 84, 79,   76, 0,  72, 0,
+
+        // Bar 13 (F): Grand build-up
+        77, 81, 84, 86,   84, 81, 77, 81,
+        // Bar 14 (G): Sparkling climb
+        79, 83, 86, 88,   86, 83, 79, 83,
+        // Bar 15 (G7): Anticipation trills
+        86, 84, 83, 81,   79, 81, 83, 86,
+        // Bar 16 (C): Joyful finale!
+        84, 0,  88, 0,    84, 0,  0,  0
+      ];
+
+      // 16-Bar Bouncy Pizzicato Bassline (128 eighth-note steps)
+      // Outlines: C - G - Am - F - C - G - F/G - C | Am - Em - F - C | F - G - G7 - C
+      // MIDI: C3=48, D3=50, E3=52, F3=53, G3=55, A3=57, B3=59, C4=60
+      const bassLine16Bars = [
+        // Bar 1 (C)
+        48, 0, 55, 0,  52, 0, 55, 0,
+        // Bar 2 (G)
+        55, 0, 50, 0,  59, 0, 55, 0,
+        // Bar 3 (Am)
+        57, 0, 52, 0,  60, 0, 57, 0,
+        // Bar 4 (F)
+        53, 0, 60, 0,  57, 0, 55, 0,
+
+        // Bar 5 (C)
+        48, 0, 55, 0,  52, 0, 55, 0,
+        // Bar 6 (G)
+        55, 0, 59, 0,  50, 0, 55, 0,
+        // Bar 7 (F / G)
+        53, 0, 57, 0,  55, 0, 59, 0,
+        // Bar 8 (C)
+        48, 0, 55, 0,  48, 0, 0,  0,
+
+        // Bar 9 (Am)
+        57, 0, 60, 0,  52, 0, 57, 0,
+        // Bar 10 (Em)
+        52, 0, 59, 0,  55, 0, 52, 0,
+        // Bar 11 (F)
+        53, 0, 57, 0,  60, 0, 53, 0,
+        // Bar 12 (C)
+        48, 0, 52, 0,  55, 0, 48, 0,
+
+        // Bar 13 (F)
+        53, 0, 60, 0,  57, 0, 53, 0,
+        // Bar 14 (G)
+        55, 0, 59, 0,  62, 0, 55, 0,
+        // Bar 15 (G7)
+        55, 0, 53, 0,  50, 0, 55, 0,
+        // Bar 16 (C)
+        48, 0, 55, 0,  48, 0, 0,  0
+      ];
+
+      // 16-Bar Shimmering Harp/Bell Chord Arpeggio Layer (128 eighth-note steps)
+      const arpLayer16Bars = [
+        // Bar 1 (C)
+        64, 67, 72, 67,  64, 67, 72, 67,
+        // Bar 2 (G)
+        62, 67, 71, 67,  62, 67, 71, 67,
+        // Bar 3 (Am)
+        64, 69, 72, 69,  64, 69, 72, 69,
+        // Bar 4 (F)
+        65, 69, 72, 69,  67, 71, 74, 0,
+
+        // Bar 5 (C)
+        64, 67, 72, 67,  64, 67, 72, 67,
+        // Bar 6 (G)
+        62, 67, 71, 67,  62, 67, 71, 67,
+        // Bar 7 (F / G)
+        65, 69, 72, 69,  67, 71, 74, 71,
+        // Bar 8 (C)
+        64, 67, 72, 76,  79, 84, 88, 0,
+
+        // Bar 9 (Am)
+        64, 69, 72, 69,  64, 69, 72, 69,
+        // Bar 10 (Em)
+        64, 67, 71, 67,  64, 67, 71, 67,
+        // Bar 11 (F)
+        65, 69, 72, 69,  65, 69, 72, 69,
+        // Bar 12 (C)
+        64, 67, 72, 67,  64, 72, 79, 0,
+
+        // Bar 13 (F)
+        65, 69, 72, 77,  65, 69, 72, 77,
+        // Bar 14 (G)
+        67, 71, 74, 79,  67, 71, 74, 79,
+        // Bar 15 (G7)
+        65, 67, 71, 74,  65, 67, 71, 74,
+        // Bar 16 (C)
+        64, 67, 72, 76,  79, 84, 91, 96
       ];
 
       function midiToFreq(midi) {
@@ -221,57 +315,118 @@
         }
       }
 
-      // Soft bell-like music box tone
-      function playBellNote(freq, duration = 0.65, volume = 0.045, type = 'sine') {
+      // Voice 1: Sparkling Celesta / Music-Box Bell (Triangle + Octave Sine Overtone)
+      function playCelestaLead(freq, duration = 0.36, volume = 0.05) {
         if (isMuted || !ctx || ctx.state !== 'running') return;
         const now = ctx.currentTime;
+
+        const fundamental = ctx.createOscillator();
+        const harmonic = ctx.createOscillator();
+        const mainGain = ctx.createGain();
+        const harmGain = ctx.createGain();
+
+        fundamental.type = 'triangle';
+        fundamental.frequency.setValueAtTime(freq, now);
+
+        harmonic.type = 'sine';
+        harmonic.frequency.setValueAtTime(freq * 2, now);
+
+        mainGain.gain.setValueAtTime(0.0001, now);
+        mainGain.gain.linearRampToValueAtTime(volume, now + 0.012);
+        mainGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        harmGain.gain.setValueAtTime(0.0001, now);
+        harmGain.gain.linearRampToValueAtTime(volume * 0.35, now + 0.008);
+        harmGain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.45);
+
+        fundamental.connect(mainGain);
+        harmonic.connect(harmGain);
+        harmGain.connect(mainGain);
+        mainGain.connect(ctx.destination);
+
+        fundamental.start(now);
+        harmonic.start(now);
+        fundamental.stop(now + duration + 0.02);
+        harmonic.stop(now + duration + 0.02);
+      }
+
+      // Voice 2: Warm Bouncy Pizzicato Bassline
+      function playPizzicatoBass(freq, duration = 0.28, volume = 0.055) {
+        if (isMuted || !ctx || ctx.state !== 'running') return;
+        const now = ctx.currentTime;
+
         const osc = ctx.createOscillator();
-        const overtone = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
         const gain = ctx.createGain();
 
-        osc.type = type;
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, now);
 
-        // Octave shimmer harmonic for authentic music-box chime
-        overtone.type = 'sine';
-        overtone.frequency.setValueAtTime(freq * 2, now);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(freq * 3.5, now);
+        filter.frequency.exponentialRampToValueAtTime(freq * 1.1, now + duration);
 
-        const overtoneGain = ctx.createGain();
-        overtoneGain.gain.setValueAtTime(volume * 0.25, now);
-        overtoneGain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.45);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(volume, now + 0.014);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      }
+
+      // Voice 3: Gentle Shimmering Harp Arpeggio & Phrase Chimes
+      function playShimmerArp(freq, duration = 0.26, volume = 0.022) {
+        if (isMuted || !ctx || ctx.state !== 'running') return;
+        const now = ctx.currentTime;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
 
         gain.gain.setValueAtTime(0.0001, now);
         gain.gain.linearRampToValueAtTime(volume, now + 0.015);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
         osc.connect(gain);
-        overtone.connect(overtoneGain);
-        overtoneGain.connect(gain);
         gain.connect(ctx.destination);
 
         osc.start(now);
-        overtone.start(now);
         osc.stop(now + duration + 0.02);
-        overtone.stop(now + duration + 0.02);
       }
 
       function startMusicLoop() {
         if (bgmTimer) clearInterval(bgmTimer);
-        // 3/4 waltz tempo: ~340ms per beat
         bgmTimer = setInterval(() => {
           if (isMuted || !ctx || ctx.state !== 'running') return;
-          const note = waltzSequence[stepIndex % waltzSequence.length];
-          const isDownbeat = (stepIndex % 3) === 0;
-          if (note > 0) {
-            playBellNote(
-              midiToFreq(note),
-              isDownbeat ? 0.95 : 0.6,
-              isDownbeat ? 0.038 : 0.026,
-              'sine'
+
+          const idx = stepIndex % leadMelody16Bars.length;
+          const leadNote = leadMelody16Bars[idx];
+          const bassNote = bassLine16Bars[idx];
+          const arpNote  = arpLayer16Bars[idx];
+          const isPhraseEnd = (idx === 31 || idx === 63 || idx === 95 || idx === 127);
+
+          if (leadNote > 0) {
+            playCelestaLead(midiToFreq(leadNote), 0.38, 0.048);
+          }
+          if (bassNote > 0) {
+            playPizzicatoBass(midiToFreq(bassNote), 0.28, 0.055);
+          }
+          if (arpNote > 0) {
+            playShimmerArp(
+              midiToFreq(arpNote),
+              isPhraseEnd ? 0.55 : 0.25,
+              isPhraseEnd ? 0.036 : 0.02
             );
           }
+
           stepIndex++;
-        }, 350);
+        }, EIGHTH_MS);
       }
 
       function toggleMute() {
@@ -279,6 +434,9 @@
         isMuted = !isMuted;
         localStorage.setItem('fairy_festival_muted', String(isMuted));
         if (!isMuted) {
+          if (ctx && ctx.state === 'suspended') {
+            ctx.resume().catch(() => {});
+          }
           startMusicLoop();
           playClick();
         }
@@ -289,29 +447,25 @@
         return isMuted;
       }
 
-      // UI Tap / Pop
       function playClick() {
         initContext();
-        playBellNote(784, 0.14, 0.07, 'sine'); // G5
+        playCelestaLead(880, 0.14, 0.065); // A5 pop
       }
 
-      // Compass Spinner Wheel Tick
       function playSpinTick(speedRatio = 1) {
         initContext();
-        const freq = 520 + Math.min(350, speedRatio * 260);
-        playBellNote(freq, 0.07, 0.055, 'triangle');
+        const freq = 540 + Math.min(380, speedRatio * 280);
+        playCelestaLead(freq, 0.08, 0.05);
       }
 
-      // Resource Harvest Chime
       function playHarvest(isRare = false) {
         initContext();
         const notes = isRare ? [587.33, 739.99, 880, 1174.66] : [523.25, 659.25, 783.99];
         notes.forEach((f, idx) => {
-          setTimeout(() => playBellNote(f, 0.45, 0.08, 'sine'), idx * 85);
+          setTimeout(() => playCelestaLead(f, 0.42, 0.075), idx * 80);
         });
       }
 
-      // Grumpy Raincloud Appearance
       function playThunder() {
         initContext();
         if (isMuted || !ctx) return;
@@ -336,70 +490,63 @@
         osc.stop(now + 0.62);
       }
 
-      // Clearing Raincloud with Strawberry
       function playCloudClear() {
         initContext();
         const gliss = [523.25, 587.33, 659.25, 783.99, 880, 1046.5];
         gliss.forEach((f, i) => {
-          setTimeout(() => playBellNote(f, 0.42, 0.075, 'sine'), i * 65);
+          setTimeout(() => playCelestaLead(f, 0.4, 0.07), i * 60);
         });
       }
 
-      // Wishing Well Sparkle Trade
       function playWish() {
         initContext();
         const notes = [659.25, 987.77, 1318.51];
         notes.forEach((f, i) => {
-          setTimeout(() => playBellNote(f, 0.55, 0.075, 'sine'), i * 100);
+          setTimeout(() => playCelestaLead(f, 0.5, 0.075), i * 95);
         });
       }
 
-      // Structure Built Royal Fanfare
       function playBuildFanfare() {
         initContext();
         const fanfare = [
-          { f: 523.25, t: 0, d: 0.25 },
-          { f: 659.25, t: 130, d: 0.25 },
-          { f: 783.99, t: 260, d: 0.25 },
-          { f: 1046.50, t: 400, d: 0.55 },
-          { f: 880.00, t: 620, d: 0.25 },
-          { f: 1046.50, t: 780, d: 0.9 }
+          { f: 523.25, t: 0, d: 0.24 },
+          { f: 659.25, t: 120, d: 0.24 },
+          { f: 783.99, t: 240, d: 0.24 },
+          { f: 1046.50, t: 370, d: 0.52 },
+          { f: 880.00, t: 580, d: 0.24 },
+          { f: 1046.50, t: 730, d: 0.85 }
         ];
         fanfare.forEach(n => {
-          setTimeout(() => playBellNote(n.f, n.d, 0.095, 'triangle'), n.t);
+          setTimeout(() => playCelestaLead(n.f, n.d, 0.09), n.t);
         });
       }
 
-      // Boutique Item Purchase
       function playPurchase() {
         initContext();
         const notes = [783.99, 1046.50, 1318.51, 1567.98];
         notes.forEach((f, i) => {
-          setTimeout(() => playBellNote(f, 0.45, 0.08, 'sine'), i * 75);
+          setTimeout(() => playCelestaLead(f, 0.42, 0.075), i * 70);
         });
       }
 
-      // Equip / Unequip Pop
       function playEquip() {
         initContext();
-        playBellNote(698.46, 0.16, 0.065, 'sine');
-        setTimeout(() => playBellNote(932.33, 0.25, 0.065, 'sine'), 70);
+        playCelestaLead(698.46, 0.16, 0.06);
+        setTimeout(() => playCelestaLead(932.33, 0.24, 0.06), 65);
       }
 
-      // Educational Minigame Correct Answer
       function playSuccess() {
         initContext();
         const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((f, i) => {
-          setTimeout(() => playBellNote(f, 0.4, 0.085, 'sine'), i * 80);
+          setTimeout(() => playCelestaLead(f, 0.38, 0.08), i * 75);
         });
       }
 
-      // Gentle Encouraging Try-Again Sound
       function playRetry() {
         initContext();
-        playBellNote(392.00, 0.22, 0.06, 'triangle'); // G4
-        setTimeout(() => playBellNote(349.23, 0.3, 0.06, 'triangle'), 150); // F4
+        playCelestaLead(392.00, 0.22, 0.055);
+        setTimeout(() => playCelestaLead(349.23, 0.28, 0.055), 145);
       }
 
       return {
@@ -420,25 +567,22 @@
       };
     })();
 
-    // Unlock audio on first user interaction anywhere
-    ['pointerdown', 'keydown'].forEach(evt => {
-      window.addEventListener(evt, () => SoundEngine.initContext(), { once: true });
-    });
-
     /* --------------------------------------------------------------------------
-     * 2. BROWSER SPEECH SYNTHESIS ENGINE (SPELLING SCROLL)
+     * 2. BULLETPROOF BROWSER SPEECH SYNTHESIS ENGINE (SPELLING SCROLL)
      * -------------------------------------------------------------------------- */
     const SpeechEngine = (() => {
       let preferredVoice = null;
+      let unlocked = false;
+      let isSpeaking = false;
 
       function loadVoices() {
         if (!('speechSynthesis' in window)) return;
         const voices = window.speechSynthesis.getVoices();
-        if (!voices.length) return;
+        if (!voices || !voices.length) return;
         preferredVoice =
-          voices.find(v => /Google US English|Samantha|Victoria|Microsoft Zira/i.test(v.name)) ||
-          voices.find(v => v.lang && v.lang.startsWith('en-US')) ||
-          voices.find(v => v.lang && v.lang.startsWith('en')) ||
+          voices.find(v => /Google US English|Samantha|Victoria|Microsoft Zira|Microsoft Aria|Jenny|Karen/i.test(v.name)) ||
+          voices.find(v => v.lang && (v.lang === 'en-US' || v.lang === 'en-GB')) ||
+          voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en')) ||
           voices[0];
       }
 
@@ -447,79 +591,150 @@
         window.speechSynthesis.onvoiceschanged = loadVoices;
       }
 
-      function speak(text) {
+      function unlockSpeech() {
+        if (unlocked || !('speechSynthesis' in window)) return;
+        unlocked = true;
+        loadVoices();
+        try {
+          const primer = new SpeechSynthesisUtterance('');
+          primer.volume = 0;
+          window._fairyUtterance = primer;
+          window.speechSynthesis.speak(primer);
+        } catch (e) {}
+      }
+
+      function setVisualizerState(speaking) {
+        isSpeaking = speaking;
+        const viz = document.getElementById('speech-wave-visualizer');
+        const btn = document.getElementById('hear-word-btn');
+        if (viz) {
+          viz.classList.toggle('opacity-100', speaking);
+          viz.classList.toggle('opacity-40', !speaking);
+          viz.querySelectorAll('.wave-bar').forEach(bar => {
+            if (speaking) {
+              bar.classList.add('animate-wave-bar');
+            } else {
+              bar.classList.remove('animate-wave-bar');
+            }
+          });
+        }
+        if (btn) {
+          btn.classList.toggle('ring-4', speaking);
+          btn.classList.toggle('ring-sky-300', speaking);
+        }
+      }
+
+      function speak(text, rate = 0.85, pitch = 1.15) {
         if (!('speechSynthesis' in window)) return false;
         try {
+          loadVoices();
           window.speechSynthesis.cancel();
+          window.speechSynthesis.resume();
+
           const utter = new SpeechSynthesisUtterance(text);
-          if (!preferredVoice) loadVoices();
-          if (preferredVoice) utter.voice = preferredVoice;
-          utter.pitch = 1.2;  // Child-friendly warm higher pitch
-          utter.rate = 0.85;  // Clear, unhurried pace for 6-7 year olds
+          // Anchor on window to prevent Chrome/Safari garbage collection mid-speech
+          window._fairyUtterance = utter;
+
+          if (preferredVoice) {
+            utter.voice = preferredVoice;
+          }
+          utter.lang = (preferredVoice && preferredVoice.lang) ? preferredVoice.lang : 'en-US';
+          utter.rate = rate;
+          utter.pitch = pitch;
           utter.volume = 1.0;
-          window.speechSynthesis.speak(utter);
+
+          utter.onstart = () => setVisualizerState(true);
+          utter.onend = () => setVisualizerState(false);
+          utter.onerror = () => setVisualizerState(false);
+
+          // 45ms timeout after cancel() prevents Chrome/Edge speech queue drop bug
+          setTimeout(() => {
+            try {
+              window.speechSynthesis.resume();
+              window.speechSynthesis.speak(utter);
+            } catch (err) {
+              setVisualizerState(false);
+            }
+          }, 45);
+
           return true;
         } catch (e) {
+          setVisualizerState(false);
           return false;
         }
       }
 
       function speakWord(word) {
-        return speak(`Spell the word: ${word}`);
+        return speak(word.toLowerCase(), 0.85, 1.15);
       }
 
-      function speakSentence(word, sentence) {
-        return speak(`${word}. ${sentence}`);
+      function speakSlow(word) {
+        // Speak slowly at rate 0.6 so a 6-7 year old can sound out the phonics
+        return speak(word.toLowerCase(), 0.6, 1.15);
       }
 
-      return { speakWord, speakSentence };
+      function getIsSpeaking() {
+        return isSpeaking;
+      }
+
+      return { unlockSpeech, speakWord, speakSlow, getIsSpeaking };
     })();
+
+    // Unlock both Web Audio and Speech Synthesis on first user interaction anywhere
+    ['pointerdown', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        SoundEngine.initContext();
+        SpeechEngine.unlockSpeech();
+      }, { once: true });
+    });
 
     /* --------------------------------------------------------------------------
      * 3. GAME DATA: CUSTOMIZATION, STRUCTURES, BOUTIQUE (38 ITEMS), WORDS, BADGES
      * -------------------------------------------------------------------------- */
     const SKIN_TONES = [
-      { id: 0, name: 'Porcelain Peach', fill: '#FFE5D4', shade: '#F3C6AC' },
-      { id: 1, name: 'Warm Ivory', fill: '#FAD2B8', shade: '#E5AE8C' },
-      { id: 2, name: 'Golden Honey', fill: '#E8B48A', shade: '#CC9163' },
-      { id: 3, name: 'Sunlit Caramel', fill: '#C98A5B', shade: '#A86A3D' },
-      { id: 4, name: 'Rich Almond', fill: '#A5673F', shade: '#844C28' },
-      { id: 5, name: 'Warm Espresso', fill: '#7B4829', shade: '#5C3219' },
-      { id: 6, name: 'Deep Ebony', fill: '#522E1A', shade: '#381D0E' },
-      { id: 7, name: 'Moonlit Rose', fill: '#F7D6E4', shade: '#E2B2C8' }
+      { id: 0, name: 'Porcelain Peach', fill: '#FFE6D5', shade: '#F2C1A5', blush: '#FF8FA3' },
+      { id: 1, name: 'Warm Ivory',      fill: '#FAD2B8', shade: '#E3AA86', blush: '#FF758F' },
+      { id: 2, name: 'Golden Honey',    fill: '#E8B48A', shade: '#C98E60', blush: '#F46A82' },
+      { id: 3, name: 'Sunlit Caramel',  fill: '#C98A5B', shade: '#A36639', blush: '#E05A73' },
+      { id: 4, name: 'Rich Almond',     fill: '#A5673F', shade: '#804825', blush: '#C94B65' },
+      { id: 5, name: 'Warm Espresso',   fill: '#7B4829', shade: '#593017', blush: '#B03E58' },
+      { id: 6, name: 'Deep Ebony',      fill: '#522E1A', shade: '#361B0D', blush: '#94334B' },
+      { id: 7, name: 'Moonlit Rose',    fill: '#F9D8E6', shade: '#E0B0C6', blush: '#FF7096' }
     ];
 
+    // 4 Luminous Glossy Anime/Storybook Eye Styles
     const EYE_STYLES = [
-      { id: 0, name: 'Starry Sparkle', iris: '#3B82F6', icon: '🌟' },
-      { id: 1, name: 'Sweet Heart', iris: '#EC4899', icon: '💖' },
-      { id: 2, name: 'Happy Smile', iris: '#10B981', icon: '😊' },
-      { id: 3, name: 'Mystic Moon', iris: '#8B5CF6', icon: '🌙' }
+      { id: 0, name: 'Starry Sparkle', topCol: '#1D4ED8', botCol: '#38BDF8', icon: '🌟' },
+      { id: 1, name: 'Emerald Dew',    topCol: '#047857', botCol: '#34D399', icon: '🍃' },
+      { id: 2, name: 'Heart Twinkle',  topCol: '#BE185D', botCol: '#F472B6', icon: '💖' },
+      { id: 3, name: 'Ocean Dream',    topCol: '#6D28D9', botCol: '#22D3EE', icon: '🌙' }
     ];
 
+    // 12 Distinct Storybook Chibi Hairstyles
     const HAIR_STYLES = [
-      { id: 0, name: 'Princess Curls' },
-      { id: 1, name: 'Twin Pigtails' },
-      { id: 2, name: 'High Bun' },
-      { id: 3, name: 'Long Straight' },
-      { id: 4, name: 'Braided Crown' },
-      { id: 5, name: 'Bob Cut' },
-      { id: 6, name: 'Side-Swept' },
-      { id: 7, name: 'Space Buns' },
-      { id: 8, name: 'Wavy Cascade' },
-      { id: 9, name: 'Pixie Cut' },
-      { id: 10, name: 'High Ponytail' },
-      { id: 11, name: 'Mermaid Waves' }
+      { id: 0,  name: 'Twin Pigtails' },
+      { id: 1,  name: 'Space Buns' },
+      { id: 2,  name: 'Long Fairy Waves' },
+      { id: 3,  name: 'Princess Ringlets' },
+      { id: 4,  name: 'Braided Crown' },
+      { id: 5,  name: 'Cute Pixie Bob' },
+      { id: 6,  name: 'High Ponytail' },
+      { id: 7,  name: 'Mermaid Locks' },
+      { id: 8,  name: 'Ribbon Twintails' },
+      { id: 9,  name: 'Side Braid' },
+      { id: 10, name: 'Starry Halo Curls' },
+      { id: 11, name: 'Royal Updo' }
     ];
 
     const HAIR_COLORS = [
-      { id: 0, name: 'Sunbeam Gold', main: '#F6C25B', dark: '#D6992E', light: '#FFE79E' },
-      { id: 1, name: 'Bubblegum Pink', main: '#FF78B4', dark: '#D9488A', light: '#FFB8D9' },
-      { id: 2, name: 'Lavender Mist', main: '#A78BFA', dark: '#7C58E0', light: '#DDD6FE' },
-      { id: 3, name: 'Chestnut Cocoa', main: '#6E422B', dark: '#4A2918', light: '#996447' },
-      { id: 4, name: 'Midnight Star', main: '#272B3F', dark: '#161826', light: '#4B5275' },
-      { id: 5, name: 'Mermaid Aqua', main: '#2DD4BF', dark: '#0D9488', light: '#99F6E4' },
-      { id: 6, name: 'Sunset Copper', main: '#EA6B35', dark: '#B84718', light: '#FFA278' },
-      { id: 7, name: 'Moonlight Silver', main: '#DCE4F2', dark: '#A6B5D1', light: '#FFFFFF' }
+      { id: 0, name: 'Sunbeam Gold',     main: '#F6C25B', dark: '#C98A20', light: '#FFF0B3' },
+      { id: 1, name: 'Bubblegum Pink',   main: '#FF78B4', dark: '#C93B7B', light: '#FFC4E1' },
+      { id: 2, name: 'Lavender Mist',    main: '#A78BFA', dark: '#6D48D4', light: '#E4DEFF' },
+      { id: 3, name: 'Chestnut Cocoa',   main: '#75462D', dark: '#472514', light: '#A86E4E' },
+      { id: 4, name: 'Midnight Star',    main: '#292E45', dark: '#131624', light: '#58628F' },
+      { id: 5, name: 'Mermaid Aqua',     main: '#2DD4BF', dark: '#0B8778', light: '#A7FBF0' },
+      { id: 6, name: 'Sunset Copper',    main: '#EA6B35', dark: '#AD4013', light: '#FFB08C' },
+      { id: 7, name: 'Moonlight Silver', main: '#DCE4F2', dark: '#98A9C9', light: '#FFFFFF' }
     ];
 
     const RANDOM_FAIRY_NAMES = [
@@ -529,73 +744,73 @@
     ];
 
     const COMMODITY_META = {
-      strawberry: { label: 'Strawberries', singular: 'Strawberry', emoji: '🍓', bg: 'bg-rose-100', text: 'text-rose-700', border: 'border-rose-300' },
-      pearl:      { label: 'Pearls',       singular: 'Pearl',      emoji: '🐚', bg: 'bg-cyan-100', text: 'text-cyan-700', border: 'border-cyan-300' },
-      pixieDust:  { label: 'Pixie Dust',   singular: 'Pixie Dust', emoji: '✨', bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
-      gem:        { label: 'Gems',         singular: 'Gem',        emoji: '💎', bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300' }
+      strawberry: { label: 'Strawberries', singular: 'Strawberry', emoji: '🍓' },
+      pearl:      { label: 'Pearls',       singular: 'Pearl',      emoji: '🐚' },
+      pixieDust:  { label: 'Pixie Dust',   singular: 'Pixie Dust', emoji: '✨' },
+      gem:        { label: 'Gems',         singular: 'Gem',        emoji: '💎' }
     };
 
-    // 8 Sequential Festival Build Track Structures
+    // 8 Sequential Festival Build Track Structures (Levels 1–8)
     const FESTIVAL_STRUCTURES = [
       {
         level: 1,
-        name: 'Petal Welcome Arch',
-        description: 'A blooming archway of roses and glowing fairy lanterns to greet guests!',
+        name: 'Rainbow Bridge',
+        description: 'A shimmering seven-color crystal bridge arching across Sparkle Brook!',
         cost: { strawberry: 2, pearl: 1 },
         rewardGold: 45,
         rewardStardust: 1
       },
       {
         level: 2,
-        name: 'Rainbow Bridge',
-        description: 'A shimmering seven-color crystal bridge arching across Sparkle Brook!',
+        name: 'Pixie Blossom Arch',
+        description: 'A blooming archway of pastel roses and glowing fairy lanterns!',
         cost: { strawberry: 2, pearl: 2, pixieDust: 1 },
         rewardGold: 60,
         rewardStardust: 1
       },
       {
         level: 3,
-        name: 'Starlight Lantern Stage',
-        description: 'A crescent-moon dance stage lit by floating star lanterns for fairy music!',
+        name: 'Mushroom Tea Gazebo',
+        description: 'A cozy polka-dot toadstool pavilion for strawberry fairy tea parties!',
         cost: { pearl: 2, pixieDust: 2, gem: 1 },
         rewardGold: 75,
         rewardStardust: 2
       },
       {
         level: 4,
-        name: 'Giggle Brook Fountain',
-        description: 'A tiered seashell fountain that bubbles with joyful rainbow water!',
+        name: 'Starlight Carousel',
+        description: 'A pastel-and-gold merry-go-round with magical flying unicorns!',
         cost: { strawberry: 3, pearl: 2, pixieDust: 2 },
         rewardGold: 95,
         rewardStardust: 2
       },
       {
         level: 5,
-        name: 'Fairy Treehouse',
-        description: 'A cozy enchanted oak treehouse with stained-glass windows and rope swing!',
+        name: 'Crystal Fountain',
+        description: 'A tiered seashell fountain that bubbles with joyful rainbow water!',
         cost: { strawberry: 3, pixieDust: 3, gem: 2 },
         rewardGold: 115,
         rewardStardust: 2
       },
       {
         level: 6,
-        name: 'Crystal Carousel',
-        description: 'A pastel-and-gold merry-go-round with magical flying unicorns!',
+        name: 'Fairy Treehouse',
+        description: 'An enchanted oak treehouse with stained-glass windows and rope swing!',
         cost: { pearl: 3, pixieDust: 3, gem: 3 },
         rewardGold: 135,
         rewardStardust: 3
       },
       {
         level: 7,
-        name: 'Cloud-Cotton Candy Pavilion',
-        description: 'A fluffy sky-cloud gazebo spun with sweet pink and lavender cotton candy!',
+        name: 'Moonbeam Observatory',
+        description: 'A starry telescope tower for wishing on shooting stars!',
         cost: { strawberry: 4, pearl: 3, pixieDust: 3, gem: 2 },
         rewardGold: 165,
         rewardStardust: 3
       },
       {
         level: 8,
-        name: 'Grand Fairy Festival Palace',
+        name: 'Grand Fairy Palace',
         description: 'The crowning jewel of the realm—a majestic crystal palace with festival fireworks!',
         cost: { strawberry: 4, pearl: 4, pixieDust: 4, gem: 4 },
         rewardGold: 260,
@@ -604,7 +819,6 @@
     ];
 
     // 38 Unique Unlockable Boutique Items across 6 Categories
-    // (8 Dresses/Tails + 6 Tops + 6 Bottoms + 6 Shoes + 6 Tiaras + 6 Wands = 38 items)
     const BOUTIQUE_ITEMS = [
       // --- Category 1: Dresses & Mermaid Tails (8 items) ---
       { id: 'dress_petal',      category: 'dress', name: 'Rose Petal Dress',       price: 25,  rare: false, color1: '#FB7185', color2: '#FECDD3', style: 'petal' },
@@ -666,64 +880,62 @@
       { id: 'wand',   label: 'Wands',           icon: '🪄' }
     ];
 
-    // 56 Age-Appropriate Sight Words & Whimsical Fairy Words (6-7 year old reading level)
+    // 54 Sight & Whimsical Fairy Words with Non-Spoiler Emoji Picture Clues
     const SPELLING_WORDS = [
-      { word: 'STAR',    sentence: 'Make a wish upon a bright shooting star.' },
-      { word: 'MOON',    sentence: 'The silver moon glows softly in the night sky.' },
-      { word: 'WISH',    sentence: 'Toss a shiny coin into the wishing well.' },
-      { word: 'PINK',    sentence: 'The rose petals are a lovely shade of pink.' },
-      { word: 'TREE',    sentence: 'Little fairies live inside the tall oak tree.' },
-      { word: 'BIRD',    sentence: 'A tiny blue bird sang a happy morning song.' },
-      { word: 'BLUE',    sentence: 'Look up at the clear blue summer sky.' },
-      { word: 'GOLD',    sentence: 'You earned a shiny piece of glitter gold!' },
-      { word: 'PLAY',    sentence: 'Let us play together in the sunny meadow.' },
-      { word: 'SING',    sentence: 'The crickets love to sing at sunset.' },
-      { word: 'JUMP',    sentence: 'Frogs like to jump from lily pad to lily pad.' },
-      { word: 'GLOW',    sentence: 'Fireflies glow like tiny lanterns in the dark.' },
-      { word: 'WING',    sentence: 'Every fairy has a pair of sparkly wings.' },
-      { word: 'RING',    sentence: 'Hear the sweet fairy bells ring!' },
-      { word: 'SONG',    sentence: 'Hum along to the gentle music box song.' },
-      { word: 'LEAF',    sentence: 'A dewdrop rested on a bright green leaf.' },
-      { word: 'RAIN',    sentence: 'After a little rain, a rainbow appears.' },
-      { word: 'WIND',    sentence: 'The warm wind blew dandelion seeds in the air.' },
-      { word: 'LAKE',    sentence: 'Swans glide gracefully across the calm lake.' },
-      { word: 'FROG',    sentence: 'A friendly green frog wore a tiny crown.' },
-      { word: 'CAKE',    sentence: 'We baked a strawberry cake for the festival!' },
-      { word: 'BELL',    sentence: 'Ring the silver bell to start the parade.' },
-      { word: 'GIFT',    sentence: 'Kindness is the very best gift of all.' },
-      { word: 'RUBY',    sentence: 'A red ruby sparkled on top of the tiara.' },
-      { word: 'WAND',    sentence: 'Wave your magic wand to cast a spell.' },
-      { word: 'FAIRY',   sentence: 'The friendly fairy sprinkled pixie dust.' },
-      { word: 'MAGIC',   sentence: 'The whole forest is filled with wonder and magic.' },
-      { word: 'CROWN',   sentence: 'She placed a golden crown upon her head.' },
-      { word: 'QUEEN',   sentence: 'Welcome to the palace of the Fairy Queen!' },
-      { word: 'SMILE',   sentence: 'A warm smile makes everyone feel happy.' },
-      { word: 'LIGHT',   sentence: 'The lantern fills the path with golden light.' },
-      { word: 'SWEET',   sentence: 'Ripe red strawberries taste so sweet.' },
-      { word: 'CLOUD',   sentence: 'A fluffy white cloud floated overhead.' },
-      { word: 'DREAM',   sentence: 'Close your eyes and have a wonderful dream.' },
-      { word: 'HAPPY',   sentence: 'Dancing at the festival makes us happy.' },
-      { word: 'PETAL',   sentence: 'Each flower petal is soft as velvet.' },
-      { word: 'PEARL',   sentence: 'Inside the seashell sat a shiny white pearl.' },
-      { word: 'BLOOM',   sentence: 'Spring flowers bloom all around the garden.' },
-      { word: 'SPARK',   sentence: 'A tiny spark of magic lit up the wand.' },
-      { word: 'DANCE',   sentence: 'Twirl and dance upon the starlight stage.' },
-      { word: 'SHINE',   sentence: 'Let your kindness shine bright every day.' },
-      { word: 'WATER',   sentence: 'Sparkling water splashed in the fountain.' },
-      { word: 'HEART',   sentence: 'Follow your kind and brave heart.' },
-      { word: 'GREEN',   sentence: 'The soft moss on the forest floor is green.' },
-      { word: 'RIVER',   sentence: 'The rainbow bridge crosses over the river.' },
-      { word: 'FLOWER',  sentence: 'A honeybee landed on a yellow flower.' },
-      { word: 'CASTLE',  sentence: 'Tall towers rise above the crystal castle.' },
-      { word: 'FOREST',  sentence: 'Tall trees grow in the enchanted forest.' },
-      { word: 'SILVER',  sentence: 'Starlight painted the clouds in silver.' },
-      { word: 'RIBBON',  sentence: 'Tie a pretty pink ribbon in your hair.' },
-      { word: 'BRIDGE',  sentence: 'Walk across the colorful rainbow bridge.' },
-      { word: 'GARDEN',  sentence: 'Butterflies flutter through the royal garden.' },
-      { word: 'RAINBOW', sentence: 'Seven bright colors arch across the rainbow.' },
-      { word: 'CRYSTAL', sentence: 'The carousel shines like clear crystal.' },
-      { word: 'UNICORN', sentence: 'A gentle white unicorn pranced by the brook.' },
-      { word: 'SPARKLE', sentence: 'Everything begins to sparkle with pixie dust!' }
+      { word: 'CAT',     emoji: '🐱', clue: 'A furry pet that says meow!' },
+      { word: 'DOG',     emoji: '🐶', clue: 'A friendly puppy that wags its tail!' },
+      { word: 'SUN',     emoji: '☀️', clue: 'It shines bright and warm in the daytime sky!' },
+      { word: 'BEE',     emoji: '🐝', clue: 'A buzzing yellow insect that makes sweet honey!' },
+      { word: 'OWL',     emoji: '🦉', clue: 'A wise night bird that says hoo-hoo!' },
+      { word: 'HAT',     emoji: '🎩', clue: 'You wear this on top of your head!' },
+      { word: 'STAR',    emoji: '⭐', clue: 'A twinkling light high up in the night sky!' },
+      { word: 'MOON',    emoji: '🌙', clue: 'A glowing crescent that shines at bedtime!' },
+      { word: 'FROG',    emoji: '🐸', clue: 'A green pond hopper that says ribbit!' },
+      { word: 'CAKE',    emoji: '🍰', clue: 'A sweet birthday treat with frosting!' },
+      { word: 'RAIN',    emoji: '🌧️', clue: 'Water drops falling from fluffy clouds!' },
+      { word: 'KING',    emoji: '👑', clue: 'A royal ruler who wears a golden crown!' },
+      { word: 'TREE',    emoji: '🌳', clue: 'A tall plant with branches and green leaves!' },
+      { word: 'BIRD',    emoji: '🐦', clue: 'A feathered friend that sings and flies!' },
+      { word: 'FISH',    emoji: '🐠', clue: 'A scaly swimmer with fins under the sea!' },
+      { word: 'BEAR',    emoji: '🧸', clue: 'A cuddly forest animal that loves berries!' },
+      { word: 'DUCK',    emoji: '🦆', clue: 'A pond swimmer with a bill that says quack!' },
+      { word: 'BOAT',    emoji: '⛵', clue: 'It floats and sails across the water!' },
+      { word: 'BOOK',    emoji: '📖', clue: 'Full of fairy tales and pictures to read!' },
+      { word: 'BELL',    emoji: '🔔', clue: 'Ring it to hear a sweet jingle chime!' },
+      { word: 'GIFT',    emoji: '🎁', clue: 'A present wrapped with a pretty ribbon!' },
+      { word: 'LEAF',    emoji: '🍃', clue: 'It grows green on branches in spring!' },
+      { word: 'RING',    emoji: '💍', clue: 'A sparkly circle worn on your finger!' },
+      { word: 'ROSE',    emoji: '🌹', clue: 'A sweet-smelling red or pink garden bloom!' },
+      { word: 'SONG',    emoji: '🎵', clue: 'A happy tune you love to hum and sing!' },
+      { word: 'WAND',    emoji: '🪄', clue: 'Wave this magic stick to cast a spell!' },
+      { word: 'WING',    emoji: '🦋', clue: 'Butterflies and fairies use these to flutter!' },
+      { word: 'WISH',    emoji: '🌠', clue: 'Close your eyes and hope for something magical!' },
+      { word: 'GOLD',    emoji: '🪙', clue: 'Shiny yellow treasure coins for the boutique!' },
+      { word: 'PINK',    emoji: '🩷', clue: 'The pastel color of bubblegum and flamingos!' },
+      { word: 'BLUE',    emoji: '💙', clue: 'The color of a clear sunny sky and ocean!' },
+      { word: 'JUMP',    emoji: '🦘', clue: 'Hop high into the air with both feet!' },
+      { word: 'PLAY',    emoji: '🎈', clue: 'Have fun with games and friends!' },
+      { word: 'FAIRY',   emoji: '🧚‍♀️', clue: 'A tiny magical friend with sparkly wings!' },
+      { word: 'CROWN',   emoji: '👑', clue: 'A jeweled royal headpiece for a princess!' },
+      { word: 'CLOUD',   emoji: '☁️', clue: 'A soft white puff floating in the sky!' },
+      { word: 'APPLE',   emoji: '🍎', clue: 'A crunchy red fruit from an orchard tree!' },
+      { word: 'HEART',   emoji: '💖', clue: 'A symbol of love and kindness!' },
+      { word: 'MUSIC',   emoji: '🎶', clue: 'Pretty melodies played on bells and harps!' },
+      { word: 'PEARL',   emoji: '🐚', clue: 'A shiny white treasure found inside a seashell!' },
+      { word: 'QUEEN',   emoji: '👸', clue: 'The royal lady who rules the palace!' },
+      { word: 'SMILE',   emoji: '😊', clue: 'The happy curve on your face when you giggle!' },
+      { word: 'SWEET',   emoji: '🍭', clue: 'The yummy taste of candy and strawberries!' },
+      { word: 'MAGIC',   emoji: '✨', clue: 'Wonderful enchantment that makes miracles happen!' },
+      { word: 'DREAM',   emoji: '💭', clue: 'A cozy adventure in your imagination while sleeping!' },
+      { word: 'HAPPY',   emoji: '🥳', clue: 'Feeling joyful, cheerful, and full of giggles!' },
+      { word: 'FLOWER',  emoji: '🌸', clue: 'A colorful garden blossom that bees love!' },
+      { word: 'CASTLE',  emoji: '🏰', clue: 'A grand stone palace with tall towers!' },
+      { word: 'FOREST',  emoji: '🌲', clue: 'A magical woodland filled with tall trees!' },
+      { word: 'BRIDGE',  emoji: '🌉', clue: 'A path built to cross safely over a brook!' },
+      { word: 'RIBBON',  emoji: '🎀', clue: 'A silky band tied into a pretty bow!' },
+      { word: 'RAINBOW', emoji: '🌈', clue: 'Seven bright colors arching in the sky after showers!' },
+      { word: 'UNICORN', emoji: '🦄', clue: 'A magical white pony with a spiraling horn!' },
+      { word: 'SPARKLE', emoji: '💫', clue: 'To twinkle and shine brightly like pixie dust!' }
     ];
 
     // 8 Unlockable Achievement Badges
@@ -732,7 +944,7 @@
         id: 'badge_first_build',
         title: 'First Sprout Builder',
         desc: 'Build your very first festival structure!',
-        icon: '🌸',
+        icon: '🌈',
         color: 'from-pink-400 to-rose-500',
         check: (h) => h.builtStructures.length >= 1,
         progress: (h) => `${Math.min(1, h.builtStructures.length)} / 1`
@@ -750,7 +962,7 @@
         id: 'badge_cloud',
         title: 'Raincloud Cheerleader',
         desc: 'Cheer up 2 Grumpy Rainclouds with strawberries.',
-        icon: '🌈',
+        icon: '🍓',
         color: 'from-sky-400 to-indigo-500',
         check: (h) => (h.stats.cloudsCleared || 0) >= 2,
         progress: (h) => `${Math.min(2, h.stats.cloudsCleared || 0)} / 2`
@@ -793,7 +1005,7 @@
       },
       {
         id: 'badge_queen',
-        title: 'Fairy Festival Queen',
+        title: 'Grand Fairy Queen',
         desc: 'Complete all 8 magical Festival structures!',
         icon: '👑',
         color: 'from-yellow-400 to-amber-600',
@@ -803,26 +1015,27 @@
     ];
 
     /* --------------------------------------------------------------------------
-     * 4. PROCEDURAL SVG CHARACTER RENDERER (`renderDollSVG`) & ARTWORK ENGINES
+     * 4. REDESIGNED STORYBOOK CHIBI FAIRY CHARACTER RENDERER (`renderDollSVG`)
      * -------------------------------------------------------------------------- */
     function getBoutiqueItem(id) {
       return BOUTIQUE_ITEMS.find(item => item.id === id) || null;
     }
 
     /**
-     * Renders the complete customizable Fairy Doll SVG with:
-     * - Iridescent butterfly fairy wings
-     * - 12 layered hairstyles (back + front hair) & 8 hair colors
-     * - 8 skin tones
-     * - 4 sparkly anime eye styles
-     * - Dresses, Mermaid Tails, Tops, Bottoms, Shoes, Tiaras & Wands
-     * - Rare item glowing SVG aura filters
+     * Renders an adorable, expressive Storybook Chibi / Kawaii Pastel Fairy SVG:
+     * - Large chibi head (`cy=84`) with soft radial-gradient rosy cheeks, button nose,
+     *   sweet smiling mouth, delicate eyebrows, and large luminous glossy eyes with
+     *   multi-stop iris gradients, curved upper lashes, and dual white catchlights.
+     * - Multi-layer hair: back hair volume behind shoulders + front bangs & face-framing
+     *   locks with glossy curved anime hair-shine highlights (`opacity="0.45"`).
+     * - Iridescent 4-winged butterfly/dragonfly fairy wings with inner filigree veins & stardust.
+     * - Layered dresses, mermaid tails, tops/skirts, slippers/boots, tiaras & glowing wands.
      */
     function renderDollSVG(hero, uid = 'doll', extraClasses = 'w-full h-full') {
       const skin = SKIN_TONES[hero.skinTone] || SKIN_TONES[0];
       const hair = HAIR_COLORS[hero.hairColor] || HAIR_COLORS[0];
-      const eyeStyle = hero.eyeStyle || 0;
-      const hairStyle = hero.hairStyle || 0;
+      const eyeCfg = EYE_STYLES[hero.eyeStyle] || EYE_STYLES[0];
+      const hairStyle = Number(hero.hairStyle) || 0;
 
       const eq = hero.equipped || {};
       const dressItem  = getBoutiqueItem(eq.dress);
@@ -834,209 +1047,224 @@
 
       const hasRareAura = [dressItem, topItem, bottomItem, shoesItem, tiaraItem, wandItem].some(i => i && i.rare);
 
-      // Helper for back hair SVG shapes
+      // Layer 1 (Back): Multi-volume back hair behind shoulders
       function renderBackHair() {
         switch (hairStyle) {
-          case 0: // Princess Curls
+          case 0: // Twin Pigtails
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <circle cx="66" cy="115" r="18" />
-                <circle cx="154" cy="115" r="18" />
-                <circle cx="60" cy="142" r="20" />
-                <circle cx="160" cy="142" r="20" />
-                <circle cx="64" cy="170" r="18" />
-                <circle cx="156" cy="170" r="18" />
-                <path d="M72,72 Q110,55 148,72 L156,165 Q110,178 64,165 Z" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6" stroke-linejoin="round">
+                <path d="M74,64 C38,68 28,118 42,164 C52,154 60,138 63,116 C63,140 56,160 65,172 C76,150 81,108 78,74 Z" />
+                <path d="M146,64 C182,68 192,118 178,164 C168,154 160,138 157,116 C157,140 164,160 155,172 C144,150 139,108 142,74 Z" />
+                <circle cx="71" cy="66" r="6.5" fill="#F472B6" stroke="#BE185D" stroke-width="1.2" />
+                <circle cx="149" cy="66" r="6.5" fill="#F472B6" stroke="#BE185D" stroke-width="1.2" />
               </g>`;
-          case 1: // Twin Pigtails
+          case 1: // Space Buns
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <path d="M76,74 C44,78 36,125 48,168 C56,158 64,142 66,122 C66,145 60,165 68,176 C78,155 82,115 80,82 Z" />
-                <path d="M144,74 C176,78 184,125 172,168 C164,158 156,142 154,122 C154,145 160,165 152,176 C142,155 138,115 140,82 Z" />
-                <circle cx="74" cy="76" r="6" fill="#F472B6" />
-                <circle cx="146" cy="76" r="6" fill="#F472B6" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <circle cx="70" cy="40" r="19" />
+                <circle cx="150" cy="40" r="19" />
+                <path d="M61,35 Q70,27 79,35" fill="none" stroke="${hair.light}" stroke-width="2.6" stroke-linecap="round" opacity="0.55" />
+                <path d="M141,35 Q150,27 159,35" fill="none" stroke="${hair.light}" stroke-width="2.6" stroke-linecap="round" opacity="0.55" />
+                <rect x="61" y="53" width="18" height="5" rx="2.5" fill="#F472B6" stroke="none" />
+                <rect x="141" y="53" width="18" height="5" rx="2.5" fill="#F472B6" stroke="none" />
               </g>`;
-          case 2: // High Bun
+          case 2: // Long Fairy Waves
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <circle cx="110" cy="36" r="22" />
-                <path d="M92,44 Q110,36 128,44" fill="none" stroke="${hair.light}" stroke-width="2.5" stroke-linecap="round" />
-                <rect x="94" y="51" width="32" height="7" rx="3.5" fill="#F472B6" stroke="none" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6" stroke-linejoin="round">
+                <path d="M66,68 Q110,44 154,68 C170,104 156,142 168,178 C174,198 158,214 140,216 Q110,208 80,216 C62,214 46,198 52,178 C64,142 50,104 66,68 Z" />
               </g>`;
-          case 3: // Long Straight
+          case 3: // Princess Ringlets
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <path d="M70,74 Q110,52 150,74 L156,205 Q132,212 110,206 Q88,212 64,205 Z" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <path d="M68,66 Q110,46 152,66 L158,158 Q110,170 62,158 Z" />
+                <ellipse cx="60" cy="112" rx="14" ry="18" />
+                <ellipse cx="160" cy="112" rx="14" ry="18" />
+                <ellipse cx="55" cy="142" rx="15" ry="20" />
+                <ellipse cx="165" cy="142" rx="15" ry="20" />
+                <ellipse cx="60" cy="172" rx="13" ry="17" />
+                <ellipse cx="160" cy="172" rx="13" ry="17" />
               </g>`;
           case 4: // Braided Crown
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <path d="M68,85 Q110,42 152,85 Q148,132 110,136 Q72,132 68,85 Z" />
-                <path d="M72,66 Q110,44 148,66" fill="none" stroke="${hair.light}" stroke-width="6" stroke-dasharray="6 5" stroke-linecap="round" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <path d="M64,78 Q110,36 156,78 Q152,126 110,130 Q68,126 64,78 Z" />
+                <path d="M68,58 Q110,36 152,58" fill="none" stroke="${hair.light}" stroke-width="6.5" stroke-dasharray="6 5" stroke-linecap="round" />
               </g>`;
-          case 5: // Bob Cut
+          case 5: // Cute Pixie Bob
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <path d="M70,75 Q110,52 150,75 C158,108 154,132 138,136 Q110,130 82,136 C66,132 62,108 70,75 Z" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <path d="M66,72 Q110,44 154,72 C164,104 158,128 140,132 Q110,126 80,132 C62,128 56,104 66,72 Z" />
               </g>`;
-          case 6: // Side-Swept
+          case 6: // High Ponytail
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <path d="M72,74 Q110,52 148,74 C162,112 166,158 148,192 C132,186 126,155 126,128 L76,124 Z" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <circle cx="110" cy="34" r="12" />
+                <path d="M114,30 C152,26 180,72 166,138 C156,122 148,94 146,74 C144,100 138,124 128,136 C122,106 118,62 110,38 Z" />
+                <rect x="97" y="41" width="26" height="6" rx="3" fill="#F472B6" stroke="none" />
               </g>`;
-          case 7: // Space Buns
+          case 7: // Mermaid Locks
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <circle cx="74" cy="48" r="17" />
-                <circle cx="146" cy="48" r="17" />
-                <path d="M64,62 L56,82 M74,64 L72,85" stroke="#F472B6" stroke-width="3" stroke-linecap="round" />
-                <path d="M156,62 L164,82 M146,64 L148,85" stroke="#F472B6" stroke-width="3" stroke-linecap="round" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <path d="M64,68 Q110,42 156,68 C174,106 158,146 172,184 C178,210 160,228 142,230 Q110,222 78,230 C60,228 42,210 48,184 C62,146 46,106 64,68 Z" />
+                <circle cx="60" cy="130" r="3.5" fill="#FFF" stroke="#38BDF8" stroke-width="1" />
+                <circle cx="160" cy="150" r="4" fill="#FFF" stroke="#38BDF8" stroke-width="1" />
+                <circle cx="64" cy="176" r="3" fill="#FFF" stroke="#38BDF8" stroke-width="1" />
               </g>`;
-          case 8: // Wavy Cascade
+          case 8: // Ribbon Twintails
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <path d="M70,75 Q110,54 150,75 C160,102 148,125 158,152 C164,172 150,192 138,195 Q110,188 82,195 C70,192 56,172 62,152 C72,125 60,102 70,75 Z" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <path d="M72,66 C42,84 44,142 54,192 C66,184 74,154 78,108 Z" />
+                <path d="M148,66 C178,84 176,142 166,192 C154,184 146,154 142,108 Z" />
+                <!-- Cute Pink Ribbon Bows -->
+                <polygon points="68,66 56,58 58,72" fill="#EC4899" stroke="none" />
+                <polygon points="68,66 78,56 78,70" fill="#EC4899" stroke="none" />
+                <polygon points="152,66 164,58 162,72" fill="#EC4899" stroke="none" />
+                <polygon points="152,66 142,56 142,70" fill="#EC4899" stroke="none" />
               </g>`;
-          case 9: // Pixie Cut
+          case 9: // Side Braid
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <path d="M71,82 Q110,50 149,82 Q145,114 110,116 Q75,114 71,82 Z" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <path d="M68,68 Q110,46 152,68 Q154,108 144,124 L74,124 Q64,108 68,68 Z" />
+                <ellipse cx="144" cy="128" rx="9" ry="11" />
+                <ellipse cx="148" cy="145" rx="8.5" ry="11" />
+                <ellipse cx="144" cy="162" rx="8" ry="10" />
+                <path d="M140,170 L136,186 L152,184 Z" />
+                <circle cx="144" cy="170" r="4" fill="#F472B6" stroke="none" />
               </g>`;
-          case 10: // High Ponytail
+          case 10: // Starry Halo Curls
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <circle cx="110" cy="42" r="11" />
-                <path d="M114,38 C148,34 174,76 162,138 C152,122 146,96 144,78 C142,102 136,124 128,136 C122,108 118,68 110,46 Z" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <circle cx="66" cy="64" r="16" />
+                <circle cx="154" cy="64" r="16" />
+                <circle cx="58" cy="92" r="18" />
+                <circle cx="162" cy="92" r="18" />
+                <circle cx="64" cy="120" r="16" />
+                <circle cx="156" cy="120" r="16" />
+                <path d="M72,56 Q110,40 148,56 L150,126 L70,126 Z" />
               </g>`;
-          case 11: // Mermaid Waves
+          case 11: // Royal Updo
           default:
             return `
-              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5">
-                <path d="M68,75 Q110,50 152,75 C168,112 154,148 166,184 C172,208 156,226 140,228 Q110,220 80,228 C64,226 48,208 54,184 C66,148 52,112 68,75 Z" />
-                <circle cx="64" cy="135" r="3" fill="#FFF" stroke="none" />
-                <circle cx="156" cy="155" r="3.5" fill="#FFF" stroke="none" />
+              <g fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.6">
+                <ellipse cx="110" cy="34" rx="26" ry="20" />
+                <path d="M88,40 Q110,30 132,40" fill="none" stroke="${hair.light}" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+                <rect x="88" y="48" width="44" height="7" rx="3.5" fill="#FBBF24" stroke="#B45309" stroke-width="1.2" />
               </g>`;
         }
       }
 
-      // Helper for front hair bangs framing the face
+      // Layer 3 (Front): Bangs + face-framing locks + glossy anime hair-shine highlights
       function renderFrontHair() {
-        const capBase = `<path d="M72,86 C72,56 148,56 148,86 C144,68 128,64 110,64 C92,64 76,68 72,86 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.4" />`;
+        const capBase = `<path d="M68,82 C68,48 152,48 152,82 C146,62 128,56 110,56 C92,56 74,62 68,82 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.5" />`;
+        const glossyShine = `
+          <path d="M82,64 Q96,57 106,63" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" opacity="0.45" />
+          <path d="M115,63 Q126,57 139,64" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" opacity="0.45" />
+        `;
+
         switch (hairStyle) {
-          case 1: // Twin Pigtails blunt bangs
-          case 5: // Bob Cut blunt bangs
-          case 7: // Space Buns blunt bangs
+          case 0: // Twin Pigtails blunt kawaii bangs
+          case 1: // Space Buns
+          case 5: // Cute Pixie Bob
             return `
               ${capBase}
-              <path d="M74,84 C78,60 142,60 146,84 C134,76 124,78 118,83 C114,76 106,76 102,83 C96,78 86,76 74,84 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.3" />
-              <path d="M86,67 Q110,61 134,67" fill="none" stroke="${hair.light}" stroke-width="2.5" stroke-linecap="round" />`;
-          case 3: // Long Straight hime side locks
-          case 11: // Mermaid waves
+              <path d="M70,80 C76,52 144,52 150,80 C138,72 126,74 119,79 C114,72 106,72 101,79 C94,74 82,72 70,80 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.4" />
+              ${glossyShine}`;
+          case 2: // Long Fairy Waves
+          case 7: // Mermaid Locks
+          case 8: // Ribbon Twintails
             return `
               ${capBase}
-              <path d="M73,82 C70,104 72,126 78,136 C81,122 81,102 82,84 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.3" />
-              <path d="M147,82 C150,104 148,126 142,136 C139,122 139,102 138,84 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.3" />
-              <path d="M80,82 Q110,70 140,82 Q122,76 110,82 Q98,76 80,82 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.2" />`;
-          case 6: // Side-swept bangs
+              <path d="M69,76 C65,102 68,128 75,140 C79,124 79,102 80,80 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.4" />
+              <path d="M151,76 C155,102 152,128 145,140 C141,124 141,102 140,80 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.4" />
+              <path d="M76,78 Q110,64 144,78 Q124,72 110,79 Q96,72 76,78 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.3" />
+              ${glossyShine}`;
+          case 9: // Side Braid swept bangs
             return `
               ${capBase}
-              <path d="M74,84 C84,56 142,58 147,88 C132,74 104,76 74,84 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.3" />
-              <path d="M90,66 Q116,62 136,72" fill="none" stroke="${hair.light}" stroke-width="2.5" stroke-linecap="round" />`;
-          case 9: // Pixie cut wispy bangs
+              <path d="M70,80 C82,50 144,52 150,84 C132,68 102,70 70,80 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.4" />
+              ${glossyShine}`;
+          default: // Soft parted chibi bangs with side locks
             return `
               ${capBase}
-              <path d="M73,86 C78,56 142,56 147,86 L138,76 L128,84 L118,74 L108,83 L98,74 L86,83 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.3" />`;
-          default: // Soft parted fairy bangs
-            return `
-              ${capBase}
-              <path d="M73,88 C74,58 110,56 110,74 C96,74 84,80 73,88 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.3" />
-              <path d="M147,88 C146,58 110,56 110,74 C124,74 136,80 147,88 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.3" />
-              <path d="M84,67 Q110,60 136,67" fill="none" stroke="${hair.light}" stroke-width="2.5" stroke-linecap="round" />`;
+              <path d="M69,84 C70,50 110,48 110,69 C95,69 81,75 69,84 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.4" />
+              <path d="M151,84 C150,50 110,48 110,69 C125,69 139,75 151,84 Z" fill="${hair.main}" stroke="${hair.dark}" stroke-width="1.4" />
+              ${glossyShine}`;
         }
       }
 
-      // Helper for 4 sparkly anime eye styles
-      function renderEyes() {
-        const irisColor = EYE_STYLES[eyeStyle]?.iris || '#3B82F6';
-        switch (eyeStyle) {
-          case 1: // Heart-Sparkle Eyes
-            return `
-              <g>
-                <!-- Left Eye -->
-                <ellipse cx="95" cy="95" rx="7.5" ry="8.5" fill="#1E1B4B" />
-                <ellipse cx="95" cy="96" rx="6" ry="7" fill="${irisColor}" />
-                <path d="M95,93 C93.5,91 91,92.5 91,94.5 C91,96.5 95,99 95,99 C95,99 99,96.5 99,94.5 C99,92.5 96.5,91 95,93 Z" fill="#FFF" />
-                <circle cx="92" cy="91.5" r="1.8" fill="#FFF" />
-                <path d="M86,91 Q95,84 104,91" fill="none" stroke="#1E1B4B" stroke-width="2" stroke-linecap="round" />
-                <!-- Right Eye -->
-                <ellipse cx="125" cy="95" rx="7.5" ry="8.5" fill="#1E1B4B" />
-                <ellipse cx="125" cy="96" rx="6" ry="7" fill="${irisColor}" />
-                <path d="M125,93 C123.5,91 121,92.5 121,94.5 C121,96.5 125,99 125,99 C125,99 129,96.5 129,94.5 C129,92.5 126.5,91 125,93 Z" fill="#FFF" />
-                <circle cx="122" cy="91.5" r="1.8" fill="#FFF" />
-                <path d="M116,91 Q125,84 134,91" fill="none" stroke="#1E1B4B" stroke-width="2" stroke-linecap="round" />
-              </g>`;
-          case 2: // Happy Crescent Smile Eyes
-            return `
-              <g>
-                <path d="M87,96 Q95,87 103,96" fill="none" stroke="#1E1B4B" stroke-width="3" stroke-linecap="round" />
-                <path d="M86,93 L84,90 M104,93 L106,90" stroke="#1E1B4B" stroke-width="1.8" stroke-linecap="round" />
-                <path d="M117,96 Q125,87 133,96" fill="none" stroke="#1E1B4B" stroke-width="3" stroke-linecap="round" />
-                <path d="M116,93 L114,90 M134,93 L136,90" stroke="#1E1B4B" stroke-width="1.8" stroke-linecap="round" />
-                <text x="83" y="103" font-size="7" fill="#F59E0B">✦</text>
-                <text x="131" y="103" font-size="7" fill="#F59E0B">✦</text>
-              </g>`;
-          case 3: // Mystic Moon Eyes
-            return `
-              <g>
-                <ellipse cx="95" cy="95" rx="7.5" ry="8" fill="#1E1B4B" />
-                <ellipse cx="95" cy="96" rx="6" ry="6.5" fill="${irisColor}" />
-                <path d="M96,91 A4.5,4.5 0 1,0 96,100 A3.2,3.2 0 1,1 96,91 Z" fill="#FEF08A" />
-                <circle cx="92" cy="91.5" r="2" fill="#FFF" />
-                <path d="M86,90 Q95,84 104,91" fill="none" stroke="#1E1B4B" stroke-width="2.2" stroke-linecap="round" />
-                <ellipse cx="125" cy="95" rx="7.5" ry="8" fill="#1E1B4B" />
-                <ellipse cx="125" cy="96" rx="6" ry="6.5" fill="${irisColor}" />
-                <path d="M126,91 A4.5,4.5 0 1,0 126,100 A3.2,3.2 0 1,1 126,91 Z" fill="#FEF08A" />
-                <circle cx="122" cy="91.5" r="2" fill="#FFF" />
-                <path d="M116,91 Q125,84 134,90" fill="none" stroke="#1E1B4B" stroke-width="2.2" stroke-linecap="round" />
-              </g>`;
-          case 0: // Classic Starry Anime Eyes
-          default:
-            return `
-              <g>
-                <ellipse cx="95" cy="95" rx="7.5" ry="8.8" fill="#1E1B4B" />
-                <ellipse cx="95" cy="96" rx="6" ry="7.2" fill="${irisColor}" />
-                <circle cx="95" cy="96" r="3" fill="#1E1B4B" />
-                <circle cx="92.5" cy="92" r="2.6" fill="#FFF" />
-                <circle cx="97.5" cy="98.5" r="1.4" fill="#FFF" />
-                <path d="M86,90 Q95,83 104,90" fill="none" stroke="#1E1B4B" stroke-width="2.2" stroke-linecap="round" />
+      // Large Luminous Glossy Storybook Eyes (4 Distinct Styles)
+      function renderChibiEyes() {
+        const irisUrl = `url(#${uid}-iris)`;
+        const leftCx = 92;
+        const rightCx = 128;
+        const cy = 91;
 
-                <ellipse cx="125" cy="95" rx="7.5" ry="8.8" fill="#1E1B4B" />
-                <ellipse cx="125" cy="96" rx="6" ry="7.2" fill="${irisColor}" />
-                <circle cx="125" cy="96" r="3" fill="#1E1B4B" />
-                <circle cx="122.5" cy="92" r="2.6" fill="#FFF" />
-                <circle cx="127.5" cy="98.5" r="1.4" fill="#FFF" />
-                <path d="M116,90 Q125,83 134,90" fill="none" stroke="#1E1B4B" stroke-width="2.2" stroke-linecap="round" />
-              </g>`;
-        }
+        const specialCatchlight = (cx) => {
+          if (eyeCfg.id === 0) {
+            // Starry Sparkle golden star inside lower iris
+            return `<polygon points="${cx+2.5},${cy+3.5} ${cx+3.4},${cy+5.2} ${cx+5.2},${cy+5.4} ${cx+3.9},${cy+6.6} ${cx+4.2},${cy+8.4} ${cx+2.5},${cy+7.5} ${cx+0.8},${cy+8.4} ${cx+1.1},${cy+6.6} ${cx-0.2},${cy+5.4} ${cx+1.6},${cy+5.2}" fill="#FEF08A" />`;
+          }
+          if (eyeCfg.id === 2) {
+            // Heart Twinkle pink heart catchlight
+            return `<path d="M${cx+2.5},${cy+4.5} C${cx+1.3},${cy+3} ${cx-0.5},${cy+4.2} ${cx-0.5},${cy+5.8} C${cx-0.5},${cy+7.4} ${cx+2.5},${cy+9} ${cx+2.5},${cy+9} C${cx+2.5},${cy+9} ${cx+5.5},${cy+7.4} ${cx+5.5},${cy+5.8} C${cx+5.5},${cy+4.2} ${cx+3.7},${cy+3} ${cx+2.5},${cy+4.5} Z" fill="#FBCFE8" />`;
+          }
+          if (eyeCfg.id === 3) {
+            // Ocean Dream crescent moon catchlight
+            return `<path d="M${cx+3},${cy+3.5} A3.6,3.6 0 1,0 ${cx+3},${cy+9.2} A2.5,2.5 0 1,1 ${cx+3},${cy+3.5} Z" fill="#FEF9C3" />`;
+          }
+          // Emerald Dew luminous oval catchlight
+          return `<ellipse cx="${cx+2.8}" cy="${cy+5.8}" rx="2.4" ry="1.8" fill="#A7F3D0" />`;
+        };
+
+        return `
+          <g>
+            <!-- Delicate Eyebrows -->
+            <path d="M84,78 Q92,75 100,78" fill="none" stroke="${hair.dark}" stroke-width="1.8" stroke-linecap="round" />
+            <path d="M120,78 Q128,75 136,78" fill="none" stroke="${hair.dark}" stroke-width="1.8" stroke-linecap="round" />
+
+            <!-- Left Glossy Chibi Eye -->
+            <ellipse cx="${leftCx}" cy="${cy}" rx="9.2" ry="10.4" fill="#FFFFFF" />
+            <ellipse cx="${leftCx}" cy="${cy+0.5}" rx="8.2" ry="9.4" fill="${irisUrl}" />
+            <circle cx="${leftCx}" cy="${cy+0.8}" r="4.1" fill="#1E1B4B" />
+            ${specialCatchlight(leftCx)}
+            <!-- Dual White Catchlights -->
+            <circle cx="${leftCx-3.2}" cy="${cy-3.6}" r="3.1" fill="#FFFFFF" />
+            <circle cx="${leftCx+3.4}" cy="${cy-1.2}" r="1.5" fill="#FFFFFF" />
+            <!-- Curved Upper Eyelash -->
+            <path d="M81,87 Q92,77 103,87" fill="none" stroke="#1E1B4B" stroke-width="2.8" stroke-linecap="round" />
+            <path d="M81,86 L78.5,83.5" stroke="#1E1B4B" stroke-width="2.2" stroke-linecap="round" />
+
+            <!-- Right Glossy Chibi Eye -->
+            <ellipse cx="${rightCx}" cy="${cy}" rx="9.2" ry="10.4" fill="#FFFFFF" />
+            <ellipse cx="${rightCx}" cy="${cy+0.5}" rx="8.2" ry="9.4" fill="${irisUrl}" />
+            <circle cx="${rightCx}" cy="${cy+0.8}" r="4.1" fill="#1E1B4B" />
+            ${specialCatchlight(rightCx)}
+            <!-- Dual White Catchlights -->
+            <circle cx="${rightCx-3.2}" cy="${cy-3.6}" r="3.1" fill="#FFFFFF" />
+            <circle cx="${rightCx+3.4}" cy="${cy-1.2}" r="1.5" fill="#FFFFFF" />
+            <!-- Curved Upper Eyelash -->
+            <path d="M117,87 Q128,77 139,87" fill="none" stroke="#1E1B4B" stroke-width="2.8" stroke-linecap="round" />
+            <path d="M139,86 L141.5,83.5" stroke="#1E1B4B" stroke-width="2.2" stroke-linecap="round" />
+          </g>
+        `;
       }
 
-      // Helper for equipped Shoes (hidden if wearing a Mermaid Tail)
+      // Equipped Shoes (hidden when wearing a Mermaid Tail)
       function renderShoes() {
         if (dressItem && dressItem.style === 'mermaid') return '';
         if (!shoesItem) {
-          // Cute default pastel petal slippers
           return `
             <g>
-              <path d="M90,256 Q96,265 104,262 L104,254 Z" fill="#F9A8D4" stroke="#DB2777" stroke-width="1.2" />
-              <path d="M130,256 Q124,265 116,262 L116,254 Z" fill="#F9A8D4" stroke="#DB2777" stroke-width="1.2" />
+              <path d="M90,256 Q96,266 105,263 L104,254 Z" fill="#F9A8D4" stroke="#DB2777" stroke-width="1.3" />
+              <path d="M130,256 Q124,266 115,263 L116,254 Z" fill="#F9A8D4" stroke="#DB2777" stroke-width="1.3" />
             </g>`;
         }
         const glowAttr = shoesItem.rare ? `filter="url(#${uid}-glow)"` : '';
         if (shoesItem.style === 'boots') {
           return `
             <g ${glowAttr}>
-              <path d="M90,228 L104,228 L105,263 Q96,266 89,261 Z" fill="${shoesItem.color1}" stroke="#1E293B" stroke-width="1.3" />
-              <path d="M116,228 L130,228 L131,261 Q124,266 115,263 Z" fill="${shoesItem.color1}" stroke="#1E293B" stroke-width="1.3" />
+              <path d="M90,228 L104,228 L105,264 Q96,267 89,262 Z" fill="${shoesItem.color1}" stroke="#1E293B" stroke-width="1.3" />
+              <path d="M116,228 L130,228 L131,262 Q124,267 115,264 Z" fill="${shoesItem.color1}" stroke="#1E293B" stroke-width="1.3" />
               <rect x="89" y="227" width="16" height="5" rx="2.5" fill="${shoesItem.color2}" />
               <rect x="115" y="227" width="16" height="5" rx="2.5" fill="${shoesItem.color2}" />
             </g>`;
@@ -1047,56 +1275,47 @@
               <path d="M92,240 L103,247 M103,240 L92,247" stroke="${shoesItem.color1}" stroke-width="1.8" />
               <path d="M117,240 L128,247 M128,240 L117,247" stroke="${shoesItem.color1}" stroke-width="1.8" />
             ` : ''}
-            <path d="M89,253 Q96,266 105,262 L104,252 Z" fill="${shoesItem.color1}" stroke="#1E293B" stroke-width="1.3" />
-            <path d="M131,253 Q124,266 115,262 L116,252 Z" fill="${shoesItem.color1}" stroke="#1E293B" stroke-width="1.3" />
-            <circle cx="96" cy="255" r="2.2" fill="${shoesItem.color2}" />
-            <circle cx="124" cy="255" r="2.2" fill="${shoesItem.color2}" />
+            <path d="M89,254 Q96,267 105,263 L104,253 Z" fill="${shoesItem.color1}" stroke="#1E293B" stroke-width="1.3" />
+            <path d="M131,254 Q124,267 115,263 L116,253 Z" fill="${shoesItem.color1}" stroke="#1E293B" stroke-width="1.3" />
+            <circle cx="96" cy="256" r="2.3" fill="${shoesItem.color2}" />
+            <circle cx="124" cy="256" r="2.3" fill="${shoesItem.color2}" />
           </g>`;
       }
 
-      // Helper for Dress / Mermaid Tail OR Top + Bottom
+      // Layered Ruffled Fairy Dress / Mermaid Tail OR Top + Skirt
       function renderOutfit() {
         if (dressItem) {
           const glowAttr = dressItem.rare ? `filter="url(#${uid}-glow)"` : '';
           if (dressItem.style === 'mermaid') {
             return `
               <g ${glowAttr}>
-                <!-- Shell Bodice -->
-                <path d="M93,128 Q110,136 127,128 L124,154 Q110,158 96,154 Z" fill="${dressItem.color2}" stroke="${dressItem.color1}" stroke-width="1.5" />
-                <circle cx="102" cy="136" r="7" fill="${dressItem.color1}" />
-                <circle cx="118" cy="136" r="7" fill="${dressItem.color1}" />
-                <!-- Shimmering Mermaid Tail -->
-                <path d="M95,153 Q110,160 125,153 C132,182 126,216 115,244 L105,244 C94,216 88,182 95,153 Z" fill="url(#${uid}-outfit-grad)" stroke="${dressItem.color1}" stroke-width="1.6" />
-                <!-- Scale arcs -->
-                <path d="M98,175 Q104,181 110,175 Q116,181 122,175 M97,193 Q104,199 110,193 Q116,199 123,193 M100,211 Q110,217 120,211" fill="none" stroke="${dressItem.color2}" stroke-width="1.6" stroke-linecap="round" />
-                <!-- Tail Fin -->
-                <path d="M105,243 C86,252 80,272 96,276 C104,272 108,263 110,256 C112,263 116,272 124,276 C140,272 134,252 115,243 Z" fill="${dressItem.color2}" stroke="${dressItem.color1}" stroke-width="1.5" />
+                <path d="M94,132 Q110,140 126,132 L123,158 Q110,162 97,158 Z" fill="${dressItem.color2}" stroke="${dressItem.color1}" stroke-width="1.5" />
+                <circle cx="102" cy="140" r="6.8" fill="${dressItem.color1}" />
+                <circle cx="118" cy="140" r="6.8" fill="${dressItem.color1}" />
+                <path d="M96,157 Q110,164 124,157 C131,186 125,218 115,246 L105,246 C95,218 89,186 96,157 Z" fill="url(#${uid}-outfit-grad)" stroke="${dressItem.color1}" stroke-width="1.6" />
+                <path d="M98,178 Q104,184 110,178 Q116,184 122,178 M97,196 Q104,202 110,196 Q116,202 123,196 M100,214 Q110,220 120,214" fill="none" stroke="${dressItem.color2}" stroke-width="1.7" stroke-linecap="round" />
+                <path d="M105,245 C86,254 80,273 96,277 C104,273 108,264 110,257 C112,264 116,273 124,277 C140,273 134,254 115,245 Z" fill="${dressItem.color2}" stroke="${dressItem.color1}" stroke-width="1.5" />
               </g>`;
           }
           if (dressItem.style === 'ballgown') {
             return `
               <g ${glowAttr}>
-                <!-- Bodice -->
-                <path d="M92,126 L128,126 L124,158 L96,158 Z" fill="${dressItem.color1}" stroke="#1E293B" stroke-width="1.3" />
-                <path d="M96,126 L110,144 L124,126" fill="${dressItem.color2}" />
-                <!-- Puff Sleeves -->
-                <circle cx="88" cy="131" r="8" fill="${dressItem.color2}" stroke="${dressItem.color1}" stroke-width="1.4" />
-                <circle cx="132" cy="131" r="8" fill="${dressItem.color2}" stroke="${dressItem.color1}" stroke-width="1.4" />
-                <!-- Sweeping Ballgown Skirt -->
-                <path d="M96,157 L124,157 C144,185 152,218 148,236 Q129,244 110,237 Q91,244 72,236 C68,218 76,185 96,157 Z" fill="url(#${uid}-outfit-grad)" stroke="${dressItem.color1}" stroke-width="1.6" />
-                <path d="M84,210 Q110,224 136,210" fill="none" stroke="${dressItem.color2}" stroke-width="2.5" stroke-dasharray="4 4" />
+                <path d="M93,130 L127,130 L123,160 L97,160 Z" fill="${dressItem.color1}" stroke="#1E293B" stroke-width="1.3" />
+                <path d="M97,130 L110,147 L123,130" fill="${dressItem.color2}" />
+                <circle cx="88" cy="135" r="7.5" fill="${dressItem.color2}" stroke="${dressItem.color1}" stroke-width="1.4" />
+                <circle cx="132" cy="135" r="7.5" fill="${dressItem.color2}" stroke="${dressItem.color1}" stroke-width="1.4" />
+                <path d="M97,159 L123,159 C144,186 152,218 148,237 Q129,245 110,238 Q91,245 72,237 C68,218 76,186 97,159 Z" fill="url(#${uid}-outfit-grad)" stroke="${dressItem.color1}" stroke-width="1.6" />
+                <path d="M82,216 Q96,226 110,216 Q124,226 138,216" fill="none" stroke="${dressItem.color2}" stroke-width="2.5" stroke-linecap="round" />
               </g>`;
           }
-          // Petal / Flared Fairy Dress
           return `
             <g ${glowAttr}>
-              <path d="M93,126 L127,126 L123,158 L97,158 Z" fill="${dressItem.color1}" stroke="#1E293B" stroke-width="1.3" />
-              <path d="M97,157 L123,157 L142,208 L126,202 L118,214 L110,202 L102,214 L94,202 L78,208 Z" fill="url(#${uid}-outfit-grad)" stroke="${dressItem.color1}" stroke-width="1.5" />
-              <rect x="95" y="154" width="30" height="6" rx="3" fill="${dressItem.color2}" />
+              <path d="M94,130 L126,130 L122,160 L98,160 Z" fill="${dressItem.color1}" stroke="#1E293B" stroke-width="1.3" />
+              <path d="M98,159 L122,159 L142,210 L126,204 L118,216 L110,204 L102,216 L94,204 L78,210 Z" fill="url(#${uid}-outfit-grad)" stroke="${dressItem.color1}" stroke-width="1.5" />
+              <rect x="95" y="156" width="30" height="6" rx="3" fill="${dressItem.color2}" />
             </g>`;
         }
 
-        // Otherwise render Bottom + Top (or sweet default starter outfit)
         const bCol1 = bottomItem ? bottomItem.color1 : '#F472B6';
         const bCol2 = bottomItem ? bottomItem.color2 : '#FBCFE8';
         const bStyle = bottomItem ? bottomItem.style : 'tutu';
@@ -1111,43 +1330,42 @@
         if (bStyle === 'shorts') {
           bottomSVG = `
             <g ${bGlow}>
-              <path d="M95,155 L125,155 L129,184 L112,184 L110,174 L108,184 L91,184 Z" fill="${bCol1}" stroke="#1E293B" stroke-width="1.3" />
-              <rect x="95" y="155" width="30" height="5" fill="${bCol2}" />
+              <path d="M96,158 L124,158 L128,186 L112,186 L110,176 L108,186 L92,186 Z" fill="${bCol1}" stroke="#1E293B" stroke-width="1.3" />
+              <rect x="96" y="158" width="28" height="5" fill="${bCol2}" />
             </g>`;
         } else if (bStyle === 'leggings') {
           bottomSVG = `
             <g ${bGlow}>
-              <path d="M95,155 L125,155 L128,248 L116,248 L110,185 L104,248 L92,248 Z" fill="${bCol1}" stroke="#1E293B" stroke-width="1.3" />
-              <circle cx="98" cy="205" r="2" fill="${bCol2}" />
-              <circle cx="122" cy="220" r="2" fill="${bCol2}" />
+              <path d="M96,158 L124,158 L128,250 L116,250 L110,188 L104,250 L92,250 Z" fill="${bCol1}" stroke="#1E293B" stroke-width="1.3" />
+              <circle cx="98" cy="208" r="2" fill="${bCol2}" />
+              <circle cx="122" cy="222" r="2" fill="${bCol2}" />
             </g>`;
         } else {
-          // Tutu / Frill Skirt
           bottomSVG = `
             <g ${bGlow}>
-              <path d="M95,155 L125,155 L139,194 Q110,203 81,194 Z" fill="${bCol1}" stroke="#1E293B" stroke-width="1.3" />
-              <path d="M84,188 Q97,196 110,188 Q123,196 136,188" fill="none" stroke="${bCol2}" stroke-width="3" stroke-linecap="round" />
+              <path d="M96,158 L124,158 L139,196 Q110,205 81,196 Z" fill="${bCol1}" stroke="#1E293B" stroke-width="1.3" />
+              <path d="M84,190 Q97,198 110,190 Q123,198 136,190" fill="none" stroke="${bCol2}" stroke-width="3" stroke-linecap="round" />
             </g>`;
         }
 
         const topSVG = `
           <g ${tGlow}>
-            <path d="M92,126 L128,126 L125,158 L95,158 Z" fill="${tCol1}" stroke="#1E293B" stroke-width="1.3" />
+            <path d="M93,130 L127,130 L124,160 L96,160 Z" fill="${tCol1}" stroke="#1E293B" stroke-width="1.3" />
             ${tStyle === 'puff' ? `
-              <circle cx="88" cy="131" r="7.5" fill="${tCol2}" stroke="${tCol1}" stroke-width="1.4" />
-              <circle cx="132" cy="131" r="7.5" fill="${tCol2}" stroke="${tCol1}" stroke-width="1.4" />
+              <circle cx="88" cy="135" r="7.2" fill="${tCol2}" stroke="${tCol1}" stroke-width="1.4" />
+              <circle cx="132" cy="135" r="7.2" fill="${tCol2}" stroke="${tCol1}" stroke-width="1.4" />
             ` : ''}
             ${tStyle === 'cardigan' ? `
-              <line x1="110" y1="127" x2="110" y2="157" stroke="${tCol2}" stroke-width="2.5" />
+              <line x1="110" y1="131" x2="110" y2="159" stroke="${tCol2}" stroke-width="2.5" />
             ` : `
-              <path d="M99,126 Q110,136 121,126" fill="${tCol2}" />
+              <path d="M100,130 Q110,140 120,130" fill="${tCol2}" />
             `}
           </g>`;
 
         return `${bottomSVG}${topSVG}`;
       }
 
-      // Helper for Tiara / Crown
+      // Jeweled Tiaras & Flower Crowns
       function renderTiara() {
         if (!tiaraItem) return '';
         const glowAttr = tiaraItem.rare ? `filter="url(#${uid}-glow)"` : '';
@@ -1155,63 +1373,62 @@
           case 'flower':
             return `
               <g ${glowAttr}>
-                <circle cx="86" cy="63" r="6" fill="${tiaraItem.color1}" />
-                <circle cx="86" cy="63" r="2.5" fill="${tiaraItem.color2}" />
-                <circle cx="102" cy="59" r="6.5" fill="${tiaraItem.color2}" stroke="${tiaraItem.color1}" stroke-width="1.5" />
-                <circle cx="102" cy="59" r="2.5" fill="${tiaraItem.color1}" />
-                <circle cx="118" cy="59" r="6.5" fill="${tiaraItem.color1}" />
-                <circle cx="118" cy="59" r="2.5" fill="${tiaraItem.color2}" />
-                <circle cx="134" cy="63" r="6" fill="${tiaraItem.color2}" stroke="${tiaraItem.color1}" stroke-width="1.5" />
+                <circle cx="84" cy="57" r="6" fill="${tiaraItem.color1}" />
+                <circle cx="84" cy="57" r="2.5" fill="${tiaraItem.color2}" />
+                <circle cx="101" cy="52" r="6.5" fill="${tiaraItem.color2}" stroke="${tiaraItem.color1}" stroke-width="1.5" />
+                <circle cx="101" cy="52" r="2.5" fill="${tiaraItem.color1}" />
+                <circle cx="119" cy="52" r="6.5" fill="${tiaraItem.color1}" />
+                <circle cx="119" cy="52" r="2.5" fill="${tiaraItem.color2}" />
+                <circle cx="136" cy="57" r="6" fill="${tiaraItem.color2}" stroke="${tiaraItem.color1}" stroke-width="1.5" />
               </g>`;
           case 'moon':
             return `
               <g ${glowAttr}>
-                <path d="M84,65 Q110,54 136,65" fill="none" stroke="${tiaraItem.color1}" stroke-width="3.5" stroke-linecap="round" />
-                <path d="M112,41 A9,9 0 1,0 112,57 A6.5,6.5 0 1,1 112,41 Z" fill="${tiaraItem.color2}" stroke="${tiaraItem.color1}" stroke-width="1.3" />
+                <path d="M82,59 Q110,48 138,59" fill="none" stroke="${tiaraItem.color1}" stroke-width="3.5" stroke-linecap="round" />
+                <path d="M112,34 A9,9 0 1,0 112,50 A6.5,6.5 0 1,1 112,34 Z" fill="${tiaraItem.color2}" stroke="${tiaraItem.color1}" stroke-width="1.3" />
               </g>`;
           case 'butterfly':
             return `
               <g ${glowAttr}>
-                <path d="M84,65 Q110,55 136,65" fill="none" stroke="${tiaraItem.color1}" stroke-width="3" />
-                <ellipse cx="104" cy="51" rx="7" ry="5" transform="rotate(-20 104 51)" fill="${tiaraItem.color1}" />
-                <ellipse cx="116" cy="51" rx="7" ry="5" transform="rotate(20 116 51)" fill="${tiaraItem.color1}" />
-                <circle cx="110" cy="53" r="3" fill="${tiaraItem.color2}" />
+                <path d="M82,59 Q110,49 138,59" fill="none" stroke="${tiaraItem.color1}" stroke-width="3" />
+                <ellipse cx="104" cy="44" rx="7.5" ry="5.5" transform="rotate(-20 104 44)" fill="${tiaraItem.color1}" />
+                <ellipse cx="116" cy="44" rx="7.5" ry="5.5" transform="rotate(20 116 44)" fill="${tiaraItem.color1}" />
+                <circle cx="110" cy="46" r="3.2" fill="${tiaraItem.color2}" />
               </g>`;
-          default: // Crown / Band
+          default:
             return `
               <g ${glowAttr}>
-                <path d="M88,64 L92,48 L102,57 L110,43 L118,57 L128,48 L132,64 Z" fill="${tiaraItem.color1}" stroke="#1E293B" stroke-width="1.3" stroke-linejoin="round" />
-                <circle cx="110" cy="55" r="3.2" fill="${tiaraItem.color2}" />
-                <circle cx="96" cy="59" r="2" fill="${tiaraItem.color2}" />
-                <circle cx="124" cy="59" r="2" fill="${tiaraItem.color2}" />
+                <path d="M86,58 L91,41 L101,51 L110,36 L119,51 L129,41 L134,58 Z" fill="${tiaraItem.color1}" stroke="#1E293B" stroke-width="1.3" stroke-linejoin="round" />
+                <circle cx="110" cy="49" r="3.4" fill="${tiaraItem.color2}" />
+                <circle cx="95" cy="53" r="2.2" fill="${tiaraItem.color2}" />
+                <circle cx="125" cy="53" r="2.2" fill="${tiaraItem.color2}" />
               </g>`;
         }
       }
 
-      // Helper for Magic Wand held in right hand
+      // Magical Wand held in raised right hand
       function renderWand() {
         if (!wandItem) return '';
         const glowAttr = wandItem.rare ? `filter="url(#${uid}-glow)"` : '';
         let topper = '';
         if (wandItem.style === 'heart') {
-          topper = `<path d="M166,102 C162,96 153,99 153,106 C153,113 166,121 166,121 C166,121 179,113 179,106 C179,99 170,96 166,102 Z" fill="${wandItem.color1}" stroke="#FFF" stroke-width="1.5" />`;
+          topper = `<path d="M166,104 C162,98 153,101 153,108 C153,115 166,123 166,123 C166,123 179,115 179,108 C179,101 170,98 166,104 Z" fill="${wandItem.color1}" stroke="#FFF" stroke-width="1.5" />`;
         } else if (wandItem.style === 'moon') {
-          topper = `<path d="M170,96 A12,12 0 1,0 170,120 A8.5,8.5 0 1,1 170,96 Z" fill="${wandItem.color1}" stroke="${wandItem.color2}" stroke-width="1.5" />`;
+          topper = `<path d="M170,98 A12,12 0 1,0 170,122 A8.5,8.5 0 1,1 170,98 Z" fill="${wandItem.color1}" stroke="${wandItem.color2}" stroke-width="1.5" />`;
         } else if (wandItem.style === 'orb' || wandItem.style === 'flower') {
           topper = `
-            <circle cx="166" cy="108" r="11" fill="${wandItem.color1}" stroke="${wandItem.color2}" stroke-width="2.5" />
-            <circle cx="163" cy="104" r="3.5" fill="#FFF" opacity="0.8" />`;
+            <circle cx="166" cy="110" r="11" fill="${wandItem.color1}" stroke="${wandItem.color2}" stroke-width="2.5" />
+            <circle cx="163" cy="106" r="3.5" fill="#FFF" opacity="0.85" />`;
         } else {
-          // Star topper
-          topper = `<polygon points="166,93 170,103 181,103 172,110 175,120 166,114 157,120 160,110 151,103 162,103" fill="${wandItem.color1}" stroke="${wandItem.color2}" stroke-width="1.5" stroke-linejoin="round" />`;
+          topper = `<polygon points="166,95 170,105 181,105 172,112 175,122 166,116 157,122 160,112 151,105 162,105" fill="${wandItem.color1}" stroke="${wandItem.color2}" stroke-width="1.5" stroke-linejoin="round" />`;
         }
 
         return `
           <g ${glowAttr}>
-            <line x1="145" y1="172" x2="165" y2="112" stroke="${wandItem.color2}" stroke-width="4.5" stroke-linecap="round" />
-            <line x1="145" y1="172" x2="165" y2="112" stroke="${wandItem.color1}" stroke-width="2" stroke-linecap="round" />
+            <line x1="145" y1="172" x2="165" y2="114" stroke="${wandItem.color2}" stroke-width="4.8" stroke-linecap="round" />
+            <line x1="145" y1="172" x2="165" y2="114" stroke="${wandItem.color1}" stroke-width="2.2" stroke-linecap="round" />
             ${topper}
-            <text x="177" y="96" font-size="11" fill="${wandItem.color1}">✨</text>
+            <text x="177" y="98" font-size="11" fill="${wandItem.color1}">✨</text>
           </g>`;
       }
 
@@ -1219,19 +1436,37 @@
       const outfitC2 = dressItem ? dressItem.color2 : '#FBCFE8';
 
       return `
-        <svg viewBox="0 0 220 290" class="${extraClasses}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${hero.name}">
+        <svg viewBox="0 0 220 290" class="${extraClasses}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${escapeHTML(hero.name)}">
           <defs>
+            <!-- Iridescent Fairy Wing Gradient -->
             <linearGradient id="${uid}-wing-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="${hasRareAura ? '#FDE047' : '#F9A8D4'}" stop-opacity="0.72" />
-              <stop offset="50%" stop-color="#C4B5FD" stop-opacity="0.65" />
-              <stop offset="100%" stop-color="#67E8F9" stop-opacity="0.75" />
+              <stop offset="0%" stop-color="${hasRareAura ? '#FDE047' : '#F9A8D4'}" stop-opacity="0.76" />
+              <stop offset="50%" stop-color="#C4B5FD" stop-opacity="0.68" />
+              <stop offset="100%" stop-color="#67E8F9" stop-opacity="0.78" />
             </linearGradient>
+
+            <!-- Multi-Stop Radial Eye Iris Gradient -->
+            <radialGradient id="${uid}-iris" cx="50%" cy="42%" r="55%">
+              <stop offset="0%" stop-color="${eyeCfg.topCol}" />
+              <stop offset="68%" stop-color="${eyeCfg.botCol}" />
+              <stop offset="100%" stop-color="#FFFFFF" />
+            </radialGradient>
+
+            <!-- Soft Radial Chibi Cheek Blush Gradient -->
+            <radialGradient id="${uid}-blush" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="${skin.blush}" stop-opacity="0.68" />
+              <stop offset="100%" stop-color="${skin.blush}" stop-opacity="0" />
+            </radialGradient>
+
+            <!-- Outfit Gradient -->
             <linearGradient id="${uid}-outfit-grad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stop-color="${outfitC1}" />
               <stop offset="100%" stop-color="${outfitC2}" />
             </linearGradient>
-            <filter id="${uid}-glow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="3.5" result="blur" />
+
+            <!-- Rare Item Glowing Aura Filter -->
+            <filter id="${uid}-glow" x="-35%" y="-35%" width="170%" height="170%">
+              <feGaussianBlur stdDeviation="3.8" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
@@ -1242,70 +1477,75 @@
           <!-- Soft Ground Shadow -->
           <ellipse cx="110" cy="272" rx="44" ry="8" fill="rgba(126, 34, 206, 0.14)" />
 
-          <!-- Iridescent Fairy Wings -->
+          <!-- Iridescent 4-Winged Butterfly/Dragonfly Fairy Wings + Filigree Veins + Stardust -->
           <g>
             <!-- Upper Wings -->
-            <path d="M96,130 C52,82 14,96 24,136 C32,162 72,156 96,144 Z" fill="url(#${uid}-wing-grad)" stroke="#FFFFFF" stroke-width="2" />
-            <path d="M124,130 C168,82 206,96 196,136 C188,162 148,156 124,144 Z" fill="url(#${uid}-wing-grad)" stroke="#FFFFFF" stroke-width="2" />
-            <!-- Lower Wings -->
-            <path d="M96,146 C54,154 34,186 54,202 C72,214 92,184 98,156 Z" fill="url(#${uid}-wing-grad)" stroke="#FFFFFF" stroke-width="1.8" />
-            <path d="M124,146 C166,154 186,186 166,202 C148,214 128,184 122,156 Z" fill="url(#${uid}-wing-grad)" stroke="#FFFFFF" stroke-width="1.8" />
-            <!-- Wing Sparkle Veins -->
-            <path d="M84,134 Q52,118 36,126 M136,134 Q168,118 184,126" fill="none" stroke="#FFFFFF" stroke-width="1.3" opacity="0.8" />
+            <path d="M96,134 C46,78 10,94 22,138 C32,166 72,158 96,146 Z" fill="url(#${uid}-wing-grad)" stroke="#FFFFFF" stroke-width="2.2" />
+            <path d="M124,134 C174,78 210,94 198,138 C188,166 148,158 124,146 Z" fill="url(#${uid}-wing-grad)" stroke="#FFFFFF" stroke-width="2.2" />
+            <!-- Lower Dragonfly/Butterfly Wings -->
+            <path d="M96,148 C50,156 30,190 52,206 C72,218 92,188 98,158 Z" fill="url(#${uid}-wing-grad)" stroke="#FFFFFF" stroke-width="2" />
+            <path d="M124,148 C170,156 190,190 168,206 C148,218 128,188 122,158 Z" fill="url(#${uid}-wing-grad)" stroke="#FFFFFF" stroke-width="2" />
+            <!-- Delicate Inner Wing Filigree Veins -->
+            <path d="M88,136 Q52,114 32,126 M84,143 Q54,138 38,146 M88,156 Q62,174 56,192" fill="none" stroke="#FFFFFF" stroke-width="1.4" opacity="0.85" stroke-linecap="round" />
+            <path d="M132,136 Q168,114 188,126 M136,143 Q166,138 182,146 M132,156 Q158,174 164,192" fill="none" stroke="#FFFFFF" stroke-width="1.4" opacity="0.85" stroke-linecap="round" />
+            <!-- Floating Stardust Dots -->
+            <circle cx="24" cy="86" r="2.6" fill="#FDE047" />
+            <circle cx="196" cy="84" r="2.8" fill="#F9A8D4" />
+            <circle cx="18" cy="162" r="2.2" fill="#67E8F9" />
+            <circle cx="202" cy="165" r="2.4" fill="#C4B5FD" />
           </g>
 
-          <!-- Back Hair Layer -->
+          <!-- LAYER 1 (BACK): Multi-Volume Back Hair -->
           ${renderBackHair()}
 
-          <!-- Legs (hidden when wearing a Mermaid Tail) -->
+          <!-- LAYER 2 (BODY): Legs, Shoes, Arms, Neck & Outfit -->
           ${!(dressItem && dressItem.style === 'mermaid') ? `
             <g fill="${skin.fill}" stroke="${skin.shade}" stroke-width="1.3">
-              <rect x="92" y="180" width="11" height="76" rx="5.5" />
-              <rect x="117" y="180" width="11" height="76" rx="5.5" />
+              <rect x="92" y="182" width="11" height="75" rx="5.5" />
+              <rect x="117" y="182" width="11" height="75" rx="5.5" />
             </g>
           ` : ''}
 
-          <!-- Shoes -->
           ${renderShoes()}
 
-          <!-- Arms -->
+          <!-- Chibi Arms -->
           <g fill="${skin.fill}" stroke="${skin.shade}" stroke-width="1.3">
-            <!-- Left Arm -->
-            <path d="M92,130 Q74,152 79,174 Q84,177 87,171 Q85,154 96,138 Z" />
-            <!-- Right Arm (raised slightly when holding a wand) -->
+            <path d="M93,134 Q74,154 79,175 Q84,178 87,172 Q85,156 97,142 Z" />
             ${wandItem
-              ? `<path d="M128,130 Q144,146 151,164 Q146,168 142,163 Q136,149 124,138 Z" />`
-              : `<path d="M128,130 Q146,152 141,174 Q136,177 133,171 Q135,154 124,138 Z" />`
+              ? `<path d="M127,134 Q144,148 151,166 Q146,170 142,165 Q136,151 123,142 Z" />`
+              : `<path d="M127,134 Q146,154 141,175 Q136,178 133,172 Q135,156 123,142 Z" />`
             }
           </g>
 
-          <!-- Torso & Neck -->
-          <rect x="104" y="114" width="12" height="16" rx="5" fill="${skin.fill}" />
-          <path d="M94,126 L126,126 L123,160 L97,160 Z" fill="${skin.fill}" />
+          <!-- Delicate Neck & Torso -->
+          <rect x="104.5" y="117" width="11" height="17" rx="5" fill="${skin.fill}" />
+          <path d="M95,130 L125,130 L122,162 L98,162 Z" fill="${skin.fill}" />
 
-          <!-- Equipped Outfit (Dress / Mermaid Tail / Top & Bottom) -->
+          <!-- Equipped Dress / Mermaid Tail / Top & Bottom -->
           ${renderOutfit()}
 
-          <!-- Head & Face -->
+          <!-- EXPRESSIVE STORYBOOK CHIBI HEAD & FACE -->
           <g>
-            <!-- Cute Ears -->
-            <circle cx="77" cy="96" r="5.5" fill="${skin.fill}" stroke="${skin.shade}" stroke-width="1.2" />
-            <circle cx="143" cy="96" r="5.5" fill="${skin.fill}" stroke="${skin.shade}" stroke-width="1.2" />
-            <!-- Face Oval -->
-            <path d="M79,86 C79,63 141,63 141,86 C141,108 128,120 110,120 C92,120 79,108 79,86 Z" fill="${skin.fill}" stroke="${skin.shade}" stroke-width="1.4" />
-            <!-- Rosy Cheeks -->
-            <ellipse cx="89" cy="103" rx="5.5" ry="3.2" fill="#FB7185" opacity="0.45" />
-            <ellipse cx="131" cy="103" rx="5.5" ry="3.2" fill="#FB7185" opacity="0.45" />
-            <!-- Anime Eyes -->
-            ${renderEyes()}
-            <!-- Sweet Smile -->
-            <path d="M105,108 Q110,113 115,108" fill="none" stroke="#9F1239" stroke-width="2" stroke-linecap="round" />
+            <!-- Cute Chibi Ears -->
+            <circle cx="72" cy="94" r="6" fill="${skin.fill}" stroke="${skin.shade}" stroke-width="1.3" />
+            <circle cx="148" cy="94" r="6" fill="${skin.fill}" stroke="${skin.shade}" stroke-width="1.3" />
+            <!-- Soft Rounded Chibi Head Contour -->
+            <path d="M74,84 C74,56 146,56 146,84 C146,110 131,122 110,122 C89,122 74,110 74,84 Z" fill="${skin.fill}" stroke="${skin.shade}" stroke-width="1.5" />
+            <!-- Soft Gradient Cheek Blush Ovals -->
+            <ellipse cx="85" cy="103" rx="8.5" ry="5" fill="url(#${uid}-blush)" />
+            <ellipse cx="135" cy="103" rx="8.5" ry="5" fill="url(#${uid}-blush)" />
+            <!-- Large Luminous Glossy Eyes -->
+            ${renderChibiEyes()}
+            <!-- Cute Tiny Button Nose -->
+            <ellipse cx="110" cy="101.5" rx="1.6" ry="1.1" fill="${skin.shade}" />
+            <!-- Sweet Smiling Kawaii Mouth -->
+            <path d="M104.5,108.5 Q110,114.5 115.5,108.5" fill="#FB7185" stroke="#9F1239" stroke-width="1.8" stroke-linecap="round" />
           </g>
 
-          <!-- Front Hair Bangs -->
+          <!-- LAYER 3 (FRONT): Front Bangs, Side Locks & Glossy Hair Shine -->
           ${renderFrontHair()}
 
-          <!-- Equipped Tiara / Crown -->
+          <!-- Equipped Tiara / Flower Crown -->
           ${renderTiara()}
 
           <!-- Equipped Magic Wand -->
@@ -1315,7 +1555,7 @@
     }
 
     /**
-     * Renders a miniature SVG preview for a Boutique Shop Card
+     * Miniature SVG preview for a Boutique Shop Card
      */
     function renderBoutiqueItemIcon(item) {
       const glow = item.rare ? 'drop-shadow(0 0 6px rgba(245,158,11,0.75))' : '';
@@ -1337,7 +1577,7 @@
           return `<svg viewBox="0 0 80 80" class="w-16 h-16 mx-auto" style="filter:${glow}">
             <circle cx="22" cy="30" r="9" fill="${item.color2}" stroke="${item.color1}" stroke-width="2" />
             <circle cx="58" cy="30" r="9" fill="${item.color2}" stroke="${item.color1}" stroke-width="2" />
-            <path d="M26,22 L54,22 L51,60 L29,60 Z" fill="${item.color1}" rx="4" />
+            <path d="M26,22 L54,22 L51,60 L29,60 Z" fill="${item.color1}" />
             <path d="M33,22 Q40,31 47,22" fill="${item.color2}" />
           </svg>`;
         case 'bottom':
@@ -1368,7 +1608,7 @@
     }
 
     /**
-     * Renders bespoke whimsical SVG illustrations for each of the 8 Festival Structures
+     * Bespoke whimsical SVG illustrations for the 8 Festival Structures (Levels 1–8)
      */
     function renderStructureSVG(level, isBuilt = false) {
       const badge = isBuilt
@@ -1376,7 +1616,18 @@
         : '';
 
       switch (level) {
-        case 1: // Petal Welcome Arch
+        case 1: // Rainbow Bridge
+          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-indigo-100 to-cyan-100">
+            <path d="M0,122 Q130,108 260,122 L260,150 L0,150 Z" fill="#38BDF8" opacity="0.75" />
+            <path d="M36,130 Q130,36 224,130" fill="none" stroke="#F43F5E" stroke-width="6" />
+            <path d="M40,132 Q130,42 220,132" fill="none" stroke="#FB923C" stroke-width="6" />
+            <path d="M44,134 Q130,48 216,134" fill="none" stroke="#FACC15" stroke-width="6" />
+            <path d="M48,136 Q130,54 212,136" fill="none" stroke="#34D399" stroke-width="6" />
+            <path d="M52,138 Q130,60 208,138" fill="none" stroke="#60A5FA" stroke-width="6" />
+            <path d="M56,140 Q130,66 204,140" fill="none" stroke="#A855F7" stroke-width="6" />
+            ${badge}
+          </svg>`;
+        case 2: // Pixie Blossom Arch
           return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-sky-100 to-emerald-100">
             <ellipse cx="130" cy="136" rx="105" ry="12" fill="#86EFAC" />
             <path d="M68,134 C68,48 192,48 192,134" fill="none" stroke="#F472B6" stroke-width="16" stroke-linecap="round" />
@@ -1388,48 +1639,18 @@
             <circle cx="164" cy="96" r="6" fill="#FDE047" />
             ${badge}
           </svg>`;
-        case 2: // Rainbow Bridge
-          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-indigo-100 to-cyan-100">
-            <path d="M0,122 Q130,108 260,122 L260,150 L0,150 Z" fill="#38BDF8" opacity="0.75" />
-            <path d="M36,130 Q130,36 224,130" fill="none" stroke="#F43F5E" stroke-width="6" />
-            <path d="M40,132 Q130,42 220,132" fill="none" stroke="#FB923C" stroke-width="6" />
-            <path d="M44,134 Q130,48 216,134" fill="none" stroke="#FACC15" stroke-width="6" />
-            <path d="M48,136 Q130,54 212,136" fill="none" stroke="#34D399" stroke-width="6" />
-            <path d="M52,138 Q130,60 208,138" fill="none" stroke="#60A5FA" stroke-width="6" />
-            <path d="M56,140 Q130,66 204,140" fill="none" stroke="#A855F7" stroke-width="6" />
+        case 3: // Mushroom Tea Gazebo
+          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-pink-100 to-emerald-100">
+            <ellipse cx="130" cy="136" rx="100" ry="11" fill="#6EE7B7" />
+            <rect x="112" y="76" width="36" height="58" rx="10" fill="#FEF3C7" stroke="#D97706" stroke-width="2" />
+            <path d="M64,80 C64,28 196,28 196,80 Z" fill="#F43F5E" stroke="#BE123C" stroke-width="2" />
+            <circle cx="95" cy="58" r="8" fill="#FFF" />
+            <circle cx="130" cy="46" r="10" fill="#FFF" />
+            <circle cx="165" cy="58" r="8" fill="#FFF" />
+            <rect x="121" y="102" width="18" height="32" rx="9" fill="#F59E0B" />
             ${badge}
           </svg>`;
-        case 3: // Starlight Lantern Stage
-          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-purple-900 via-indigo-800 to-purple-700">
-            <circle cx="42" cy="30" r="2" fill="#FEF08A" /><circle cx="210" cy="26" r="2.5" fill="#FFF" /><circle cx="130" cy="20" r="2" fill="#FEF08A" />
-            <path d="M46,112 L214,112 L226,136 L34,136 Z" fill="#D97706" stroke="#FDE68A" stroke-width="2" />
-            <path d="M56,112 Q130,46 204,112" fill="none" stroke="#F472B6" stroke-width="3" />
-            <circle cx="84" cy="86" r="8" fill="#FDE047" />
-            <circle cx="130" cy="76" r="10" fill="#FDE047" />
-            <circle cx="176" cy="86" r="8" fill="#FDE047" />
-            ${badge}
-          </svg>`;
-        case 4: // Giggle Brook Fountain
-          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-cyan-100 to-emerald-100">
-            <ellipse cx="130" cy="124" rx="84" ry="18" fill="#38BDF8" stroke="#E0F2FE" stroke-width="4" />
-            <rect x="118" y="72" width="24" height="48" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2" />
-            <ellipse cx="130" cy="76" rx="46" ry="11" fill="#7DD3FC" stroke="#F8FAFC" stroke-width="3" />
-            <path d="M130,72 Q105,34 86,74 M130,72 Q155,34 174,74 M130,72 L130,30" fill="none" stroke="#BAE6FD" stroke-width="3.5" stroke-linecap="round" />
-            <circle cx="130" cy="26" r="5" fill="#FFF" />
-            ${badge}
-          </svg>`;
-        case 5: // Fairy Treehouse
-          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-amber-100 to-emerald-100">
-            <rect x="108" y="64" width="44" height="78" fill="#92400E" />
-            <circle cx="130" cy="54" r="52" fill="#22C55E" />
-            <circle cx="88" cy="66" r="34" fill="#16A34A" />
-            <circle cx="172" cy="66" r="34" fill="#16A34A" />
-            <rect x="104" y="48" width="52" height="38" rx="6" fill="#FDE68A" stroke="#B45309" stroke-width="2.5" />
-            <polygon points="98,48 130,24 162,48" fill="#EC4899" />
-            <circle cx="130" cy="66" r="9" fill="#38BDF8" stroke="#FFF" stroke-width="2" />
-            ${badge}
-          </svg>`;
-        case 6: // Crystal Carousel
+        case 4: // Starlight Carousel
           return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-pink-100 to-purple-100">
             <rect x="58" y="122" width="144" height="14" rx="7" fill="#F59E0B" />
             <line x1="84" y1="62" x2="84" y2="122" stroke="#FDE047" stroke-width="4" />
@@ -1441,18 +1662,36 @@
             <circle cx="130" cy="18" r="6" fill="#FDE047" />
             ${badge}
           </svg>`;
-        case 7: // Cloud-Cotton Candy Pavilion
-          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-sky-200 to-pink-100">
-            <ellipse cx="130" cy="128" rx="90" ry="14" fill="#FFFFFF" />
-            <rect x="78" y="68" width="10" height="58" rx="5" fill="#F9A8D4" />
-            <rect x="172" y="68" width="10" height="58" rx="5" fill="#C4B5FD" />
-            <circle cx="96" cy="58" r="24" fill="#FBCFE8" />
-            <circle cx="164" cy="58" r="24" fill="#DDD6FE" />
-            <circle cx="130" cy="46" r="30" fill="#FFFFFF" />
-            <text x="130" y="54" text-anchor="middle" font-size="22">🍭</text>
+        case 5: // Crystal Fountain
+          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-cyan-100 to-emerald-100">
+            <ellipse cx="130" cy="124" rx="84" ry="18" fill="#38BDF8" stroke="#E0F2FE" stroke-width="4" />
+            <rect x="118" y="72" width="24" height="48" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2" />
+            <ellipse cx="130" cy="76" rx="46" ry="11" fill="#7DD3FC" stroke="#F8FAFC" stroke-width="3" />
+            <path d="M130,72 Q105,34 86,74 M130,72 Q155,34 174,74 M130,72 L130,30" fill="none" stroke="#BAE6FD" stroke-width="3.5" stroke-linecap="round" />
+            <circle cx="130" cy="26" r="5" fill="#FFF" />
             ${badge}
           </svg>`;
-        case 8: // Grand Fairy Festival Palace
+        case 6: // Fairy Treehouse
+          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-amber-100 to-emerald-100">
+            <rect x="108" y="64" width="44" height="78" fill="#92400E" />
+            <circle cx="130" cy="54" r="52" fill="#22C55E" />
+            <circle cx="88" cy="66" r="34" fill="#16A34A" />
+            <circle cx="172" cy="66" r="34" fill="#16A34A" />
+            <rect x="104" y="48" width="52" height="38" rx="6" fill="#FDE68A" stroke="#B45309" stroke-width="2.5" />
+            <polygon points="98,48 130,24 162,48" fill="#EC4899" />
+            <circle cx="130" cy="66" r="9" fill="#38BDF8" stroke="#FFF" stroke-width="2" />
+            ${badge}
+          </svg>`;
+        case 7: // Moonbeam Observatory
+          return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-indigo-950 via-purple-900 to-indigo-800">
+            <circle cx="46" cy="28" r="2.5" fill="#FEF08A" /><circle cx="212" cy="30" r="2" fill="#FFF" /><circle cx="88" cy="22" r="2" fill="#FEF08A" />
+            <rect x="96" y="62" width="68" height="74" rx="6" fill="#EDE9FE" stroke="#A78BFA" stroke-width="2" />
+            <path d="M90,64 C90,26 170,26 170,64 Z" fill="#6366F1" stroke="#FDE047" stroke-width="2.5" />
+            <line x1="154" y1="42" x2="184" y2="24" stroke="#FBBF24" stroke-width="7" stroke-linecap="round" />
+            <circle cx="130" cy="96" r="12" fill="#FDE047" />
+            ${badge}
+          </svg>`;
+        case 8: // Grand Fairy Palace
         default:
           return `<svg viewBox="0 0 260 150" class="w-full h-36 sm:h-40 rounded-2xl bg-gradient-to-b from-indigo-900 via-purple-800 to-pink-700">
             <text x="44" y="34" font-size="16">🎆</text><text x="200" y="34" font-size="16">🎇</text>
@@ -1471,8 +1710,8 @@
     /* --------------------------------------------------------------------------
      * 5. LOCALSTORAGE PERSISTENCE & APPLICATION STATE
      * -------------------------------------------------------------------------- */
-    const STORAGE_KEY = 'fairy_festival_profiles_v1';
-    const ACTIVE_KEY  = 'fairy_festival_active_id_v1';
+    const STORAGE_KEY = 'fairy_festival_profiles_v2';
+    const ACTIVE_KEY  = 'fairy_festival_active_id_v2';
 
     function loadAllProfiles() {
       try {
@@ -1495,7 +1734,7 @@
     function createDefaultHero({ name, skinTone, eyeStyle, hairStyle, hairColor }) {
       return {
         id: 'hero_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-        name: name.trim() || 'Princess Lily',
+        name: name.trim() || 'Luna Starblossom',
         skinTone: Number(skinTone) || 0,
         eyeStyle: Number(eyeStyle) || 0,
         hairStyle: Number(hairStyle) || 0,
@@ -1534,7 +1773,6 @@
       };
     }
 
-    // Central reactive state object
     const AppState = {
       profiles: loadAllProfiles(),
       activeHeroId: localStorage.getItem(ACTIVE_KEY) || null,
@@ -1571,10 +1809,12 @@
       spellItem: null,
       spellInput: '',
       spellStreak: 0,
+      spellAttempts: 0,
+      spellFirstLetterRevealed: false,
+      spellSolvedBanner: null,
       spellFeedback: null
     };
 
-    // If a saved active hero exists on boot, load straight into Festival or Menu
     if (AppState.activeHeroId && AppState.profiles.some(p => p.id === AppState.activeHeroId)) {
       AppState.screen = 'festival';
     }
@@ -1691,7 +1931,6 @@
     function pickNewSpellingWord(speakNow = true) {
       const hero = getActiveHero();
       const lvl = hero ? hero.level : 1;
-      // Gently favor 3-4 letter words at levels 1-2, and include 5-7 letter words as levels rise
       const pool = SPELLING_WORDS.filter(item => {
         if (lvl <= 2) return item.word.length <= 5;
         return true;
@@ -1702,10 +1941,13 @@
       }
       AppState.spellItem = chosen;
       AppState.spellInput = '';
+      AppState.spellAttempts = 0;
+      AppState.spellFirstLetterRevealed = false;
+      AppState.spellSolvedBanner = null;
       AppState.spellFeedback = null;
 
       if (speakNow) {
-        setTimeout(() => SpeechEngine.speakWord(chosen.word), 180);
+        setTimeout(() => SpeechEngine.speakWord(chosen.word), 220);
       }
     }
 
@@ -1743,8 +1985,8 @@
       AppState.isSpinning = true;
       renderApp();
 
-      const sliceDeg = 360 / COMPASS_SLICES.length; // 45 deg per slice
-      const extraSpins = 4 + Math.floor(Math.random() * 3); // 4-6 full spins
+      const sliceDeg = 360 / COMPASS_SLICES.length;
+      const extraSpins = 4 + Math.floor(Math.random() * 3);
       const randomOffset = Math.floor(Math.random() * 360);
       const startAngle = AppState.compassAngle;
       const targetAngle = startAngle + extraSpins * 360 + randomOffset;
@@ -1755,7 +1997,6 @@
       function animateWheel(now) {
         const elapsed = now - startTime;
         const t = Math.min(1, elapsed / duration);
-        // Smooth cubic ease-out deceleration
         const eased = 1 - Math.pow(1 - t, 3);
         const currentAngle = startAngle + (targetAngle - startAngle) * eased;
         AppState.compassAngle = currentAngle;
@@ -1774,7 +2015,6 @@
         if (t < 1) {
           requestAnimationFrame(animateWheel);
         } else {
-          // Determine winning slice under top pointer (0 deg / 360 deg)
           const normalized = ((360 - (currentAngle % 360)) + 360) % 360;
           const winningIdx = Math.floor(normalized / sliceDeg) % COMPASS_SLICES.length;
           const prize = COMPASS_SLICES[winningIdx];
@@ -1802,7 +2042,6 @@
             spawnSparkleBurst(evt.clientX, evt.clientY, [prize.short, '✨', '🌟']);
           }
 
-          // ~28% chance of Grumpy Raincloud obstacle after the 2nd spin
           if (hero.stats.spinsCount >= 2 && hero.sunsetSteps > 0 && Math.random() < 0.28) {
             hero.raincloudActive = true;
             setTimeout(() => {
@@ -1823,8 +2062,6 @@
     /* --------------------------------------------------------------------------
      * 9. VIEW RENDERERS
      * -------------------------------------------------------------------------- */
-
-    // Top Resource & Navigation Header (shown on all gameplay screens)
     function renderTopHeader(hero) {
       const muted = SoundEngine.getMuted();
       const navTabs = [
@@ -1875,10 +2112,10 @@
               </div>
             </div>
 
-            <!-- Music Toggle & Switch Hero -->
+            <!-- Music ON/OFF Toggle & Switch Hero -->
             <div class="flex items-center gap-1.5">
-              <button onclick="handleToggleMusic()" class="fairy-btn px-3 py-2 rounded-xl text-xs sm:text-sm font-bold border-2 ${muted ? 'bg-slate-100 text-slate-600 border-slate-300' : 'bg-pink-100 text-pink-700 border-pink-300'}" title="Toggle Music Box">
-                ${muted ? '🔇 Off' : '🎵 Music'}
+              <button onclick="handleToggleMusic()" class="fairy-btn px-3 py-2 rounded-xl text-xs sm:text-sm font-bold border-2 ${muted ? 'bg-slate-100 text-slate-600 border-slate-300' : 'bg-gradient-to-r from-pink-100 to-amber-100 text-pink-800 border-pink-300'}" title="Toggle Music">
+                ${muted ? '🔇 Music OFF' : '🎵 Music ON'}
               </button>
               <button onclick="handleSwitchToMenu()" class="fairy-btn px-3 py-2 rounded-xl bg-purple-100 text-purple-800 border-2 border-purple-300 text-xs sm:text-sm font-bold" title="Hero Profiles">
                 🏠 Heroes
@@ -1914,14 +2151,12 @@
       const muted = SoundEngine.getMuted();
       return `
         <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-6 sm:py-10 flex flex-col items-center">
-          <!-- Top Audio Control -->
           <div class="w-full flex justify-end mb-2">
-            <button onclick="handleToggleMusic()" class="fairy-btn px-4 py-2 rounded-2xl bg-white/90 border-2 border-pink-200 font-bold text-purple-800 text-sm">
-              ${muted ? '🔇 Music Off' : '🎵 Music Box On'}
+            <button onclick="handleToggleMusic()" class="fairy-btn px-4 py-2 rounded-2xl border-2 font-bold text-sm ${muted ? 'bg-white/90 border-slate-300 text-slate-600' : 'bg-gradient-to-r from-pink-100 to-amber-100 border-pink-300 text-pink-800'}">
+              ${muted ? '🔇 Music OFF' : '🎵 Music ON'}
             </button>
           </div>
 
-          <!-- Whimsical Title Emblem -->
           <div class="text-center mb-8 animate-float-slow">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/85 border-2 border-pink-300 text-pink-600 font-bold text-sm mb-3 shadow-sm">
               <span>🦋 Enchanted Realm Adventure • Ages 6–7 ✨</span>
@@ -1934,7 +2169,6 @@
             </p>
           </div>
 
-          <!-- Create New Hero Call-To-Action -->
           <button onclick="openCreatorScreen()"
             class="fairy-btn mb-8 px-8 py-4 rounded-3xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 text-white font-bold text-xl sm:text-2xl flex items-center gap-3 border-2 border-white/60">
             <span class="text-3xl">🧚‍♀️</span>
@@ -1942,7 +2176,6 @@
             <span class="text-2xl">✨</span>
           </button>
 
-          <!-- Saved Profiles Grid -->
           <div class="w-full">
             <h2 class="text-xl sm:text-2xl font-bold text-purple-950 mb-4 text-center">
               ${AppState.profiles.length > 0 ? '🌟 Choose Your Fairy Hero 🌟' : '✨ No Fairy Heroes Yet — Create Your First Hero Above! ✨'}
@@ -1951,15 +2184,13 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               ${AppState.profiles.map((hero, index) => `
                 <div class="fairy-panel rounded-3xl p-5 flex flex-col items-center text-center relative transition-transform hover:-translate-y-1">
-                  <!-- Delete Profile Button -->
                   <button onclick="confirmDeleteHero('${hero.id}')"
                     class="absolute top-3 right-3 w-9 h-9 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 border border-rose-200 flex items-center justify-center text-sm font-bold"
                     title="Delete Hero">
                     🗑️
                   </button>
 
-                  <!-- Live SVG Avatar -->
-                  <div class="w-32 h-40 mb-2">
+                  <div class="w-36 h-44 mb-2">
                     ${renderDollSVG(hero, 'menu_' + index)}
                   </div>
 
@@ -1988,7 +2219,7 @@
       `;
     }
 
-    // SCREEN 2: INTERACTIVE SPRITE CUSTOMIZER (PROFILE CREATOR)
+    // SCREEN 2: INTERACTIVE STORYBOOK CHIBI SPRITE CUSTOMIZER
     function renderCreatorScreen() {
       const d = AppState.draft;
       const previewHero = {
@@ -2006,18 +2237,17 @@
             <button onclick="navigateScreen('menu')" class="fairy-btn px-4 py-2.5 rounded-2xl bg-white font-bold text-purple-800 border-2 border-purple-200">
               ← Back to Menu
             </button>
-            <h1 class="text-2xl sm:text-3xl font-bold text-purple-950 text-center">✨ Fairy Hero Creator ✨</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-purple-950 text-center">✨ Storybook Fairy Creator ✨</h1>
             <div class="w-24 hidden sm:block"></div>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <!-- Left Column: Live SVG Preview & Name -->
+            <!-- Left Column: Live Storybook Chibi Preview & Name -->
             <div class="lg:col-span-5 fairy-panel rounded-3xl p-6 flex flex-col items-center">
-              <div class="w-56 h-72 sm:w-64 sm:h-80 bg-gradient-to-b from-purple-100/70 via-pink-50/70 to-amber-50/70 rounded-3xl border-2 border-pink-200 p-2 mb-4 flex items-center justify-center">
+              <div class="w-56 h-72 sm:w-64 sm:h-80 bg-gradient-to-b from-purple-100/75 via-pink-50/75 to-amber-50/75 rounded-3xl border-2 border-pink-200 p-2 mb-4 flex items-center justify-center">
                 ${renderDollSVG(previewHero, 'creator_prev')}
               </div>
 
-              <!-- Hero Name Input + Magic Randomizer -->
               <label class="w-full text-left font-bold text-purple-900 text-sm mb-1">Fairy Hero Name:</label>
               <div class="flex w-full gap-2 mb-5">
                 <input id="hero-name-input" type="text" maxlength="22"
@@ -2036,9 +2266,8 @@
               </button>
             </div>
 
-            <!-- Right Column: Skin, Eyes, 12 Hairstyles & 8 Hair Colors -->
+            <!-- Right Column: Skin, Glossy Eyes, 12 Hairstyles & 8 Hair Colors -->
             <div class="lg:col-span-7 fairy-panel rounded-3xl p-5 sm:p-6 space-y-5">
-              <!-- 8 Skin Tones -->
               <div>
                 <h3 class="font-bold text-purple-950 text-base mb-2">1. Choose Skin Tone (8 Shades)</h3>
                 <div class="flex flex-wrap gap-2.5">
@@ -2052,9 +2281,8 @@
                 </div>
               </div>
 
-              <!-- 4 Sparkly Anime Eye Styles -->
               <div>
-                <h3 class="font-bold text-purple-950 text-base mb-2">2. Sparkly Anime Eyes (4 Styles)</h3>
+                <h3 class="font-bold text-purple-950 text-base mb-2">2. Luminous Glossy Eyes (4 Styles)</h3>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   ${EYE_STYLES.map(e => `
                     <button onclick="updateDraftField('eyeStyle', ${e.id})"
@@ -2070,7 +2298,6 @@
                 </div>
               </div>
 
-              <!-- 8 Hair Colors -->
               <div>
                 <h3 class="font-bold text-purple-950 text-base mb-2">3. Magical Hair Color (8 Colors)</h3>
                 <div class="flex flex-wrap gap-2.5">
@@ -2086,7 +2313,6 @@
                 </div>
               </div>
 
-              <!-- 12 Unique Hairstyles -->
               <div>
                 <h3 class="font-bold text-purple-950 text-base mb-2">4. Hairstyle (12 Styles)</h3>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
@@ -2112,11 +2338,8 @@
     function renderFestivalScreen(hero) {
       const allBuilt = hero.builtStructures.length >= 8;
       const currentStruct = FESTIVAL_STRUCTURES.find(s => s.level === hero.level) || FESTIVAL_STRUCTURES[7];
-
-      // Check if hero has enough commodities for current structure
       const canBuild = !allBuilt && Object.entries(currentStruct.cost).every(([k, req]) => (hero.commodities[k] || 0) >= req);
 
-      // Build SVG slices for Magic Compass
       const sliceDeg = 360 / COMPASS_SLICES.length;
       const wheelSlicesSVG = COMPASS_SLICES.map((s, idx) => {
         const startRad = ((idx * sliceDeg - 90) * Math.PI) / 180;
@@ -2143,7 +2366,7 @@
 
       return `
         <main class="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-5 py-4 space-y-5">
-          <!-- Sequential Festival Build Track Stepper (Levels 1-8) -->
+          <!-- Sequential Festival Build Track (Levels 1–8) -->
           <section class="fairy-panel rounded-3xl p-4 sm:p-5">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
               <h2 class="text-lg sm:text-2xl font-bold text-purple-950 flex items-center gap-2">
@@ -2155,7 +2378,6 @@
               </span>
             </div>
 
-            <!-- Horizontal Level Nodes -->
             <div class="grid grid-cols-4 sm:grid-cols-8 gap-2 mb-4">
               ${FESTIVAL_STRUCTURES.map(st => {
                 const built = hero.builtStructures.includes(st.level);
@@ -2176,7 +2398,6 @@
               }).join('')}
             </div>
 
-            <!-- Active Structure Card OR Grand Completion Celebration -->
             ${allBuilt ? `
               <div class="rounded-3xl bg-gradient-to-r from-amber-100 via-pink-100 to-purple-100 border-2 border-amber-300 p-5 flex flex-col md:flex-row items-center gap-5">
                 <div class="w-full md:w-64 flex-shrink-0">
@@ -2216,7 +2437,6 @@
                     <p class="text-slate-600 text-sm sm:text-base mb-3">${currentStruct.description}</p>
                   </div>
 
-                  <!-- Required Commodities & Build Button -->
                   <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-pink-200/70">
                     <div class="flex flex-wrap items-center gap-2">
                       <span class="text-xs font-bold text-purple-900 uppercase tracking-wide">Needs:</span>
@@ -2250,7 +2470,6 @@
 
           <!-- Bottom Two-Column Interactive Playground: Magic Compass + Wishing Well -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-            <!-- LEFT: Magic Compass (Spinner Wheel), Sunset Clock & Grumpy Raincloud -->
             <section class="lg:col-span-7 fairy-panel rounded-3xl p-5 flex flex-col items-center relative overflow-hidden">
               <div class="w-full flex flex-wrap items-center justify-between gap-2 mb-3">
                 <h2 class="text-xl sm:text-2xl font-bold text-purple-950 flex items-center gap-2">
@@ -2258,7 +2477,6 @@
                   <span>Magic Compass</span>
                 </h2>
 
-                <!-- Sunset Clock Progress Tracker -->
                 <div class="flex items-center gap-1.5 bg-amber-50 px-3 py-1.5 rounded-2xl border border-amber-300">
                   <span class="text-sm font-bold text-amber-900">
                     ${hero.sunsetSteps > 0 ? '☀️ Sun Steps:' : '🌙 Sunset!'}
@@ -2272,9 +2490,7 @@
                 </div>
               </div>
 
-              <!-- Compass Wheel Container -->
               <div class="relative w-64 h-64 sm:w-72 sm:h-72 my-2 flex items-center justify-center">
-                <!-- Top Pointer Jewel -->
                 <div class="absolute -top-2 left-1/2 -translate-x-1/2 z-20 drop-shadow-md">
                   <svg width="34" height="36" viewBox="0 0 34 36">
                     <polygon points="17,34 3,6 31,6" fill="#EC4899" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" />
@@ -2282,7 +2498,6 @@
                   </svg>
                 </div>
 
-                <!-- Rotating SVG Wheel -->
                 <div id="compass-wheel-rotor"
                   onclick="spinMagicCompass(event)"
                   class="w-full h-full cursor-pointer select-none"
@@ -2291,13 +2506,11 @@
                     <circle cx="100" cy="100" r="97" fill="#F59E0B" />
                     ${wheelSlicesSVG}
                     <circle cx="100" cy="100" r="93" fill="none" stroke="#FDE047" stroke-width="4" />
-                    <!-- Center Compass Rose -->
                     <circle cx="100" cy="100" r="22" fill="#FFFFFF" stroke="#EC4899" stroke-width="4" />
                     <text x="100" y="101" text-anchor="middle" dominant-baseline="central" font-size="20">🧭</text>
                   </svg>
                 </div>
 
-                <!-- GRUMPY RAINCLOUD OBSTACLE OVERLAY -->
                 ${hero.raincloudActive ? `
                   <div class="absolute inset-0 z-30 rounded-3xl bg-slate-900/75 backdrop-blur-xs flex flex-col items-center justify-center p-4 text-center text-white animate-float-slow">
                     <div class="text-6xl mb-1">⛈️</div>
@@ -2319,7 +2532,6 @@
                 ` : ''}
               </div>
 
-              <!-- Spin or Rest Until Sunrise Button -->
               <div class="mt-3 w-full max-w-sm">
                 ${hero.sunsetSteps > 0 ? `
                   <button onclick="spinMagicCompass(event)" ${AppState.isSpinning || hero.raincloudActive ? 'disabled' : ''}
@@ -2337,7 +2549,7 @@
               </div>
             </section>
 
-            <!-- RIGHT: Wishing Well Trading Hub & Quick Bonus Action Links -->
+            <!-- RIGHT: Wishing Well Trading Hub -->
             <section class="lg:col-span-5 fairy-panel rounded-3xl p-5 flex flex-col justify-between space-y-4">
               <div>
                 <h2 class="text-xl sm:text-2xl font-bold text-purple-950 flex items-center gap-2 mb-1">
@@ -2348,7 +2560,6 @@
                   Trade extra treasures or Star Stardust for the exact items you need!
                 </p>
 
-                <!-- Trade 1: 2-for-1 Commodity Swap -->
                 <div class="bg-sky-50/90 border-2 border-sky-200 rounded-2xl p-3.5 mb-3">
                   <div class="font-bold text-sky-950 text-sm mb-2">🔄 Swap 2 Treasures → 1 Chosen Treasure</div>
                   <div class="grid grid-cols-2 gap-2 mb-2.5">
@@ -2382,7 +2593,6 @@
                   </button>
                 </div>
 
-                <!-- Trade 2: Star Stardust Magic Wishes (3-to-1 Commodity or 1-to-15 Gold) -->
                 <div class="bg-indigo-50/90 border-2 border-indigo-200 rounded-2xl p-3.5">
                   <div class="font-bold text-indigo-950 text-sm mb-2">🌟 Star Stardust Wishes (You have ${hero.stardust} 🌟)</div>
                   <div class="flex gap-2 mb-2.5">
@@ -2406,7 +2616,6 @@
                 </div>
               </div>
 
-              <!-- Quick Bonus Minigame Launchers -->
               <div class="pt-2 border-t border-purple-100">
                 <div class="text-xs font-bold text-purple-900 mb-2">Need more 🌟 Stardust or 🍓 Strawberries?</div>
                 <div class="grid grid-cols-2 gap-2">
@@ -2430,8 +2639,6 @@
         generateMathProblem(hero.level);
       }
       const p = AppState.mathProblem;
-
-      // Visual counters for concrete number sense (shown when numbers <= 12)
       const showVisualCounters = p.a <= 12 && p.b <= 12;
 
       return `
@@ -2451,7 +2658,6 @@
               Solve the puzzle to earn <strong class="text-indigo-700">+1 🌟 Star Stardust</strong>, <strong class="text-amber-700">+10 🪙</strong>, and a <strong class="text-rose-700">bonus treasure</strong>!
             </p>
 
-            <!-- Equation Display Card -->
             <div class="rounded-3xl bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 border-2 border-purple-200 p-5 mb-5">
               ${showVisualCounters ? `
                 <div class="flex flex-wrap items-center justify-center gap-3 mb-3 text-lg sm:text-xl">
@@ -2488,7 +2694,6 @@
               ` : ''}
             </div>
 
-            <!-- Kid-Friendly Touch Number Pad -->
             <div class="grid grid-cols-3 gap-2.5 max-w-xs mx-auto mb-4">
               ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => `
                 <button onclick="pressMathDigit('${num}')"
@@ -2518,7 +2723,7 @@
       `;
     }
 
-    // SCREEN 5: EDUCATIONAL MINIGAME 2 — SPELLING SCROLL
+    // SCREEN 5: FIXED SPELLING SCROLL MINIGAME (TRUE AUDIO-ONLY PROMPT + PICTURE CLUE)
     function renderSpellingScreen() {
       if (!AppState.spellItem) {
         pickNewSpellingWord(true);
@@ -2526,6 +2731,8 @@
       const item = AppState.spellItem;
       const target = item.word;
       const typed = AppState.spellInput.toUpperCase();
+      const isSolved = AppState.spellFeedback === 'correct';
+      const speakingNow = SpeechEngine.getIsSpeaking();
 
       const alphabetRows = [
         ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
@@ -2545,52 +2752,92 @@
               </span>
             </div>
 
-            <h1 class="text-2xl sm:text-3xl font-bold text-purple-950 mb-1">Listen & Spell the Word!</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-purple-950 mb-1">Listen & Spell the Mystery Word!</h1>
             <p class="text-slate-600 text-sm mb-4">
-              Tap the speaker button to hear the word, then spell it to win <strong class="text-indigo-700">+1 🌟 Stardust</strong>, <strong class="text-amber-700">+10 🪙</strong>, and a <strong class="text-rose-700">treasure</strong>!
+              Listen to the fairy voice and use the picture clue to spell the word! Win <strong class="text-indigo-700">+1 🌟 Stardust</strong>, <strong class="text-amber-700">+10 🪙</strong>, and a <strong class="text-rose-700">treasure</strong>!
             </p>
 
-            <!-- Voice Replay Controls -->
-            <div class="flex flex-wrap justify-center gap-3 mb-5">
-              <button onclick="replaySpellWord()"
-                class="fairy-btn px-5 py-3 rounded-2xl bg-gradient-to-r from-sky-400 to-blue-500 text-white font-bold text-base sm:text-lg flex items-center gap-2">
-                <span>🔊</span>
-                <span>Hear Word Again</span>
-              </button>
-              <button onclick="replaySpellHint()"
-                class="fairy-btn px-5 py-3 rounded-2xl bg-amber-100 border-2 border-amber-300 text-amber-950 font-bold text-base flex items-center gap-2">
-                <span>💬</span>
-                <span>Hint Sentence</span>
-              </button>
+            <!-- Audio Voice Controls + Animated Sound-Wave Visualizer -->
+            <div class="flex flex-col items-center justify-center gap-3 mb-5">
+              <div class="flex flex-wrap justify-center gap-3">
+                <button id="hear-word-btn" onclick="replaySpellWord()"
+                  class="fairy-btn px-6 py-3.5 rounded-2xl bg-gradient-to-r from-sky-400 to-blue-600 text-white font-bold text-base sm:text-lg flex items-center gap-2 ${speakingNow ? 'ring-4 ring-sky-300' : ''}">
+                  <span class="text-2xl">🔊</span>
+                  <span>Hear Word</span>
+                </button>
+                <button onclick="replaySpellSlow()"
+                  class="fairy-btn px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-bold text-base sm:text-lg flex items-center gap-2">
+                  <span class="text-2xl">🐢</span>
+                  <span>Slow Say</span>
+                </button>
+              </div>
+
+              <!-- Animated Sound-Wave Visualizer -->
+              <div id="speech-wave-visualizer" class="flex items-center justify-center gap-1.5 h-6 px-4 py-1 rounded-full bg-sky-100/80 border border-sky-200 transition-opacity ${speakingNow ? 'opacity-100' : 'opacity-45'}" aria-hidden="true">
+                <span class="wave-bar w-1.5 h-4 rounded-full bg-sky-500 inline-block ${speakingNow ? 'animate-wave-bar' : ''}" style="animation-delay:0.0s"></span>
+                <span class="wave-bar w-1.5 h-5 rounded-full bg-pink-500 inline-block ${speakingNow ? 'animate-wave-bar' : ''}" style="animation-delay:0.15s"></span>
+                <span class="wave-bar w-1.5 h-4 rounded-full bg-purple-500 inline-block ${speakingNow ? 'animate-wave-bar' : ''}" style="animation-delay:0.3s"></span>
+                <span class="wave-bar w-1.5 h-5 rounded-full bg-amber-500 inline-block ${speakingNow ? 'animate-wave-bar' : ''}" style="animation-delay:0.1s"></span>
+                <span class="wave-bar w-1.5 h-4 rounded-full bg-sky-500 inline-block ${speakingNow ? 'animate-wave-bar' : ''}" style="animation-delay:0.25s"></span>
+                <span class="text-xs font-bold text-sky-900 ml-1.5">Fairy Voice</span>
+              </div>
             </div>
 
-            <!-- Parchment Scroll Letter Boxes -->
+            <!-- Parchment Scroll: Non-Spoiler Emoji Picture Clue + Mystery Sparkle Letter Tiles -->
             <div class="rounded-3xl bg-gradient-to-b from-amber-50 to-orange-50 border-4 border-amber-200 p-5 mb-5 shadow-inner">
+              <!-- Emoji Picture Clue & Non-Spoiler Riddle -->
+              <div class="inline-flex flex-col items-center bg-white/90 border-2 border-amber-200 rounded-2xl px-5 py-3 mb-4 shadow-xs">
+                <div class="text-5xl sm:text-6xl mb-1 animate-bounce-gentle">${item.emoji}</div>
+                <div class="text-xs sm:text-sm font-bold text-amber-900">
+                  Clue: ${escapeHTML(item.clue)}
+                </div>
+              </div>
+
+              <!-- Mystery Sparkle Letter Tiles (NEVER reveals the spelling prior to solving!) -->
               <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-3">
                 ${Array.from({ length: target.length }).map((_, idx) => {
                   const char = typed[idx] || '';
+                  const showHintLetter = !char && idx === 0 && AppState.spellFirstLetterRevealed;
                   return `
                     <div class="w-12 h-14 sm:w-14 sm:h-16 rounded-2xl bg-white border-b-4 border-2 ${
-                      char ? 'border-purple-500 text-purple-950' : 'border-amber-300 text-slate-300'
+                      isSolved
+                        ? 'border-emerald-500 text-emerald-700 bg-emerald-50'
+                        : char
+                          ? 'border-purple-500 text-purple-950'
+                          : showHintLetter
+                            ? 'border-amber-400 text-amber-500'
+                            : 'border-amber-300 text-pink-400'
                     } flex items-center justify-center text-2xl sm:text-3xl font-bold shadow-xs">
-                      ${char || '_'}
+                      ${char || (showHintLetter ? target[0] : '✨')}
                     </div>
                   `;
                 }).join('')}
               </div>
 
-              <p class="text-xs sm:text-sm text-amber-900/80 italic">
-                Hint: "${escapeHTML(item.sentence.replace(new RegExp(target, 'ig'), '_____'))}"
-              </p>
+              <div class="text-xs font-bold text-purple-800">
+                ${isSolved
+                  ? `🎉 Hooray! You spelled "${target}"!`
+                  : `Mystery Word has ${target.length} letters`}
+              </div>
 
               ${AppState.spellFeedback === 'wrong' ? `
                 <p class="mt-2 text-rose-600 font-bold text-sm">
-                  🌟 Good try! Listen closely to the sounds and try again!
+                  🌟 Good try! Tap "🐢 Slow Say" to sound out each letter and try again!
                 </p>
+              ` : ''}
+
+              <!-- Optional First-Letter Hint Button after 2 failed attempts -->
+              ${!isSolved && AppState.spellAttempts >= 2 && !AppState.spellFirstLetterRevealed ? `
+                <div class="mt-3">
+                  <button onclick="revealFirstLetterHint()"
+                    class="fairy-btn px-4 py-2 rounded-xl bg-amber-200 border-2 border-amber-400 text-amber-950 font-bold text-xs sm:text-sm">
+                    💡 Show First Letter Hint
+                  </button>
+                </div>
               ` : ''}
             </div>
 
-            <!-- Kid-Friendly On-Screen Alphabet Keyboard (Also supports physical keyboard) -->
+            <!-- Kid-Friendly On-Screen Alphabet Keyboard -->
             <div class="space-y-1.5 mb-4">
               ${alphabetRows.map(row => `
                 <div class="flex justify-center gap-1 sm:gap-1.5">
@@ -2632,7 +2879,6 @@
       return `
         <main class="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-5 py-4">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-            <!-- LEFT: Real-Time Live Doll Preview Pedestal -->
             <div class="lg:col-span-4 fairy-panel rounded-3xl p-5 flex flex-col items-center lg:sticky lg:top-32">
               <div class="w-full flex items-center justify-between mb-2">
                 <h2 class="text-xl font-bold text-purple-950">✨ Dressing Room</h2>
@@ -2641,12 +2887,10 @@
                 </span>
               </div>
 
-              <!-- Live Doll SVG -->
               <div class="w-56 h-72 sm:w-64 sm:h-80 rounded-3xl bg-gradient-to-b from-pink-100/70 via-purple-100/60 to-amber-100/70 border-2 border-pink-300 p-2 my-2 flex items-center justify-center relative">
                 ${renderDollSVG(hero, 'boutique_live')}
               </div>
 
-              <!-- Currently Equipped Slot Chips (Click to Unequip) -->
               <div class="w-full mt-2">
                 <div class="text-xs font-bold text-purple-900 mb-1.5 text-center">
                   Tap an equipped item below to take it off:
@@ -2667,7 +2911,6 @@
               </div>
             </div>
 
-            <!-- RIGHT: 6-Tab Glitter Boutique Catalog (38 Items) -->
             <div class="lg:col-span-8 fairy-panel rounded-3xl p-4 sm:p-6">
               <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div>
@@ -2681,7 +2924,6 @@
                 </div>
               </div>
 
-              <!-- 6 Category Tabs -->
               <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 mb-5">
                 ${BOUTIQUE_TABS.map(tab => {
                   const active = AppState.boutiqueTab === tab.id;
@@ -2702,7 +2944,6 @@
                 }).join('')}
               </div>
 
-              <!-- Items Grid -->
               <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 ${tabItems.map(item => {
                   const unlocked = hero.unlockedItems.includes(item.id);
@@ -2763,7 +3004,6 @@
 
       return `
         <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-5 space-y-5">
-          <!-- Hero Accomplishment Summary Cards -->
           <section class="fairy-panel rounded-3xl p-5 sm:p-6">
             <div class="flex flex-col sm:flex-row items-center gap-4 mb-6">
               <div class="w-24 h-28 rounded-3xl bg-gradient-to-b from-pink-100 to-purple-100 border-2 border-pink-300 p-1 flex-shrink-0">
@@ -2779,7 +3019,6 @@
               </div>
             </div>
 
-            <!-- 4 Key Progress Metrics -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
               <div class="rounded-2xl bg-purple-50 border-2 border-purple-200 p-4 text-center">
                 <div class="text-3xl mb-1">🎪</div>
@@ -2806,14 +3045,12 @@
               </div>
             </div>
 
-            <!-- Wardrobe Completion Progress Bar -->
             <div class="bg-pink-100 rounded-full h-5 p-1 border border-pink-300">
               <div class="h-full rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-amber-400 transition-all duration-500"
                 style="width: ${wardrobePct}%"></div>
             </div>
           </section>
 
-          <!-- 8 Illustrated Fairy Badges -->
           <section class="fairy-panel rounded-3xl p-5 sm:p-6">
             <h2 class="text-xl sm:text-2xl font-bold text-purple-950 mb-4">✨ Magical Fairy Badges ✨</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -2872,6 +3109,7 @@
 
     function navigateScreen(screenName) {
       SoundEngine.playClick();
+      SpeechEngine.unlockSpeech();
       AppState.screen = screenName;
       if (screenName === 'math' && !AppState.mathProblem) {
         const hero = getActiveHero();
@@ -2881,13 +3119,12 @@
         if (!AppState.spellItem) {
           pickNewSpellingWord(true);
         } else {
-          setTimeout(() => SpeechEngine.speakWord(AppState.spellItem.word), 180);
+          setTimeout(() => SpeechEngine.speakWord(AppState.spellItem.word), 220);
         }
       }
       renderApp();
     }
 
-    // Menu & Creator handlers
     function openCreatorScreen() {
       SoundEngine.playClick();
       AppState.draft = {
@@ -2956,7 +3193,6 @@
       );
     }
 
-    // Festival Build Track & Obstacles
     function buildCurrentStructure(evt) {
       const hero = getActiveHero();
       if (!hero) return;
@@ -2966,12 +3202,10 @@
       const canAfford = Object.entries(st.cost).every(([k, req]) => (hero.commodities[k] || 0) >= req);
       if (!canAfford) return;
 
-      // Deduct required commodities
       Object.entries(st.cost).forEach(([k, req]) => {
         hero.commodities[k] -= req;
       });
 
-      // Mark built & grant rewards
       if (!hero.builtStructures.includes(st.level)) {
         hero.builtStructures.push(st.level);
       }
@@ -3038,7 +3272,6 @@
       renderApp();
     }
 
-    // Wishing Well Trades
     function tradeCommodities(evt) {
       const hero = getActiveHero();
       if (!hero) return;
@@ -3089,7 +3322,6 @@
       renderApp();
     }
 
-    // Math Wand Handlers
     function pressMathDigit(digit) {
       SoundEngine.playClick();
       if (AppState.mathInput.length < 3) {
@@ -3152,30 +3384,36 @@
       }
     }
 
-    // Spelling Scroll Handlers
+    // Spelling Scroll Handlers (Audio-Only Prompt — NEVER reveals spelling prior to solving)
     function replaySpellWord() {
-      SoundEngine.playClick();
+      SpeechEngine.unlockSpeech();
       if (AppState.spellItem) {
         const ok = SpeechEngine.speakWord(AppState.spellItem.word);
         if (!ok) {
-          showToast(`📜 Word to spell: ${AppState.spellItem.word}`, 'magic');
+          showToast('🔊 Listen to your device speakers and use the picture clue!', 'magic');
         }
       }
     }
 
-    function replaySpellHint() {
-      SoundEngine.playClick();
+    function replaySpellSlow() {
+      SpeechEngine.unlockSpeech();
       if (AppState.spellItem) {
-        const ok = SpeechEngine.speakSentence(AppState.spellItem.word, AppState.spellItem.sentence);
+        const ok = SpeechEngine.speakSlow(AppState.spellItem.word);
         if (!ok) {
-          showToast(`💬 ${AppState.spellItem.sentence}`, 'magic');
+          showToast('🐢 Sound out each letter using the picture clue!', 'magic');
         }
       }
+    }
+
+    function revealFirstLetterHint() {
+      SoundEngine.playClick();
+      AppState.spellFirstLetterRevealed = true;
+      renderApp();
     }
 
     function pressSpellLetter(letter) {
       SoundEngine.playClick();
-      if (!AppState.spellItem) return;
+      if (!AppState.spellItem || AppState.spellFeedback === 'correct') return;
       if (AppState.spellInput.length < AppState.spellItem.word.length) {
         AppState.spellInput += letter;
         AppState.spellFeedback = null;
@@ -3185,6 +3423,7 @@
 
     function backspaceSpellLetter() {
       SoundEngine.playClick();
+      if (AppState.spellFeedback === 'correct') return;
       AppState.spellInput = AppState.spellInput.slice(0, -1);
       AppState.spellFeedback = null;
       renderApp();
@@ -3192,7 +3431,7 @@
 
     function submitSpellingAnswer(evt) {
       const hero = getActiveHero();
-      if (!hero || !AppState.spellItem) return;
+      if (!hero || !AppState.spellItem || AppState.spellFeedback === 'correct') return;
 
       const target = AppState.spellItem.word.toUpperCase();
       const attempt = AppState.spellInput.toUpperCase();
@@ -3214,7 +3453,9 @@
         SoundEngine.playSuccess();
         showToast(`📜 Wonderful! You spelled ${target}! +1 🌟, +10 🪙 & +1 ${COMMODITY_META[bonusKey].emoji}!`, 'success');
         if (evt && evt.clientX) {
-          spawnSparkleBurst(evt.clientX, evt.clientY, ['📜', '🌟', COMMODITY_META[bonusKey].emoji]);
+          spawnSparkleBurst(evt.clientX, evt.clientY, ['📜', '🌟', '🎉', COMMODITY_META[bonusKey].emoji]);
+        } else {
+          spawnSparkleBurst(window.innerWidth / 2, window.innerHeight / 3, ['📜', '🌟', '🎉', COMMODITY_META[bonusKey].emoji]);
         }
         persistHero(hero);
         renderApp();
@@ -3222,12 +3463,13 @@
         setTimeout(() => {
           pickNewSpellingWord(true);
           renderApp();
-        }, 850);
+        }, 1250);
       } else {
         AppState.spellFeedback = 'wrong';
         AppState.spellStreak = 0;
+        AppState.spellAttempts += 1;
         SoundEngine.playRetry();
-        SpeechEngine.speakWord(target);
+        SpeechEngine.speakSlow(target);
         renderApp();
       }
     }
@@ -3240,11 +3482,9 @@
 
       const eq = hero.equipped;
       if (eq[item.category] === item.id) {
-        // Unequip
         eq[item.category] = null;
         SoundEngine.playEquip();
       } else {
-        // Equip (smart mutual exclusion between Dress/Tail and Top/Bottom)
         if (item.category === 'dress') {
           eq.top = null;
           eq.bottom = null;
@@ -3271,7 +3511,6 @@
         return;
       }
 
-      // Attempt purchase
       if (hero.gold < item.price) {
         SoundEngine.playRetry();
         const diff = item.price - hero.gold;
@@ -3289,7 +3528,7 @@
       toggleEquipItem(item.id, null);
     }
 
-    // Global physical keyboard listener for Math Wand & Spelling Scroll
+    // Physical keyboard support for Math Wand & Spelling Scroll
     window.addEventListener('keydown', (e) => {
       if (document.activeElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
         return;
@@ -3335,14 +3574,13 @@
         return;
       }
 
-      // Gameplay views include the sticky top header
       let bodyHTML = '';
       switch (AppState.screen) {
         case 'math':
           bodyHTML = renderMathScreen(hero);
           break;
         case 'spelling':
-          bodyHTML = renderSpellingScreen(hero);
+          bodyHTML = renderSpellingScreen();
           break;
         case 'boutique':
           bodyHTML = renderBoutiqueScreen(hero);
@@ -3359,7 +3597,6 @@
       appEl.innerHTML = `${renderTopHeader(hero)}${bodyHTML}`;
     }
 
-    // Populate gentle floating ambient fairy sparkles
     function initAmbientSparkles() {
       const container = document.getElementById('bg-sparkles');
       if (!container) return;
