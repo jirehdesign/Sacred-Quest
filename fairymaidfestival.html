@@ -68,7 +68,7 @@
         <div id="screen-menu" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 flex flex-col items-center text-center border-4 border-pink-300">
             <div class="text-5xl sm:text-6xl mb-2 bounce-slow">🏰✨</div>
             <h1 class="text-3xl sm:text-5xl font-bold text-pink-600 mb-2 drop-shadow">Fairy-Maid Festival</h1>
-            <p class="text-slate-500 text-sm sm:text-base mb-6 max-w-md">Build magical places, gather sparkling resources, solve fun math & spelling puzzles, and dress up your cute hero!</p>
+            <p class="text-slate-500 text-sm sm:text-base mb-6 max-w-md">Build magical places, gather sparkling resources, solve fun math & spelling puzzles, and dress up your realistic hero!</p>
 
             <!-- Profile Selector / Creator Area -->
             <div class="w-full max-w-md bg-pink-50/80 rounded-2xl p-4 sm:p-6 mb-6 border-2 border-pink-200 shadow-inner">
@@ -99,7 +99,7 @@
         <!-- 2. PROFILE CREATOR / CUSTOMIZER SCREEN -->
         <div id="screen-creator" class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col items-center text-center border-4 border-purple-300 hidden">
             <h2 class="text-2xl sm:text-3xl font-bold text-purple-600 mb-2">Design Your Hero</h2>
-            <p class="text-slate-500 text-sm mb-4">Customize your cute cartoon hero before the adventure begins!</p>
+            <p class="text-slate-500 text-sm mb-4">Customize your realistic fantasy portrait hero before the adventure begins!</p>
 
             <div class="w-full max-w-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-purple-50/50 p-4 sm:p-6 rounded-2xl border-2 border-purple-200 mb-6">
                 <!-- Preview Canvas -->
@@ -424,7 +424,7 @@
         }
 
         /* --- DATA & STATE MANAGEMENT --- */
-        const STORAGE_KEY = 'fairy_maid_v11_users';
+        const STORAGE_KEY = 'fairy_maid_v22_users';
 
         // 38 Unique Wardrobe Items Database
         const WARDROBE_ITEMS = [
@@ -498,28 +498,28 @@
             { id: 'wand_magic', name: 'Sparkle Wand ✨', type: 'wand', price: 85, rare: false, svg: `<line x1="125" y1="130" x2="140" y2="105" stroke="#854d0e" stroke-width="3"/><polygon points="140,92 143,100 151,102 145,108 147,116 140,112 133,116 135,108 129,102 137,100" fill="#c084fc"/>` }
         ];
 
-        // 12 Detailed Hairstyle Options (Classic Cute Cartoon Style)
+        // 12 Detailed Hairstyle Options (Realistic Fantasy Vector Style)
         const HAIRSTYLES = [
-            { id: 'pigtails', name: 'Cute Pigtails', svg: `<path d="M45 75 Q80 25 115 75 Q125 50 135 45 Q130 80 120 85 Z M45 75 Q35 50 25 45 Q30 80 40 85 Z" fill="{COLOR}"/>` },
-            { id: 'buns', name: 'Space Buns', svg: `<circle cx="45" cy="45" r="16" fill="{COLOR}"/><circle cx="115" cy="45" r="16" fill="{COLOR}"/><path d="M48 70 Q80 35 112 70 Z" fill="{COLOR}"/>` },
-            { id: 'curls', name: 'Curly Puffs', svg: `<circle cx="44" cy="55" r="18" fill="{COLOR}"/><circle cx="116" cy="55" r="18" fill="{COLOR}"/><path d="M48 72 Q80 40 112 72 Z" fill="{COLOR}"/>` },
-            { id: 'long', name: 'Long Wavy', svg: `<path d="M45 70 Q80 30 115 70 Q125 120 115 150 Q80 155 45 150 Q35 120 45 70 Z" fill="{COLOR}"/>` },
-            { id: 'bob', name: 'Short Bob', svg: `<path d="M45 70 Q80 30 115 70 Q120 100 105 110 Q80 105 55 110 Q40 100 45 70 Z" fill="{COLOR}"/>` },
-            { id: 'braids', name: 'Twin Braids', svg: `<path d="M46 72 Q80 35 114 72 Z" fill="{COLOR}"/><path d="M42 75 Q30 110 45 140 Q50 115 45 75 Z" fill="{COLOR}"/><path d="M118 75 Q130 110 115 140 Q110 115 115 75 Z" fill="{COLOR}"/>` },
-            { id: 'ponytail', name: 'High Ponytail', svg: `<path d="M45 72 Q80 35 115 72 Z" fill="{COLOR}"/><path d="M90 45 Q120 15 130 45 Q120 60 90 45 Z" fill="{COLOR}"/>` },
-            { id: 'curlsweep', name: 'Curly Sweep', svg: `<path d="M45 70 Q80 30 115 70 Q130 90 115 105 Q90 90 70 105 Q50 90 45 70 Z" fill="{COLOR}"/>` },
-            { id: 'afropuff', name: 'Afro Puffs', svg: `<circle cx="42" cy="50" r="20" fill="{COLOR}"/><circle cx="118" cy="50" r="20" fill="{COLOR}"/><path d="M48 70 Q80 45 112 70 Z" fill="{COLOR}"/>` },
-            { id: 'twinbuns', name: 'Braided Buns', svg: `<circle cx="45" cy="40" r="17" fill="{COLOR}"/><circle cx="115" cy="40" r="17" fill="{COLOR}"/><path d="M48 70 Q80 35 112 70 Z" fill="{COLOR}"/>` },
-            { id: 'sidebraid', name: 'Side Braid', svg: `<path d="M45 70 Q80 30 115 70 Q125 100 130 130 Q115 135 105 105 Q95 85 45 70 Z" fill="{COLOR}"/>` },
-            { id: 'pixie', name: 'Headband Pixie', svg: `<path d="M46 72 Q80 38 114 72 Z" fill="{COLOR}"/><rect x="48" y="58" width="64" height="8" rx="4" fill="#ec4899"/>` },
+            { id: 'pigtails', name: 'Cute Pigtails', svg: `<path d="M48 68 Q80 25 112 68 Q118 45 128 40 Q124 72 112 78 Z M48 68 Q42 45 32 40 Q36 72 48 78 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'buns', name: 'Space Buns', svg: `<circle cx="48" cy="42" r="15" fill="url(#realHairGrad)"/><circle cx="112" cy="42" r="15" fill="url(#realHairGrad)"/><path d="M50 65 Q80 32 110 65 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'curls', name: 'Curly Puffs', svg: `<circle cx="46" cy="52" r="17" fill="url(#realHairGrad)"/><circle cx="114" cy="52" r="17" fill="url(#realHairGrad)"/><path d="M50 68 Q80 38 110 68 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'long', name: 'Long Wavy', svg: `<path d="M46 65 Q80 25 114 65 Q122 115 112 145 Q80 150 48 145 Q38 115 46 65 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'bob', name: 'Short Bob', svg: `<path d="M46 65 Q80 25 114 65 Q118 95 102 105 Q80 100 58 105 Q42 95 46 65 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'braids', name: 'Twin Braids', svg: `<path d="M48 68 Q80 32 112 68 Z" fill="url(#realHairGrad)"/><path d="M44 70 Q32 100 46 130 Q50 110 46 70 Z" fill="url(#realHairGrad)"/><path d="M116 70 Q128 100 114 130 Q110 110 114 70 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'ponytail', name: 'High Ponytail', svg: `<path d="M48 68 Q80 32 112 68 Z" fill="url(#realHairGrad)"/><path d="M88 42 Q118 18 126 48 Q118 58 88 42 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'curlsweep', name: 'Curly Sweep', svg: `<path d="M46 65 Q80 25 114 65 Q128 85 112 100 Q92 88 72 100 Q52 85 46 65 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'afropuff', name: 'Afro Puffs', svg: `<circle cx="44" cy="48" r="19" fill="url(#realHairGrad)"/><circle cx="116" cy="48" r="19" fill="url(#realHairGrad)"/><path d="M48 65 Q80 42 112 65 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'twinbuns', name: 'Braided Buns', svg: `<circle cx="46" cy="38" r="16" fill="url(#realHairGrad)"/><circle cx="114" cy="38" r="16" fill="url(#realHairGrad)"/><path d="M50 65 Q80 32 110 65 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'sidebraid', name: 'Side Braid', svg: `<path d="M46 65 Q80 25 114 65 Q122 95 128 125 Q112 130 102 100 Q92 80 46 65 Z" fill="url(#realHairGrad)"/>` },
+            { id: 'pixie', name: 'Headband Pixie', svg: `<path d="M48 68 Q80 35 112 68 Z" fill="url(#realHairGrad)"/><rect x="50" y="55" width="60" height="8" rx="4" fill="#ec4899"/>` },
         ];
 
         // 4 Adorable Eye Styles
         const EYE_STYLES = [
-            { id: 'classic', name: 'Classic', svg: `<circle cx="67" cy="80" r="4.5" fill="#1e293b"/><circle cx="93" cy="80" r="4.5" fill="#1e293b"/><circle cx="65.5" cy="78.5" r="1.5" fill="#fff"/><circle cx="91.5" cy="78.5" r="1.5" fill="#fff"/>` },
-            { id: 'starry', name: 'Starry ✨', svg: `<polygon points="67,73 69,78 74,79 70,82 72,87 67,84 62,87 64,82 60,79 65,78" fill="#f59e0b"/><polygon points="93,73 95,78 100,79 96,82 98,87 93,84 88,87 90,82 86,79 91,78" fill="#f59e0b"/><circle cx="65.5" cy="78.5" r="1" fill="#fff"/><circle cx="91.5" cy="78.5" r="1" fill="#fff"/>` },
-            { id: 'winking', name: 'Winking 😉', svg: `<circle cx="67" cy="80" r="4.5" fill="#1e293b"/><circle cx="65.5" cy="78.5" r="1.5" fill="#fff"/><path d="M88 80 Q93 72 98 80" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>` },
-            { id: 'gentle', name: 'Gentle 😊', svg: `<path d="M62 80 Q67 86 72 80" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M88 80 Q93 86 98 80" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>` }
+            { id: 'classic', name: 'Classic', svg: `<circle cx="68" cy="76" r="4.2" fill="#1e293b"/><circle cx="92" cy="76" r="4.2" fill="#1e293b"/><circle cx="67" cy="75" r="1.5" fill="#fff"/><circle cx="91" cy="75" r="1.5" fill="#fff"/>` },
+            { id: 'starry', name: 'Starry ✨', svg: `<polygon points="68,70 70,75 75,76 71,79 73,84 68,81 63,84 65,79 61,76 66,75" fill="#f59e0b"/><polygon points="92,70 94,75 99,76 95,79 97,84 92,81 87,84 89,79 85,76 90,75" fill="#f59e0b"/><circle cx="67" cy="75" r="1" fill="#fff"/><circle cx="91" cy="75" r="1" fill="#fff"/>` },
+            { id: 'winking', name: 'Winking 😉', svg: `<circle cx="68" cy="76" r="4.2" fill="#1e293b"/><circle cx="67" cy="75" r="1.5" fill="#fff"/><path d="M88 76 Q92 69 96 76" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>` },
+            { id: 'gentle', name: 'Gentle 😊', svg: `<path d="M63 76 Q68 82 73 76" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M87 76 Q92 82 97 76" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>` }
         ];
 
         const SKIN_TONES = ['#ffdbac', '#f1c27d', '#e0ac69', '#c68642', '#8d5524', '#ffefd5', '#ffe0bd', '#eac086'];
@@ -554,7 +554,7 @@
             } catch(e) {}
         }
 
-        // --- CLASSIC CUTE CARTOON SVG DOLL RENDERER ---
+        // --- ULTRA-REALISTIC REFINED PORTRAIT SVG DOLL RENDERER ---
         function renderDollSVG(profile, width = 140, height = 200) {
             const skin = profile.skin || '#ffdbac';
             const hairColor = profile.hairColor || '#4a3525';
@@ -568,65 +568,79 @@
             const tiaraItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedTiara);
             const wandItem = WARDROBE_ITEMS.find(i => i.id === profile.equippedWand);
 
-            const hairSvg = hairObj.svg.replace(/\{COLOR\}/g, hairColor);
+            const hairSvg = hairObj.svg; // Uses #realHairGrad
 
             return `
-            <svg width="${width}" height="${height}" viewBox="0 0 160 240" xmlns="http://www.w3.org/2000/svg">
+            <svg width="${width}" height="${height}" viewBox="0 0 160 230" xmlns="http://www.w3.org/2000/svg">
                 <defs>
+                    <radialGradient id="realSkinGrad" cx="40%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"/>
+                        <stop offset="55%" stop-color="${skin}"/>
+                        <stop offset="100%" stop-color="#b47846" stop-opacity="0.45"/>
+                    </radialGradient>
+                    <linearGradient id="realHairGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+                        <stop offset="35%" stop-color="${hairColor}"/>
+                        <stop offset="100%" stop-color="#120c09"/>
+                    </linearGradient>
                     <linearGradient id="rainbow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#f472b6"/>
                         <stop offset="33%" stop-color="#facc15"/>
                         <stop offset="66%" stop-color="#34d399"/>
                         <stop offset="100%" stop-color="#38bdf8"/>
                     </linearGradient>
-                    <filter id="cute-shadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/>
+                    <filter id="real-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#000" flood-opacity="0.22"/>
                     </filter>
                 </defs>
 
                 <!-- Wand -->
-                <g filter="url(#cute-shadow)">
+                <g filter="url(#real-shadow)">
                     ${wandItem ? wandItem.svg : ''}
                 </g>
 
-                <!-- Cute Cartoon Body Group -->
-                <g filter="url(#cute-shadow)">
-                    <!-- Legs -->
-                    <rect x="68" y="150" width="8" height="75" rx="4" fill="${skin}"/>
-                    <rect x="84" y="150" width="8" height="75" rx="4" fill="${skin}"/>
+                <!-- Realistic Refined Body Group -->
+                <g filter="url(#real-shadow)">
+                    <!-- Graceful Legs -->
+                    <rect x="70" y="145" width="8" height="85" rx="4" fill="url(#realSkinGrad)"/>
+                    <rect x="82" y="145" width="8" height="85" rx="4" fill="url(#realSkinGrad)"/>
 
                     <!-- Modesty Shorts -->
-                    <path d="M62 185 L98 185 L96 210 L82 210 L80 195 L78 210 L64 210 Z" fill="#60a5fa"/>
+                    <path d="M64 180 L96 180 L94 205 L82 205 L80 190 L78 205 L66 205 Z" fill="#60a5fa"/>
 
                     <!-- Torso -->
-                    <rect x="60" y="110" width="40" height="45" rx="10" fill="${skin}"/>
+                    <rect x="62" y="105" width="36" height="45" rx="8" fill="url(#realSkinGrad)"/>
 
                     <!-- Arms -->
-                    <rect x="46" y="115" width="10" height="40" rx="5" fill="${skin}"/>
-                    <rect x="104" y="115" width="10" height="40" rx="5" fill="${skin}"/>
+                    <rect x="48" y="110" width="10" height="40" rx="5" fill="url(#realSkinGrad)"/>
+                    <rect x="102" y="110" width="10" height="40" rx="5" fill="url(#realSkinGrad)"/>
 
                     <!-- Clothes Layer -->
                     ${dressItem ? dressItem.svg : (
-                        (topItem ? topItem.svg : '<path d="M60 110 L100 110 L104 155 L56 155 Z" fill="#f472b6"/>') +
+                        (topItem ? topItem.svg : '<path d="M62 105 L98 105 L102 150 L58 150 Z" fill="#f472b6"/>') +
                         (bottomItem ? bottomItem.svg : '')
                     )}
 
                     <!-- Shoes -->
-                    ${shoesItem ? shoesItem.svg : '<ellipse cx="72" cy="230" rx="8" ry="5" fill="#f472b6"/><ellipse cx="88" cy="230" rx="8" ry="5" fill="#f472b6"/>'}
+                    ${shoesItem ? shoesItem.svg : '<ellipse cx="74" cy="228" rx="7" ry="4" fill="#f472b6"/><ellipse cx="86" cy="228" rx="7" ry="4" fill="#f472b6"/>'}
 
-                    <!-- Neck & Head -->
-                    <rect x="73" y="98" width="14" height="15" fill="${skin}"/>
-                    <circle cx="80" cy="78" r="26" fill="${skin}"/>
+                    <!-- Neck & Refined Oval Head -->
+                    <rect x="74" y="95" width="12" height="15" fill="url(#realSkinGrad)"/>
+                    <ellipse cx="80" cy="72" rx="20" ry="23" fill="url(#realSkinGrad)"/>
 
-                    <!-- Soft Blush -->
-                    <circle cx="66" cy="88" r="4.5" fill="#fb7185" opacity="0.6"/>
-                    <circle cx="94" cy="88" r="4.5" fill="#fb7185" opacity="0.6"/>
+                    <!-- Blush & Lip Shading -->
+                    <circle cx="68" cy="80" r="4" fill="#e11d48" opacity="0.3"/>
+                    <circle cx="92" cy="80" r="4" fill="#e11d48" opacity="0.3"/>
+                    <path d="M76 83 Q80 87 84 83" stroke="#be123c" stroke-width="2" fill="none" stroke-linecap="round"/>
 
-                    <!-- Eyes & Face -->
+                    <!-- Detailed Eyes, Lashes & Brows -->
                     ${eyeObj.svg}
-                    <path d="M74 92 Q80 97 86 92" stroke="#e11d48" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M63 70 Q68 67 73 70" stroke="#1e293b" stroke-width="1.2" fill="none"/>
+                    <path d="M87 70 Q92 67 97 70" stroke="#1e293b" stroke-width="1.2" fill="none"/>
+                    <path d="M64 65 Q68 63 72 65" stroke="#475569" stroke-width="1" fill="none"/>
+                    <path d="M88 65 Q92 63 96 65" stroke="#475569" stroke-width="1" fill="none"/>
 
-                    <!-- Hairstyle -->
+                    <!-- Flowing Realistic Hair -->
                     ${hairSvg}
 
                     <!-- Tiara -->
@@ -825,7 +839,7 @@
 
             const level = profile.level || 1;
             const targetBuildCount = level >= 5 ? 5 : (level >= 3 ? 4 : 3);
-            const totalClocks = level >= 5 ? 15 : (level >= 4 ? 18 : 20);
+            const totalClocks = level >= 4 ? 15 : 20;
 
             let shuffled = [...ALL_BUILDINGS_POOL].sort(() => 0.5 - Math.random());
             let selectedBuildings = shuffled.slice(0, targetBuildCount - 1);
