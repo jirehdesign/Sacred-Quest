@@ -1712,12 +1712,30 @@
      * -------------------------------------------------------------------------- */
     const STORAGE_KEY = 'fairy_festival_profiles_v2';
     const ACTIVE_KEY  = 'fairy_festival_active_id_v2';
+    const MAX_SUNSET_STEPS = 20;
+
+    function normalizeHeroProfile(hero) {
+      if (!hero) return hero;
+      const oldMax = Number(hero.maxSunsetSteps) || 8;
+      let steps = typeof hero.sunsetSteps === 'number' ? hero.sunsetSteps : MAX_SUNSET_STEPS;
+      if (oldMax !== MAX_SUNSET_STEPS) {
+        const bonusSteps = Math.max(0, MAX_SUNSET_STEPS - oldMax);
+        steps = Math.min(MAX_SUNSET_STEPS, steps + bonusSteps);
+      }
+      return {
+        ...hero,
+        maxSunsetSteps: MAX_SUNSET_STEPS,
+        sunsetSteps: Math.max(0, Math.min(MAX_SUNSET_STEPS, steps))
+      };
+    }
 
     function loadAllProfiles() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
+        if (!Array.isArray(parsed)) return [];
+        // Migrate any existing saved heroes from 8 sunset steps to 20 sunset steps
+        return parsed.map(normalizeHeroProfile);
       } catch (e) {
         return [];
       }
@@ -1749,8 +1767,8 @@
         },
         level: 1,
         builtStructures: [],
-        sunsetSteps: 8,
-        maxSunsetSteps: 8,
+        sunsetSteps: MAX_SUNSET_STEPS,
+        maxSunsetSteps: MAX_SUNSET_STEPS,
         raincloudActive: false,
         unlockedItems: [],
         equipped: {
@@ -1820,7 +1838,25 @@
     }
 
     function getActiveHero() {
-      return AppState.profiles.find(p => p.id === AppState.activeHeroId) || null;
+      const hero = AppState.profiles.find(p => p.id === AppState.activeHeroId) || null;
+      if (hero && hero.maxSunsetSteps !== MAX_SUNSET_STEPS) {
+        const normalized = normalizeHeroProfile(hero);
+        persistHero(normalized);
+        return normalized;
+      }
+      return hero;
+    }
+
+    function persistHero(hero) {
+      const normalized = normalizeHeroProfile(hero);
+      const idx = AppState.profiles.findIndex(p => p.id === normalized.id);
+      if (idx !== -1) {
+        AppState.profiles[idx] = normalized;
+      } else {
+        AppState.profiles.push(normalized);
+      }
+      saveAllProfiles(AppState.profiles);
+      localStorage.setItem(ACTIVE_KEY, normalized.id);
     }
 
     function persistHero(hero) {
@@ -2022,6 +2058,12 @@
           AppState.isSpinning = false;
           hero.sunsetSteps = Math.max(0, hero.sunsetSteps - 1);
           hero.stats.spinsCount = (hero.stats.spinsCount || 0) + 1;
+
+          if (hero.sunsetSteps === 3) {
+            setTimeout(() => {
+              showToast('🌇 Golden hour! Only 3 steps left until sunset!', 'warn');
+            }, 900);
+          }
 
           if (prize.type !== 'jackpot' && prize.amount > 0) {
             hero.commodities[prize.type] = (hero.commodities[prize.type] || 0) + prize.amount;
@@ -2445,22 +2487,20 @@
                         const met = have >= req;
                         const meta = COMMODITY_META[k];
                         return `
-                          <span class="px-3 py-1.5 rounded-xl font-bold text-sm border-2 flex items-center gap-1 ${
+                          <span class="px-3 py-1 rounded-xl font-bold text-xs sm:text-sm border ${
                             met
-                              ? 'bg-emerald-100 border-emerald-400 text-emerald-900'
-                              : 'bg-white border-rose-200 text-slate-700'
+                              ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                              : 'bg-white text-slate-700 border-slate-300'
                           }">
-                            <span>${meta.emoji}</span>
-                            <span>${have}/${req}</span>
-                            ${met ? '<span>✓</span>' : ''}
+                            ${meta.emoji} ${have}/${req} ${meta.singular}
                           </span>
                         `;
                       }).join('')}
                     </div>
 
                     <button onclick="buildCurrentStructure(event)" ${canBuild ? '' : 'disabled'}
-                      class="fairy-btn px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-bold text-base sm:text-lg flex items-center gap-2">
-                      <span>✨ Build ${currentStruct.name}!</span>
+                      class="fairy-btn px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-bold text-base sm:text-lg">
+                      ${canBuild ? `✨ Build ${currentStruct.name}!` : 'Gather Treasures to Build'}
                     </button>
                   </div>
                 </div>
@@ -2468,25 +2508,51 @@
             `}
           </section>
 
-          <!-- Bottom Two-Column Interactive Playground: Magic Compass + Wishing Well -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Main Gameplay Grid: Magic Compass (Left) & Wishing Well (Right) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+            <!-- LEFT: Magic Compass Spinner Wheel -->
             <section class="lg:col-span-7 fairy-panel rounded-3xl p-5 flex flex-col items-center relative overflow-hidden">
-              <div class="w-full flex flex-wrap items-center justify-between gap-2 mb-3">
-                <h2 class="text-xl sm:text-2xl font-bold text-purple-950 flex items-center gap-2">
-                  <span>🧭</span>
-                  <span>Magic Compass</span>
-                </h2>
+              <div class="w-full flex flex-col gap-2 mb-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <h2 class="text-xl sm:text-2xl font-bold text-purple-950 flex items-center gap-2">
+                    <span>🧭</span>
+                    <span>Magic Compass</span>
+                  </h2>
 
-                <div class="flex items-center gap-1.5 bg-amber-50 px-3 py-1.5 rounded-2xl border border-amber-300">
-                  <span class="text-sm font-bold text-amber-900">
-                    ${hero.sunsetSteps > 0 ? '☀️ Sun Steps:' : '🌙 Sunset!'}
-                  </span>
-                  <div class="flex gap-1">
-                    ${Array.from({ length: hero.maxSunsetSteps }).map((_, i) => `
-                      <span class="w-2.5 h-2.5 rounded-full ${i < hero.sunsetSteps ? 'bg-amber-400' : 'bg-indigo-900/25'}"></span>
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs sm:text-sm font-bold ${
+                    hero.sunsetSteps === 0
+                      ? 'bg-indigo-950 text-amber-200 border-indigo-700'
+                      : hero.sunsetSteps <= 4
+                        ? 'bg-orange-100 text-orange-900 border-orange-300'
+                        : 'bg-amber-100 text-amber-900 border-amber-300'
+                  }">
+                    <span>${hero.sunsetSteps === 0 ? '🌙' : hero.sunsetSteps <= 4 ? '🌇' : '☀️'}</span>
+                    <span>${hero.sunsetSteps > 0 ? `Sunset Steps Left: ${hero.sunsetSteps} / ${MAX_SUNSET_STEPS}` : `Sunset Steps Left: 0 / ${MAX_SUNSET_STEPS} • Sunset!`}</span>
+                  </div>
+                </div>
+
+                <!-- 20-Step Adaptive Sun/Moon Progress Bar & Pips -->
+                <div class="w-full bg-gradient-to-r from-amber-50 via-orange-50 to-indigo-50 px-3 py-2 rounded-2xl border border-amber-200/90">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <span class="text-xs" aria-hidden="true">🌅</span>
+                    <div class="flex-1 h-2.5 rounded-full bg-indigo-950/15 overflow-hidden p-0.5">
+                      <div class="h-full rounded-full transition-all duration-500 ${
+                        hero.sunsetSteps <= 4
+                          ? 'bg-gradient-to-r from-rose-500 to-amber-500'
+                          : 'bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-400'
+                      }" style="width: ${Math.round((hero.sunsetSteps / MAX_SUNSET_STEPS) * 100)}%"></div>
+                    </div>
+                    <span class="text-xs" aria-hidden="true">🌙</span>
+                  </div>
+                  <div class="grid gap-1" style="grid-template-columns: repeat(20, minmax(0, 1fr));">
+                    ${Array.from({ length: MAX_SUNSET_STEPS }).map((_, i) => `
+                      <span class="h-2 rounded-full transition-all ${
+                        i < hero.sunsetSteps
+                          ? (hero.sunsetSteps <= 4 ? 'bg-orange-400 shadow-xs' : 'bg-amber-400 shadow-xs')
+                          : 'bg-indigo-950/15'
+                      }" title="Step ${i + 1} of ${MAX_SUNSET_STEPS}"></span>
                     `).join('')}
                   </div>
-                  <span class="text-xs font-bold text-amber-900 ml-1">${hero.sunsetSteps}/${hero.maxSunsetSteps}</span>
                 </div>
               </div>
 
@@ -2543,7 +2609,7 @@
                   <button onclick="restUntilSunrise(event)"
                     class="fairy-btn w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-amber-950 font-bold text-lg sm:text-xl flex items-center justify-center gap-2">
                     <span>🌅</span>
-                    <span>Rest Until Sunrise (+8 Steps)</span>
+                    <span>Rest Until Sunrise (+${MAX_SUNSET_STEPS} Steps)</span>
                   </button>
                 `}
               </div>
@@ -3262,9 +3328,10 @@
     function restUntilSunrise(evt) {
       const hero = getActiveHero();
       if (!hero) return;
-      hero.sunsetSteps = hero.maxSunsetSteps;
+      hero.maxSunsetSteps = MAX_SUNSET_STEPS;
+      hero.sunsetSteps = MAX_SUNSET_STEPS;
       SoundEngine.playCloudClear();
-      showToast('🌅 Good morning! A bright new day begins with 8 Sun Steps!', 'success');
+      showToast(`🌅 Good morning! A bright new day begins with ${MAX_SUNSET_STEPS} Sun Steps!`, 'success');
       if (evt && evt.clientX) {
         spawnSparkleBurst(evt.clientX, evt.clientY, ['☀️', '🌸', '✨']);
       }
