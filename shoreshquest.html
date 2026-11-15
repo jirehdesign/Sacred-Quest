@@ -1,0 +1,3269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shoresh Quest | מסע בעברית — Interactive Hebrew Modules &amp; Arenas</title>
+
+  <!-- Google Fonts: Heebo & Frank Ruhl Libre for crisp RTL Hebrew + Nikud, Inter for English UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            parchment: {
+              50: '#FCFBF7',
+              100: '#F7F2E7',
+              200: '#EDE3D0',
+              300: '#DDD0B6',
+            },
+            indigo: {
+              700: '#253963',
+              800: '#1B2A4A',
+              900: '#111C33',
+            },
+            turquoise: {
+              100: '#E0F5F7',
+              400: '#26B5C4',
+              500: '#0E8A96',
+              600: '#0A6C76',
+            },
+            gold: {
+              100: '#FDF4DC',
+              300: '#F5CE6C',
+              400: '#EAB63E',
+              500: '#D4981C',
+              600: '#A8740E',
+            },
+            coral: {
+              100: '#FDEBE6',
+              500: '#D95D39',
+              600: '#B84726',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            hebrew: ['Heebo', 'Arial', 'sans-serif'],
+            serifHeb: ['Frank Ruhl Libre', 'Heebo', 'serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Base Desert-Scholastic Aesthetic */
+    body {
+      background-color: #F7F2E7;
+      color: #111C33;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Hebrew RTL Typography */
+    .hebrew-text {
+      font-family: 'Heebo', sans-serif;
+      direction: rtl;
+      unicode-bidi: isolate;
+      line-height: 1.5;
+    }
+
+    .hebrew-display {
+      font-family: 'Frank Ruhl Libre', 'Heebo', serif;
+      direction: rtl;
+      unicode-bidi: isolate;
+      line-height: 1.45;
+    }
+
+    /* Subtle Geometric Parchment Backdrop */
+    .desert-pattern {
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(14, 138, 150, 0.07) 0%, rgba(14, 138, 150, 0.07) 85px, transparent 86px),
+        radial-gradient(circle at 90% 85%, rgba(234, 182, 62, 0.09) 0%, rgba(234, 182, 62, 0.09) 110px, transparent 111px),
+        linear-gradient(135deg, rgba(27, 42, 74, 0.025) 25%, transparent 25%);
+      background-size: 100% 100%, 100% 100%, 52px 52px;
+    }
+
+    /* Tactile Interactive Tile Styling */
+    .tile-btn {
+      transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
+      box-shadow: 0 3px 0 #DDD0B6;
+    }
+    .tile-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 0 #C4B393;
+    }
+    .tile-btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #DDD0B6;
+    }
+
+    .tile-selected {
+      background-color: #1B2A4A !important;
+      color: #FCFBF7 !important;
+      border-color: #111C33 !important;
+      box-shadow: 0 3px 0 #091020 !important;
+    }
+
+    /* ===================================================================== */
+    /* CUSTOM EDUCATIONAL MORPHOLOGY & AUDIO ANIMATIONS                      */
+    /* ===================================================================== */
+
+    /* 1. Visual Audio Equalizer Bars */
+    @keyframes eqWave {
+      0%, 100% { transform: scaleY(0.28); }
+      50% { transform: scaleY(1); }
+    }
+    .eq-bar {
+      transform-origin: bottom;
+      transform: scaleY(0.3);
+      transition: background-color 0.2s ease;
+    }
+    .eq-active .eq-bar {
+      background-color: #0E8A96;
+      animation: eqWave 0.65s ease-in-out infinite;
+    }
+    .eq-active .eq-bar:nth-child(1) { animation-delay: 0.0s; }
+    .eq-active .eq-bar:nth-child(2) { animation-delay: 0.15s; }
+    .eq-active .eq-bar:nth-child(3) { animation-delay: 0.30s; }
+    .eq-active .eq-bar:nth-child(4) { animation-delay: 0.10s; }
+
+    /* 2. Card Entrance & Morph Pulse */
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.95) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop {
+      animation: popIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes morphFlip {
+      0% { opacity: 0.3; transform: scale(0.92) rotateX(18deg); }
+      60% { opacity: 1; transform: scale(1.03) rotateX(0deg); }
+      100% { opacity: 1; transform: scale(1) rotateX(0deg); }
+    }
+    .animate-morph {
+      animation: morphFlip 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* 3. Prefix Slide-and-Attach (RTL: slides from right to left onto base word) */
+    @keyframes prefixSlideRTL {
+      0% { opacity: 0; transform: translateX(32px) scale(1.15); }
+      70% { opacity: 1; transform: translateX(-3px) scale(1.02); }
+      100% { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    .animate-prefix-attach {
+      display: inline-block;
+      animation: prefixSlideRTL 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* 4. Magnetic Article Fusion (He vanishes vs He stays) */
+    @keyframes vanishArticle {
+      0% { opacity: 1; transform: scale(1) translateY(0); }
+      50% { opacity: 0.45; transform: scale(0.75) translateY(-10px); }
+      100% { opacity: 0.28; transform: scale(0.65) translateY(-4px); text-decoration: line-through; }
+    }
+    .animate-vanish-he {
+      animation: vanishArticle 0.6s ease forwards;
+    }
+
+    @keyframes magneticPull {
+      0% { letter-spacing: 0.28em; opacity: 0.5; transform: scale(0.94); }
+      100% { letter-spacing: 0.01em; opacity: 1; transform: scale(1); }
+    }
+    .animate-magnetic-fuse {
+      animation: magneticPull 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* 5. X-Ray Shoresh Root Extraction Glow & Float */
+    @keyframes xrayGlow {
+      0% { transform: scale(0.85); box-shadow: 0 0 0 rgba(234, 182, 62, 0); }
+      50% { transform: scale(1.12); box-shadow: 0 0 18px rgba(234, 182, 62, 0.75); }
+      100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 182, 62, 0.4); }
+    }
+    .animate-xray-root {
+      animation: xrayGlow 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+    }
+    .animate-shake {
+      animation: shake 0.35s ease-in-out;
+    }
+  </style>
+</head>
+<body class="desert-pattern min-h-screen flex flex-col justify-between selection:bg-gold-300 selection:text-indigo-900">
+
+  <!-- ===================================================================== -->
+  <!-- TOP LEARNER CONTROLS BAR (ALWAYS VISIBLE)                             -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-40 bg-parchment-50/95 backdrop-blur-md border-b border-parchment-300 shadow-xs">
+    <div class="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+
+      <!-- Brand Logo / Home Button -->
+      <button onclick="app.goHome()" class="flex items-center gap-2.5 text-left group focus:outline-none cursor-pointer">
+        <div class="w-10 h-10 rounded-xl bg-indigo-800 flex items-center justify-center relative overflow-hidden shadow-sm group-hover:scale-105 transition-transform">
+          <div class="w-5 h-5 rounded-full bg-turquoise-400 -translate-x-1 -translate-y-1"></div>
+          <div class="w-4 h-4 bg-gold-400 rotate-45 translate-x-1.5 translate-y-1.5"></div>
+          <span class="hebrew-display text-white font-black text-xl relative z-10">ש</span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-indigo-900 text-base sm:text-lg tracking-tight">Shoresh Quest</span>
+            <span class="hebrew-display text-turquoise-600 font-bold text-base sm:text-lg">מסע בעברית</span>
+          </div>
+          <p class="text-[11px] text-indigo-700/75 hidden sm:block font-medium">Interactive Training Modules &amp; Grammar Arenas</p>
+        </div>
+      </button>
+
+      <!-- Global Learner Controls -->
+      <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+
+        <!-- 1. Nikud Toggle (נְקוּדוֹת) -->
+        <button id="toggleNikudBtn" onclick="app.toggleNikud()" title="Toggle Hebrew Vowel Points (Nikud)"
+          class="px-2.5 py-1.5 rounded-xl border text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+          <span class="hebrew-text text-base leading-none font-bold">נְקוּדוֹת</span>
+          <span id="nikudBadge" class="px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase">ON</span>
+        </button>
+
+        <!-- 2. Transliteration Toggle (Aa) -->
+        <button id="toggleTranslitBtn" onclick="app.toggleTranslit()" title="Toggle Phonetic Transliteration"
+          class="px-2.5 py-1.5 rounded-xl border text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+          <span class="font-bold">Aa</span>
+          <span id="translitBadge" class="px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase">ON</span>
+        </button>
+
+        <!-- 3. Speech Speed Toggle (1.0x / 0.75x Slow) -->
+        <button id="toggleSpeedBtn" onclick="app.toggleSpeechRate()" title="Toggle Hebrew Speech Rate (Normal 1.0x vs Slow 0.75x)"
+          class="px-2.5 py-1.5 rounded-xl border border-parchment-300 bg-white hover:bg-parchment-100 text-indigo-900 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+          <span>🐢</span>
+          <span id="speedBadge" class="font-bold text-turquoise-600">1.0x</span>
+        </button>
+
+        <!-- 4. SFX Mute Toggle + Visual Audio Equalizer -->
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-parchment-300 bg-white">
+          <button id="toggleSfxBtn" onclick="app.toggleSfx()" title="Mute/Unmute Sound Effects"
+            class="text-sm leading-none hover:scale-110 transition-transform cursor-pointer" aria-label="Toggle Sound Effects">
+            <span id="sfxIcon">🔔</span>
+          </button>
+          <span class="text-parchment-300">|</span>
+          <!-- Visual Audio Equalizer Bars -->
+          <div id="audioEqualizer" class="flex items-end gap-0.5 h-4 px-0.5" title="Hebrew Audio Visualizer">
+            <span class="eq-bar w-1 h-3.5 bg-indigo-700/35 rounded-full"></span>
+            <span class="eq-bar w-1 h-4 bg-indigo-700/35 rounded-full"></span>
+            <span class="eq-bar w-1 h-3 bg-indigo-700/35 rounded-full"></span>
+            <span class="eq-bar w-1 h-4 bg-indigo-700/35 rounded-full"></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Secondary Progress & XP Tracker Strip -->
+    <div class="bg-parchment-100/95 border-t border-parchment-200 px-3 sm:px-6 py-1.5">
+      <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+        <div class="flex items-center gap-3 sm:gap-4 font-semibold text-indigo-900">
+          <span class="inline-flex items-center gap-1.5">
+            <span>🎓</span>
+            <span>Modules Completed: <strong id="modulesCountDisplay" class="text-turquoise-600">0/3</strong></span>
+          </span>
+          <span class="text-parchment-300 hidden sm:inline">|</span>
+          <span class="hidden sm:inline-flex items-center gap-1.5">
+            <span>⭐</span>
+            <span>Arena Stars: <strong id="arenaStarsDisplay" class="text-gold-600">0/4</strong></span>
+          </span>
+        </div>
+
+        <div class="flex items-center gap-3 font-semibold text-indigo-900">
+          <span class="inline-flex items-center gap-1" title="Current Streak">
+            <span>⚡</span>
+            <span id="streakDisplay">0</span>
+          </span>
+          <span class="inline-flex items-center gap-1.5 bg-white px-2.5 py-0.5 rounded-lg border border-parchment-300">
+            <span class="text-gold-500">★</span>
+            <span id="xpDisplay">0 XP</span>
+            <span class="text-parchment-300">|</span>
+            <span id="levelDisplay" class="text-indigo-700">Lvl 1</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN DYNAMIC VIEWPORT (HOME HUB / TRAINING MODULES / PRACTICE ARENAS) -->
+  <!-- ===================================================================== -->
+  <main id="appMain" class="flex-grow max-w-5xl w-full mx-auto px-3 sm:px-6 py-6 sm:py-8">
+    <!-- Rendered dynamically -->
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-parchment-300 bg-parchment-50/90 py-4 px-4 text-xs text-indigo-700/80">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+      <span><strong>Shoresh Quest (מסע בעברית)</strong> — Interactive Intermediate Hebrew Training &amp; Practice</span>
+      <div class="flex items-center gap-4">
+        <span id="ttsStatusLabel" class="text-turquoise-600 font-medium">🔊 Hebrew Audio Ready</span>
+        <button onclick="app.openResetModal()" class="text-coral-600 hover:underline font-semibold cursor-pointer">Reset Progress</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- CUSTOM RESET CONFIRMATION MODAL (NEVER USE window.confirm/alert)      -->
+  <!-- ===================================================================== -->
+  <div id="resetModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-indigo-900/60 backdrop-blur-xs p-4">
+    <div class="bg-parchment-50 border-2 border-indigo-800 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-pop">
+      <h3 class="text-lg font-extrabold text-indigo-900 mb-2">Reset All Learning Progress?</h3>
+      <p class="text-sm text-indigo-700 mb-5">This will clear your completed Training Modules, Arena stars, XP, and streaks.</p>
+      <div class="flex justify-end gap-2.5">
+        <button onclick="app.closeResetModal()" class="px-4 py-2 rounded-xl border border-parchment-300 bg-white font-semibold text-indigo-800 hover:bg-parchment-100 cursor-pointer">Cancel</button>
+        <button onclick="app.confirmResetProgress()" class="px-4 py-2 rounded-xl bg-coral-500 hover:bg-coral-600 text-white font-semibold cursor-pointer">Yes, Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- COMPLETE JAVASCRIPT CURRICULUM, AUDIO & ANIMATION ENGINE              -->
+  <!-- ===================================================================== -->
+  <script>
+    /**
+     * =========================================================================
+     * 1. AUDIO & SPEECH SYNTHESIS ENGINE (Web Speech API + Web Audio API)
+     * =========================================================================
+     */
+    const AudioEngine = {
+      ctx: null,
+      sfxEnabled: true,
+      speechRate: 1.0, // 1.0 or 0.75
+      speakingTimer: null,
+      hasHebrewVoice: null,
+
+      initAudioContext() {
+        if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      },
+
+      playTone(freq, type = 'sine', duration = 0.14, delay = 0, gainVal = 0.11) {
+        if (!this.sfxEnabled) return;
+        try {
+          this.initAudioContext();
+          if (!this.ctx) return;
+          if (this.ctx.state === 'suspended') this.ctx.resume();
+
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
+
+          gain.gain.setValueAtTime(0.001, this.ctx.currentTime + delay);
+          gain.gain.exponentialRampToValueAtTime(gainVal, this.ctx.currentTime + delay + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + delay);
+          osc.stop(this.ctx.currentTime + delay + duration + 0.02);
+        } catch (e) {
+          // Safe fallback if blocked
+        }
+      },
+
+      pop() {
+        this.playTone(540, 'triangle', 0.07, 0, 0.08);
+      },
+
+      chime(streak = 1) {
+        const boost = Math.min(streak * 20, 140);
+        this.playTone(523.25 + boost, 'sine', 0.14, 0, 0.12);
+        this.playTone(659.25 + boost, 'sine', 0.20, 0.09, 0.13);
+      },
+
+      wrong() {
+        this.playTone(235, 'sawtooth', 0.15, 0, 0.07);
+        this.playTone(190, 'sawtooth', 0.20, 0.10, 0.07);
+      },
+
+      fanfare() {
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((n, idx) => this.playTone(n, 'triangle', 0.24, idx * 0.1, 0.13));
+      },
+
+      setEqualizerActive(active) {
+        const eq = document.getElementById('audioEqualizer');
+        if (!eq) return;
+        if (active) {
+          eq.classList.add('eq-active');
+        } else {
+          eq.classList.remove('eq-active');
+        }
+      },
+
+      detectHebrewVoice() {
+        if (!('speechSynthesis' in window)) return null;
+        const voices = window.speechSynthesis.getVoices();
+        const heVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('he'));
+        this.hasHebrewVoice = Boolean(heVoice);
+        const statusEl = document.getElementById('ttsStatusLabel');
+        if (statusEl) {
+          statusEl.textContent = heVoice
+            ? `🔊 Hebrew Voice Active (${heVoice.name.split(' ')[0]})`
+            : '🔊 Visual Audio Guide Active (he-IL)';
+        }
+        return heVoice || null;
+      },
+
+      speakHebrew(rawText, onDone = null) {
+        if (!rawText) return;
+        const cleanText = rawText.replace(/[\u0591-\u05C7]/g, '').replace(/[־•.]/g, ' ').trim();
+
+        // Always trigger visual equalizer animation
+        clearTimeout(this.speakingTimer);
+        this.setEqualizerActive(true);
+
+        const simulatedDuration = Math.max(750, cleanText.length * (this.speechRate < 1 ? 115 : 85));
+
+        if (!('speechSynthesis' in window)) {
+          this.speakingTimer = setTimeout(() => {
+            this.setEqualizerActive(false);
+            if (onDone) onDone();
+          }, simulatedDuration);
+          return;
+        }
+
+        try {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(cleanText);
+          utterance.lang = 'he-IL';
+          utterance.rate = this.speechRate;
+
+          const heVoice = this.detectHebrewVoice();
+          if (heVoice) utterance.voice = heVoice;
+
+          let finished = false;
+          const finishSpeech = () => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(this.speakingTimer);
+            this.setEqualizerActive(false);
+            if (onDone) onDone();
+          };
+
+          utterance.onend = finishSpeech;
+          utterance.onerror = () => {
+            // Graceful fallback visual pulse even if browser has no local he-IL TTS pack
+            this.speakingTimer = setTimeout(finishSpeech, simulatedDuration);
+          };
+
+          // Safety timeout in case onend does not fire on certain mobile browsers
+          this.speakingTimer = setTimeout(finishSpeech, simulatedDuration + 1200);
+          window.speechSynthesis.speak(utterance);
+        } catch (e) {
+          this.speakingTimer = setTimeout(() => {
+            this.setEqualizerActive(false);
+            if (onDone) onDone();
+          }, simulatedDuration);
+        }
+      },
+
+      speakSequence(textArray) {
+        if (!textArray || !textArray.length) return;
+        let idx = 0;
+        const next = () => {
+          if (idx >= textArray.length) return;
+          const item = textArray[idx++];
+          this.speakHebrew(item, () => {
+            setTimeout(next, 240);
+          });
+        };
+        next();
+      }
+    };
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => AudioEngine.detectHebrewVoice();
+    }
+
+    /**
+     * =========================================================================
+     * 2. TRAINING MODULES CURRICULUM DATA (MODULES 1, 2, AND 3)
+     * =========================================================================
+     */
+    const MODULES_DATA = {
+      mod1: {
+        id: 'mod1',
+        num: '01',
+        title: 'Plurals & Adjectives',
+        heTitle: 'רַבִּים וּתְאָרִים',
+        color: 'coral',
+        steps: [
+          {
+            title: 'Step 1: Gender & Number Agreement',
+            badge: 'Core Principle',
+            intro: 'In Hebrew, adjectives always follow the noun and must agree in both <strong>Gender</strong> (Masculine / Feminine) and <strong>Number</strong> (Singular / Plural). Toggle between Singular and Plural below to see and hear the suffixes lock into place!',
+            pairs: [
+              {
+                gender: 'Masculine (זָכָר)',
+                singNoun: { nikud: 'יֶלֶד', plain: 'ילד', tr: 'yeled', stem: 'יֶלֶד', suffix: '' },
+                singAdj:  { nikud: 'טוֹב', plain: 'טוב', tr: 'tov', stem: 'טוֹב', suffix: '' },
+                plurNoun: { nikud: 'יְלָדִים', plain: 'ילדים', tr: 'yeladim', stem: 'יְלָד', suffix: 'ִים' },
+                plurAdj:  { nikud: 'טוֹבִים', plain: 'טובים', tr: 'tovim', stem: 'טוֹב', suffix: 'ִים' },
+                english: 'a good boy → good boys'
+              },
+              {
+                gender: 'Feminine (נְקֵבָה)',
+                singNoun: { nikud: 'יַלְדָּה', plain: 'ילדה', tr: 'yalda', stem: 'יַלְדּ', suffix: 'ָה' },
+                singAdj:  { nikud: 'טוֹבָה', plain: 'טובה', tr: 'tova', stem: 'טוֹב', suffix: 'ָה' },
+                plurNoun: { nikud: 'יְלָדוֹת', plain: 'ילדות', tr: 'yeladot', stem: 'יְלָד', suffix: 'וֹת' },
+                plurAdj:  { nikud: 'טוֹבוֹת', plain: 'טובות', tr: 'tovot', stem: 'טוֹב', suffix: 'וֹת' },
+                english: 'a good girl → good girls'
+              },
+              {
+                gender: 'Masculine (זָכָר)',
+                singNoun: { nikud: 'סֵפֶר', plain: 'ספר', tr: 'sefer', stem: 'סֵפֶר', suffix: '' },
+                singAdj:  { nikud: 'חָדָשׁ', plain: 'חדש', tr: 'khadash', stem: 'חָדָשׁ', suffix: '' },
+                plurNoun: { nikud: 'סְפָרִים', plain: 'ספרים', tr: 'sfarim', stem: 'סְפָר', suffix: 'ִים' },
+                plurAdj:  { nikud: 'חֲדָשִׁים', plain: 'חדשים', tr: 'khadashim', stem: 'חֲדָשׁ', suffix: 'ִים' },
+                english: 'a new book → new books'
+              },
+              {
+                gender: 'Feminine (נְקֵבָה)',
+                singNoun: { nikud: 'דִּירָה', plain: 'דירה', tr: 'dira', stem: 'דִּיר', suffix: 'ָה' },
+                singAdj:  { nikud: 'יָפָה', plain: 'יפה', tr: 'yafa', stem: 'יָפ', suffix: 'ָה' },
+                plurNoun: { nikud: 'דִּירוֹת', plain: 'דירות', tr: 'dirot', stem: 'דִּיר', suffix: 'וֹת' },
+                plurAdj:  { nikud: 'יָפוֹת', plain: 'יפות', tr: 'yafot', stem: 'יָפ', suffix: 'וֹת' },
+                english: 'a nice apartment → nice apartments'
+              }
+            ],
+            miniChecks: [
+              {
+                prompt: 'Transform "יַלְדָּה טוֹבָה" (a good girl) into the plural:',
+                options: [
+                  { nikud: 'יְלָדוֹת טוֹבוֹת', plain: 'ילדות טובות', tr: 'yeladot tovot' },
+                  { nikud: 'יְלָדִים טוֹבִים', plain: 'ילדים טובים', tr: 'yeladim tovim' },
+                  { nikud: 'יְלָדוֹת טוֹבִים', plain: 'ילדות טובים', tr: 'yeladot tovim' }
+                ],
+                correctIdx: 0,
+                explanation: 'Feminine singular -ָה becomes feminine plural -וֹת on both the noun and adjective: יְלָדוֹת טוֹבוֹת.'
+              }
+            ]
+          },
+          {
+            title: 'Step 2: Irregular "Rule-Breaker" Plurals',
+            badge: 'Critical Rule',
+            intro: 'Some high-frequency Hebrew nouns take the "opposite" plural ending! However, <strong>the adjective ALWAYS follows the noun’s true grammatical gender</strong>—never the noun’s plural ending. Tap <strong>"Transform to Plural ✨"</strong> on any card to watch and hear the morph!',
+            irregularCards: [
+              {
+                trueGender: 'MASCULINE Noun (Takes -וֹת!)',
+                genderType: 'masc',
+                sing: { nikud: 'שֻׁלְחָן גָּדוֹל', plain: 'שולחן גדול', tr: 'shulkhan gadol' },
+                plur: { nikud: 'שֻׁלְחָנוֹת גְּדוֹלִים', plain: 'שולחנות גדולים', tr: 'shulkhanot gdolim' },
+                english: 'a big table → big tables',
+                note: 'שֻׁלְחָן is masculine, so despite -וֹת on שֻׁלְחָנוֹת, the adjective takes -ִים (גְּדוֹלִים).'
+              },
+              {
+                trueGender: 'MASCULINE Noun (Takes -וֹת!)',
+                genderType: 'masc',
+                sing: { nikud: 'לַיְלָה אָרוֹךְ', plain: 'לילה ארוך', tr: 'layla arokh' },
+                plur: { nikud: 'לֵילוֹת אֲרוּכִים', plain: 'לילות ארוכים', tr: 'leilot arukhim' },
+                english: 'a long night → long nights',
+                note: 'לַיְלָה is masculine, so its plural לֵילוֹת pairs with masculine plural אֲרוּכִים (-ִים).'
+              },
+              {
+                trueGender: 'MASCULINE Noun (Takes -וֹת!)',
+                genderType: 'masc',
+                sing: { nikud: 'חַלּוֹן פָּתוּחַ', plain: 'חלון פתוח', tr: 'khalon patuakh' },
+                plur: { nikud: 'חַלּוֹנוֹת פְּתוּחִים', plain: 'חלונות פתוחים', tr: 'khalonot ptukhim' },
+                english: 'an open window → open windows',
+                note: 'חַלּוֹן is masculine → חַלּוֹנוֹת פְּתוּחִים (-ִים).'
+              },
+              {
+                trueGender: 'FEMININE Noun (Takes -ִים!)',
+                genderType: 'fem',
+                sing: { nikud: 'עִיר גְּדוֹלָה', plain: 'עיר גדולה', tr: 'ir gdola' },
+                plur: { nikud: 'עָרִים גְּדוֹלוֹת', plain: 'ערים גדולות', tr: 'arim gdolot' },
+                english: 'a big city → big cities',
+                note: 'עִיר is feminine, so even though עָרִים ends in -ִים, the adjective takes -וֹת (גְּדוֹלוֹת).'
+              },
+              {
+                trueGender: 'FEMININE Noun (Takes -ִים!)',
+                genderType: 'fem',
+                sing: { nikud: 'אִשָּׁה חֲכָמָה', plain: 'אישה חכמה', tr: 'isha khakhama' },
+                plur: { nikud: 'נָשִׁים חֲכָמוֹת', plain: 'נשים חכמות', tr: 'nashim khakhamot' },
+                english: 'a wise woman → wise women',
+                note: 'אִשָּׁה → נָשִׁים is feminine plural, requiring חֲכָמוֹת (-וֹת).'
+              }
+            ],
+            miniChecks: [
+              {
+                prompt: 'Which adjective correctly completes "עָרִים _____"? (big cities — עִיר is feminine)',
+                options: [
+                  { nikud: 'גְּדוֹלוֹת', plain: 'גדולות', tr: 'gdolot' },
+                  { nikud: 'גְּדוֹלִים', plain: 'גדולים', tr: 'gdolim' },
+                  { nikud: 'גְּדוֹלָה', plain: 'גדולה', tr: 'gdola' }
+                ],
+                correctIdx: 0,
+                explanation: 'Because עִיר is a feminine noun, עָרִים stays feminine and takes גְּדוֹלוֹת!'
+              }
+            ]
+          },
+          {
+            title: 'Step 3: Guided Agreement Workshop',
+            badge: '4-Question Workshop',
+            intro: 'Apply what you learned! Select the matching plural adjective tile for each Hebrew noun phrase below. Listen to the pronunciation and check your mastery.',
+            miniChecks: [
+              {
+                prompt: '1/4: Complete "שֻׁלְחָנוֹת _____" (big tables — שֻׁלְחָן is masculine)',
+                options: [
+                  { nikud: 'גְּדוֹלִים', plain: 'גדולים', tr: 'gdolim' },
+                  { nikud: 'גְּדוֹלוֹת', plain: 'גדולות', tr: 'gdolot' },
+                  { nikud: 'גָּדוֹל', plain: 'גדול', tr: 'gadol' }
+                ],
+                correctIdx: 0,
+                explanation: 'שֻׁלְחָן is masculine, so שֻׁלְחָנוֹת requires masculine plural גְּדוֹלִים.'
+              },
+              {
+                prompt: '2/4: Complete "נָשִׁים _____" (wise women — אִשָּׁה is feminine)',
+                options: [
+                  { nikud: 'חֲכָמִים', plain: 'חכמים', tr: 'khakhamim' },
+                  { nikud: 'חֲכָמוֹת', plain: 'חכמות', tr: 'khakhamot' },
+                  { nikud: 'חֲכָמָה', plain: 'חכמה', tr: 'khakhama' }
+                ],
+                correctIdx: 1,
+                explanation: 'נָשִׁים (women) is feminine plural, so the adjective ends in -וֹת: חֲכָמוֹת.'
+              },
+              {
+                prompt: '3/4: Complete "לֵילוֹת _____" (long nights — לַיְלָה is masculine)',
+                options: [
+                  { nikud: 'אֲרוּכוֹת', plain: 'ארוכות', tr: 'arukhot' },
+                  { nikud: 'אָרוֹךְ', plain: 'ארוך', tr: 'arokh' },
+                  { nikud: 'אֲרוּכִים', plain: 'ארוכים', tr: 'arukhim' }
+                ],
+                correctIdx: 2,
+                explanation: 'לַיְלָה is masculine despite ending in -ה and taking -וֹת in plural → לֵילוֹת אֲרוּכִים.'
+              },
+              {
+                prompt: '4/4: Complete "מִלִּים _____" (new words — מִלָּה is feminine)',
+                options: [
+                  { nikud: 'חֲדָשׁוֹת', plain: 'חדשות', tr: 'khadashot' },
+                  { nikud: 'חֲדָשִׁים', plain: 'חדשים', tr: 'khadashim' },
+                  { nikud: 'חֲדָשָׁה', plain: 'חדשה', tr: 'khadasha' }
+                ],
+                correctIdx: 0,
+                explanation: 'מִלָּה is feminine (irregular plural מִלִּים), so its adjective is חֲדָשׁוֹת.'
+              }
+            ]
+          }
+        ]
+      },
+
+      mod2: {
+        id: 'mod2',
+        num: '02',
+        title: 'Prefixes & Prepositions',
+        heTitle: 'אוֹתִיּוֹת שִׁמּוּשׁ וּמִלּוֹת יַחַס',
+        color: 'turquoise',
+        steps: [
+          {
+            title: 'Step 1: Moshe VeKaleb (מ ש ה ו כ ל ב)',
+            badge: '7 Inseparable Prefixes',
+            intro: 'Hebrew attaches 7 high-frequency prefixes directly to the front of words—remembered by the mnemonic <strong>מֹשֶׁה וְכָלֵב</strong>. Click any prefix tile and base word below to watch it slide and attach!',
+            prefixes: [
+              { id: 'b', label: 'בְּ־', plain: 'ב־', meaning: 'in / at / with', tr: 'be-' },
+              { id: 'l', label: 'לְ־', plain: 'ל־', meaning: 'to / for', tr: 'le-' },
+              { id: 'k', label: 'כְּ־', plain: 'כ־', meaning: 'like / as', tr: 'ke-' },
+              { id: 'm', label: 'מִ־', plain: 'מ־', meaning: 'from', tr: 'mi-' },
+              { id: 'v', label: 'וְ־', plain: 'ו־', meaning: 'and', tr: 've-' },
+              { id: 'h', label: 'הַ־', plain: 'ה־', meaning: 'the', tr: 'ha-' },
+              { id: 'sh', label: 'שֶׁ־', plain: 'ש־', meaning: 'that / which', tr: 'she-' }
+            ],
+            bases: [
+              {
+                id: 'bayit',
+                base: { nikud: 'בַּיִת', plain: 'בית', tr: 'bayit', en: 'house' },
+                forms: {
+                  b:  { nikud: 'בְּבַיִת', plain: 'בבית', tr: 'be-vayit', en: 'in a house' },
+                  l:  { nikud: 'לְבַיִת', plain: 'לבית', tr: 'le-vayit', en: 'to a house' },
+                  k:  { nikud: 'כְּבַיִת', plain: 'כבית', tr: 'ke-vayit', en: 'like a house' },
+                  m:  { nikud: 'מִבַּיִת', plain: 'מבית', tr: 'mi-bayit', en: 'from a house' },
+                  v:  { nikud: 'וּבַיִת', plain: 'ובית', tr: 'u-vayit', en: 'and a house' },
+                  h:  { nikud: 'הַבַּיִת', plain: 'הבית', tr: 'ha-bayit', en: 'the house' },
+                  sh: { nikud: 'שֶׁבַּיִת', plain: 'שבית', tr: 'she-bayit', en: 'that a house' }
+                }
+              },
+              {
+                id: 'sefer',
+                base: { nikud: 'סֵפֶר', plain: 'ספר', tr: 'sefer', en: 'book' },
+                forms: {
+                  b:  { nikud: 'בְּסֵפֶר', plain: 'בספר', tr: 'be-sefer', en: 'in a book' },
+                  l:  { nikud: 'לְסֵפֶר', plain: 'לספר', tr: 'le-sefer', en: 'to/for a book' },
+                  k:  { nikud: 'כְּסֵפֶר', plain: 'כספר', tr: 'ke-sefer', en: 'like a book' },
+                  m:  { nikud: 'מִסֵּפֶר', plain: 'מספר', tr: 'mi-sefer', en: 'from a book' },
+                  v:  { nikud: 'וְסֵפֶר', plain: 'וספר', tr: 've-sefer', en: 'and a book' },
+                  h:  { nikud: 'הַסֵּפֶר', plain: 'הספר', tr: 'ha-sefer', en: 'the book' },
+                  sh: { nikud: 'שֶׁסֵּפֶר', plain: 'שספר', tr: 'she-sefer', en: 'that a book' }
+                }
+              },
+              {
+                id: 'chaver',
+                base: { nikud: 'חָבֵר', plain: 'חבר', tr: 'khaver', en: 'friend' },
+                forms: {
+                  b:  { nikud: 'בְּחָבֵר', plain: 'בחבר', tr: 'be-khaver', en: 'in/with a friend' },
+                  l:  { nikud: 'לְחָבֵר', plain: 'לחבר', tr: 'le-khaver', en: 'to a friend' },
+                  k:  { nikud: 'כְּחָבֵר', plain: 'כחבר', tr: 'ke-khaver', en: 'like a friend' },
+                  m:  { nikud: 'מֵחָבֵר', plain: 'מחבר', tr: 'me-khaver', en: 'from a friend' },
+                  v:  { nikud: 'וְחָבֵר', plain: 'וחבר', tr: 've-khaver', en: 'and a friend' },
+                  h:  { nikud: 'הֶחָבֵר', plain: 'החבר', tr: 'he-khaver', en: 'the friend' },
+                  sh: { nikud: 'שֶׁחָבֵר', plain: 'שחבר', tr: 'she-khaver', en: 'that a friend' }
+                }
+              }
+            ],
+            miniChecks: [
+              {
+                prompt: 'How do you write "and a book" using the prefix וְ־ + סֵפֶר?',
+                options: [
+                  { nikud: 'וְסֵפֶר', plain: 'וספר', tr: 've-sefer' },
+                  { nikud: 'בְּסֵפֶר', plain: 'בספר', tr: 'be-sefer' },
+                  { nikud: 'שֶׁסֵּפֶר', plain: 'שספר', tr: 'she-sefer' }
+                ],
+                correctIdx: 0,
+                explanation: 'The prefix וְ־ attaches directly to סֵפֶר to form וְסֵפֶר (ve-sefer).'
+              }
+            ]
+          },
+          {
+            title: 'Step 2: Definite Article Fusion (בְּ + הַ vs מִ + הַ)',
+            badge: 'Magnetic Contraction',
+            intro: 'When <strong>בְּ־, כְּ־, לְ־</strong> meet <strong>הַ־ (the)</strong>, the letter <strong>ה vanishes</strong> and transfers its vowel to the prefix! By contrast, <strong>מִ־ (from)</strong> keeps the <strong>ה</strong> and shifts to <strong>מֵהַ־</strong>. Select each fusion below to animate and hear it!',
+            fusions: [
+              {
+                id: 'f_sifriya',
+                label: 'בְּ + הַ + סִפְרִיָּה',
+                type: 'absorb',
+                prefix: { nikud: 'בְּ', plain: 'ב' },
+                article: { nikud: 'הַ', plain: 'ה' },
+                noun: { nikud: 'סִפְרִיָּה', plain: 'ספרייה' },
+                result: { nikud: 'בַּסִּפְרִיָּה', plain: 'בספרייה', tr: 'basifriya' },
+                english: 'in the library',
+                rule: 'בְּ absorbs הַ־: the ה disappears and ב takes the patach vowel → בַּסִּפְרִיָּה.'
+              },
+              {
+                id: 'f_mebayit',
+                label: 'מִ + הַ + בַּיִת',
+                type: 'keep',
+                prefix: { nikud: 'מִ', plain: 'מ' },
+                article: { nikud: 'הַ', plain: 'ה' },
+                noun: { nikud: 'בַּיִת', plain: 'בית' },
+                result: { nikud: 'מֵהַבַּיִת', plain: 'מהבית', tr: 'mehabayit' },
+                english: 'from the house',
+                rule: 'מִ־ does NOT drop הַ־! Instead, מִ lengthens to מֵ and keeps הַ → מֵהַבַּיִת.'
+              },
+              {
+                id: 'f_avoda',
+                label: 'לְ + הַ + עֲבוֹדָה',
+                type: 'absorb',
+                prefix: { nikud: 'לְ', plain: 'ל' },
+                article: { nikud: 'הָ', plain: 'ה' },
+                noun: { nikud: 'עֲבוֹדָה', plain: 'עבודה' },
+                result: { nikud: 'לָעֲבוֹדָה', plain: 'לעבודה', tr: 'la’avoda' },
+                english: 'to the work',
+                rule: 'לְ absorbs הָ־: the ה drops out and ל takes the vowel → לָעֲבוֹדָה.'
+              },
+              {
+                id: 'f_mehair',
+                label: 'מִ + הַ + עִיר',
+                type: 'keep',
+                prefix: { nikud: 'מִ', plain: 'מ' },
+                article: { nikud: 'הָ', plain: 'ה' },
+                noun: { nikud: 'עִיר', plain: 'עיר' },
+                result: { nikud: 'מֵהָעִיר', plain: 'מהעיר', tr: 'meha’ir' },
+                english: 'from the city',
+                rule: 'מִ־ keeps the definite article הָ־ before עִיר → מֵהָעִיר.'
+              }
+            ],
+            miniChecks: [
+              {
+                prompt: 'How do you say "from the house" (מִ + הַ + בַּיִת)?',
+                options: [
+                  { nikud: 'מֵהַבַּיִת', plain: 'מהבית', tr: 'mehabayit' },
+                  { nikud: 'מַבַּיִת', plain: 'מבית', tr: 'mabayit' },
+                  { nikud: 'בַּבַּיִת', plain: 'בבית', tr: 'babayit' }
+                ],
+                correctIdx: 0,
+                explanation: 'מִ־ keeps the ה of the definite article: מֵהַבַּיִת (mehabayit).'
+              }
+            ]
+          },
+          {
+            title: 'Step 3: Inflected Prepositions (שֶׁל, אֶת, עִם, לְ)',
+            badge: 'Pronoun Switcher + Mini-Check',
+            intro: 'Prepositions in Hebrew fuse with pronouns into a single inflected word. Tap any pronoun below to watch <strong>שֶׁל</strong> (of), <strong>אֶת</strong> (direct object), <strong>עִם</strong> (with), and <strong>לְ־</strong> (to/for) morph and speak!',
+            pronouns: [
+              {
+                id: 'ani',
+                label: { nikud: 'אֲנִי', plain: 'אני', tr: 'ani (I / me)' },
+                shel: { nikud: 'שֶׁלִּי', plain: 'שלי', tr: 'sheli (my/mine)' },
+                et:   { nikud: 'אוֹתִי', plain: 'אותי', tr: 'oti (me)' },
+                im:   { nikud: 'אִתִּי', plain: 'איתי', tr: 'iti (with me)' },
+                le:   { nikud: 'לִי', plain: 'לי', tr: 'li (to/for me)' }
+              },
+              {
+                id: 'ata',
+                label: { nikud: 'אַתָּה', plain: 'אתה', tr: 'ata (you, m.sg.)' },
+                shel: { nikud: 'שֶׁלְּךָ', plain: 'שלך', tr: 'shelkha (your)' },
+                et:   { nikud: 'אוֹתְךָ', plain: 'אותך', tr: 'otkha (you)' },
+                im:   { nikud: 'אִתְּךָ', plain: 'איתך', tr: 'itkha (with you)' },
+                le:   { nikud: 'לְךָ', plain: 'לך', tr: 'lekha (to/for you)' }
+              },
+              {
+                id: 'at',
+                label: { nikud: 'אַתְּ', plain: 'את', tr: 'at (you, f.sg.)' },
+                shel: { nikud: 'שֶׁלָּךְ', plain: 'שלך', tr: 'shelakh (your)' },
+                et:   { nikud: 'אוֹתָךְ', plain: 'אותך', tr: 'otakh (you)' },
+                im:   { nikud: 'אִתָּךְ', plain: 'איתך', tr: 'itakh (with you)' },
+                le:   { nikud: 'לָךְ', plain: 'לך', tr: 'lakh (to/for you)' }
+              },
+              {
+                id: 'hu',
+                label: { nikud: 'הוּא', plain: 'הוא', tr: 'hu (he / him)' },
+                shel: { nikud: 'שֶׁלּוֹ', plain: 'שלו', tr: 'shelo (his)' },
+                et:   { nikud: 'אוֹתוֹ', plain: 'אותו', tr: 'oto (him)' },
+                im:   { nikud: 'אִתּוֹ', plain: 'איתו', tr: 'ito (with him)' },
+                le:   { nikud: 'לוֹ', plain: 'לו', tr: 'lo (to/for him)' }
+              },
+              {
+                id: 'hi',
+                label: { nikud: 'הִיא', plain: 'היא', tr: 'hi (she / her)' },
+                shel: { nikud: 'שֶׁלָּהּ', plain: 'שלה', tr: 'shela (her/hers)' },
+                et:   { nikud: 'אוֹתָהּ', plain: 'אותה', tr: 'ota (her)' },
+                im:   { nikud: 'אִתָּהּ', plain: 'איתה', tr: 'ita (with her)' },
+                le:   { nikud: 'לָהּ', plain: 'לה', tr: 'la (to/for her)' }
+              },
+              {
+                id: 'anachnu',
+                label: { nikud: 'אֲנַחְנוּ', plain: 'אנחנו', tr: 'anakhnu (we / us)' },
+                shel: { nikud: 'שֶׁלָּנוּ', plain: 'שלנו', tr: 'shelanu (our/ours)' },
+                et:   { nikud: 'אוֹתָנוּ', plain: 'אותנו', tr: 'otanu (us)' },
+                im:   { nikud: 'אִתָּנוּ', plain: 'איתנו', tr: 'itanu (with us)' },
+                le:   { nikud: 'לָנוּ', plain: 'לנו', tr: 'lanu (to/for us)' }
+              },
+              {
+                id: 'hem',
+                label: { nikud: 'הֵם', plain: 'הם', tr: 'hem (they / them, m.)' },
+                shel: { nikud: 'שֶׁלָּהֶם', plain: 'שלהם', tr: 'shelahem (their)' },
+                et:   { nikud: 'אוֹתָם', plain: 'אותם', tr: 'otam (them)' },
+                im:   { nikud: 'אִתָּם', plain: 'איתם', tr: 'itam (with them)' },
+                le:   { nikud: 'לָהֶם', plain: 'להם', tr: 'lahem (to/for them)' }
+              }
+            ],
+            miniChecks: [
+              {
+                prompt: '1/4: Fuse בְּ + הַ + סִפְרִיָּה ("in the library"):',
+                options: [
+                  { nikud: 'בַּסִּפְרִיָּה', plain: 'בספרייה', tr: 'basifriya' },
+                  { nikud: 'בְּהַסִּפְרִיָּה', plain: 'בהספרייה', tr: 'behasifriya' },
+                  { nikud: 'מֵהַסִּפְרִיָּה', plain: 'מהספרייה', tr: 'mehasifriya' }
+                ],
+                correctIdx: 0,
+                explanation: 'בְּ absorbs הַ־ into בַּסִּפְרִיָּה.'
+              },
+              {
+                prompt: '2/4: Inflect שֶׁל + אֲנַחְנוּ ("our / ours"):',
+                options: [
+                  { nikud: 'שֶׁלָּהֶם', plain: 'שלהם', tr: 'shelahem' },
+                  { nikud: 'שֶׁלָּנוּ', plain: 'שלנו', tr: 'shelanu' },
+                  { nikud: 'לָנוּ', plain: 'לנו', tr: 'lanu' }
+                ],
+                correctIdx: 1,
+                explanation: 'שֶׁל + אֲנַחְנוּ = שֶׁלָּנוּ (shelanu).'
+              },
+              {
+                prompt: '3/4: Complete "אֲנִי רוֹאֶה _____ בַּקָּפֶה" (I see her — אֶת + הִיא):',
+                options: [
+                  { nikud: 'אוֹתָהּ', plain: 'אותה', tr: 'ota' },
+                  { nikud: 'אוֹתוֹ', plain: 'אותו', tr: 'oto' },
+                  { nikud: 'אִתָּהּ', plain: 'איתה', tr: 'ita' }
+                ],
+                correctIdx: 0,
+                explanation: 'אֶת + הִיא = אוֹתָהּ (her, direct object). אִתָּהּ means "with her".'
+              },
+              {
+                prompt: '4/4: Complete "אַתָּה רוֹצֶה לָבוֹא _____?" (Do you want to come with me? — עִם + אֲנִי):',
+                options: [
+                  { nikud: 'אוֹתִי', plain: 'אותי', tr: 'oti' },
+                  { nikud: 'אִתִּי', plain: 'איתי', tr: 'iti' },
+                  { nikud: 'שֶׁלִּי', plain: 'שלי', tr: 'sheli' }
+                ],
+                correctIdx: 1,
+                explanation: 'עִם + אֲנִי inflects to אִתִּי (iti, "with me").'
+              }
+            ]
+          }
+        ]
+      },
+
+      mod3: {
+        id: 'mod3',
+        num: '03',
+        title: 'Roots & Present Tense',
+        heTitle: 'שׁוֹרָשִׁים וְהֹוֶה',
+        color: 'indigo',
+        steps: [
+          {
+            title: 'Step 1: The 3-Letter Shoresh (שׁוֹרֶשׁ) — X-Ray Extractor',
+            badge: 'Interactive X-Ray',
+            intro: 'Almost every Hebrew verb and noun is built around a <strong>3-letter consonantal root (שׁוֹרֶשׁ)</strong> that carries core meaning. Select a root family below and click any word to X-ray its 3 glowing root letters!',
+            families: [
+              {
+                id: 'ktv',
+                root: ['כ', 'ת', 'ב'],
+                meaning: 'Writing / Inscribing',
+                words: [
+                  {
+                    nikud: 'כּוֹתֵב', plain: 'כותב', tr: 'kotev (writes)',
+                    letters: [
+                      { ch: 'כּ', isRoot: true, rIdx: 0 },
+                      { ch: 'וֹ', isRoot: false },
+                      { ch: 'ת', isRoot: true, rIdx: 1 },
+                      { ch: 'ב', isRoot: true, rIdx: 2 }
+                    ]
+                  },
+                  {
+                    nikud: 'מִכְתָּב', plain: 'מכתב', tr: 'mikhtav (letter)',
+                    letters: [
+                      { ch: 'מ', isRoot: false },
+                      { ch: 'כ', isRoot: true, rIdx: 0 },
+                      { ch: 'ת', isRoot: true, rIdx: 1 },
+                      { ch: 'ב', isRoot: true, rIdx: 2 }
+                    ]
+                  },
+                  {
+                    nikud: 'כְּתוֹבֶת', plain: 'כתובת', tr: 'ktovet (address)',
+                    letters: [
+                      { ch: 'כ', isRoot: true, rIdx: 0 },
+                      { ch: 'ת', isRoot: true, rIdx: 1 },
+                      { ch: 'וֹ', isRoot: false },
+                      { ch: 'ב', isRoot: true, rIdx: 2 },
+                      { ch: 'ת', isRoot: false }
+                    ]
+                  },
+                  {
+                    nikud: 'הִכְתִּיב', plain: 'הכתיב', tr: 'hikhtiv (dictated)',
+                    letters: [
+                      { ch: 'ה', isRoot: false },
+                      { ch: 'כ', isRoot: true, rIdx: 0 },
+                      { ch: 'ת', isRoot: true, rIdx: 1 },
+                      { ch: 'י', isRoot: false },
+                      { ch: 'ב', isRoot: true, rIdx: 2 }
+                    ]
+                  }
+                ]
+              },
+              {
+                id: 'lmd',
+                root: ['ל', 'מ', 'ד'],
+                meaning: 'Learning / Studying',
+                words: [
+                  {
+                    nikud: 'לוֹמֵד', plain: 'לומד', tr: 'lomed (learns)',
+                    letters: [
+                      { ch: 'ל', isRoot: true, rIdx: 0 },
+                      { ch: 'וֹ', isRoot: false },
+                      { ch: 'מ', isRoot: true, rIdx: 1 },
+                      { ch: 'ד', isRoot: true, rIdx: 2 }
+                    ]
+                  },
+                  {
+                    nikud: 'תַּלְמִיד', plain: 'תלמיד', tr: 'talmid (student)',
+                    letters: [
+                      { ch: 'ת', isRoot: false },
+                      { ch: 'ל', isRoot: true, rIdx: 0 },
+                      { ch: 'מ', isRoot: true, rIdx: 1 },
+                      { ch: 'י', isRoot: false },
+                      { ch: 'ד', isRoot: true, rIdx: 2 }
+                    ]
+                  },
+                  {
+                    nikud: 'לִמּוּדִים', plain: 'לימודים', tr: 'limudim (studies)',
+                    letters: [
+                      { ch: 'ל', isRoot: true, rIdx: 0 },
+                      { ch: 'מ', isRoot: true, rIdx: 1 },
+                      { ch: 'וּ', isRoot: false },
+                      { ch: 'ד', isRoot: true, rIdx: 2 },
+                      { ch: 'י', isRoot: false },
+                      { ch: 'ם', isRoot: false }
+                    ]
+                  }
+                ]
+              },
+              {
+                id: 'dbr',
+                root: ['ד', 'ב', 'ר'],
+                meaning: 'Speaking / Word / Thing',
+                words: [
+                  {
+                    nikud: 'מְדַבֵּר', plain: 'מדבר', tr: 'medaber (speaks)',
+                    letters: [
+                      { ch: 'מ', isRoot: false },
+                      { ch: 'ד', isRoot: true, rIdx: 0 },
+                      { ch: 'ב', isRoot: true, rIdx: 1 },
+                      { ch: 'ר', isRoot: true, rIdx: 2 }
+                    ]
+                  },
+                  {
+                    nikud: 'דָּבָר', plain: 'דבר', tr: 'davar (thing/word)',
+                    letters: [
+                      { ch: 'ד', isRoot: true, rIdx: 0 },
+                      { ch: 'ב', isRoot: true, rIdx: 1 },
+                      { ch: 'ר', isRoot: true, rIdx: 2 }
+                    ]
+                  },
+                  {
+                    nikud: 'דִּבּוּר', plain: 'דיבור', tr: 'dibur (speech)',
+                    letters: [
+                      { ch: 'ד', isRoot: true, rIdx: 0 },
+                      { ch: 'ב', isRoot: true, rIdx: 1 },
+                      { ch: 'וּ', isRoot: false },
+                      { ch: 'ר', isRoot: true, rIdx: 2 }
+                    ]
+                  }
+                ]
+              }
+            ],
+            miniChecks: [
+              {
+                prompt: 'What is the 3-letter Shoresh (שׁוֹרֶשׁ) of תַּלְמִיד (student) and לִמּוּדִים (studies)?',
+                options: [
+                  { nikud: 'ל . מ . ד', plain: 'ל . מ . ד', tr: 'L-M-D' },
+                  { nikud: 'ת . ל . מ', plain: 'ת . ל . מ', tr: 'T-L-M' },
+                  { nikud: 'מ . ד . ם', plain: 'מ . ד . ם', tr: 'M-D-M' }
+                ],
+                correctIdx: 0,
+                explanation: 'תַּ־ is a noun prefix and ־ִים is the plural suffix, leaving the 3-letter root ל-מ-ד.'
+              }
+            ]
+          },
+          {
+            title: 'Step 2: Present Tense (זְמַן הֹוֶה) 4-Form Conjugator',
+            badge: '2×2 Animated Grid',
+            intro: 'In Hebrew Present Tense, verbs do <strong>not</strong> change for 1st, 2nd, or 3rd person (אֲנִי / אַתָּה / הוּא all use the same form!). Instead, they conjugate strictly into <strong>4 Gender &amp; Number forms</strong>. Pick a verb below to animate all 4 forms and hear them!',
+            verbs: [
+              {
+                id: 'kotev',
+                root: 'כ-ת-ב',
+                meaning: 'to write',
+                ms: { nikud: 'כּוֹתֵב', plain: 'כותב', tr: 'kotev', suffix: '—' },
+                fs: { nikud: 'כּוֹתֶבֶת', plain: 'כותבת', tr: 'kotevet', suffix: '-ֶת' },
+                mp: { nikud: 'כּוֹתְבִים', plain: 'כותבים', tr: 'kotvim', suffix: '-ִים' },
+                fp: { nikud: 'כּוֹתְבוֹת', plain: 'כותבות', tr: 'kotvot', suffix: '-וֹת' }
+              },
+              {
+                id: 'holekh',
+                root: 'ה-ל-כ',
+                meaning: 'to go / walk',
+                ms: { nikud: 'הוֹלֵךְ', plain: 'הולך', tr: 'holekh', suffix: '—' },
+                fs: { nikud: 'הוֹלֶכֶת', plain: 'הולכת', tr: 'holekhet', suffix: '-ֶת' },
+                mp: { nikud: 'הוֹלְכִים', plain: 'הולכים', tr: 'holkhim', suffix: '-ִים' },
+                fp: { nikud: 'הוֹלְכוֹת', plain: 'הולכות', tr: 'holkhot', suffix: '-וֹת' }
+              },
+              {
+                id: 'kore',
+                root: 'ק-ר-א',
+                meaning: 'to read / call',
+                ms: { nikud: 'קוֹרֵא', plain: 'קורא', tr: 'kore', suffix: '—' },
+                fs: { nikud: 'קוֹרֵאת', plain: 'קוראת', tr: 'koret', suffix: '-ת' },
+                mp: { nikud: 'קוֹרְאִים', plain: 'קוראים', tr: 'kor’im', suffix: '-ִים' },
+                fp: { nikud: 'קוֹרְאוֹת', plain: 'קוראות', tr: 'kor’ot', suffix: '-וֹת' }
+              },
+              {
+                id: 'rotze',
+                root: 'ר-צ-ה',
+                meaning: 'to want',
+                ms: { nikud: 'רוֹצֶה', plain: 'רוצה', tr: 'rotze', suffix: '-ֶה' },
+                fs: { nikud: 'רוֹצָה', plain: 'רוצה', tr: 'rotza', suffix: '-ָה' },
+                mp: { nikud: 'רוֹצִים', plain: 'רוצים', tr: 'rotzim', suffix: '-ִים' },
+                fp: { nikud: 'רוֹצוֹת', plain: 'רוצות', tr: 'rotzot', suffix: '-וֹת' }
+              }
+            ],
+            miniChecks: [
+              {
+                prompt: 'Complete "הֵן _____ סֵפֶר בַּסִּפְרִיָּה" (They [fem.pl.] are reading a book):',
+                options: [
+                  { nikud: 'קוֹרְאוֹת', plain: 'קוראות', tr: 'kor’ot' },
+                  { nikud: 'קוֹרְאִים', plain: 'קוראים', tr: 'kor’im' },
+                  { nikud: 'קוֹרֵאת', plain: 'קוראת', tr: 'koret' }
+                ],
+                correctIdx: 0,
+                explanation: 'הֵן (they, feminine plural) takes the -וֹת ending: קוֹרְאוֹת (kor’ot).'
+              }
+            ]
+          },
+          {
+            title: 'Step 3: Binyan Patterns in Present Tense',
+            badge: '4 Active Binyanim + Mini-Check',
+            intro: 'Hebrew organizes verbs into <strong>Binyanim (בִּנְיָנִים)</strong>—architectural patterns! Notice how <strong>Pi’el, Hif’il, and Hitpa’el</strong> all begin with a <strong>מ־</strong> prefix in the Present Tense. Tap each Binyan card to inspect and hear it!',
+            binyanim: [
+              {
+                id: 'paal',
+                name: 'Pa’al (פָּעַל)',
+                prefixTag: 'No Prefix (o-e pattern)',
+                root: 'ל-מ-ד',
+                ms: { nikud: 'לוֹמֵד', plain: 'לומד', tr: 'lomed' },
+                fs: { nikud: 'לוֹמֶדֶת', plain: 'לומדת', tr: 'lomedet' },
+                mp: { nikud: 'לוֹמְדִים', plain: 'לומדים', tr: 'lomdim' },
+                fp: { nikud: 'לוֹמְדוֹת', plain: 'לומדות', tr: 'lomdot' },
+                sentence: { nikud: 'הוּא לוֹמֵד עִבְרִית כָּל יוֹם.', plain: 'הוא לומד עברית כל יום.', tr: 'hu lomed ivrit kol yom. (He studies Hebrew every day.)' }
+              },
+              {
+                id: 'piel',
+                name: 'Pi’el (פִּעֵל)',
+                prefixTag: 'Prefix מְ־ (me-)',
+                root: 'ד-ב-ר',
+                ms: { nikud: 'מְדַבֵּר', plain: 'מדבר', tr: 'medaber' },
+                fs: { nikud: 'מְדַבֶּרֶת', plain: 'מדברת', tr: 'medaberet' },
+                mp: { nikud: 'מְדַבְּרִים', plain: 'מדברים', tr: 'medabrim' },
+                fp: { nikud: 'מְדַבְּרוֹת', plain: 'מדברות', tr: 'medabrot' },
+                sentence: { nikud: 'הִיא מְדַבֶּרֶת עִבְרִית מְצֻיֶּנֶת.', plain: 'היא מדברת עברית מצוינת.', tr: 'hi medaberet ivrit metzuyenet. (She speaks excellent Hebrew.)' }
+              },
+              {
+                id: 'hifil',
+                name: 'Hif’il (הִפְעִיל)',
+                prefixTag: 'Prefix מַ־ + Internal י',
+                root: 'ז-מ-נ',
+                ms: { nikud: 'מַזְמִין', plain: 'מזמין', tr: 'mazmin' },
+                fs: { nikud: 'מַזְמִינָה', plain: 'מזמינה', tr: 'mazmina' },
+                mp: { nikud: 'מַזְמִינִים', plain: 'מזמינים', tr: 'mazminim' },
+                fp: { nikud: 'מַזְמִינוֹת', plain: 'מזמינות', tr: 'mazminot' },
+                sentence: { nikud: 'אֲנַחְנוּ מַזְמִינִים קָפֶה וְעוּגָה.', plain: 'אנחנו מזמינים קפה ועוגה.', tr: 'anakhnu mazminim kafe ve-uga. (We are ordering coffee and cake.)' }
+              },
+              {
+                id: 'hitpael',
+                name: 'Hitpa’el (הִתְפַּעֵל)',
+                prefixTag: 'Prefix מִתְ־ (mit-)',
+                root: 'ק-ד-מ',
+                ms: { nikud: 'מִתְקַדֵּם', plain: 'מתקדם', tr: 'mitkadem' },
+                fs: { nikud: 'מִתְקַדֶּמֶת', plain: 'מתקדמת', tr: 'mitkademet' },
+                mp: { nikud: 'מִתְקַדְּמִים', plain: 'מתקדמים', tr: 'mitkadmim' },
+                fp: { nikud: 'מִתְקַדְּמוֹת', plain: 'מתקדמות', tr: 'mitkadmot' },
+                sentence: { nikud: 'אַתָּה מִתְקַדֵּם מַהֵר מְאוֹד!', plain: 'אתה מתקדם מהר מאוד!', tr: 'ata mitkadem maher me’od! (You are progressing very fast!)' }
+              }
+            ],
+            miniChecks: [
+              {
+                prompt: '1/4: Which Binyan uses the reflexive prefix מִתְ־ in Present Tense (e.g., מִתְקַדֵּם)?',
+                options: [
+                  { nikud: 'הִתְפַּעֵל (Hitpa’el)', plain: 'התפעל (Hitpa’el)', tr: 'reflexive / progressive' },
+                  { nikud: 'פָּעַל (Pa’al)', plain: 'פעל (Pa’al)', tr: 'simple active' },
+                  { nikud: 'הִפְעִיל (Hif’il)', plain: 'הפעיל (Hif’il)', tr: 'causative' }
+                ],
+                correctIdx: 0,
+                explanation: 'Hitpa’el (הִתְפַּעֵל) always takes מִתְ־ in the present tense (מִתְקַדֵּם, מִתְלַבֵּשׁ).'
+              },
+              {
+                prompt: '2/4: Conjugate root כ-ת-ב (Pa’al) for הִיא (she):',
+                options: [
+                  { nikud: 'כּוֹתֶבֶת', plain: 'כותבת', tr: 'kotevet' },
+                  { nikud: 'כּוֹתֵב', plain: 'כותב', tr: 'kotev' },
+                  { nikud: 'כּוֹתְבוֹת', plain: 'כותבות', tr: 'kotvot' }
+                ],
+                correctIdx: 0,
+                explanation: 'Feminine singular in Pa’al adds -ֶת: הִיא כּוֹתֶבֶת.'
+              },
+              {
+                prompt: '3/4: Complete "מָה אַתְּ _____?" (What are you [f.sg.] ordering? — root ז-מ-נ, Hif’il):',
+                options: [
+                  { nikud: 'מַזְמִינָה', plain: 'מזמינה', tr: 'mazmina' },
+                  { nikud: 'מַזְמִין', plain: 'מזמין', tr: 'mazmin' },
+                  { nikud: 'מַזְמִינִים', plain: 'מזמינים', tr: 'mazminim' }
+                ],
+                correctIdx: 0,
+                explanation: 'Hif’il feminine singular adds -ָה: מַזְמִינָה (mazmina).'
+              },
+              {
+                prompt: '4/4: Extract the 3-letter Shoresh from מְדַבְּרִים (they speak):',
+                options: [
+                  { nikud: 'ד . ב . ר', plain: 'ד . ב . ר', tr: 'D-B-R' },
+                  { nikud: 'מ . ד . ב', plain: 'מ . ד . ב', tr: 'M-D-B' },
+                  { nikud: 'ב . ר . ם', plain: 'ב . ר . ם', tr: 'B-R-M' }
+                ],
+                correctIdx: 0,
+                explanation: 'Strip the Pi’el prefix מְ־ and plural suffix ־ִים to reveal the root ד-ב-ר.'
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    /**
+     * =========================================================================
+     * 3. PRACTICE ARENAS DATA (4 INTERACTIVE ARENAS)
+     * =========================================================================
+     */
+    const ARENA_1_DATA = [
+      {
+        id: 'a1_shulchan',
+        gender: 'masculine',
+        singNoun: { nikud: 'שֻׁלְחָן', plain: 'שולחן', tr: 'shulkhan' },
+        singAdj:  { nikud: 'גָּדוֹל', plain: 'גדול', tr: 'gadol' },
+        plurNoun: { nikud: 'שֻׁלְחָנוֹת', plain: 'שולחנות', tr: 'shulkhanot' },
+        plurAdj:  { nikud: 'גְּדוֹלִים', plain: 'גדולים', tr: 'gdolim' },
+        nounChoices: [
+          { nikud: 'שֻׁלְחָנוֹת', plain: 'שולחנות', tr: 'shulkhanot' },
+          { nikud: 'שֻׁלְחָנִים', plain: 'שולחנים', tr: 'shulkhanim' },
+          { nikud: 'שֻׁלְחָנָה', plain: 'שולחנה', tr: 'shulkhana' }
+        ],
+        adjChoices: [
+          { nikud: 'גְּדוֹלִים', plain: 'גדולים', tr: 'gdolim' },
+          { nikud: 'גְּדוֹלוֹת', plain: 'גדולות', tr: 'gdolot' },
+          { nikud: 'גְּדוֹלָה', plain: 'גדולה', tr: 'gdola' }
+        ],
+        meaning: 'a big table → big tables',
+        insight: 'שֻׁלְחָן is a MASCULINE noun with an irregular -וֹת plural (שֻׁלְחָנוֹת). Its adjective must stay masculine plural: גְּדוֹלִים (-ִים).'
+      },
+      {
+        id: 'a1_ir',
+        gender: 'feminine',
+        singNoun: { nikud: 'עִיר', plain: 'עיר', tr: 'ir' },
+        singAdj:  { nikud: 'גְּדוֹלָה', plain: 'גדולה', tr: 'gdola' },
+        plurNoun: { nikud: 'עָרִים', plain: 'ערים', tr: 'arim' },
+        plurAdj:  { nikud: 'גְּדוֹלוֹת', plain: 'גדולות', tr: 'gdolot' },
+        nounChoices: [
+          { nikud: 'עָרִים', plain: 'ערים', tr: 'arim' },
+          { nikud: 'עִירוֹת', plain: 'עירות', tr: 'irot' },
+          { nikud: 'עָרוֹת', plain: 'ערות', tr: 'arot' }
+        ],
+        adjChoices: [
+          { nikud: 'גְּדוֹלוֹת', plain: 'גדולות', tr: 'gdolot' },
+          { nikud: 'גְּדוֹלִים', plain: 'גדולים', tr: 'gdolim' },
+          { nikud: 'גָּדוֹל', plain: 'גדול', tr: 'gadol' }
+        ],
+        meaning: 'a big city → big cities',
+        insight: 'עִיר is a FEMININE noun whose plural is עָרִים (-ִים). Because עָרִים is feminine, its adjective takes -וֹת: גְּדוֹלוֹת.'
+      },
+      {
+        id: 'a1_layla',
+        gender: 'masculine',
+        singNoun: { nikud: 'לַיְלָה', plain: 'לילה', tr: 'layla' },
+        singAdj:  { nikud: 'אָרוֹךְ', plain: 'ארוך', tr: 'arokh' },
+        plurNoun: { nikud: 'לֵילוֹת', plain: 'לילות', tr: 'leilot' },
+        plurAdj:  { nikud: 'אֲרוּכִים', plain: 'ארוכים', tr: 'arukhim' },
+        nounChoices: [
+          { nikud: 'לֵילוֹת', plain: 'לילות', tr: 'leilot' },
+          { nikud: 'לֵילִים', plain: 'לילים', tr: 'leilim' },
+          { nikud: 'לַיְלוֹת', plain: 'לילות (כתיב חסר)', tr: 'laylot' }
+        ],
+        adjChoices: [
+          { nikud: 'אֲרוּכִים', plain: 'ארוכים', tr: 'arukhim' },
+          { nikud: 'אֲרוּכוֹת', plain: 'ארוכות', tr: 'arukhot' },
+          { nikud: 'אֲרוּכָּה', plain: 'ארוכה', tr: 'aruka' }
+        ],
+        meaning: 'a long night → long nights',
+        insight: 'לַיְלָה is MASCULINE and pluralizes as לֵילוֹת (-וֹת), requiring the masculine plural adjective אֲרוּכִים (-ִים).'
+      },
+      {
+        id: 'a1_isha',
+        gender: 'feminine',
+        singNoun: { nikud: 'אִשָּׁה', plain: 'אישה', tr: 'isha' },
+        singAdj:  { nikud: 'חֲכָמָה', plain: 'חכמה', tr: 'khakhama' },
+        plurNoun: { nikud: 'נָשִׁים', plain: 'נשים', tr: 'nashim' },
+        plurAdj:  { nikud: 'חֲכָמוֹת', plain: 'חכמות', tr: 'khakhamot' },
+        nounChoices: [
+          { nikud: 'נָשִׁים', plain: 'נשים', tr: 'nashim' },
+          { nikud: 'אִשּׁוֹת', plain: 'אישות', tr: 'ishot' },
+          { nikud: 'אֲנָשִׁים', plain: 'אנשים', tr: 'anashim' }
+        ],
+        adjChoices: [
+          { nikud: 'חֲכָמוֹת', plain: 'חכמות', tr: 'khakhamot' },
+          { nikud: 'חֲכָמִים', plain: 'חכמים', tr: 'khakhamim' },
+          { nikud: 'חָכָם', plain: 'חכם', tr: 'khakham' }
+        ],
+        meaning: 'a wise woman → wise women',
+        insight: 'אִשָּׁה becomes נָשִׁים in the plural (ending in -ִים yet feminine!), so the adjective takes -וֹת: חֲכָמוֹת.'
+      },
+      {
+        id: 'a1_chalon',
+        gender: 'masculine',
+        singNoun: { nikud: 'חַלּוֹן', plain: 'חלון', tr: 'khalon' },
+        singAdj:  { nikud: 'פָּתוּחַ', plain: 'פתוח', tr: 'patuakh' },
+        plurNoun: { nikud: 'חַלּוֹנוֹת', plain: 'חלונות', tr: 'khalonot' },
+        plurAdj:  { nikud: 'פְּתוּחִים', plain: 'פתוחים', tr: 'ptukhim' },
+        nounChoices: [
+          { nikud: 'חַלּוֹנוֹת', plain: 'חלונות', tr: 'khalonot' },
+          { nikud: 'חַלּוֹנִים', plain: 'חלונים', tr: 'khalonim' },
+          { nikud: 'חַלּוֹנָה', plain: 'חלונה', tr: 'khalona' }
+        ],
+        adjChoices: [
+          { nikud: 'פְּתוּחִים', plain: 'פתוחים', tr: 'ptukhim' },
+          { nikud: 'פְּתוּחוֹת', plain: 'פתוחות', tr: 'ptukhot' },
+          { nikud: 'פְּתוּחָה', plain: 'פתוחה', tr: 'ptukha' }
+        ],
+        meaning: 'an open window → open windows',
+        insight: 'חַלּוֹן is MASCULINE with plural חַלּוֹנוֹת (-וֹת), so its adjective is פְּתוּחִים (-ִים).'
+      }
+    ];
+
+    const ARENA_2_DATA = [
+      {
+        type: 'fusion',
+        pieces: [{ nikud: 'בְּ־', plain: 'ב־' }, { nikud: 'הַ־', plain: 'ה־' }, { nikud: 'סִפְרִיָּה', plain: 'ספרייה' }],
+        answer: { nikud: 'בַּסִּפְרִיָּה', plain: 'בספרייה', tr: 'basifriya' },
+        choices: [
+          { nikud: 'בַּסִּפְרִיָּה', plain: 'בספרייה', tr: 'basifriya' },
+          { nikud: 'בְּהַסִּפְרִיָּה', plain: 'בהספרייה', tr: 'behasifriya' },
+          { nikud: 'מֵהַסִּפְרִיָּה', plain: 'מהספרייה', tr: 'mehasifriya' },
+          { nikud: 'לַסִּפְרִיָּה', plain: 'לספרייה', tr: 'lasifriya' }
+        ],
+        english: 'in the library',
+        insight: 'בְּ + הַ absorbs the ה and transfers its vowel to ב → בַּסִּפְרִיָּה.'
+      },
+      {
+        type: 'fusion',
+        pieces: [{ nikud: 'מִ־', plain: 'מ־' }, { nikud: 'הַ־', plain: 'ה־' }, { nikud: 'בַּיִת', plain: 'בית' }],
+        answer: { nikud: 'מֵהַבַּיִת', plain: 'מהבית', tr: 'mehabayit' },
+        choices: [
+          { nikud: 'מֵהַבַּיִת', plain: 'מהבית', tr: 'mehabayit' },
+          { nikud: 'מַבַּיִת', plain: 'מבית', tr: 'mabayit' },
+          { nikud: 'בַּבַּיִת', plain: 'בבית', tr: 'babayit' },
+          { nikud: 'מִבַּיִת', plain: 'מבית (ללא ה׳)', tr: 'mibayit' }
+        ],
+        english: 'from the house',
+        insight: 'Unlike ב/כ/ל, מִ־ keeps the definite article הַ־ and lengthens to מֵהַ־ → מֵהַבַּיִת.'
+      },
+      {
+        type: 'inflect',
+        cue: 'שֶׁל + אֲנַחְנוּ',
+        before: { nikud: 'זֶה הַבַּיִת הֶחָדָשׁ', plain: 'זה הבית החדש' },
+        after: { nikud: 'בְּתֵל אָבִיב.', plain: 'בתל אביב.' },
+        answer: { nikud: 'שֶׁלָּנוּ', plain: 'שלנו', tr: 'shelanu' },
+        choices: [
+          { nikud: 'שֶׁלָּנוּ', plain: 'שלנו', tr: 'shelanu' },
+          { nikud: 'שֶׁלָּהֶם', plain: 'שלהם', tr: 'shelahem' },
+          { nikud: 'שֶׁלִּי', plain: 'שלי', tr: 'sheli' },
+          { nikud: 'לָנוּ', plain: 'לנו', tr: 'lanu' }
+        ],
+        english: 'This is our new house in Tel Aviv.',
+        insight: 'שֶׁל + אֲנַחְנוּ inflects to שֶׁלָּנוּ (ours).'
+      },
+      {
+        type: 'inflect',
+        cue: 'אֶת + הִיא',
+        before: { nikud: 'אֲנִי רוֹאֶה', plain: 'אני רואה' },
+        after: { nikud: 'כָּל בֹּקֶר.', plain: 'כל בוקר.' },
+        answer: { nikud: 'אוֹתָהּ', plain: 'אותה', tr: 'ota' },
+        choices: [
+          { nikud: 'אוֹתָהּ', plain: 'אותה', tr: 'ota' },
+          { nikud: 'אוֹתוֹ', plain: 'אותו', tr: 'oto' },
+          { nikud: 'אִתָּהּ', plain: 'איתה', tr: 'ita' },
+          { nikud: 'לָהּ', plain: 'לה', tr: 'la' }
+        ],
+        english: 'I see her every morning.',
+        insight: 'אֶת + הִיא inflects to אוֹתָהּ (her, direct object).'
+      },
+      {
+        type: 'inflect',
+        cue: 'עִם + אֲנִי',
+        before: { nikud: 'אַתָּה רוֹצֶה לָבוֹא', plain: 'אתה רוצה לבוא' },
+        after: { nikud: 'לַסֶּרֶט?', plain: 'לסרט?' },
+        answer: { nikud: 'אִתִּי', plain: 'איתי', tr: 'iti' },
+        choices: [
+          { nikud: 'אִתִּי', plain: 'איתי', tr: 'iti' },
+          { nikud: 'אוֹתִי', plain: 'אותי', tr: 'oti' },
+          { nikud: 'אִתְּךָ', plain: 'איתך', tr: 'itkha' },
+          { nikud: 'לִי', plain: 'לי', tr: 'li' }
+        ],
+        english: 'Do you want to come with me to the movie?',
+        insight: 'עִם + אֲנִי inflects on the stem אִתּ־ → אִתִּי (with me).'
+      }
+    ];
+
+    const ARENA_3_DATA = [
+      {
+        type: 'extract',
+        word: { nikud: 'מִכְתָּבִים', plain: 'מכתבים', tr: 'mikhtavim (letters)' },
+        root: ['כ', 'ת', 'ב'],
+        bank: ['מ', 'כ', 'ת', 'ב', 'י', 'ם', 'ר'],
+        insight: 'Strip the prefix מִ־ and plural suffix ־ִים to extract the 3-letter Shoresh כ-ת-ב (writing).'
+      },
+      {
+        type: 'conjugate',
+        root: 'כ-ת-ב • Pa’al (פָּעַל)',
+        subject: 'הִיא (she)',
+        before: { nikud: 'הִיא', plain: 'היא' },
+        after: { nikud: 'אִימֵייל חָשׁוּב.', plain: 'אימייל חשוב.' },
+        answer: { nikud: 'כּוֹתֶבֶת', plain: 'כותבת', tr: 'kotevet' },
+        choices: [
+          { nikud: 'כּוֹתֶבֶת', plain: 'כותבת', tr: 'kotevet' },
+          { nikud: 'כּוֹתֵב', plain: 'כותב', tr: 'kotev' },
+          { nikud: 'כּוֹתְבוֹת', plain: 'כותבות', tr: 'kotvot' },
+          { nikud: 'כּוֹתְבִים', plain: 'כותבים', tr: 'kotvim' }
+        ],
+        english: 'She is writing an important email.',
+        insight: 'In Binyan Pa’al, feminine singular adds -ֶת: כּוֹתֶבֶת.'
+      },
+      {
+        type: 'extract',
+        word: { nikud: 'מִתְקַדְּמִים', plain: 'מתקדמים', tr: 'mitkadmim (progressing)' },
+        root: ['ק', 'ד', 'מ'],
+        bank: ['מ', 'ת', 'ק', 'ד', 'י', 'ם', 'ל'],
+        insight: 'Strip the Hitpa’el prefix מִתְ־ and plural ending ־ִים to reveal the root ק-ד-מ (forward/progress).'
+      },
+      {
+        type: 'conjugate',
+        root: 'ז-מ-נ • Hif’il (הִפְעִיל)',
+        subject: 'אַתְּ (you, f.sg.)',
+        before: { nikud: 'מָה אַתְּ', plain: 'מה את' },
+        after: { nikud: 'לַאֲרוּחַת צָהֳרַיִם?', plain: 'לארוחת צהריים?' },
+        answer: { nikud: 'מַזְמִינָה', plain: 'מזמינה', tr: 'mazmina' },
+        choices: [
+          { nikud: 'מַזְמִינָה', plain: 'מזמינה', tr: 'mazmina' },
+          { nikud: 'מַזְמִין', plain: 'מזמין', tr: 'mazmin' },
+          { nikud: 'מַזְמִינוֹת', plain: 'מזמינות', tr: 'mazminot' },
+          { nikud: 'מַזְמִינִים', plain: 'מזמינים', tr: 'mazminim' }
+        ],
+        english: 'What are you (f.sg.) ordering for lunch?',
+        insight: 'Binyan Hif’il takes prefix מַ־ and internal י, plus -ָה for feminine singular: מַזְמִינָה.'
+      },
+      {
+        type: 'conjugate',
+        root: 'ד-ב-ר • Pi’el (פִּעֵל)',
+        subject: 'אֲנַחְנוּ (we, m.pl.)',
+        before: { nikud: 'אֲנַחְנוּ', plain: 'אנחנו' },
+        after: { nikud: 'עִבְרִית בַּכִּתָּה.', plain: 'עברית בכיתה.' },
+        answer: { nikud: 'מְדַבְּרִים', plain: 'מדברים', tr: 'medabrim' },
+        choices: [
+          { nikud: 'מְדַבְּרִים', plain: 'מדברים', tr: 'medabrim' },
+          { nikud: 'מְדַבְּרוֹת', plain: 'מדברות', tr: 'medabrot' },
+          { nikud: 'מְדַבֶּרֶת', plain: 'מדברת', tr: 'medaberet' },
+          { nikud: 'מְדַבֵּר', plain: 'מדבר', tr: 'medaber' }
+        ],
+        english: 'We are speaking Hebrew in class.',
+        insight: 'Binyan Pi’el takes prefix מְ־ and -ִים for masculine plural: מְדַבְּרִים.'
+      }
+    ];
+
+    const ARENA_4_DATA = [
+      {
+        english: 'The new students (m.) are studying in our big library.',
+        full: {
+          nikud: 'הַתַּלְמִידִים הַחֲדָשִׁים לוֹמְדִים בַּסִּפְרִיָּה הַגְּדוֹלָה שֶׁלָּנוּ.',
+          plain: 'התלמידים החדשים לומדים בספרייה הגדולה שלנו.',
+          tr: 'hatalmidim hakhadashim lomdim basifriya hagdola shelanu.'
+        },
+        tokens: [
+          { type: 'static', nikud: 'הַתַּלְמִידִים', plain: 'התלמידים' },
+          {
+            type: 'slot', label: 'Masc. Plural Adj.',
+            answer: { nikud: 'הַחֲדָשִׁים', plain: 'החדשים', tr: 'hakhadashim' },
+            options: [
+              { nikud: 'הַחֲדָשִׁים', plain: 'החדשים', tr: 'hakhadashim' },
+              { nikud: 'הַחֲדָשׁוֹת', plain: 'החדשות', tr: 'hakhadashot' },
+              { nikud: 'חָדָשׁ', plain: 'חדש', tr: 'khadash' }
+            ]
+          },
+          {
+            type: 'slot', label: 'Pa’al Present (ל-מ-ד)',
+            answer: { nikud: 'לוֹמְדִים', plain: 'לומדים', tr: 'lomdim' },
+            options: [
+              { nikud: 'לוֹמְדִים', plain: 'לומדים', tr: 'lomdim' },
+              { nikud: 'לוֹמֶדֶת', plain: 'לומדת', tr: 'lomedet' },
+              { nikud: 'לוֹמְדוֹת', plain: 'לומדות', tr: 'lomdot' }
+            ]
+          },
+          {
+            type: 'slot', label: 'Prefix Fusion (ב + ה + ספרייה)',
+            answer: { nikud: 'בַּסִּפְרִיָּה', plain: 'בספרייה', tr: 'basifriya' },
+            options: [
+              { nikud: 'בַּסִּפְרִיָּה', plain: 'בספרייה', tr: 'basifriya' },
+              { nikud: 'בְּהַסִּפְרִיָּה', plain: 'בהספרייה', tr: 'behasifriya' },
+              { nikud: 'מֵהַסִּפְרִיָּה', plain: 'מהספרייה', tr: 'mehasifriya' }
+            ]
+          },
+          { type: 'static', nikud: 'הַגְּדוֹלָה שֶׁלָּנוּ.', plain: 'הגדולה שלנו.' }
+        ],
+        insight: 'Combines masculine plural adjective agreement (הַחֲדָשִׁים), Pa’al present plural (לוֹמְדִים), and definite prefix fusion (בַּסִּפְרִיָּה).'
+      },
+      {
+        english: 'The wise women are speaking with their teacher.',
+        full: {
+          nikud: 'הַנָּשִׁים הַחֲכָמוֹת מְדַבְּרוֹת עִם הַמּוֹרֶה שֶׁלָּהֶן.',
+          plain: 'הנשים החכמות מדברות עם המורה שלהן.',
+          tr: 'hanashim hakhakhamot medabrot im hamore shelahen.'
+        },
+        tokens: [
+          { type: 'static', nikud: 'הַנָּשִׁים', plain: 'הנשים' },
+          {
+            type: 'slot', label: 'Fem. Plural Adj.',
+            answer: { nikud: 'הַחֲכָמוֹת', plain: 'החכמות', tr: 'hakhakhamot' },
+            options: [
+              { nikud: 'הַחֲכָמוֹת', plain: 'החכמות', tr: 'hakhakhamot' },
+              { nikud: 'הַחֲכָמִים', plain: 'החכמים', tr: 'hakhakhamim' },
+              { nikud: 'הַחֲכָמָה', plain: 'החכמה', tr: 'hakhakhama' }
+            ]
+          },
+          {
+            type: 'slot', label: 'Pi’el Present (ד-ב-ר)',
+            answer: { nikud: 'מְדַבְּרוֹת', plain: 'מדברות', tr: 'medabrot' },
+            options: [
+              { nikud: 'מְדַבְּרוֹת', plain: 'מדברות', tr: 'medabrot' },
+              { nikud: 'מְדַבְּרִים', plain: 'מדברים', tr: 'medabrim' },
+              { nikud: 'מְדַבֶּרֶת', plain: 'מדברת', tr: 'medaberet' }
+            ]
+          },
+          { type: 'static', nikud: 'עִם הַמּוֹרֶה', plain: 'עם המורה' },
+          {
+            type: 'slot', label: 'Inflected של (הן)',
+            answer: { nikud: 'שֶׁלָּהֶן.', plain: 'שלהן.', tr: 'shelahen.' },
+            options: [
+              { nikud: 'שֶׁלָּהֶן.', plain: 'שלהן.', tr: 'shelahen.' },
+              { nikud: 'שֶׁלָּנוּ.', plain: 'שלנו.', tr: 'shelanu.' },
+              { nikud: 'אוֹתָן.', plain: 'אותן.', tr: 'otan.' }
+            ]
+          }
+        ],
+        insight: 'הַנָּשִׁים is feminine plural despite ending in -ִים, governing both הַחֲכָמוֹת and מְדַבְּרוֹת, followed by שֶׁלָּהֶן (theirs, f.pl.).'
+      },
+      {
+        english: 'They are progressing fast because they respect their time.',
+        full: {
+          nikud: 'הֵם מִתְקַדְּמִים מַהֵר כִּי הֵם שׁוֹמְרִים עַל הַזְּמַן שֶׁלָּהֶם.',
+          plain: 'הם מתקדמים מהר כי הם שומרים על הזמן שלהם.',
+          tr: 'hem mitkadmim maher ki hem shomrim al hazman shelahem.'
+        },
+        tokens: [
+          { type: 'static', nikud: 'הֵם', plain: 'הם' },
+          {
+            type: 'slot', label: 'Hitpa’el Present (ק-ד-מ)',
+            answer: { nikud: 'מִתְקַדְּמִים', plain: 'מתקדמים', tr: 'mitkadmim' },
+            options: [
+              { nikud: 'מִתְקַדְּמִים', plain: 'מתקדמים', tr: 'mitkadmim' },
+              { nikud: 'מִתְקַדֵּם', plain: 'מתקדם', tr: 'mitkadem' },
+              { nikud: 'מִתְקַדְּמוֹת', plain: 'מתקדמות', tr: 'mitkadmot' }
+            ]
+          },
+          { type: 'static', nikud: 'מַהֵר כִּי הֵם', plain: 'מהר כי הם' },
+          {
+            type: 'slot', label: 'Pa’al Present (ש-מ-ר)',
+            answer: { nikud: 'שׁוֹמְרִים', plain: 'שומרים', tr: 'shomrim' },
+            options: [
+              { nikud: 'שׁוֹמְרִים', plain: 'שומרים', tr: 'shomrim' },
+              { nikud: 'שׁוֹמֶרֶת', plain: 'שומרת', tr: 'shomeret' },
+              { nikud: 'שׁוֹמְרוֹת', plain: 'שומרות', tr: 'shomrot' }
+            ]
+          },
+          { type: 'static', nikud: 'עַל הַזְּמַן', plain: 'על הזמן' },
+          {
+            type: 'slot', label: 'Inflected של (הם)',
+            answer: { nikud: 'שֶׁלָּהֶם.', plain: 'שלהם.', tr: 'shelahem.' },
+            options: [
+              { nikud: 'שֶׁלָּהֶם.', plain: 'שלהם.', tr: 'shelahem.' },
+              { nikud: 'לָהֶם.', plain: 'להם.', tr: 'lahem.' },
+              { nikud: 'אוֹתָם.', plain: 'אותם.', tr: 'otam.' }
+            ]
+          }
+        ],
+        insight: 'Weaves Hitpa’el (מִתְקַדְּמִים), Pa’al (שׁוֹמְרִים), and inflected שֶׁלָּהֶם into a fluid intermediate sentence.'
+      }
+    ];
+
+    /**
+     * =========================================================================
+     * 4. MAIN APPLICATION CONTROLLER
+     * =========================================================================
+     */
+    const app = {
+      STORAGE_KEY: 'shoresh_quest_modules_v1',
+
+      state: {
+        showNikud: true,
+        showTranslit: true,
+        xp: 0,
+        streak: 0,
+        completedModules: {}, // { mod1: true, mod2: true, mod3: true }
+        arenaStars: {},       // { arena1: true, arena2: true, arena3: true, arena4: true }
+
+        // Routing: 'hub' | 'module' | 'arena' | 'arena_summary'
+        view: 'hub',
+
+        // Active Training Module State
+        activeModId: null,
+        modStepIdx: 0,
+        modMiniAnswers: {}, // { `${stepIdx}_${qIdx}`: { selectedIdx, correct } }
+
+        // Interactive Lesson Widget States
+        m1s1PluralMode: false,
+        m1s2MorphedCards: {}, // { cardIdx: true }
+        m2s1PrefixId: 'b',
+        m2s1BaseId: 'bayit',
+        m2s1AnimKey: 0,
+        m2s2FusionId: 'f_sifriya',
+        m2s2AnimKey: 0,
+        m2s3PronounId: 'ani',
+        m3s1FamilyId: 'ktv',
+        m3s1WordIdx: 0,
+        m3s1AnimKey: 0,
+        m3s2VerbId: 'kotev',
+        m3s2AnimKey: 0,
+        m3s3BinyanId: 'paal',
+
+        // Active Practice Arena State
+        activeArenaId: null,
+        arenaQuestions: [],
+        arenaIdx: 0,
+        arenaScore: 0,
+        arenaRoundXP: 0,
+        arenaAnswered: false,
+        arenaLastCorrect: false,
+        arenaSelectedNoun: null,
+        arenaSelectedAdj: null,
+        arenaSelectedChoice: null,
+        arenaRootPick: [],
+        arenaSlotPicks: {},
+        arenaActiveSlot: 0
+      },
+
+      init() {
+        this.loadState();
+        AudioEngine.detectHebrewVoice();
+        this.updateControlsUI();
+        this.render();
+      },
+
+      loadState() {
+        try {
+          const raw = localStorage.getItem(this.STORAGE_KEY);
+          if (raw) {
+            const p = JSON.parse(raw);
+            this.state.xp = p.xp || 0;
+            this.state.streak = p.streak || 0;
+            this.state.completedModules = p.completedModules || {};
+            this.state.arenaStars = p.arenaStars || {};
+            if (typeof p.showNikud === 'boolean') this.state.showNikud = p.showNikud;
+            if (typeof p.showTranslit === 'boolean') this.state.showTranslit = p.showTranslit;
+          }
+        } catch (e) {}
+      },
+
+      saveState() {
+        try {
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
+            xp: this.state.xp,
+            streak: this.state.streak,
+            completedModules: this.state.completedModules,
+            arenaStars: this.state.arenaStars,
+            showNikud: this.state.showNikud,
+            showTranslit: this.state.showTranslit
+          }));
+        } catch (e) {}
+      },
+
+      getLevel() {
+        return Math.floor(this.state.xp / 150) + 1;
+      },
+
+      hebText(obj) {
+        if (!obj) return '';
+        if (typeof obj === 'string') {
+          return this.state.showNikud ? obj : obj.replace(/[\u0591-\u05C7]/g, '');
+        }
+        return this.state.showNikud ? obj.nikud : obj.plain;
+      },
+
+      speakBtn(obj, label = '') {
+        const text = typeof obj === 'string' ? obj : (obj.plain || obj.nikud);
+        const safe = text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        return `
+          <button type="button" onclick="event.stopPropagation(); AudioEngine.speakHebrew('${safe}')"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-turquoise-100 hover:bg-turquoise-400/30 text-indigo-900 border border-turquoise-500/40 text-xs sm:text-sm font-bold transition-all cursor-pointer shrink-0"
+            title="Listen to Hebrew pronunciation">
+            <span>🔊</span>
+            ${label ? `<span>${label}</span>` : ''}
+          </button>
+        `;
+      },
+
+      /**
+       * Global Controls Handlers
+       */
+      toggleNikud() {
+        AudioEngine.pop();
+        this.state.showNikud = !this.state.showNikud;
+        this.saveState();
+        this.updateControlsUI();
+        this.render();
+      },
+
+      toggleTranslit() {
+        AudioEngine.pop();
+        this.state.showTranslit = !this.state.showTranslit;
+        this.saveState();
+        this.updateControlsUI();
+        this.render();
+      },
+
+      toggleSpeechRate() {
+        AudioEngine.pop();
+        AudioEngine.speechRate = AudioEngine.speechRate === 1.0 ? 0.75 : 1.0;
+        this.updateControlsUI();
+        this.showToast(`Speech speed set to ${AudioEngine.speechRate === 1.0 ? '1.0x (Normal)' : '0.75x (Slow Learner Pace)'}`);
+      },
+
+      toggleSfx() {
+        AudioEngine.sfxEnabled = !AudioEngine.sfxEnabled;
+        if (AudioEngine.sfxEnabled) AudioEngine.pop();
+        this.updateControlsUI();
+      },
+
+      updateControlsUI() {
+        const nikudBtn = document.getElementById('toggleNikudBtn');
+        const nikudBadge = document.getElementById('nikudBadge');
+        if (this.state.showNikud) {
+          nikudBtn.className = 'px-2.5 py-1.5 rounded-xl border border-indigo-800 bg-indigo-800 text-parchment-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all cursor-pointer';
+          nikudBadge.className = 'px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-gold-400 text-indigo-900';
+          nikudBadge.textContent = 'ON';
+        } else {
+          nikudBtn.className = 'px-2.5 py-1.5 rounded-xl border border-parchment-300 bg-white text-indigo-900 hover:bg-parchment-100 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all cursor-pointer';
+          nikudBadge.className = 'px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-parchment-200 text-indigo-700';
+          nikudBadge.textContent = 'OFF';
+        }
+
+        const trBtn = document.getElementById('toggleTranslitBtn');
+        const trBadge = document.getElementById('translitBadge');
+        if (this.state.showTranslit) {
+          trBtn.className = 'px-2.5 py-1.5 rounded-xl border border-indigo-800 bg-indigo-800 text-parchment-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all cursor-pointer';
+          trBadge.className = 'px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-gold-400 text-indigo-900';
+          trBadge.textContent = 'ON';
+        } else {
+          trBtn.className = 'px-2.5 py-1.5 rounded-xl border border-parchment-300 bg-white text-indigo-900 hover:bg-parchment-100 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all cursor-pointer';
+          trBadge.className = 'px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-parchment-200 text-indigo-700';
+          trBadge.textContent = 'OFF';
+        }
+
+        document.getElementById('speedBadge').textContent = AudioEngine.speechRate === 1.0 ? '1.0x' : '0.75x';
+        document.getElementById('sfxIcon').textContent = AudioEngine.sfxEnabled ? '🔔' : '🔕';
+
+        const modDoneCount = Object.keys(this.state.completedModules).filter(k => this.state.completedModules[k]).length;
+        const starsCount = Object.keys(this.state.arenaStars).filter(k => this.state.arenaStars[k]).length;
+        document.getElementById('modulesCountDisplay').textContent = `${modDoneCount}/3`;
+        document.getElementById('arenaStarsDisplay').textContent = `${starsCount}/4`;
+        document.getElementById('streakDisplay').textContent = this.state.streak;
+        document.getElementById('xpDisplay').textContent = `${this.state.xp} XP`;
+        document.getElementById('levelDisplay').textContent = `Lvl ${this.getLevel()}`;
+      },
+
+      goHome() {
+        AudioEngine.pop();
+        this.state.view = 'hub';
+        this.render();
+      },
+
+      showToast(msg) {
+        const old = document.getElementById('toastBox');
+        if (old) old.remove();
+        const div = document.createElement('div');
+        div.id = 'toastBox';
+        div.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-indigo-900 text-parchment-50 px-4 py-2.5 rounded-xl shadow-lg text-xs sm:text-sm font-semibold animate-pop';
+        div.textContent = msg;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 2600);
+      },
+
+      openResetModal() {
+        AudioEngine.pop();
+        const m = document.getElementById('resetModal');
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      },
+
+      closeResetModal() {
+        const m = document.getElementById('resetModal');
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      },
+
+      confirmResetProgress() {
+        this.state.xp = 0;
+        this.state.streak = 0;
+        this.state.completedModules = {};
+        this.state.arenaStars = {};
+        this.saveState();
+        this.closeResetModal();
+        this.updateControlsUI();
+        this.goHome();
+        this.showToast('All progress has been reset.');
+      },
+
+      /**
+       * =====================================================================
+       * 5. HOME HUB VIEW
+       * =====================================================================
+       */
+      renderHub() {
+        const topics = [
+          {
+            modId: 'mod1',
+            arenaId: 'arena1',
+            num: '01',
+            title: 'Plurals & Adjectives',
+            heTitle: 'רַבִּים וּתְאָרִים',
+            desc: 'Learn Gender & Number Agreement (יְלָדִים טוֹבִים) and conquer irregular rule-breakers like שֻׁלְחָנוֹת גְּדוֹלִים and עָרִים גְּדוֹלוֹת.',
+            accent: 'border-coral-500/40',
+            badgeClass: 'bg-coral-100 text-coral-600'
+          },
+          {
+            modId: 'mod2',
+            arenaId: 'arena2',
+            num: '02',
+            title: 'Prefixes & Prepositions',
+            heTitle: 'אוֹתִיּוֹת שִׁמּוּשׁ וּמִלּוֹת יַחַס',
+            desc: 'Attach מש"ה וכל"ב prefixes, master magnetic article fusion (בַּסִּפְרִיָּה vs מֵהַבַּיִת), and inflect שֶׁל, אֶת, עִם, לְ־.',
+            accent: 'border-turquoise-500/40',
+            badgeClass: 'bg-turquoise-100 text-turquoise-600'
+          },
+          {
+            modId: 'mod3',
+            arenaId: 'arena3',
+            num: '03',
+            title: 'Roots & Present Tense',
+            heTitle: 'שׁוֹרָשִׁים וְהֹוֶה',
+            desc: 'X-ray 3-letter Shoresh families (כ-ת-ב, ל-מ-ד, ד-ב-ר) and conjugate Present Tense verbs across Pa’al, Pi’el, Hif’il & Hitpa’el.',
+            accent: 'border-indigo-700/40',
+            badgeClass: 'bg-indigo-800/10 text-indigo-800'
+          }
+        ];
+
+        return `
+          <div class="space-y-7 animate-pop">
+            <!-- Hero Banner -->
+            <section class="bg-indigo-800 text-parchment-50 rounded-3xl p-6 sm:p-8 shadow-md relative overflow-hidden">
+              <div class="w-32 h-32 rounded-full bg-turquoise-400/15 absolute -top-10 -right-10 pointer-events-none"></div>
+              <div class="w-24 h-24 bg-gold-400/20 rotate-12 absolute -bottom-8 right-24 pointer-events-none"></div>
+
+              <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                <div class="space-y-2 max-w-2xl">
+                  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-700 text-gold-300 text-xs font-bold">
+                    <span>🎓 Guided Audio Lessons + Interactive Practice Arenas</span>
+                  </div>
+                  <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                    Intermediate Hebrew Grammar, Brought to Life
+                  </h1>
+                  <p class="text-sm sm:text-base text-parchment-200 leading-relaxed">
+                    Start with a step-by-step <strong>Training Module</strong> featuring animated morphology and native-pace or slow (<code class="text-gold-300">0.75x</code>) audio, then test your reflexes in the <strong>Practice Arena</strong>.
+                  </p>
+                </div>
+
+                <div class="bg-indigo-900/85 border border-indigo-700 rounded-2xl p-4 sm:min-w-[220px] text-center space-y-2">
+                  <div class="text-xs uppercase tracking-wider text-gold-300 font-bold">Curriculum Mastery</div>
+                  <div class="text-3xl font-extrabold text-white">
+                    ${Object.keys(this.state.completedModules).filter(k => this.state.completedModules[k]).length} <span class="text-lg text-parchment-300">/ 3 Modules</span>
+                  </div>
+                  <div class="text-xs text-turquoise-400 font-semibold">
+                    ⭐ ${Object.keys(this.state.arenaStars).filter(k => this.state.arenaStars[k]).length} / 4 Arena Stars Earned
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 3 Core Curriculum Cards -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              ${topics.map(t => {
+                const modCompleted = Boolean(this.state.completedModules[t.modId]);
+                const arenaStarred = Boolean(this.state.arenaStars[t.arenaId]);
+                return `
+                  <div class="bg-white rounded-3xl border-2 ${t.accent} p-5 sm:p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+                    <div class="space-y-3">
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold ${t.badgeClass}">TOPIC ${t.num}</span>
+                        <div class="flex items-center gap-1.5 text-xs font-bold">
+                          ${modCompleted ? '<span class="px-2 py-0.5 rounded-md bg-turquoise-100 text-turquoise-600">✓ Lesson Done</span>' : ''}
+                          ${arenaStarred ? '<span class="px-2 py-0.5 rounded-md bg-gold-100 text-gold-600">⭐ Mastered</span>' : ''}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h2 class="text-xl font-extrabold text-indigo-900">${t.title}</h2>
+                        <div class="hebrew-display text-xl font-bold text-turquoise-600">${this.hebText(t.heTitle)}</div>
+                      </div>
+
+                      <p class="text-sm text-indigo-700 leading-relaxed">${t.desc}</p>
+                    </div>
+
+                    <div class="pt-5 mt-5 border-t border-parchment-200 space-y-2.5">
+                      <button onclick="app.startModule('${t.modId}')"
+                        class="w-full py-3 px-4 rounded-xl bg-indigo-800 hover:bg-indigo-700 text-parchment-50 font-bold text-sm flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer">
+                        <span>📘 Start Training Module</span>
+                        <span>→</span>
+                      </button>
+                      <button onclick="app.startArena('${t.arenaId}')"
+                        class="w-full py-2.5 px-4 rounded-xl bg-parchment-100 hover:bg-gold-100 text-indigo-900 border border-parchment-300 font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
+                        <span>⚔️ Practice Arena</span>
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </section>
+
+            <!-- 4th Card: Mixed Mastery Arena -->
+            <section class="bg-gradient-to-r from-gold-100 via-parchment-50 to-turquoise-100 rounded-3xl border-2 border-gold-400/60 p-5 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-5 shadow-sm">
+              <div class="space-y-1.5 max-w-2xl">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-lg bg-gold-400 text-indigo-900 text-xs font-extrabold uppercase">Capstone Challenge</span>
+                  ${this.state.arenaStars.arena4 ? '<span class="px-2 py-0.5 rounded-md bg-white text-gold-600 text-xs font-bold border border-gold-400">⭐ Mastered</span>' : ''}
+                </div>
+                <h3 class="text-xl sm:text-2xl font-extrabold text-indigo-900">
+                  Mixed Mastery Arena <span class="hebrew-display text-turquoise-600 mr-1">אֶתְגָּר מְשֻׁלָּב</span>
+                </h3>
+                <p class="text-sm text-indigo-800">
+                  Synthesize irregular plurals, prefix contractions, inflected prepositions, and present-tense verbs in complete intermediate Hebrew sentences for bonus XP!
+                </p>
+              </div>
+              <button onclick="app.startArena('arena4')"
+                class="w-full md:w-auto shrink-0 py-3.5 px-6 rounded-2xl bg-coral-500 hover:bg-coral-600 text-white font-extrabold text-sm sm:text-base shadow-sm transition-all cursor-pointer">
+                ⚔️ Enter Mixed Mastery Arena →
+              </button>
+            </section>
+          </div>
+        `;
+      },
+
+      /**
+       * =====================================================================
+       * 6. TRAINING MODULES ENGINE (STEP-BY-STEP INTERACTIVE LESSONS)
+       * =====================================================================
+       */
+      startModule(modId) {
+        AudioEngine.pop();
+        this.state.view = 'module';
+        this.state.activeModId = modId;
+        this.state.modStepIdx = 0;
+        this.state.modMiniAnswers = {};
+        this.state.m1s1PluralMode = false;
+        this.state.m1s2MorphedCards = {};
+        this.state.m2s1PrefixId = 'b';
+        this.state.m2s1BaseId = 'bayit';
+        this.state.m2s2FusionId = 'f_sifriya';
+        this.state.m2s3PronounId = 'ani';
+        this.state.m3s1FamilyId = 'ktv';
+        this.state.m3s1WordIdx = 0;
+        this.state.m3s2VerbId = 'kotev';
+        this.state.m3s3BinyanId = 'paal';
+        this.render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+
+      setModuleStep(idx) {
+        AudioEngine.pop();
+        this.state.modStepIdx = idx;
+        this.render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+
+      completeModule(modId) {
+        AudioEngine.fanfare();
+        if (!this.state.completedModules[modId]) {
+          this.state.completedModules[modId] = true;
+          this.state.xp += 60;
+          this.showToast('🎓 Module Completed! +60 XP Earned!');
+        } else {
+          this.state.xp += 15;
+          this.showToast('🎓 Module Reviewed! +15 XP');
+        }
+        this.saveState();
+        this.updateControlsUI();
+        this.goHome();
+      },
+
+      renderModuleView() {
+        const mod = MODULES_DATA[this.state.activeModId];
+        const stepIdx = this.state.modStepIdx;
+        const step = mod.steps[stepIdx];
+
+        let interactiveBody = '';
+        if (mod.id === 'mod1' && stepIdx === 0) interactiveBody = this.renderMod1Step1(step);
+        if (mod.id === 'mod1' && stepIdx === 1) interactiveBody = this.renderMod1Step2(step);
+        if (mod.id === 'mod2' && stepIdx === 0) interactiveBody = this.renderMod2Step1(step);
+        if (mod.id === 'mod2' && stepIdx === 1) interactiveBody = this.renderMod2Step2(step);
+        if (mod.id === 'mod2' && stepIdx === 2) interactiveBody = this.renderMod2Step3(step);
+        if (mod.id === 'mod3' && stepIdx === 0) interactiveBody = this.renderMod3Step1(step);
+        if (mod.id === 'mod3' && stepIdx === 1) interactiveBody = this.renderMod3Step2(step);
+        if (mod.id === 'mod3' && stepIdx === 2) interactiveBody = this.renderMod3Step3(step);
+
+        // Mini-check section at bottom of every step
+        const miniCheckHtml = this.renderModuleMiniChecks(step, stepIdx);
+
+        // Navigation buttons
+        const allMiniAnswered = step.miniChecks.every((_, qIdx) => {
+          const rec = this.state.modMiniAnswers[`${stepIdx}_${qIdx}`];
+          return rec && rec.correct;
+        });
+
+        return `
+          <div class="max-w-4xl mx-auto space-y-5 animate-pop">
+            <!-- Top Navigation & 3-Step Progress Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <button onclick="app.goHome()" class="px-3.5 py-2 rounded-xl bg-white border border-parchment-300 hover:bg-parchment-100 text-xs sm:text-sm font-bold text-indigo-900 cursor-pointer">
+                ← Back to Hub
+              </button>
+
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                ${mod.steps.map((s, idx) => {
+                  const isCurrent = idx === stepIdx;
+                  const isPast = idx < stepIdx;
+                  return `
+                    <button onclick="app.setModuleStep(${idx})"
+                      class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                        isCurrent
+                          ? 'bg-indigo-800 text-gold-300 shadow-2xs'
+                          : isPast
+                            ? 'bg-turquoise-500 text-white'
+                            : 'bg-parchment-200 text-indigo-700'
+                      }">
+                      Step ${idx + 1}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Lesson Header Card -->
+            <div class="bg-white rounded-3xl border-2 border-parchment-300 p-5 sm:p-7 shadow-sm space-y-5">
+              <div class="border-b border-parchment-200 pb-4 space-y-1.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="text-xs font-extrabold uppercase tracking-wider text-turquoise-600">
+                    Module ${mod.num}: ${mod.title} (<span class="hebrew-text">${this.hebText(mod.heTitle)}</span>)
+                  </span>
+                  <span class="px-2.5 py-0.5 rounded-full bg-gold-100 text-gold-600 text-xs font-bold">${step.badge}</span>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-indigo-900">${step.title}</h2>
+                <p class="text-sm sm:text-base text-indigo-700 leading-relaxed">${step.intro}</p>
+              </div>
+
+              <!-- Interactive Animated Lesson Canvas -->
+              ${interactiveBody}
+
+              <!-- Try It Now Mini-Check -->
+              ${miniCheckHtml}
+
+              <!-- Bottom Step Navigation -->
+              <div class="pt-4 border-t border-parchment-200 flex items-center justify-between gap-3">
+                <button type="button" ${stepIdx === 0 ? 'disabled' : ''} onclick="app.setModuleStep(${stepIdx - 1})"
+                  class="px-4 py-2.5 rounded-xl border border-parchment-300 font-bold text-sm ${
+                    stepIdx === 0 ? 'opacity-40 cursor-not-allowed bg-parchment-100' : 'bg-white hover:bg-parchment-100 text-indigo-900 cursor-pointer'
+                  }">
+                  ← Previous Step
+                </button>
+
+                ${stepIdx < mod.steps.length - 1 ? `
+                  <button type="button" onclick="app.setModuleStep(${stepIdx + 1})"
+                    class="px-5 py-2.5 rounded-xl font-extrabold text-sm shadow-sm transition-all cursor-pointer ${
+                      allMiniAnswered
+                        ? 'bg-turquoise-500 hover:bg-turquoise-600 text-white'
+                        : 'bg-indigo-800 hover:bg-indigo-700 text-parchment-50'
+                    }">
+                    Next Step (${stepIdx + 2}/3) →
+                  </button>
+                ` : `
+                  <button type="button" onclick="app.completeModule('${mod.id}')"
+                    class="px-5 py-3 rounded-xl bg-coral-500 hover:bg-coral-600 text-white font-extrabold text-sm sm:text-base shadow-sm transition-all cursor-pointer">
+                    🎓 Complete Module (+60 XP) ✓
+                  </button>
+                `}
+              </div>
+            </div>
+          </div>
+        `;
+      },
+
+      /**
+       * Module 1, Step 1: Gender & Number Agreement Interactive Cards
+       */
+      renderMod1Step1(step) {
+        const isPl = this.state.m1s1PluralMode;
+        return `
+          <div class="space-y-4">
+            <!-- Master Toggle: Singular vs Plural -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-parchment-100 p-3.5 rounded-2xl border border-parchment-300">
+              <span class="text-xs sm:text-sm font-bold text-indigo-900">Switch all cards between Singular &amp; Plural:</span>
+              <div class="flex items-center gap-1.5 bg-parchment-200 p-1 rounded-xl">
+                <button type="button" onclick="app.toggleM1S1Mode(false)"
+                  class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                    !isPl ? 'bg-indigo-800 text-white shadow-2xs' : 'text-indigo-800'
+                  }">
+                  Singular (יָחִיד / יְחִידָה)
+                </button>
+                <button type="button" onclick="app.toggleM1S1Mode(true)"
+                  class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                    isPl ? 'bg-turquoise-600 text-white shadow-2xs' : 'text-indigo-800'
+                  }">
+                  Plural (רַבִּים / רַבּוֹת) ✨
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              ${step.pairs.map(p => {
+                const noun = isPl ? p.plurNoun : p.singNoun;
+                const adj = isPl ? p.plurAdj : p.singAdj;
+                const phrase = { nikud: `${noun.nikud} ${adj.nikud}`, plain: `${noun.plain} ${adj.plain}` };
+                const isFem = p.gender.includes('Feminine');
+                const suffixBadgeColor = isFem ? 'text-coral-600 bg-coral-100' : 'text-turquoise-600 bg-turquoise-100';
+
+                return `
+                  <div class="p-4 rounded-2xl border-2 border-parchment-300 bg-parchment-50 space-y-2.5 animate-morph">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-extrabold uppercase tracking-wide ${isFem ? 'text-coral-600' : 'text-turquoise-600'}">${p.gender}</span>
+                      ${this.speakBtn(phrase, 'Listen')}
+                    </div>
+
+                    <div dir="rtl" class="bg-white rounded-xl p-3 border border-parchment-200 text-center">
+                      <div class="hebrew-text text-2xl sm:text-3xl font-extrabold text-indigo-900">
+                        <span>${this.hebText(noun)}</span>
+                        <span class="mx-1.5"></span>
+                        <span>${this.hebText(adj)}</span>
+                      </div>
+                      ${this.state.showTranslit ? `<div class="text-xs text-indigo-700 font-medium mt-1" dir="ltr">${noun.tr} ${adj.tr}</div>` : ''}
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs text-indigo-700">
+                      <span>${p.english}</span>
+                      ${noun.suffix ? `<span class="px-2 py-0.5 rounded-md font-bold hebrew-text ${suffixBadgeColor}">Suffix: ${this.hebText(noun.suffix)}</span>` : '<span class="text-indigo-700/60">Base form</span>'}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      },
+
+      toggleM1S1Mode(toPlural) {
+        AudioEngine.pop();
+        this.state.m1s1PluralMode = toPlural;
+        this.render();
+      },
+
+      /**
+       * Module 1, Step 2: Irregular "Rule-Breaker" Plurals Animated Morph Cards
+       */
+      renderMod1Step2(step) {
+        return `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${step.irregularCards.map((card, idx) => {
+              const morphed = Boolean(this.state.m1s2MorphedCards[idx]);
+              const activeObj = morphed ? card.plur : card.sing;
+              const isMasc = card.genderType === 'masc';
+
+              return `
+                <div class="rounded-2xl border-2 ${morphed ? (isMasc ? 'border-turquoise-500 bg-turquoise-100/35' : 'border-coral-500 bg-coral-100/35') : 'border-parchment-300 bg-parchment-50'} p-4 space-y-3 transition-all">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold ${isMasc ? 'bg-turquoise-100 text-turquoise-600' : 'bg-coral-100 text-coral-600'}">
+                      ${card.trueGender}
+                    </span>
+                    ${this.speakBtn(activeObj)}
+                  </div>
+
+                  <div dir="rtl" class="bg-white rounded-xl p-3.5 border border-parchment-200 text-center ${morphed ? 'animate-morph' : ''}">
+                    <div class="text-[11px] font-sans font-bold uppercase text-indigo-700/60 mb-1" dir="ltr">
+                      ${morphed ? 'Plural Form (True Gender Kept!)' : 'Singular Form'}
+                    </div>
+                    <div class="hebrew-text text-2xl sm:text-3xl font-extrabold text-indigo-900">
+                      ${this.hebText(activeObj)}
+                    </div>
+                    ${this.state.showTranslit ? `<div class="text-xs text-indigo-700 mt-1" dir="ltr">${activeObj.tr}</div>` : ''}
+                  </div>
+
+                  <p class="text-xs text-indigo-800 leading-relaxed">${card.note}</p>
+
+                  <button type="button" onclick="app.toggleMorphCard(${idx})"
+                    class="w-full py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer ${
+                      morphed
+                        ? 'bg-indigo-800 text-parchment-50 hover:bg-indigo-700'
+                        : 'bg-gold-400 hover:bg-gold-300 text-indigo-900 shadow-2xs'
+                    }">
+                    ${morphed ? '↺ Back to Singular' : '✨ Transform to Plural & Hear'}
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      },
+
+      toggleMorphCard(idx) {
+        const step = MODULES_DATA.mod1.steps[1];
+        const card = step.irregularCards[idx];
+        const nextState = !this.state.m1s2MorphedCards[idx];
+        this.state.m1s2MorphedCards[idx] = nextState;
+        this.render();
+        // Automatically speak Hebrew audio on morph!
+        const target = nextState ? card.plur : card.sing;
+        AudioEngine.speakHebrew(target.plain);
+      },
+
+      /**
+       * Module 2, Step 1: Moshe VeKaleb Interactive Prefix Attacher
+       */
+      renderMod2Step1(step) {
+        const activePrefix = step.prefixes.find(p => p.id === this.state.m2s1PrefixId) || step.prefixes[0];
+        const activeBase = step.bases.find(b => b.id === this.state.m2s1BaseId) || step.bases[0];
+        const combined = activeBase.forms[activePrefix.id];
+
+        return `
+          <div class="space-y-4">
+            <!-- Step A: Choose Prefix -->
+            <div class="space-y-2">
+              <div class="text-xs font-extrabold uppercase tracking-wider text-indigo-800">1. Tap a Moshe VeKaleb Prefix:</div>
+              <div dir="rtl" class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                ${step.prefixes.map(p => {
+                  const sel = p.id === activePrefix.id;
+                  return `
+                    <button type="button" onclick="app.selectM2S1Prefix('${p.id}')"
+                      class="tile-btn p-2.5 rounded-xl border-2 text-center cursor-pointer ${
+                        sel ? 'tile-selected' : 'bg-parchment-50 border-parchment-300 text-indigo-900 hover:bg-parchment-100'
+                      }">
+                      <span class="hebrew-text text-xl sm:text-2xl font-extrabold block">${this.hebText({ nikud: p.label, plain: p.plain })}</span>
+                      <span class="text-[10px] opacity-85 block" dir="ltr">${p.meaning}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Step B: Choose Base Word -->
+            <div class="space-y-2">
+              <div class="text-xs font-extrabold uppercase tracking-wider text-indigo-800">2. Tap a Base Word:</div>
+              <div dir="rtl" class="grid grid-cols-3 gap-2.5">
+                ${step.bases.map(b => {
+                  const sel = b.id === activeBase.id;
+                  return `
+                    <button type="button" onclick="app.selectM2S1Base('${b.id}')"
+                      class="tile-btn p-3 rounded-xl border-2 text-center cursor-pointer ${
+                        sel ? 'tile-selected' : 'bg-parchment-50 border-parchment-300 text-indigo-900 hover:bg-parchment-100'
+                      }">
+                      <span class="hebrew-text text-xl font-extrabold block">${this.hebText(b.base)}</span>
+                      <span class="text-xs opacity-85 block" dir="ltr">${b.base.en}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Animated Attachment Stage -->
+            <div class="bg-indigo-800 text-parchment-50 rounded-2xl p-5 text-center space-y-3">
+              <div class="text-xs uppercase tracking-wider text-gold-300 font-bold">Animated Prefix Attachment</div>
+              <div dir="rtl" class="flex items-center justify-center gap-3 flex-wrap text-2xl sm:text-4xl font-extrabold hebrew-text">
+                <span class="px-3 py-1 rounded-xl bg-turquoise-500 text-white animate-prefix-attach">${this.hebText({ nikud: activePrefix.label, plain: activePrefix.plain })}</span>
+                <span class="text-gold-300">+</span>
+                <span class="px-3 py-1 rounded-xl bg-indigo-700 text-white">${this.hebText(activeBase.base)}</span>
+                <span class="text-gold-300">=</span>
+                <span class="px-4 py-1.5 rounded-2xl bg-gold-400 text-indigo-900 animate-morph shadow-md">${this.hebText(combined)}</span>
+              </div>
+              <div class="flex flex-wrap items-center justify-center gap-3 pt-1">
+                <span class="text-sm font-semibold text-parchment-200">
+                  ${this.state.showTranslit ? `(${combined.tr}) — ` : ''}Meaning: <strong class="text-white">"${combined.en}"</strong>
+                </span>
+                ${this.speakBtn(combined, 'Hear Word')}
+              </div>
+            </div>
+          </div>
+        `;
+      },
+
+      selectM2S1Prefix(id) {
+        this.state.m2s1PrefixId = id;
+        const step = MODULES_DATA.mod2.steps[0];
+        const b = step.bases.find(x => x.id === this.state.m2s1BaseId);
+        this.render();
+        AudioEngine.speakHebrew(b.forms[id].plain);
+      },
+
+      selectM2S1Base(id) {
+        this.state.m2s1BaseId = id;
+        const step = MODULES_DATA.mod2.steps[0];
+        const b = step.bases.find(x => x.id === id);
+        this.render();
+        AudioEngine.speakHebrew(b.forms[this.state.m2s1PrefixId].plain);
+      },
+
+      /**
+       * Module 2, Step 2: Definite Article Magnetic Fusion Animator
+       */
+      renderMod2Step2(step) {
+        const active = step.fusions.find(f => f.id === this.state.m2s2FusionId) || step.fusions[0];
+        const isAbsorb = active.type === 'absorb';
+
+        return `
+          <div class="space-y-4">
+            <div dir="rtl" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              ${step.fusions.map(f => {
+                const sel = f.id === active.id;
+                return `
+                  <button type="button" onclick="app.selectM2S2Fusion('${f.id}')"
+                    class="tile-btn p-2.5 rounded-xl border-2 text-center cursor-pointer ${
+                      sel ? 'tile-selected' : 'bg-parchment-50 border-parchment-300 text-indigo-900 hover:bg-parchment-100'
+                    }">
+                    <span class="hebrew-text text-base sm:text-lg font-extrabold block">${this.hebText(f.label)}</span>
+                    <span class="text-[11px] opacity-80 block" dir="ltr">${f.english}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Magnetic Fusion Stage -->
+            <div class="bg-parchment-100 border-2 border-parchment-300 rounded-2xl p-5 text-center space-y-4">
+              <div class="inline-block px-3 py-1 rounded-full text-xs font-extrabold ${
+                isAbsorb ? 'bg-turquoise-100 text-turquoise-600' : 'bg-coral-100 text-coral-600'
+              }">
+                ${isAbsorb ? '🧲 Rule A: ה Disappears & Transfers Vowel!' : '🛡️ Rule B: מִ Keeps ה and Lengthens to מֵ!'}
+              </div>
+
+              <div dir="rtl" class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap hebrew-text text-2xl sm:text-3xl font-extrabold">
+                <span class="px-3.5 py-2 rounded-xl bg-indigo-800 text-white">${this.hebText(active.prefix)}</span>
+                <span class="text-indigo-700">+</span>
+                <span class="px-3.5 py-2 rounded-xl ${
+                  isAbsorb
+                    ? 'bg-coral-100 text-coral-600 border border-coral-500 animate-vanish-he'
+                    : 'bg-gold-300 text-indigo-900 border border-gold-500 animate-morph'
+                }">
+                  ${this.hebText(active.article)}
+                </span>
+                <span class="text-indigo-700">+</span>
+                <span class="px-3.5 py-2 rounded-xl bg-white border border-parchment-300 text-indigo-900">${this.hebText(active.noun)}</span>
+                <span class="text-indigo-700">=</span>
+                <span class="px-5 py-2 rounded-2xl bg-turquoise-500 text-white shadow-md animate-magnetic-fuse">
+                  ${this.hebText(active.result)}
+                </span>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-center gap-3">
+                <span class="text-sm font-bold text-indigo-900">
+                  ${this.state.showTranslit ? `${active.result.tr} — ` : ''}"${active.english}"
+                </span>
+                ${this.speakBtn(active.result, 'Play Fused Word')}
+              </div>
+
+              <p class="text-xs sm:text-sm text-indigo-800 bg-white/80 rounded-xl p-3 border border-parchment-200 max-w-xl mx-auto">
+                ${active.rule}
+              </p>
+            </div>
+          </div>
+        `;
+      },
+
+      selectM2S2Fusion(id) {
+        this.state.m2s2FusionId = id;
+        const step = MODULES_DATA.mod2.steps[1];
+        const f = step.fusions.find(x => x.id === id);
+        this.render();
+        AudioEngine.speakHebrew(f.result.plain);
+      },
+
+      /**
+       * Module 2, Step 3: Interactive Pronoun Switcher for Inflected Prepositions
+       */
+      renderMod2Step3(step) {
+        const activePron = step.pronouns.find(p => p.id === this.state.m2s3PronounId) || step.pronouns[0];
+        const cards = [
+          { base: 'שֶׁל (of)', item: activePron.shel, accent: 'border-indigo-700/30' },
+          { base: 'אֶת (direct obj.)', item: activePron.et, accent: 'border-turquoise-500/40' },
+          { base: 'עִם (with)', item: activePron.im, accent: 'border-coral-500/40' },
+          { base: 'לְ־ (to / for)', item: activePron.le, accent: 'border-gold-500/50' }
+        ];
+
+        return `
+          <div class="space-y-4">
+            <div class="text-xs font-extrabold uppercase tracking-wider text-indigo-800">Select a Pronoun to Morph All 4 Prepositions:</div>
+            <div dir="rtl" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+              ${step.pronouns.map(p => {
+                const sel = p.id === activePron.id;
+                return `
+                  <button type="button" onclick="app.selectM2S3Pronoun('${p.id}')"
+                    class="tile-btn p-2.5 rounded-xl border-2 text-center cursor-pointer ${
+                      sel ? 'tile-selected' : 'bg-parchment-50 border-parchment-300 text-indigo-900 hover:bg-parchment-100'
+                    }">
+                    <span class="hebrew-text text-lg font-extrabold block">${this.hebText(p.label)}</span>
+                    <span class="text-[10px] opacity-80 block" dir="ltr">${p.label.tr.split(' ')[0]}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${cards.map(c => `
+                <div class="bg-parchment-50 rounded-2xl border-2 ${c.accent} p-4 flex items-center justify-between gap-3 animate-morph">
+                  <div>
+                    <div class="text-xs font-bold text-indigo-700/75 hebrew-text">${this.hebText(c.base)} + ${this.hebText(activePron.label)}</div>
+                    <div class="hebrew-text text-2xl sm:text-3xl font-extrabold text-indigo-900 mt-0.5">${this.hebText(c.item)}</div>
+                    ${this.state.showTranslit ? `<div class="text-xs font-semibold text-turquoise-600 mt-0.5">${c.item.tr}</div>` : ''}
+                  </div>
+                  ${this.speakBtn(c.item)}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      },
+
+      selectM2S3Pronoun(id) {
+        this.state.m2s3PronounId = id;
+        const step = MODULES_DATA.mod2.steps[2];
+        const p = step.pronouns.find(x => x.id === id);
+        this.render();
+        AudioEngine.speakHebrew(p.shel.plain);
+      },
+
+      /**
+       * Module 3, Step 1: X-Ray Shoresh Extractor
+       */
+      renderMod3Step1(step) {
+        const fam = step.families.find(f => f.id === this.state.m3s1FamilyId) || step.families[0];
+        const wordObj = fam.words[this.state.m3s1WordIdx] || fam.words[0];
+
+        return `
+          <div class="space-y-4">
+            <!-- Root Family Selector -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-extrabold uppercase text-indigo-800 mr-1">Choose Root Family:</span>
+              ${step.families.map(f => {
+                const sel = f.id === fam.id;
+                return `
+                  <button type="button" onclick="app.selectM3S1Family('${f.id}')"
+                    class="px-3.5 py-2 rounded-xl border-2 text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                      sel ? 'bg-indigo-800 text-gold-300 border-indigo-900' : 'bg-parchment-50 border-parchment-300 text-indigo-900 hover:bg-parchment-100'
+                    }">
+                    <span class="hebrew-text">${f.root.join(' - ')}</span> (${f.meaning})
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Word Selector Pills -->
+            <div class="space-y-1.5">
+              <div class="text-xs font-bold text-indigo-700">Tap any word in the family to X-ray its 3 root letters:</div>
+              <div dir="rtl" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                ${fam.words.map((w, idx) => {
+                  const sel = idx === this.state.m3s1WordIdx;
+                  return `
+                    <button type="button" onclick="app.selectM3S1Word(${idx})"
+                      class="tile-btn p-3 rounded-xl border-2 text-center cursor-pointer ${
+                        sel ? 'tile-selected' : 'bg-white border-parchment-300 text-indigo-900 hover:bg-parchment-100'
+                      }">
+                      <span class="hebrew-text text-xl font-extrabold block">${this.hebText(w)}</span>
+                      <span class="text-[11px] opacity-80 block" dir="ltr">${w.tr}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- X-Ray Chamber -->
+            <div class="bg-indigo-900 text-parchment-50 rounded-2xl p-5 sm:p-6 text-center space-y-4">
+              <div class="flex items-center justify-center gap-3">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-turquoise-400">🔬 X-Ray Morphology Scanner</span>
+                ${this.speakBtn(wordObj, 'Pronounce')}
+              </div>
+
+              <!-- Exploded Letter Tiles -->
+              <div dir="rtl" class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+                ${wordObj.letters.map(l => {
+                  const displayChar = this.state.showNikud ? l.ch : l.ch.replace(/[\u0591-\u05C7]/g, '');
+                  if (!displayChar) return '';
+                  return `
+                    <div class="w-12 h-14 sm:w-14 sm:h-16 rounded-2xl flex flex-col items-center justify-center border-2 ${
+                      l.isRoot
+                        ? 'bg-gold-400 text-indigo-900 border-gold-300 animate-xray-root font-black'
+                        : 'bg-indigo-800/80 text-parchment-300/60 border-indigo-700'
+                    }">
+                      <span class="hebrew-text text-2xl sm:text-3xl leading-none">${displayChar}</span>
+                      <span class="text-[9px] font-sans uppercase mt-1">${l.isRoot ? `Root ${l.rIdx + 1}` : 'Affix'}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+
+              <!-- 3 Shoresh Boxes Below -->
+              <div class="pt-2 border-t border-indigo-700/80 space-y-1.5">
+                <div class="text-xs font-bold text-gold-300">Extracted 3-Letter Shoresh (שׁוֹרֶשׁ):</div>
+                <div dir="rtl" class="flex items-center justify-center gap-3">
+                  ${fam.root.map(rChar => `
+                    <div class="w-12 h-12 rounded-xl bg-turquoise-500 text-white font-extrabold text-2xl hebrew-text flex items-center justify-center shadow-md animate-pop">
+                      ${rChar}
+                    </div>
+                  `).join('<span class="text-gold-300 font-bold">•</span>')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      },
+
+      selectM3S1Family(famId) {
+        this.state.m3s1FamilyId = famId;
+        this.state.m3s1WordIdx = 0;
+        const step = MODULES_DATA.mod3.steps[0];
+        const fam = step.families.find(f => f.id === famId);
+        this.render();
+        AudioEngine.speakHebrew(fam.words[0].plain);
+      },
+
+      selectM3S1Word(idx) {
+        this.state.m3s1WordIdx = idx;
+        const step = MODULES_DATA.mod3.steps[0];
+        const fam = step.families.find(f => f.id === this.state.m3s1FamilyId);
+        this.render();
+        AudioEngine.speakHebrew(fam.words[idx].plain);
+      },
+
+      /**
+       * Module 3, Step 2: Present Tense 2x2 Animated Conjugator
+       */
+      renderMod3Step2(step) {
+        const verb = step.verbs.find(v => v.id === this.state.m3s2VerbId) || step.verbs[0];
+        const cells = [
+          { title: 'Masculine Singular (יָחִיד)', pron: 'הוּא / אַתָּה / אֲנִי', form: verb.ms, color: 'border-indigo-700/30 bg-parchment-50' },
+          { title: 'Feminine Singular (יְחִידָה)', pron: 'הִיא / אַתְּ / אֲנִי', form: verb.fs, color: 'border-coral-500/40 bg-coral-100/25' },
+          { title: 'Masculine Plural (רַבִּים)', pron: 'הֵם / אַתֶּם / אֲנַחְנוּ', form: verb.mp, color: 'border-turquoise-500/40 bg-turquoise-100/25' },
+          { title: 'Feminine Plural (רַבּוֹת)', pron: 'הֵן / אַתֶּן / אֲנַחְנוּ', form: verb.fp, color: 'border-gold-500/50 bg-gold-100/35' }
+        ];
+
+        return `
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div dir="rtl" class="flex flex-wrap gap-2">
+                ${step.verbs.map(v => {
+                  const sel = v.id === verb.id;
+                  return `
+                    <button type="button" onclick="app.selectM3S2Verb('${v.id}')"
+                      class="px-3.5 py-2 rounded-xl border-2 text-sm font-extrabold transition-all cursor-pointer ${
+                        sel ? 'bg-indigo-800 text-gold-300 border-indigo-900' : 'bg-parchment-50 border-parchment-300 text-indigo-900 hover:bg-parchment-100'
+                      }">
+                      <span class="hebrew-text">${this.hebText(v.ms)}</span> <span class="text-xs font-normal" dir="ltr">(${v.meaning})</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+
+              <button type="button" onclick="app.playAllVerbForms()"
+                class="px-3.5 py-2 rounded-xl bg-turquoise-500 hover:bg-turquoise-600 text-white text-xs font-extrabold shadow-2xs cursor-pointer">
+                🔊 Play All 4 Forms
+              </button>
+            </div>
+
+            <!-- 2x2 Conjugation Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              ${cells.map(c => `
+                <div class="rounded-2xl border-2 ${c.color} p-4 flex items-center justify-between gap-3 animate-morph">
+                  <div>
+                    <div class="text-xs font-extrabold text-indigo-900">${c.title}</div>
+                    <div class="hebrew-text text-xs text-indigo-700/75">${this.hebText(c.pron)}</div>
+                    <div class="hebrew-text text-2xl sm:text-3xl font-extrabold text-indigo-900 mt-1">${this.hebText(c.form)}</div>
+                    <div class="flex items-center gap-2 mt-1">
+                      ${this.state.showTranslit ? `<span class="text-xs font-semibold text-turquoise-600">${c.form.tr}</span>` : ''}
+                      <span class="px-2 py-0.5 rounded-md bg-white border border-parchment-300 text-[11px] font-bold hebrew-text text-coral-600">
+                        Ending: ${this.hebText(c.form.suffix)}
+                      </span>
+                    </div>
+                  </div>
+                  ${this.speakBtn(c.form)}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      },
+
+      selectM3S2Verb(id) {
+        this.state.m3s2VerbId = id;
+        const step = MODULES_DATA.mod3.steps[1];
+        const v = step.verbs.find(x => x.id === id);
+        this.render();
+        AudioEngine.speakHebrew(v.ms.plain);
+      },
+
+      playAllVerbForms() {
+        const step = MODULES_DATA.mod3.steps[1];
+        const v = step.verbs.find(x => x.id === this.state.m3s2VerbId) || step.verbs[0];
+        AudioEngine.speakSequence([v.ms.plain, v.fs.plain, v.mp.plain, v.fp.plain]);
+      },
+
+      /**
+       * Module 3, Step 3: Binyan Patterns Comparison
+       */
+      renderMod3Step3(step) {
+        const b = step.binyanim.find(x => x.id === this.state.m3s3BinyanId) || step.binyanim[0];
+
+        return `
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              ${step.binyanim.map(item => {
+                const sel = item.id === b.id;
+                return `
+                  <button type="button" onclick="app.selectM3S3Binyan('${item.id}')"
+                    class="tile-btn p-3 rounded-2xl border-2 text-center cursor-pointer ${
+                      sel ? 'tile-selected' : 'bg-parchment-50 border-parchment-300 text-indigo-900 hover:bg-parchment-100'
+                    }">
+                    <span class="font-extrabold text-sm block">${item.name}</span>
+                    <span class="hebrew-text text-xl font-extrabold text-gold-500 block mt-0.5">${this.hebText(item.ms)}</span>
+                    <span class="text-[10px] opacity-80 block mt-0.5">${item.prefixTag}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Selected Binyan Deep-Dive Panel -->
+            <div class="bg-parchment-100 border-2 border-parchment-300 rounded-2xl p-5 space-y-4 animate-morph">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span class="text-xs font-extrabold uppercase text-turquoise-600">${b.name} • Root ${b.root}</span>
+                  <h4 class="text-base sm:text-lg font-extrabold text-indigo-900">${b.prefixTag}</h4>
+                </div>
+                ${this.speakBtn(b.sentence, 'Hear Example Sentence')}
+              </div>
+
+              <div dir="rtl" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                ${[
+                  { lbl: 'יָחִיד (m.sg.)', f: b.ms },
+                  { lbl: 'יְחִידָה (f.sg.)', f: b.fs },
+                  { lbl: 'רַבִּים (m.pl.)', f: b.mp },
+                  { lbl: 'רַבּוֹת (f.pl.)', f: b.fp }
+                ].map(cell => `
+                  <div class="bg-white rounded-xl p-2.5 border border-parchment-300">
+                    <div class="text-[11px] text-indigo-700/75 font-bold">${cell.lbl}</div>
+                    <div class="hebrew-text text-lg sm:text-xl font-extrabold text-indigo-900">${this.hebText(cell.f)}</div>
+                    ${this.state.showTranslit ? `<div class="text-[11px] text-turquoise-600" dir="ltr">${cell.f.tr}</div>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+
+              <div class="bg-white rounded-xl p-3.5 border border-parchment-200 text-center">
+                <div class="hebrew-text text-lg sm:text-xl font-extrabold text-indigo-900">${this.hebText(b.sentence)}</div>
+                ${this.state.showTranslit ? `<div class="text-xs text-indigo-700 mt-1">${b.sentence.tr}</div>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      },
+
+      selectM3S3Binyan(id) {
+        this.state.m3s3BinyanId = id;
+        const step = MODULES_DATA.mod3.steps[2];
+        const b = step.binyanim.find(x => x.id === id);
+        this.render();
+        AudioEngine.speakHebrew(b.sentence.plain);
+      },
+
+      /**
+       * Render Interactive "Try It Now" Mini-Checks inside Training Modules
+       */
+      renderModuleMiniChecks(step, stepIdx) {
+        return `
+          <div class="bg-gold-100/55 border-2 border-gold-400/60 rounded-2xl p-4 sm:p-5 space-y-4">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-lg bg-gold-400 text-indigo-900 text-xs font-extrabold uppercase">Try It Now</span>
+              <span class="text-xs font-bold text-indigo-900">Quick Interactive Check</span>
+            </div>
+
+            ${step.miniChecks.map((mc, qIdx) => {
+              const key = `${stepIdx}_${qIdx}`;
+              const record = this.state.modMiniAnswers[key];
+
+              return `
+                <div class="bg-white rounded-xl p-4 border border-parchment-300 space-y-3">
+                  <p class="text-sm font-bold text-indigo-900">${mc.prompt}</p>
+                  <div dir="rtl" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    ${mc.options.map((opt, oIdx) => {
+                      const isChosen = record && record.selectedIdx === oIdx;
+                      const isCorrectOpt = oIdx === mc.correctIdx;
+                      let btnClass = 'bg-parchment-50 border-parchment-300 text-indigo-900 hover:bg-parchment-100';
+                      if (record) {
+                        if (isCorrectOpt) btnClass = 'bg-turquoise-500 text-white border-turquoise-600';
+                        else if (isChosen) btnClass = 'bg-coral-500 text-white border-coral-600';
+                      }
+
+                      return `
+                        <button type="button" onclick="app.answerMiniCheck(${stepIdx}, ${qIdx}, ${oIdx})"
+                          class="p-2.5 rounded-xl border-2 text-center font-bold transition-all cursor-pointer ${btnClass}">
+                          <span class="hebrew-text text-lg block">${this.hebText(opt)}</span>
+                          ${this.state.showTranslit ? `<span class="text-[11px] opacity-85 block" dir="ltr">${opt.tr}</span>` : ''}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+
+                  ${record ? `
+                    <div class="text-xs p-2.5 rounded-lg flex items-center justify-between gap-2 ${
+                      record.correct ? 'bg-turquoise-100 text-indigo-900' : 'bg-coral-100 text-indigo-900'
+                    }">
+                      <span><strong>${record.correct ? '✅ Correct!' : '💡 Not quite:'}</strong> ${mc.explanation}</span>
+                      ${this.speakBtn(mc.options[mc.correctIdx])}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      },
+
+      answerMiniCheck(stepIdx, qIdx, optIdx) {
+        const mod = MODULES_DATA[this.state.activeModId];
+        const mc = mod.steps[stepIdx].miniChecks[qIdx];
+        const correct = optIdx === mc.correctIdx;
+        const key = `${stepIdx}_${qIdx}`;
+        const firstTimeCorrect = correct && (!this.state.modMiniAnswers[key] || !this.state.modMiniAnswers[key].correct);
+
+        this.state.modMiniAnswers[key] = { selectedIdx: optIdx, correct };
+
+        if (correct) {
+          AudioEngine.chime(1);
+          if (firstTimeCorrect) {
+            this.state.xp += 10;
+            this.saveState();
+            this.updateControlsUI();
+          }
+          AudioEngine.speakHebrew(mc.options[mc.correctIdx].plain);
+        } else {
+          AudioEngine.wrong();
+        }
+        this.render();
+      },
+
+      /**
+       * =====================================================================
+       * 7. PRACTICE ARENAS ENGINE (4 INTERACTIVE ARENAS)
+       * =====================================================================
+       */
+      shuffle(arr) {
+        const copy = [...arr];
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      },
+
+      startArena(arenaId) {
+        AudioEngine.pop();
+        let questions = [];
+        if (arenaId === 'arena1') {
+          questions = this.shuffle(ARENA_1_DATA).map(item => ({
+            qType: 'a1',
+            item,
+            nounChoices: this.shuffle(item.nounChoices),
+            adjChoices: this.shuffle(item.adjChoices)
+          }));
+        } else if (arenaId === 'arena2') {
+          questions = this.shuffle(ARENA_2_DATA).map(item => ({
+            qType: 'a2',
+            item,
+            choices: this.shuffle(item.choices)
+          }));
+        } else if (arenaId === 'arena3') {
+          questions = this.shuffle(ARENA_3_DATA).map(item => ({
+            qType: 'a3',
+            item,
+            bank: item.bank ? this.shuffle(item.bank) : null,
+            choices: item.choices ? this.shuffle(item.choices) : null
+          }));
+        } else if (arenaId === 'arena4') {
+          questions = this.shuffle(ARENA_4_DATA).map(item => ({
+            qType: 'a4',
+            item: {
+              ...item,
+              tokens: item.tokens.map(t => t.type === 'slot' ? { ...t, shuffledOptions: this.shuffle(t.options) } : t)
+            }
+          }));
+        }
+
+        this.state.view = 'arena';
+        this.state.activeArenaId = arenaId;
+        this.state.arenaQuestions = questions;
+        this.state.arenaIdx = 0;
+        this.state.arenaScore = 0;
+        this.state.arenaRoundXP = 0;
+        this.resetArenaQuestionState();
+        this.render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+
+      resetArenaQuestionState() {
+        this.state.arenaAnswered = false;
+        this.state.arenaLastCorrect = false;
+        this.state.arenaSelectedNoun = null;
+        this.state.arenaSelectedAdj = null;
+        this.state.arenaSelectedChoice = null;
+        this.state.arenaRootPick = [];
+        this.state.arenaSlotPicks = {};
+        this.state.arenaActiveSlot = 0;
+      },
+
+      submitArenaAnswer() {
+        if (this.state.arenaAnswered) return;
+        const q = this.state.arenaQuestions[this.state.arenaIdx];
+        let isCorrect = false;
+        let resolvedHeb = null;
+
+        if (q.qType === 'a1') {
+          if (!this.state.arenaSelectedNoun || !this.state.arenaSelectedAdj) return;
+          isCorrect = this.state.arenaSelectedNoun.plain === q.item.plurNoun.plain &&
+                      this.state.arenaSelectedAdj.plain === q.item.plurAdj.plain;
+          resolvedHeb = {
+            nikud: `${q.item.plurNoun.nikud} ${q.item.plurAdj.nikud}`,
+            plain: `${q.item.plurNoun.plain} ${q.item.plurAdj.plain}`,
+            tr: `${q.item.plurNoun.tr} ${q.item.plurAdj.tr}`
+          };
+        } else if (q.qType === 'a2') {
+          if (!this.state.arenaSelectedChoice) return;
+          isCorrect = this.state.arenaSelectedChoice.plain === q.item.answer.plain;
+          resolvedHeb = q.item.type === 'fusion'
+            ? q.item.answer
+            : {
+                nikud: `${q.item.before.nikud} ${q.item.answer.nikud} ${q.item.after.nikud}`,
+                plain: `${q.item.before.plain} ${q.item.answer.plain} ${q.item.after.plain}`,
+                tr: q.item.answer.tr
+              };
+        } else if (q.qType === 'a3') {
+          if (q.item.type === 'extract') {
+            if (this.state.arenaRootPick.length !== 3) return;
+            isCorrect = q.item.root.every((l, i) => this.state.arenaRootPick[i] === l);
+            resolvedHeb = {
+              nikud: `${q.item.word.nikud} ← שׁוֹרֶשׁ: ${q.item.root.join(' . ')}`,
+              plain: `${q.item.word.plain} ← שורש: ${q.item.root.join(' . ')}`,
+              tr: q.item.word.tr
+            };
+          } else {
+            if (!this.state.arenaSelectedChoice) return;
+            isCorrect = this.state.arenaSelectedChoice.plain === q.item.answer.plain;
+            resolvedHeb = {
+              nikud: `${q.item.before.nikud} ${q.item.answer.nikud} ${q.item.after.nikud}`,
+              plain: `${q.item.before.plain} ${q.item.answer.plain} ${q.item.after.plain}`,
+              tr: q.item.answer.tr
+            };
+          }
+        } else if (q.qType === 'a4') {
+          const slots = q.item.tokens.filter(t => t.type === 'slot');
+          if (Object.keys(this.state.arenaSlotPicks).length < slots.length) return;
+          isCorrect = slots.every((s, idx) => this.state.arenaSlotPicks[idx]?.plain === s.answer.plain);
+          resolvedHeb = q.item.full;
+        }
+
+        this.state.arenaAnswered = true;
+        this.state.arenaLastCorrect = isCorrect;
+        q.resolvedHeb = resolvedHeb;
+
+        if (isCorrect) {
+          this.state.streak += 1;
+          const pts = q.qType === 'a4' ? 35 : 20;
+          this.state.xp += pts;
+          this.state.arenaRoundXP += pts;
+          this.state.arenaScore += 1;
+          AudioEngine.chime(this.state.streak);
+        } else {
+          this.state.streak = 0;
+          AudioEngine.wrong();
+        }
+
+        this.saveState();
+        this.updateControlsUI();
+        this.render();
+        // Speak the correct Hebrew answer automatically!
+        if (resolvedHeb) {
+          AudioEngine.speakHebrew(resolvedHeb.plain);
+        }
+      },
+
+      nextArenaQuestion() {
+        AudioEngine.pop();
+        if (this.state.arenaIdx + 1 < this.state.arenaQuestions.length) {
+          this.state.arenaIdx += 1;
+          this.resetArenaQuestionState();
+          this.render();
+        } else {
+          AudioEngine.fanfare();
+          if (this.state.arenaScore >= Math.ceil(this.state.arenaQuestions.length * 0.6)) {
+            this.state.arenaStars[this.state.activeArenaId] = true;
+            this.saveState();
+            this.updateControlsUI();
+          }
+          this.state.view = 'arena_summary';
+          this.render();
+        }
+      },
+
+      renderArenaView() {
+        const titles = {
+          arena1: 'Arena 1: Plurals & Adjectives',
+          arena2: 'Arena 2: Prefixes & Prepositions',
+          arena3: 'Arena 3: Roots & Present Tense',
+          arena4: 'Arena 4: Mixed Mastery Synthesis'
+        };
+        const q = this.state.arenaQuestions[this.state.arenaIdx];
+        const pct = Math.round(((this.state.arenaIdx + (this.state.arenaAnswered ? 1 : 0)) / this.state.arenaQuestions.length) * 100);
+
+        let bodyHtml = '';
+        let canSubmit = false;
+
+        if (q.qType === 'a1') {
+          canSubmit = Boolean(this.state.arenaSelectedNoun && this.state.arenaSelectedAdj);
+          bodyHtml = `
+            <div class="space-y-4">
+              <div class="bg-parchment-100 rounded-2xl p-4 border border-parchment-300 flex items-center justify-between gap-3">
+                <div>
+                  <div class="text-xs font-bold uppercase text-indigo-700">Transform to Plural (${q.item.gender}):</div>
+                  <div class="hebrew-text text-2xl sm:text-3xl font-extrabold text-indigo-900">${this.hebText(q.item.singNoun)} ${this.hebText(q.item.singAdj)}</div>
+                  <div class="text-xs text-indigo-700">${q.item.meaning}</div>
+                </div>
+                ${this.speakBtn({ plain: `${q.item.singNoun.plain} ${q.item.singAdj.plain}` }, 'Listen')}
+              </div>
+
+              <div class="space-y-2">
+                <div class="text-xs font-extrabold uppercase text-indigo-800">1. Choose Plural Noun:</div>
+                <div dir="rtl" class="grid grid-cols-3 gap-2.5">
+                  ${q.nounChoices.map((opt, idx) => {
+                    const sel = this.state.arenaSelectedNoun?.plain === opt.plain;
+                    return `
+                      <button type="button" ${this.state.arenaAnswered ? 'disabled' : ''} onclick="app.pickArenaNoun(${idx})"
+                        class="tile-btn p-3 rounded-xl border-2 text-center cursor-pointer ${sel ? 'tile-selected' : 'bg-parchment-50 border-parchment-300 text-indigo-900'}">
+                        <span class="hebrew-text text-lg sm:text-xl font-extrabold block">${this.hebText(opt)}</span>
+                        ${this.state.showTranslit ? `<span class="text-[11px] opacity-80 block" dir="ltr">${opt.tr}</span>` : ''}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <div class="text-xs font-extrabold uppercase text-indigo-800">2. Choose Matching Plural Adjective:</div>
+                <div dir="rtl" class="grid grid-cols-3 gap-2.5">
+                  ${q.adjChoices.map((opt, idx) => {
+                    const sel = this.state.arenaSelectedAdj?.plain === opt.plain;
+                    return `
+                      <button type="button" ${this.state.arenaAnswered ? 'disabled' : ''} onclick="app.pickArenaAdj(${idx})"
+                        class="tile-btn p-3 rounded-xl border-2 text-center cursor-pointer ${sel ? 'tile-selected' : 'bg-parchment-50 border-parchment-300 text-indigo-900'}">
+                        <span class="hebrew-text text-lg sm:text-xl font-extrabold block">${this.hebText(opt)}</span>
+                        ${this.state.showTranslit ? `<span class="text-[11px] opacity-80 block" dir="ltr">${opt.tr}</span>` : ''}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (q.qType === 'a2') {
+          canSubmit = Boolean(this.state.arenaSelectedChoice);
+          bodyHtml = `
+            <div class="space-y-4">
+              ${q.item.type === 'fusion' ? `
+                <div class="bg-parchment-100 rounded-2xl p-5 border border-parchment-300 text-center space-y-2">
+                  <div class="text-xs font-bold uppercase text-indigo-700">Fuse Morphemes ("${q.item.english}"):</div>
+                  <div dir="rtl" class="flex items-center justify-center gap-2 hebrew-text text-2xl sm:text-3xl font-extrabold text-indigo-900">
+                    ${q.item.pieces.map(p => `<span class="px-3 py-1 bg-white rounded-xl border border-parchment-300">${this.hebText(p)}</span>`).join('<span class="text-coral-500">+</span>')}
+                  </div>
+                </div>
+              ` : `
+                <div class="bg-parchment-100 rounded-2xl p-5 border border-parchment-300 text-center space-y-2">
+                  <div class="text-xs font-bold text-turquoise-600 hebrew-text">Inflect: ${this.hebText(q.item.cue)}</div>
+                  <div dir="rtl" class="hebrew-text text-xl sm:text-2xl font-extrabold text-indigo-900">
+                    ${this.hebText(q.item.before)}
+                    <span class="px-3 py-0.5 mx-1 rounded-lg bg-white border-2 border-dashed border-indigo-800 text-coral-600">
+                      ${this.state.arenaSelectedChoice ? this.hebText(this.state.arenaSelectedChoice) : '_____'}
+                    </span>
+                    ${this.hebText(q.item.after)}
+                  </div>
+                  <div class="text-xs text-indigo-700 italic">"${q.item.english}"</div>
+                </div>
+              `}
+
+              <div dir="rtl" class="grid grid-cols-2 gap-3">
+                ${q.choices.map((opt, idx) => {
+                  const sel = this.state.arenaSelectedChoice?.plain === opt.plain;
+                  return `
+                    <button type="button" ${this.state.arenaAnswered ? 'disabled' : ''} onclick="app.pickArenaChoice(${idx})"
+                      class="tile-btn p-3.5 rounded-2xl border-2 text-center cursor-pointer ${sel ? 'tile-selected' : 'bg-parchment-50 border-parchment-300 text-indigo-900'}">
+                      <span class="hebrew-text text-xl font-extrabold block">${this.hebText(opt)}</span>
+                      ${this.state.showTranslit ? `<span class="text-xs opacity-80 block" dir="ltr">${opt.tr}</span>` : ''}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        } else if (q.qType === 'a3') {
+          if (q.item.type === 'extract') {
+            canSubmit = this.state.arenaRootPick.length === 3;
+            bodyHtml = `
+              <div class="space-y-4">
+                <div class="bg-parchment-100 rounded-2xl p-4 border border-parchment-300 flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-xs font-bold uppercase text-indigo-700">Tap the 3 Shoresh letters in order:</div>
+                    <div class="hebrew-text text-3xl font-extrabold text-indigo-900">${this.hebText(q.item.word)}</div>
+                    <div class="text-xs text-indigo-700">${q.item.word.tr}</div>
+                  </div>
+                  ${this.speakBtn(q.item.word, 'Listen')}
+                </div>
+
+                <div dir="rtl" class="flex items-center justify-center gap-3">
+                  ${[0, 1, 2].map(i => `
+                    <div class="w-14 h-14 rounded-2xl border-2 flex items-center justify-center text-2xl font-extrabold hebrew-text ${
+                      this.state.arenaRootPick[i] ? 'bg-turquoise-500 text-white border-turquoise-600' : 'bg-white border-parchment-300 text-indigo-700/40'
+                    }">
+                      ${this.state.arenaRootPick[i] || (i + 1)}
+                    </div>
+                  `).join('')}
+                </div>
+                ${this.state.arenaRootPick.length > 0 && !this.state.arenaAnswered ? `
+                  <div class="text-center"><button type="button" onclick="app.state.arenaRootPick=[]; app.render();" class="text-xs font-bold text-coral-600 hover:underline cursor-pointer">↺ Clear</button></div>
+                ` : ''}
+
+                <div dir="rtl" class="flex flex-wrap justify-center gap-2.5">
+                  ${q.bank.map(letter => {
+                    const used = this.state.arenaRootPick.filter(x => x === letter).length;
+                    const total = q.bank.filter(x => x === letter).length;
+                    return `
+                      <button type="button" ${this.state.arenaAnswered || used >= total ? 'disabled' : ''}
+                        onclick="app.pickArenaRootLetter('${letter}')"
+                        class="tile-btn w-13 h-13 p-3 rounded-2xl border-2 text-2xl font-extrabold hebrew-text cursor-pointer ${
+                          used > 0 ? 'bg-indigo-800 text-gold-300 opacity-60' : 'bg-parchment-50 border-parchment-300 text-indigo-900'
+                        }">
+                        ${letter}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `;
+          } else {
+            canSubmit = Boolean(this.state.arenaSelectedChoice);
+            bodyHtml = `
+              <div class="space-y-4">
+                <div class="bg-parchment-100 rounded-2xl p-5 border border-parchment-300 text-center space-y-2">
+                  <div class="text-xs font-bold text-turquoise-600">Root: ${q.item.root} • Subject: ${q.item.subject}</div>
+                  <div dir="rtl" class="hebrew-text text-xl sm:text-2xl font-extrabold text-indigo-900">
+                    ${this.hebText(q.item.before)}
+                    <span class="px-3 py-0.5 mx-1 rounded-lg bg-white border-2 border-dashed border-indigo-800 text-coral-600">
+                      ${this.state.arenaSelectedChoice ? this.hebText(this.state.arenaSelectedChoice) : '_____'}
+                    </span>
+                    ${this.hebText(q.item.after)}
+                  </div>
+                  <div class="text-xs text-indigo-700 italic">"${q.item.english}"</div>
+                </div>
+
+                <div dir="rtl" class="grid grid-cols-2 gap-3">
+                  ${q.choices.map((opt, idx) => {
+                    const sel = this.state.arenaSelectedChoice?.plain === opt.plain;
+                    return `
+                      <button type="button" ${this.state.arenaAnswered ? 'disabled' : ''} onclick="app.pickArenaChoice(${idx})"
+                        class="tile-btn p-3.5 rounded-2xl border-2 text-center cursor-pointer ${sel ? 'tile-selected' : 'bg-parchment-50 border-parchment-300 text-indigo-900'}">
+                        <span class="hebrew-text text-xl font-extrabold block">${this.hebText(opt)}</span>
+                        ${this.state.showTranslit ? `<span class="text-xs opacity-80 block" dir="ltr">${opt.tr}</span>` : ''}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `;
+          }
+        } else if (q.qType === 'a4') {
+          const slots = q.item.tokens.filter(t => t.type === 'slot');
+          canSubmit = Object.keys(this.state.arenaSlotPicks).length === slots.length;
+          const activeSlot = slots[this.state.arenaActiveSlot] || slots[0];
+          let sCount = 0;
+
+          bodyHtml = `
+            <div class="space-y-4">
+              <div class="bg-indigo-800 text-parchment-50 rounded-2xl p-4 text-center">
+                <div class="text-xs font-bold uppercase text-gold-300">Complete the Hebrew Sentence:</div>
+                <p class="text-base font-bold mt-1">"${q.item.english}"</p>
+              </div>
+
+              <div dir="rtl" class="bg-parchment-100 rounded-2xl p-4 border border-parchment-300 text-center hebrew-text text-xl sm:text-2xl font-extrabold text-indigo-900 leading-loose">
+                ${q.item.tokens.map(tok => {
+                  if (tok.type === 'static') return `<span class="mx-1">${this.hebText(tok)}</span>`;
+                  const idx = sCount++;
+                  const chosen = this.state.arenaSlotPicks[idx];
+                  const focused = !this.state.arenaAnswered && this.state.arenaActiveSlot === idx;
+                  return `
+                    <button type="button" ${this.state.arenaAnswered ? 'disabled' : ''} onclick="app.state.arenaActiveSlot=${idx}; app.render();"
+                      class="inline-block mx-1 px-3 py-0.5 rounded-xl border-2 cursor-pointer ${
+                        focused ? 'border-coral-500 bg-coral-100 text-indigo-900' : chosen ? 'border-indigo-800 bg-indigo-800 text-white' : 'border-dashed border-indigo-800/50 bg-white text-indigo-700/50'
+                      }">
+                      ${chosen ? this.hebText(chosen) : `[${idx + 1}]`}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+
+              ${!this.state.arenaAnswered ? `
+                <div class="space-y-2">
+                  <div class="text-xs font-extrabold uppercase text-indigo-800">
+                    Slot ${this.state.arenaActiveSlot + 1} of ${slots.length}: <span class="text-coral-600">${activeSlot.label}</span>
+                  </div>
+                  <div dir="rtl" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    ${activeSlot.shuffledOptions.map((opt, oIdx) => {
+                      const sel = this.state.arenaSlotPicks[this.state.arenaActiveSlot]?.plain === opt.plain;
+                      return `
+                        <button type="button" onclick="app.pickArenaSlot(${this.state.arenaActiveSlot}, ${oIdx})"
+                          class="tile-btn p-3 rounded-xl border-2 text-center cursor-pointer ${sel ? 'tile-selected' : 'bg-white border-parchment-300 text-indigo-900'}">
+                          <span class="hebrew-text text-lg font-extrabold block">${this.hebText(opt)}</span>
+                          ${this.state.showTranslit ? `<span class="text-[11px] opacity-80 block" dir="ltr">${opt.tr}</span>` : ''}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+
+        return `
+          <div class="max-w-3xl mx-auto space-y-5 animate-pop">
+            <div class="flex items-center gap-3">
+              <button onclick="app.goHome()" class="px-3 py-2 rounded-xl bg-white border border-parchment-300 hover:bg-parchment-100 text-xs sm:text-sm font-bold text-indigo-900 cursor-pointer shrink-0">
+                ← Hub
+              </button>
+              <div class="flex-grow">
+                <div class="flex justify-between text-xs font-bold text-indigo-900 mb-1">
+                  <span>${titles[this.state.activeArenaId]}</span>
+                  <span>Question ${this.state.arenaIdx + 1} / ${this.state.arenaQuestions.length}</span>
+                </div>
+                <div class="w-full h-3 bg-parchment-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-turquoise-500 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border-2 border-parchment-300 p-5 sm:p-7 shadow-sm space-y-5">
+              ${bodyHtml}
+
+              ${!this.state.arenaAnswered ? `
+                <button type="button" ${canSubmit ? '' : 'disabled'} onclick="app.submitArenaAnswer()"
+                  class="w-full py-3.5 px-6 rounded-2xl font-extrabold text-base transition-all ${
+                    canSubmit ? 'bg-coral-500 hover:bg-coral-600 text-white shadow-md cursor-pointer' : 'bg-parchment-200 text-indigo-700/40 cursor-not-allowed'
+                  }">
+                  Check Answer
+                </button>
+              ` : ''}
+            </div>
+
+            ${this.state.arenaAnswered ? `
+              <div class="rounded-3xl border-2 p-5 shadow-md animate-pop space-y-3 ${
+                this.state.arenaLastCorrect ? 'bg-turquoise-100/90 border-turquoise-500' : 'bg-coral-100/95 border-coral-500 animate-shake'
+              }">
+                <div class="flex items-center justify-between gap-2">
+                  <h4 class="font-extrabold text-lg ${this.state.arenaLastCorrect ? 'text-turquoise-600' : 'text-coral-600'}">
+                    ${this.state.arenaLastCorrect ? '✅ Excellent! נָכוֹן מְאוֹד!' : '💡 Review the Grammar Rule'}
+                  </h4>
+                  ${this.speakBtn(q.resolvedHeb, 'Hear Answer')}
+                </div>
+                <div class="bg-white/90 rounded-xl p-3 text-center hebrew-text text-xl font-extrabold text-indigo-900">
+                  ${this.hebText(q.resolvedHeb)}
+                </div>
+                <p class="text-sm text-indigo-900 bg-white/70 rounded-xl p-3">${q.item.insight}</p>
+                <button type="button" onclick="app.nextArenaQuestion()"
+                  class="w-full py-3 px-5 rounded-2xl bg-indigo-800 hover:bg-indigo-700 text-white font-extrabold text-base cursor-pointer">
+                  ${this.state.arenaIdx + 1 < this.state.arenaQuestions.length ? 'Next Question →' : 'View Arena Results →'}
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      },
+
+      pickArenaNoun(idx) {
+        AudioEngine.pop();
+        this.state.arenaSelectedNoun = this.state.arenaQuestions[this.state.arenaIdx].nounChoices[idx];
+        this.render();
+      },
+
+      pickArenaAdj(idx) {
+        AudioEngine.pop();
+        this.state.arenaSelectedAdj = this.state.arenaQuestions[this.state.arenaIdx].adjChoices[idx];
+        this.render();
+      },
+
+      pickArenaChoice(idx) {
+        AudioEngine.pop();
+        this.state.arenaSelectedChoice = this.state.arenaQuestions[this.state.arenaIdx].choices[idx];
+        this.render();
+      },
+
+      pickArenaRootLetter(letter) {
+        if (this.state.arenaRootPick.length >= 3) return;
+        AudioEngine.pop();
+        this.state.arenaRootPick.push(letter);
+        this.render();
+      },
+
+      pickArenaSlot(sIdx, oIdx) {
+        AudioEngine.pop();
+        const slots = this.state.arenaQuestions[this.state.arenaIdx].item.tokens.filter(t => t.type === 'slot');
+        this.state.arenaSlotPicks[sIdx] = slots[sIdx].shuffledOptions[oIdx];
+        const nextUnfilled = slots.findIndex((_, idx) => !this.state.arenaSlotPicks[idx]);
+        if (nextUnfilled !== -1) this.state.arenaActiveSlot = nextUnfilled;
+        this.render();
+      },
+
+      renderArenaSummaryView() {
+        const total = this.state.arenaQuestions.length;
+        const starred = Boolean(this.state.arenaStars[this.state.activeArenaId]);
+        return `
+          <div class="max-w-2xl mx-auto bg-white rounded-3xl border-2 border-parchment-300 p-6 sm:p-8 text-center shadow-sm space-y-5 animate-pop">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-gold-100 border-2 border-gold-400 flex items-center justify-center text-3xl">
+              ${starred ? '⭐' : '🌟'}
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-indigo-900">
+              ${starred ? 'Arena Star Unlocked! כָּל הַכָּבוֹד!' : 'Arena Complete! Keep Practicing!'}
+            </h2>
+            <div class="grid grid-cols-2 gap-3 max-w-sm mx-auto">
+              <div class="bg-parchment-100 rounded-2xl p-3 border border-parchment-300">
+                <div class="text-2xl font-extrabold text-indigo-900">${this.state.arenaScore}/${total}</div>
+                <div class="text-xs font-semibold text-indigo-700">Correct Answers</div>
+              </div>
+              <div class="bg-parchment-100 rounded-2xl p-3 border border-parchment-300">
+                <div class="text-2xl font-extrabold text-coral-600">+${this.state.arenaRoundXP}</div>
+                <div class="text-xs font-semibold text-indigo-700">XP Earned</div>
+              </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+              <button onclick="app.startArena('${this.state.activeArenaId}')"
+                class="flex-1 py-3 px-5 rounded-2xl bg-coral-500 hover:bg-coral-600 text-white font-extrabold cursor-pointer">
+                Play Arena Again ↻
+              </button>
+              <button onclick="app.goHome()"
+                class="flex-1 py-3 px-5 rounded-2xl bg-indigo-800 hover:bg-indigo-700 text-parchment-50 font-extrabold cursor-pointer">
+                Back to Hub
+              </button>
+            </div>
+          </div>
+        `;
+      },
+
+      render() {
+        const main = document.getElementById('appMain');
+        if (this.state.view === 'hub') main.innerHTML = this.renderHub();
+        else if (this.state.view === 'module') main.innerHTML = this.renderModuleView();
+        else if (this.state.view === 'arena') main.innerHTML = this.renderArenaView();
+        else if (this.state.view === 'arena_summary') main.innerHTML = this.renderArenaSummaryView();
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => app.init());
+  </script>
+</body>
+</html>
