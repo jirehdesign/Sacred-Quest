@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Space Builder — Cosmic Adventure & Learning Game</title>
-  <!-- Google Fonts: Fredoka (400, 500, 600, 700) -->
+  <title>Space Builder — Cosmic Adventure & Learning Quest</title>
+  <!-- Google Fonts: Fredoka -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -21,7 +21,6 @@
           animation: {
             'float-slow': 'floatSlow 4s ease-in-out infinite',
             'pulse-glow': 'pulseGlow 2.2s ease-in-out infinite',
-            'spin-slow': 'spin 16s linear infinite',
             'bounce-gentle': 'bounceGentle 1.8s ease-in-out infinite',
             'zap': 'zapShake 0.45s ease-in-out infinite',
           },
@@ -31,7 +30,7 @@
               '50%': { transform: 'translateY(-8px)' },
             },
             pulseGlow: {
-              '0%, 100%': { opacity: '0.75', transform: 'scale(1)' },
+              '0%, 100%': { opacity: '0.78', transform: 'scale(1)' },
               '50%': { opacity: '1', transform: 'scale(1.06)' },
             },
             bounceGentle: {
@@ -40,8 +39,8 @@
             },
             zapShake: {
               '0%, 100%': { transform: 'translateX(0) rotate(0deg)' },
-              '25%': { transform: 'translateX(-3px) rotate(-1.5deg)' },
-              '75%': { transform: 'translateX(3px) rotate(1.5deg)' },
+              '25%': { transform: 'translateX(-3px) rotate(-1.2deg)' },
+              '75%': { transform: 'translateX(3px) rotate(1.2deg)' },
             }
           }
         }
@@ -64,13 +63,13 @@
 
     /* Dynamic Sky Themes across the 20-Turn Sundown Clock */
     body.sky-day {
-      background: radial-gradient(circle at 80% 15%, #38bdf8 0%, #3b82f6 32%, #312e81 78%, #1e1b4b 100%);
+      background: radial-gradient(circle at 80% 15%, #38bdf8 0%, #2563eb 34%, #312e81 78%, #1e1b4b 100%);
     }
     body.sky-sunset {
-      background: radial-gradient(circle at 75% 45%, #fb923c 0%, #f43f5e 34%, #6d28d9 74%, #1e1b4b 100%);
+      background: radial-gradient(circle at 75% 45%, #fb923c 0%, #e11d48 36%, #6d28d9 75%, #1e1b4b 100%);
     }
     body.sky-night {
-      background: radial-gradient(circle at 25% 20%, #312e81 0%, #1e1b4b 45%, #090d16 100%);
+      background: radial-gradient(circle at 25% 20%, #312e81 0%, #1e1b4b 45%, #070b14 100%);
     }
 
     /* Glossy 3D Kid-Friendly Tactile Buttons */
@@ -94,11 +93,24 @@
 
     /* Glassmorphism Space Cards */
     .space-panel {
-      background: rgba(15, 23, 42, 0.72);
+      background: rgba(15, 23, 42, 0.74);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 2px solid rgba(255, 255, 255, 0.16);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.36);
+    }
+
+    /* GPU-Accelerated Spinner Rotor */
+    #compass-wheel-rotor {
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    /* Pointer Tick Spring */
+    #compass-pointer {
+      transform-origin: 50% 15%;
+      transition: transform 0.09s ease-out;
+      pointer-events: none;
     }
 
     /* Starfield twinkling background */
@@ -111,7 +123,7 @@
       animation: twinkle var(--dur, 3s) ease-in-out infinite;
     }
     @keyframes twinkle {
-      0%, 100% { opacity: 0.2; transform: scale(0.85); }
+      0%, 100% { opacity: 0.22; transform: scale(0.85); }
       50% { opacity: 0.95; transform: scale(1.25); }
     }
 
@@ -147,22 +159,21 @@
     /**
      * ============================================================================
      * SPACE BUILDER — COMPLETE GAME ENGINE & ARCHITECTURE
-     * Designed for 8–10 year-old explorers:
      *  - Multi-profile LocalStorage persistence
      *  - Procedural Web Audio API sound & music engine
-     *  - Procedural SVG Hero renderer (renderBoySVG) with 8 skin tones & 20 store items
-     *  - 5-Level Sequential Space Build Track with multi-stage SVG structures
-     *  - 20-Turn Sundown Clock with dynamic Day -> Sunset -> Night sky transitions
-     *  - Space Storm obstacle cleared strictly by 1 Solar Crystal (with anti-softlock)
-     *  - Commodity Trading Hub + Space Math + Hebrew Speech Synthesis Minigames
+     *  - Icons-only Space Compass Wheel with requestAnimationFrame deceleration
+     *  - 20-Turn Sundown Clock with 20-segment SVG arc gauge & dynamic sky shifts
+     *  - Space Storm obstacle cleared by 1 Solar Crystal (with anti-softlock)
+     *  - Procedural SVG Hero renderer (`renderBoySVG`) + 20 Space Store items
+     *  - 5-Level Sequential Build Track + Commodity Trading + Space Math + Hebrew
      * ============================================================================
      */
 
     /* --------------------------------------------------------------------------
      * 1. GAME CONSTANTS & CONFIGURATION DATA
      * -------------------------------------------------------------------------- */
-    const STORAGE_KEY = 'space_builder_profiles_v1';
-    const MAX_SUNDOWN_SPINS = 20; // Explicitly 20 spins/turns until Sundown!
+    const STORAGE_KEY = 'space_builder_profiles_v2';
+    const MAX_SUNDOWN_SPINS = 20; // 20 turns per day cycle
 
     const SKIN_TONES = [
       { id: 'porcelain', name: 'Porcelain Peach', hex: '#FDE2D2' },
@@ -182,22 +193,22 @@
     ];
 
     const COMMODITIES = {
-      iron: { id: 'iron', name: 'Iron Ore', short: 'Iron', icon: '🪨', color: 'text-slate-300', bg: 'bg-slate-700/80', border: 'border-slate-400' },
-      titanium: { id: 'titanium', name: 'Titanium', short: 'Titanium', icon: '🔩', color: 'text-cyan-300', bg: 'bg-cyan-900/80', border: 'border-cyan-400' },
-      solar: { id: 'solar', name: 'Solar Crystal', short: 'Solar', icon: '☀️', color: 'text-amber-300', bg: 'bg-amber-900/80', border: 'border-amber-400' },
-      quartz: { id: 'quartz', name: 'Cosmic Quartz', short: 'Quartz', icon: '🔮', color: 'text-purple-300', bg: 'bg-purple-900/80', border: 'border-purple-400' }
+      iron: { id: 'iron', name: 'Iron Ore', short: 'Iron', icon: '🪨', color: 'text-slate-200', bg: 'bg-slate-700/85', border: 'border-slate-400' },
+      titanium: { id: 'titanium', name: 'Titanium', short: 'Titanium', icon: '🔩', color: 'text-cyan-300', bg: 'bg-cyan-900/85', border: 'border-cyan-400' },
+      solar: { id: 'solar', name: 'Solar Crystal', short: 'Solar', icon: '☀️', color: 'text-amber-300', bg: 'bg-amber-900/85', border: 'border-amber-400' },
+      fuel: { id: 'fuel', name: 'Nebula Fuel', short: 'Fuel', icon: '🧪', color: 'text-fuchsia-300', bg: 'bg-fuchsia-950/85', border: 'border-fuchsia-400' }
     };
 
-    // 8-Wedge Space Compass Wheel Configuration
+    // 8-Wedge Space Compass Wheel (ICONS ONLY inside the wheel — zero text labels!)
     const WHEEL_WEDGES = [
-      { id: 'w_iron', label: '+2 Iron', type: 'commodity', key: 'iron', amount: 2, icon: '🪨', color: '#475569' },
-      { id: 'w_solar', label: '+1 Solar', type: 'commodity', key: 'solar', amount: 1, icon: '☀️', color: '#d97706' },
-      { id: 'w_titanium', label: '+1 Titanium', type: 'commodity', key: 'titanium', amount: 1, icon: '🔩', color: '#0891b2' },
-      { id: 'w_coins', label: '+15 Coins', type: 'coins', amount: 15, icon: '🪙', color: '#ca8a04' },
-      { id: 'w_quartz', label: '+1 Quartz', type: 'commodity', key: 'quartz', amount: 1, icon: '🔮', color: '#7e22ce' },
-      { id: 'w_stardust', label: '+2 Stardust', type: 'stardust', amount: 2, icon: '✨', color: '#db2777' },
-      { id: 'w_bundle', label: '+1 Iron & Ti', type: 'bundle', amount: 1, icon: '🧰', color: '#0d9488' },
-      { id: 'w_storm', label: 'SPACE STORM!', type: 'storm', amount: 1, icon: '⛈️', color: '#dc2626' }
+      { id: 'w_iron', iconType: 'iron', name: 'Iron Ore', type: 'commodity', key: 'iron', amount: 2, bg: '#334155' },
+      { id: 'w_solar_1', iconType: 'solar', name: 'Solar Crystal', type: 'commodity', key: 'solar', amount: 1, bg: '#b45309' },
+      { id: 'w_titanium', iconType: 'titanium', name: 'Titanium', type: 'commodity', key: 'titanium', amount: 1, bg: '#0e7490' },
+      { id: 'w_coins', iconType: 'coins', name: 'Space Coins', type: 'coins', amount: 15, bg: '#a16207' },
+      { id: 'w_fuel', iconType: 'fuel', name: 'Nebula Fuel', type: 'commodity', key: 'fuel', amount: 1, bg: '#86198f' },
+      { id: 'w_stardust', iconType: 'stardust', name: 'Star Stardust', type: 'stardust', amount: 2, bg: '#be185d' },
+      { id: 'w_solar_2', iconType: 'solar', name: 'Solar Crystal', type: 'commodity', key: 'solar', amount: 1, bg: '#d97706' },
+      { id: 'w_storm', iconType: 'storm', name: 'Space Storm', type: 'storm', amount: 1, bg: '#991b1b' }
     ];
 
     // 5 Sequential Building Levels (3 stages per level)
@@ -225,7 +236,7 @@
         stages: [
           { name: 'Crater Foundation', cost: { iron: 3, titanium: 1 } },
           { name: 'Astro-Glass Dome', cost: { titanium: 2, solar: 2 } },
-          { name: 'Comet Solar Roof', cost: { solar: 2, quartz: 1 } }
+          { name: 'Comet Solar Roof', cost: { solar: 2, fuel: 1 } }
         ]
       },
       {
@@ -237,8 +248,8 @@
         rewardStardust: 5,
         stages: [
           { name: 'Moon-Gel Bounce Pad', cost: { titanium: 3, solar: 2 } },
-          { name: 'Nebula Turret Towers', cost: { solar: 2, quartz: 2 } },
-          { name: 'Zero-G Star Flags', cost: { titanium: 3, quartz: 3 } }
+          { name: 'Nebula Turret Towers', cost: { solar: 2, fuel: 2 } },
+          { name: 'Zero-G Star Flags', cost: { titanium: 3, fuel: 3 } }
         ]
       },
       {
@@ -250,8 +261,8 @@
         rewardStardust: 6,
         stages: [
           { name: 'Plasma Containment Ring', cost: { titanium: 4, solar: 3 } },
-          { name: 'Star-Core Anvil', cost: { solar: 3, quartz: 3 } },
-          { name: 'Sunbeam Collector Sails', cost: { solar: 4, quartz: 3 } }
+          { name: 'Star-Core Anvil', cost: { solar: 3, fuel: 3 } },
+          { name: 'Sunbeam Collector Sails', cost: { solar: 4, fuel: 3 } }
         ]
       },
       {
@@ -263,15 +274,15 @@
         rewardStardust: 10,
         stages: [
           { name: 'Cloud-Buoyancy Thrusters', cost: { iron: 4, titanium: 4, solar: 3 } },
-          { name: 'Golden Spire Columns', cost: { solar: 4, quartz: 4 } },
-          { name: 'Crown of Venus Observatory', cost: { titanium: 5, solar: 5, quartz: 5 } }
+          { name: 'Golden Spire Columns', cost: { solar: 4, fuel: 4 } },
+          { name: 'Crown of Venus Observatory', cost: { titanium: 5, solar: 5, fuel: 5 } }
         ]
       }
     ];
 
     // Space Store Catalog: 3 Starter Items + 20 Unlockable Items (7 Suits, 7 Helmets, 6 Boots)
     const STORE_ITEMS = [
-      // --- SPACE SUITS (1 Starter + 7 Unlockable = 8) ---
+      // --- SPACE SUITS (1 Starter + 7 Unlockable) ---
       {
         id: 'suit_cadet', category: 'suit', name: 'Cadet Jumper', price: 0, starter: true, rare: false,
         primary: '#3b82f6', secondary: '#1d4ed8', accent: '#fbbf24', emblem: 'star', wrench: '#94a3b8',
@@ -316,7 +327,7 @@
         desc: 'LEGENDARY: Shimmering starlight suit with cosmic prism aura!'
       },
 
-      // --- HELMETS (1 Starter + 7 Unlockable = 8) ---
+      // --- HELMETS (1 Starter + 7 Unlockable) ---
       {
         id: 'helmet_none', category: 'helmet', name: 'Open Sky (No Helmet)', price: 0, starter: true, rare: false,
         glass: 'none', trim: '#94a3b8',
@@ -361,7 +372,7 @@
         desc: 'LEGENDARY: Crystal royal dome crowned with floating solar gems!'
       },
 
-      // --- SPACE BOOTS (1 Starter + 6 Unlockable = 7) ---
+      // --- SPACE BOOTS (1 Starter + 6 Unlockable) ---
       {
         id: 'boots_standard', category: 'boots', name: 'Moon-Walker Boots', price: 0, starter: true, rare: false,
         primary: '#475569', sole: '#94a3b8', jet: false,
@@ -427,7 +438,92 @@
     ];
 
     /* --------------------------------------------------------------------------
-     * 2. PROCEDURAL WEB AUDIO API SOUND ENGINE
+     * 2. CUSTOM INLINE SVG ICONS FOR SPINNER WEDGES (ZERO TEXT INSIDE WHEEL!)
+     * -------------------------------------------------------------------------- */
+    function renderWedgeIconSVG(iconType) {
+      // Centered around (0, 0) in a roughly 46x46 coordinate box so it can be placed cleanly inside any SVG wedge
+      switch (iconType) {
+        case 'iron':
+          // Faceted Metallic Iron Ore Asteroid Rock
+          return `
+            <g>
+              <polygon points="-16,-6 -7,-19 10,-17 19,-4 13,15 -8,18 -19,6" fill="#94a3b8" stroke="#0f172a" stroke-width="2.4" stroke-linejoin="round"/>
+              <polygon points="-7,-19 10,-17 3,-3 -11,-5" fill="#cbd5e1"/>
+              <polygon points="3,-3 19,-4 13,15 -2,9" fill="#64748b"/>
+              <circle cx="-6" cy="5" r="3" fill="#475569"/>
+              <circle cx="8" cy="-8" r="2.2" fill="#f8fafc"/>
+            </g>
+          `;
+        case 'titanium':
+          // Gleaming Cyan-Silver Aerospace Titanium Hex-Ingot
+          return `
+            <g>
+              <polygon points="0,-20 18,-10 18,10 0,20 -18,10 -18,-10" fill="#22d3ee" stroke="#0f172a" stroke-width="2.4" stroke-linejoin="round"/>
+              <polygon points="0,-13 11,-6 11,6 0,13 -11,6 -11,-6" fill="#cffafe" opacity="0.85"/>
+              <line x1="-18" y1="-10" x2="0" y2="0" stroke="#0891b2" stroke-width="2"/>
+              <line x1="18" y1="-10" x2="0" y2="0" stroke="#0891b2" stroke-width="2"/>
+              <line x1="0" y1="0" x2="0" y2="20" stroke="#0891b2" stroke-width="2"/>
+              <circle cx="-5" cy="-7" r="2.5" fill="#ffffff"/>
+            </g>
+          `;
+        case 'solar':
+          // Radiant Golden Solar Crystal Gem with Sunburst Rays
+          return `
+            <g>
+              <circle cx="0" cy="0" r="20" fill="#fef08a" opacity="0.28"/>
+              <polygon points="0,-21 13,-7 9,18 -9,18 -13,-7" fill="#fbbf24" stroke="#0f172a" stroke-width="2.4" stroke-linejoin="round"/>
+              <polygon points="0,-21 7,-6 0,12 -7,-6" fill="#fef08a"/>
+              <polygon points="-13,-7 -7,-6 -9,18" fill="#f59e0b"/>
+              <polygon points="13,-7 7,-6 9,18" fill="#d97706"/>
+              <circle cx="0" cy="-9" r="2.5" fill="#ffffff"/>
+            </g>
+          `;
+        case 'fuel':
+          // Glowing Magenta-Violet Nebula Fuel Canister
+          return `
+            <g>
+              <rect x="-7" y="-21" width="14" height="5" rx="2" fill="#cbd5e1" stroke="#0f172a" stroke-width="2"/>
+              <rect x="-13" y="-16" width="26" height="33" rx="7" fill="#e879f9" stroke="#0f172a" stroke-width="2.4"/>
+              <rect x="-8" y="-9" width="16" height="19" rx="4" fill="#701a75"/>
+              <circle cx="0" cy="0" r="5.5" fill="#f0abfc"/>
+              <circle cx="-2" cy="-2" r="2" fill="#ffffff"/>
+            </g>
+          `;
+        case 'stardust':
+          // Sparkling 5-Point Star Stardust Emblem
+          return `
+            <g>
+              <polygon points="0,-21 6,-7 21,-6 9,4 13,19 0,10 -13,19 -9,4 -21,-6 -6,-7" fill="#fde047" stroke="#0f172a" stroke-width="2.3" stroke-linejoin="round"/>
+              <polygon points="0,-14 3,-4 13,-3 5,3 8,12 0,6 -8,12 -5,3 -13,-3 -3,-4" fill="#fef9c3"/>
+              <circle cx="-15" cy="-14" r="2.5" fill="#ffffff"/>
+              <circle cx="16" cy="13" r="2.5" fill="#f472b6"/>
+            </g>
+          `;
+        case 'coins':
+          // Twin Gleaming Gold Space Coins
+          return `
+            <g>
+              <circle cx="-6" cy="4" r="14" fill="#f59e0b" stroke="#0f172a" stroke-width="2.3"/>
+              <circle cx="6" cy="-4" r="14" fill="#facc15" stroke="#0f172a" stroke-width="2.3"/>
+              <circle cx="6" cy="-4" r="9.5" fill="none" stroke="#fef08a" stroke-width="1.6"/>
+              <polygon points="6,-10 8,-5 13,-5 9,-2 10,3 6,0 2,3 3,-2 -1,-5 4,-5" fill="#fef08a"/>
+            </g>
+          `;
+        case 'storm':
+          // Space Storm Thundercloud & Lightning Bolt
+          return `
+            <g>
+              <path d="M-15,3 C-20,3 -22,-4 -17,-7 C-17,-14 -8,-18 -2,-13 C3,-18 13,-16 15,-9 C21,-7 21,3 14,3 Z" fill="#cbd5e1" stroke="#0f172a" stroke-width="2.3" stroke-linejoin="round"/>
+              <polygon points="2,-2 -6,10 1,10 -4,22 10,7 3,7 7,-2" fill="#facc15" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+            </g>
+          `;
+        default:
+          return `<circle cx="0" cy="0" r="14" fill="#38bdf8" stroke="#0f172a" stroke-width="2"/>`;
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+     * 3. PROCEDURAL WEB AUDIO API SOUND ENGINE
      * -------------------------------------------------------------------------- */
     class SpaceSoundEngine {
       constructor() {
@@ -474,8 +570,12 @@
         osc.stop(now + duration + 0.03);
       }
 
+      playSpinStart() {
+        this.playTone(260, 0.28, 'sine', 0.14, 0, 620);
+      }
+
       playTick() {
-        this.playTone(680, 0.045, 'triangle', 0.09, 0, 420);
+        this.playTone(760, 0.04, 'triangle', 0.1, 0, 440);
       }
 
       playClick() {
@@ -483,35 +583,30 @@
       }
 
       playHarvest() {
-        // Cheerful major arpeggio chime
         [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
           this.playTone(f, 0.24, 'triangle', 0.14, idx * 0.07);
         });
       }
 
       playStormZap() {
-        // Dramatic thunderous synth zap
         this.playTone(190, 0.45, 'sawtooth', 0.16, 0, 58);
         this.playTone(440, 0.18, 'square', 0.1, 0.08, 120);
         this.playTone(320, 0.3, 'sawtooth', 0.12, 0.2, 70);
       }
 
       playStormClear() {
-        // Radiant solar purification sweep
         [392, 493.88, 587.33, 783.99, 987.77, 1174.66].forEach((f, idx) => {
           this.playTone(f, 0.3, 'sine', 0.14, idx * 0.055);
         });
       }
 
       playBuild() {
-        // Pneumatic wrench + metallic clank + positive chime
         this.playTone(240, 0.09, 'square', 0.11, 0, 340);
         this.playTone(240, 0.09, 'square', 0.11, 0.12, 360);
         this.playTone(587.33, 0.25, 'triangle', 0.15, 0.25, 880);
       }
 
       playWinFanfare() {
-        // Joyful 6-note level completion fanfare
         const notes = [
           { f: 523.25, d: 0.16, t: 0 },
           { f: 659.25, d: 0.16, t: 0.15 },
@@ -550,7 +645,6 @@
 
       startMusicLoop() {
         this.stopMusicLoop();
-        // Whimsical cosmic pentatonic space lullaby/adventure loop
         const melody = [
           261.63, 329.63, 392.00, 493.88,
           523.25, 493.88, 392.00, 329.63,
@@ -591,7 +685,7 @@
     const sound = new SpaceSoundEngine();
 
     /* --------------------------------------------------------------------------
-     * 3. BROWSER SPEECH SYNTHESIS ENGINE (HEBREW SIGHT-WORD AUDIO)
+     * 4. BROWSER SPEECH SYNTHESIS ENGINE (HEBREW SIGHT-WORD AUDIO)
      * -------------------------------------------------------------------------- */
     function speakHebrewWord(wordObj, slow = false) {
       if (!('speechSynthesis' in window)) {
@@ -611,7 +705,6 @@
           utterance.lang = hebrewVoice.lang;
           utterance.text = wordObj.hebrew;
         } else {
-          // Graceful fallback if OS lacks a Hebrew TTS voice pack: pronounce phonetic Hebrew clearly
           utterance.lang = 'en-US';
           utterance.text = wordObj.translit.replace(/-/g, ' ');
         }
@@ -632,7 +725,7 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 4. PROCEDURAL SVG CHARACTER RENDERING ENGINE (`renderBoySVG`)
+     * 5. PROCEDURAL SVG CHARACTER RENDERING ENGINE (`renderBoySVG`)
      * -------------------------------------------------------------------------- */
     function renderBoySVG(profile, options = {}) {
       const skin = profile?.skinTone || SKIN_TONES[2].hex;
@@ -647,14 +740,12 @@
       const boots = STORE_ITEMS.find(i => i.id === equipped.boots) || STORE_ITEMS.find(i => i.id === 'boots_standard');
 
       const sizeClass = options.sizeClass || 'w-44 h-52';
-      const mood = options.mood || 'happy'; // 'happy' | 'storm'
+      const mood = options.mood || 'happy';
       const uid = 'hero_' + Math.random().toString(36).slice(2, 8);
 
-      // Determine if any equipped item grants a glowing cosmic aura
       const auraColor = suit.auraColor || helmet.auraColor || boots.auraColor || null;
       const isRare = Boolean(suit.rare || helmet.rare || boots.rare);
 
-      // Emblem SVG inside the suit chest badge
       let emblemSVG = '';
       switch (suit.emblem) {
         case 'rocket':
@@ -678,18 +769,14 @@
         case 'prism':
           emblemSVG = `<polygon points="100,131 107,139 100,147 93,139" fill="${suit.accent}" stroke="#fff" stroke-width="1.2"/>`;
           break;
-        default: // 'star'
+        default:
           emblemSVG = `<polygon points="100,132 102,137 107,137 103,140 104.5,145 100,142 95.5,145 97,140 93,137 98,137" fill="${suit.accent}"/>`;
       }
 
-      // Helmet decorations & translucent glass visor layer
       let helmetBackSVG = '';
       let helmetFrontSVG = '';
       if (helmet.glass !== 'none') {
-        helmetBackSVG = `
-          <!-- Helmet Back Rim -->
-          <circle cx="100" cy="68" r="44" fill="${helmet.trim}" opacity="0.35"/>
-        `;
+        helmetBackSVG = `<circle cx="100" cy="68" r="44" fill="${helmet.trim}" opacity="0.35"/>`;
 
         let extraHelmTop = '';
         if (helmet.style === 'bubble') {
@@ -730,17 +817,13 @@
 
         helmetFrontSVG = `
           ${extraHelmTop}
-          <!-- Translucent Glass Space Helmet Dome -->
           <circle cx="100" cy="68" r="43" fill="${helmet.glass}" stroke="${helmet.trim}" stroke-width="3.5"/>
-          <!-- Specular Glass Highlight Arc -->
           <path d="M72 44 A32 32 0 0 1 114 34" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.65"/>
           <circle cx="67" cy="52" r="2.5" fill="#ffffff" opacity="0.65"/>
-          <!-- Metallic Neck Seal Ring -->
           <rect x="70" y="103" width="60" height="9" rx="4.5" fill="${helmet.trim}" stroke="#1e293b" stroke-width="1.5"/>
         `;
       }
 
-      // Rocket thruster flames on jet boots
       const bootJetsSVG = boots.jet ? `
         <polygon points="73,218 79,229 85,218" fill="#f97316"/>
         <polygon points="76,218 79,225 82,218" fill="#fef08a"/>
@@ -759,7 +842,6 @@
           </defs>
 
           ${isRare ? `
-            <!-- Glowing Cosmic Aura for Rare / Legendary Gear -->
             <circle cx="100" cy="120" r="88" fill="url(#${uid}_aura)" class="animate-pulse-glow"/>
             <circle cx="100" cy="120" r="72" fill="none" stroke="${auraColor}" stroke-width="2" stroke-dasharray="8 6" opacity="0.75"/>
             <circle cx="38" cy="70" r="3.5" fill="#fff" opacity="0.9"/>
@@ -768,19 +850,15 @@
             <circle cx="158" cy="158" r="3.5" fill="#fff" opacity="0.9"/>
           ` : ''}
 
-          <!-- Ground Shadow -->
           <ellipse cx="100" cy="222" rx="44" ry="8" fill="rgba(15, 23, 42, 0.45)"/>
 
           ${helmetBackSVG}
 
-          <!-- Backpack Jet-Pack -->
           <rect x="66" y="112" width="68" height="46" rx="12" fill="${suit.secondary}" stroke="#0f172a" stroke-width="2"/>
 
-          <!-- Legs -->
           <rect x="74" y="164" width="20" height="34" rx="8" fill="${suit.primary}" stroke="#0f172a" stroke-width="2"/>
           <rect x="106" y="164" width="20" height="34" rx="8" fill="${suit.primary}" stroke="#0f172a" stroke-width="2"/>
 
-          <!-- Space Boots -->
           ${bootJetsSVG}
           <path d="M67 195 H96 V212 C96 216 92 218 88 218 H65 C61 218 59 214 61 210 L67 195 Z" fill="${boots.primary}" stroke="#0f172a" stroke-width="2"/>
           <rect x="61" y="212" width="35" height="6" rx="3" fill="${boots.sole}"/>
@@ -788,67 +866,47 @@
           <path d="M104 195 H133 L139 210 C141 214 139 218 135 218 H112 C108 218 104 216 104 212 V195 Z" fill="${boots.primary}" stroke="#0f172a" stroke-width="2"/>
           <rect x="104" y="212" width="35" height="6" rx="3" fill="${boots.sole}"/>
 
-          <!-- Space Suit Torso -->
           <rect x="68" y="108" width="64" height="64" rx="18" fill="${suit.primary}" stroke="#0f172a" stroke-width="2.2"/>
-          <!-- Suit Chest Armor Plate & Stripe -->
           <path d="M74 114 H126 L120 156 H80 Z" fill="${suit.secondary}" opacity="0.55"/>
-          <!-- Utility Belt -->
           <rect x="68" y="154" width="64" height="10" rx="4" fill="#1e293b"/>
           <rect x="92" y="152" width="16" height="14" rx="4" fill="${suit.accent}" stroke="#0f172a" stroke-width="1.5"/>
-          <!-- Chest Emblem Medallion -->
           <circle cx="100" cy="139" r="12" fill="#0f172a" stroke="${suit.accent}" stroke-width="2"/>
           ${emblemSVG}
 
-          <!-- Left Arm -->
           <path d="M68 116 C52 122 48 142 54 156" fill="none" stroke="${suit.primary}" stroke-width="15" stroke-linecap="round"/>
           <path d="M68 116 C52 122 48 142 54 156" fill="none" stroke="#0f172a" stroke-width="15" stroke-linecap="round" opacity="0.12"/>
           <circle cx="55" cy="158" r="8" fill="${suit.accent}" stroke="#0f172a" stroke-width="2"/>
 
-          <!-- Right Arm Holding Handheld Laser-Wrench -->
           <path d="M132 116 C148 120 154 136 148 148" fill="none" stroke="${suit.primary}" stroke-width="15" stroke-linecap="round"/>
-          <!-- Handheld Laser-Wrench Tool -->
           <g transform="translate(148, 146) rotate(-28)">
             <rect x="-5" y="-34" width="10" height="42" rx="4" fill="${suit.wrench}" stroke="#0f172a" stroke-width="1.8"/>
             <path d="M-10 -34 C-10 -46 10 -46 10 -34 L6 -34 C6 -40 -6 -40 -6 -34 Z" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.8"/>
             <circle cx="0" cy="-22" r="3.5" fill="${suit.accent}"/>
-            <!-- Laser Tip Glow -->
             <circle cx="0" cy="-45" r="4.5" fill="${suit.accent}" opacity="0.85"/>
           </g>
           <circle cx="147" cy="148" r="8" fill="${suit.accent}" stroke="#0f172a" stroke-width="2"/>
 
-          <!-- Neck -->
           <rect x="91" y="96" width="18" height="14" rx="6" fill="${skin}"/>
-
-          <!-- Ears -->
           <circle cx="69" cy="70" r="7" fill="${skin}" stroke="#0f172a" stroke-width="1.5"/>
           <circle cx="131" cy="70" r="7" fill="${skin}" stroke="#0f172a" stroke-width="1.5"/>
 
-          <!-- Boy Head -->
           <rect x="71" y="38" width="58" height="62" rx="27" fill="${skin}" stroke="#0f172a" stroke-width="2"/>
-
-          <!-- Expressive Tousled Boy Hair -->
           <path d="M70 60 C68 34 86 24 104 26 C121 27 133 38 130 60 C127 48 119 42 111 43 C105 37 94 37 86 44 C78 43 73 49 70 60 Z" fill="#291d18"/>
-          <!-- Hair Tuft -->
           <path d="M93 27 C96 18 108 18 111 27" fill="#291d18"/>
 
-          <!-- Eyebrows -->
           <path d="M81 56 Q87 53 93 56" fill="none" stroke="#291d18" stroke-width="2.5" stroke-linecap="round"/>
           <path d="M107 56 Q113 53 119 56" fill="none" stroke="#291d18" stroke-width="2.5" stroke-linecap="round"/>
 
-          <!-- Expressive Eyes with Catchlights -->
           <circle cx="87" cy="66" r="5.2" fill="#0f172a"/>
           <circle cx="88.8" cy="64.2" r="2" fill="#ffffff"/>
           <circle cx="113" cy="66" r="5.2" fill="#0f172a"/>
           <circle cx="114.8" cy="64.2" r="2" fill="#ffffff"/>
 
-          <!-- Rosy Cheeks -->
           <ellipse cx="79" cy="75" rx="4.5" ry="2.5" fill="#f43f5e" opacity="0.32"/>
           <ellipse cx="121" cy="75" rx="4.5" ry="2.5" fill="#f43f5e" opacity="0.32"/>
 
-          <!-- Nose -->
           <path d="M100 69 L98 75 L102 76" fill="none" stroke="rgba(15,23,42,0.4)" stroke-width="2" stroke-linecap="round"/>
 
-          <!-- Mouth (Happy Smile or Determined Storm Expression) -->
           ${mood === 'storm'
             ? `<ellipse cx="100" cy="84" rx="6" ry="4.5" fill="#991b1b" stroke="#0f172a" stroke-width="1.5"/>`
             : `<path d="M89 81 Q100 92 111 81" fill="none" stroke="#0f172a" stroke-width="2.8" stroke-linecap="round"/>`
@@ -860,44 +918,31 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 5. PROCEDURAL MULTI-STAGE STRUCTURE SVG ART (LEVELS 1 TO 5)
+     * 6. PROCEDURAL MULTI-STAGE STRUCTURE SVG ART (LEVELS 1 TO 5)
      * -------------------------------------------------------------------------- */
     function renderStructureSVG(levelNum, stageCount) {
-      // stageCount: 0 (blueprint), 1 (stage 1 built), 2 (stage 2 built), 3 (completed!)
       const s1 = stageCount >= 1;
       const s2 = stageCount >= 2;
       const s3 = stageCount >= 3;
 
       if (levelNum === 1) {
-        // LEVEL 1: SPACE BRIDGE across an Asteroid Chasm
         return `
           <svg viewBox="0 0 360 180" class="w-full h-44 sm:h-52 rounded-2xl bg-slate-950/70 border border-indigo-400/30">
-            <!-- Starry Chasm Sky -->
             <circle cx="50" cy="30" r="2" fill="#fff"/><circle cx="180" cy="22" r="2.5" fill="#fde047"/><circle cx="310" cy="35" r="2" fill="#fff"/>
-            <!-- Glowing Chasm Lava/Plasma Below -->
             <ellipse cx="180" cy="175" rx="140" ry="22" fill="#38bdf8" opacity="0.22"/>
-            <!-- Left & Right Asteroid Cliffs -->
             <path d="M0 115 L75 115 L92 180 L0 180 Z" fill="#475569" stroke="#94a3b8" stroke-width="2"/>
             <path d="M285 115 L360 115 L360 180 L268 180 Z" fill="#475569" stroke="#94a3b8" stroke-width="2"/>
-
-            <!-- Blueprint Dashed Guide -->
             <rect x="75" y="104" width="210" height="12" rx="4" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"/>
-
-            <!-- Stage 1: Anchor Pylons -->
             ${s1 ? `
               <rect x="65" y="75" width="16" height="45" rx="4" fill="#cbd5e1" stroke="#1e293b" stroke-width="2"/>
               <rect x="279" y="75" width="16" height="45" rx="4" fill="#cbd5e1" stroke="#1e293b" stroke-width="2"/>
               <circle cx="73" cy="73" r="6" fill="#38bdf8"/>
               <circle cx="287" cy="73" r="6" fill="#38bdf8"/>
             ` : ''}
-
-            <!-- Stage 2: Starlight Decking -->
             ${s2 ? `
               <rect x="72" y="103" width="216" height="14" rx="5" fill="#38bdf8" stroke="#0f172a" stroke-width="2"/>
               <line x1="95" y1="110" x2="265" y2="110" stroke="#fef08a" stroke-width="3" stroke-dasharray="12 8"/>
             ` : ''}
-
-            <!-- Stage 3: Forcefield Railings & Arch -->
             ${s3 ? `
               <path d="M73 73 Q180 28 287 73" fill="none" stroke="#fbbf24" stroke-width="4"/>
               <path d="M73 73 Q180 42 287 73" fill="rgba(56, 189, 248, 0.25)"/>
@@ -911,29 +956,20 @@
       }
 
       if (levelNum === 2) {
-        // LEVEL 2: STAR HOUSE on a Lunar Crater
         return `
           <svg viewBox="0 0 360 180" class="w-full h-44 sm:h-52 rounded-2xl bg-slate-950/70 border border-indigo-400/30">
             <circle cx="65" cy="34" r="14" fill="#fde047" opacity="0.85"/>
-            <!-- Moon Surface -->
             <ellipse cx="180" cy="168" rx="185" ry="30" fill="#64748b"/>
-            <!-- Blueprint Outline -->
             <path d="M115 145 A65 65 0 0 1 245 145 Z" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"/>
-
-            <!-- Stage 1: Crater Foundation -->
             ${s1 ? `
               <rect x="105" y="138" width="150" height="16" rx="6" fill="#cbd5e1" stroke="#1e293b" stroke-width="2"/>
               <rect x="166" y="114" width="28" height="32" rx="6" fill="#3b82f6" stroke="#1e293b" stroke-width="2"/>
             ` : ''}
-
-            <!-- Stage 2: Astro-Glass Dome -->
             ${s2 ? `
               <path d="M115 138 A65 65 0 0 1 245 138 Z" fill="rgba(56, 189, 248, 0.35)" stroke="#38bdf8" stroke-width="3.5"/>
               <circle cx="142" cy="112" r="11" fill="#fef08a" stroke="#0284c7" stroke-width="2"/>
               <circle cx="218" cy="112" r="11" fill="#fef08a" stroke="#0284c7" stroke-width="2"/>
             ` : ''}
-
-            <!-- Stage 3: Comet Solar Roof & Flag -->
             ${s3 ? `
               <polygon points="108,92 180,48 252,92" fill="#f59e0b" stroke="#78350f" stroke-width="2.5"/>
               <line x1="180" y1="48" x2="180" y2="25" stroke="#fff" stroke-width="2.5"/>
@@ -945,28 +981,20 @@
       }
 
       if (levelNum === 3) {
-        // LEVEL 3: MOON BOUNCY CASTLE
         return `
           <svg viewBox="0 0 360 180" class="w-full h-44 sm:h-52 rounded-2xl bg-slate-950/70 border border-indigo-400/30">
             <ellipse cx="180" cy="168" rx="185" ry="28" fill="#475569"/>
-            <!-- Blueprint -->
             <rect x="100" y="75" width="160" height="75" rx="14" fill="none" stroke="#f472b6" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"/>
-
-            <!-- Stage 1: Moon-Gel Bounce Pad -->
             ${s1 ? `
               <rect x="95" y="128" width="170" height="24" rx="12" fill="#ec4899" stroke="#831843" stroke-width="2.5"/>
               <rect x="115" y="133" width="130" height="8" rx="4" fill="#fbcfe8" opacity="0.6"/>
             ` : ''}
-
-            <!-- Stage 2: Nebula Turret Towers -->
             ${s2 ? `
               <rect x="98" y="68" width="32" height="66" rx="12" fill="#8b5cf6" stroke="#4c1d95" stroke-width="2.5"/>
               <rect x="230" y="68" width="32" height="66" rx="12" fill="#8b5cf6" stroke="#4c1d95" stroke-width="2.5"/>
               <rect x="130" y="84" width="100" height="46" rx="10" fill="#a855f7" stroke="#4c1d95" stroke-width="2.5"/>
               <path d="M162 130 A18 18 0 0 1 198 130 Z" fill="#fef08a"/>
             ` : ''}
-
-            <!-- Stage 3: Zero-G Star Flags & Cones -->
             ${s3 ? `
               <polygon points="94,70 114,38 134,70" fill="#22d3ee" stroke="#0e7490" stroke-width="2"/>
               <polygon points="226,70 246,38 266,70" fill="#22d3ee" stroke="#0e7490" stroke-width="2"/>
@@ -978,27 +1006,18 @@
       }
 
       if (levelNum === 4) {
-        // LEVEL 4: SOLAR SKY-FORGE
         return `
           <svg viewBox="0 0 360 180" class="w-full h-44 sm:h-52 rounded-2xl bg-slate-950/70 border border-indigo-400/30">
-            <!-- Radiant Sun Backdrop -->
             <circle cx="180" cy="95" r="56" fill="#f59e0b" opacity="0.18"/>
-            <!-- Blueprint -->
             <circle cx="180" cy="95" r="44" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"/>
-
-            <!-- Stage 1: Plasma Containment Ring -->
             ${s1 ? `
               <circle cx="180" cy="95" r="44" fill="none" stroke="#38bdf8" stroke-width="10"/>
               <circle cx="180" cy="95" r="44" fill="none" stroke="#e0f2fe" stroke-width="2" stroke-dasharray="10 6"/>
             ` : ''}
-
-            <!-- Stage 2: Star-Core Anvil -->
             ${s2 ? `
               <circle cx="180" cy="95" r="22" fill="#f97316" stroke="#fef08a" stroke-width="3"/>
               <rect x="162" y="114" width="36" height="14" rx="4" fill="#cbd5e1" stroke="#1e293b" stroke-width="2"/>
             ` : ''}
-
-            <!-- Stage 3: Sunbeam Collector Sails -->
             ${s3 ? `
               <polygon points="134,82 62,56 62,134 134,108" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
               <polygon points="226,82 298,56 298,134 226,108" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
@@ -1008,34 +1027,24 @@
         `;
       }
 
-      // LEVEL 5: VENUS PALACE
       return `
         <svg viewBox="0 0 360 180" class="w-full h-44 sm:h-52 rounded-2xl bg-slate-950/70 border border-amber-400/40">
-          <!-- Golden Venus Clouds -->
           <ellipse cx="110" cy="156" rx="85" ry="18" fill="#fde68a" opacity="0.45"/>
           <ellipse cx="250" cy="156" rx="85" ry="18" fill="#fde68a" opacity="0.45"/>
           <ellipse cx="180" cy="162" rx="115" ry="20" fill="#fef3c7" opacity="0.65"/>
-
-          <!-- Blueprint -->
           <rect x="105" y="65" width="150" height="80" rx="12" fill="none" stroke="#facc15" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"/>
-
-          <!-- Stage 1: Cloud-Buoyancy Thrusters -->
           ${s1 ? `
             <rect x="100" y="132" width="160" height="16" rx="8" fill="#eab308" stroke="#713f12" stroke-width="2"/>
             <polygon points="122,148 130,164 138,148" fill="#38bdf8"/>
             <polygon points="172,148 180,166 188,148" fill="#38bdf8"/>
             <polygon points="222,148 230,164 238,148" fill="#38bdf8"/>
           ` : ''}
-
-          <!-- Stage 2: Golden Spire Columns -->
           ${s2 ? `
             <rect x="112" y="76" width="18" height="56" rx="4" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>
             <rect x="230" y="76" width="18" height="56" rx="4" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>
             <rect x="142" y="66" width="76" height="66" rx="10" fill="#facc15" stroke="#a16207" stroke-width="2.5"/>
             <path d="M164 132 A16 16 0 0 1 196 132 Z" fill="#ec4899"/>
           ` : ''}
-
-          <!-- Stage 3: Crown of Venus Observatory -->
           ${s3 ? `
             <path d="M142 66 A38 34 0 0 1 218 66 Z" fill="#38bdf8" stroke="#fef08a" stroke-width="3"/>
             <polygon points="108,76 121,46 134,76" fill="#ec4899" stroke="#fef08a" stroke-width="1.5"/>
@@ -1048,31 +1057,33 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 6. APPLICATION STATE & LOCALSTORAGE PERSISTENCE
+     * 7. APPLICATION STATE & LOCALSTORAGE PERSISTENCE
      * -------------------------------------------------------------------------- */
     const state = {
       profiles: [],
       activeProfileId: null,
       screen: 'menu', // 'menu' | 'creator' | 'game'
       activeTab: 'build', // 'build' | 'trade' | 'minigames' | 'store'
-      storeCategory: 'suit', // 'suit' | 'helmet' | 'boots'
+      storeCategory: 'suit',
       previewEquipped: null,
 
       // Creator form state
       creatorName: 'Captain Leo',
       creatorSkin: SKIN_TONES[2].hex,
 
-      // Wheel state
+      // Spinner state
       wheelAngle: 0,
       isSpinning: false,
+      highlightedWedgeIndex: -1,
       lastSpinResult: null,
+      spinAnimFrameId: null,
 
       // Trading Hub state
       tradeGive: 'iron',
       tradeReceive: 'solar',
 
       // Minigame state
-      activeMinigame: 'math', // 'math' | 'hebrew'
+      activeMinigame: 'math',
       mathProblem: null,
       mathInput: '',
       hebrewQuestion: null,
@@ -1085,7 +1096,15 @@
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
-            state.profiles = parsed;
+            state.profiles = parsed.map(p => ({
+              ...p,
+              inventory: {
+                iron: p.inventory?.iron ?? 2,
+                titanium: p.inventory?.titanium ?? 1,
+                solar: p.inventory?.solar ?? 2,
+                fuel: p.inventory?.fuel ?? p.inventory?.quartz ?? 0
+              }
+            }));
           }
         }
       } catch (err) {
@@ -1118,12 +1137,12 @@
           iron: 2,
           titanium: 1,
           solar: 2,
-          quartz: 0
+          fuel: 0
         },
         level: 1,
         buildStage: 0,
         masterCompleted: false,
-        spinsRemaining: MAX_SUNDOWN_SPINS, // Starts at 20 spins!
+        spinsRemaining: MAX_SUNDOWN_SPINS, // 20 turns!
         dayCount: 1,
         stormActive: false,
         unlockedItems: ['suit_cadet', 'helmet_none', 'boots_standard'],
@@ -1156,7 +1175,7 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 7. SKY THEME ENGINE (DAY -> SUNSET -> NIGHT OVER 20 TURNS)
+     * 8. SKY THEME ENGINE (DAY -> SUNSET -> NIGHT OVER 20 TURNS)
      * -------------------------------------------------------------------------- */
     function updateSkyTheme() {
       const hero = getActiveProfile();
@@ -1169,9 +1188,9 @@
       }
 
       const left = hero.spinsRemaining;
-      if (left >= 9) {
+      if (left >= 11) {
         body.classList.add('sky-day');
-      } else if (left >= 4) {
+      } else if (left >= 5) {
         body.classList.add('sky-sunset');
       } else {
         body.classList.add('sky-night');
@@ -1193,7 +1212,7 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 8. CUSTOM TOAST & MODAL HELPERS (ZERO alert() / confirm())
+     * 9. CUSTOM TOAST & MODAL HELPERS (ZERO alert() / confirm())
      * -------------------------------------------------------------------------- */
     function showToast(message, tone = 'indigo') {
       const container = document.getElementById('toast-container');
@@ -1243,7 +1262,7 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 9. CORE GAMEPLAY ACTIONS (SPINNER, 20-TURN SUNDOWN, STORM, BUILD, TRADE)
+     * 10. GUARANTEED SMOOTH REQUESTANIMATIONFRAME SPINNER & STORM LOGIC
      * -------------------------------------------------------------------------- */
     function spinSpaceCompass() {
       const hero = getActiveProfile();
@@ -1261,89 +1280,128 @@
       }
 
       sound.init();
-      state.isSpinning = true;
+      sound.playSpinStart();
 
-      // Pick winning wedge (protect Turn 1 of Day 1 from triggering a storm)
-      let wedgeIndex = Math.floor(Math.random() * WHEEL_WEDGES.length);
-      if (hero.stats.totalSpins === 0 && WHEEL_WEDGES[wedgeIndex].type === 'storm') {
-        wedgeIndex = 1; // Guarantee +1 Solar Crystal on very first spin!
+      state.isSpinning = true;
+      state.highlightedWedgeIndex = -1;
+
+      // Update button disabled state immediately without replacing the wheel DOM
+      const spinBtn = document.getElementById('spin-compass-btn');
+      if (spinBtn) {
+        spinBtn.disabled = true;
+        spinBtn.textContent = '🌀 Spinning Orbit...';
       }
 
-      const wedge = WHEEL_WEDGES[wedgeIndex];
-      const sliceDeg = 360 / WHEEL_WEDGES.length; // 45 deg
-      // Pointer is at top (0 deg). Center of wedge i is at i * sliceDeg + sliceDeg/2
+      // Select winning wedge (protect Turn 1 from triggering a storm)
+      let wedgeIndex = Math.floor(Math.random() * WHEEL_WEDGES.length);
+      if ((hero.stats.totalSpins || 0) === 0 && WHEEL_WEDGES[wedgeIndex].type === 'storm') {
+        wedgeIndex = 1; // Solar Crystal on very first spin
+      }
+
+      const sliceDeg = 360 / WHEEL_WEDGES.length; // 45°
       const targetCenter = wedgeIndex * sliceDeg + sliceDeg / 2;
       const desiredMod = (360 - targetCenter) % 360;
-      const currentMod = ((state.wheelAngle % 360) + 360) % 360;
+      const startAngle = state.wheelAngle;
+      const currentMod = ((startAngle % 360) + 360) % 360;
       const delta = (desiredMod - currentMod + 360) % 360;
-      const extraSpins = 4 * 360;
-      const finalAngle = state.wheelAngle + extraSpins + delta;
+      const fullRotations = (4 + Math.floor(Math.random() * 3)) * 360; // 4 to 6 full spins (1440°–2160°)
+      const totalRotation = fullRotations + delta;
+      const targetAngle = startAngle + totalRotation;
 
-      // Play rhythmic wheel ticks during the 2.4s spin
-      let tickCount = 0;
-      const tickInterval = setInterval(() => {
-        tickCount++;
-        sound.playTick();
-        if (tickCount >= 18) clearInterval(tickInterval);
-      }, 120);
+      const duration = 2700; // ms
+      const startTime = performance.now();
+      let lastSpoke = Math.floor(startAngle / sliceDeg);
 
-      state.wheelAngle = finalAngle;
-      render();
+      function step(now) {
+        try {
+          const elapsed = now - startTime;
+          const t = Math.min(1, Math.max(0, elapsed / duration));
+          // Smooth cubic ease-out deceleration
+          const easeOut = 1 - Math.pow(1 - t, 3);
+          const currentAngle = startAngle + totalRotation * easeOut;
+          state.wheelAngle = currentAngle;
 
-      setTimeout(() => {
-        clearInterval(tickInterval);
-        state.isSpinning = false;
+          // Update rotor element directly via GPU transform
+          const rotor = document.getElementById('compass-wheel-rotor');
+          if (rotor) {
+            rotor.style.transform = `rotate(${currentAngle.toFixed(2)}deg)`;
+          }
 
-        hero.spinsRemaining = Math.max(0, hero.spinsRemaining - 1);
-        hero.stats.totalSpins = (hero.stats.totalSpins || 0) + 1;
+          // Play tick & deflect pointer whenever a wedge spoke passes the top pointer
+          const currentSpoke = Math.floor(currentAngle / sliceDeg);
+          if (currentSpoke !== lastSpoke) {
+            lastSpoke = currentSpoke;
+            sound.playTick();
+            const pointer = document.getElementById('compass-pointer');
+            if (pointer) {
+              pointer.style.transform = 'translateX(-50%) rotate(-18deg)';
+              setTimeout(() => {
+                if (pointer) pointer.style.transform = 'translateX(-50%) rotate(0deg)';
+              }, 65);
+            }
+          }
 
-        if (wedge.type === 'commodity') {
-          hero.inventory[wedge.key] = (hero.inventory[wedge.key] || 0) + wedge.amount;
-          state.lastSpinResult = `Harvested +${wedge.amount} ${COMMODITIES[wedge.key].name} ${wedge.icon}!`;
-          sound.playHarvest();
-          showToast(state.lastSpinResult, 'emerald');
-        } else if (wedge.type === 'coins') {
-          hero.coins += wedge.amount;
-          state.lastSpinResult = `Collected +${wedge.amount} Space Coins 🪙!`;
-          sound.playHarvest();
-          showToast(state.lastSpinResult, 'amber');
-        } else if (wedge.type === 'stardust') {
-          hero.stardust += wedge.amount;
-          state.lastSpinResult = `Gathered +${wedge.amount} Star Stardust ✨!`;
-          sound.playHarvest();
-          showToast(state.lastSpinResult, 'purple');
-        } else if (wedge.type === 'bundle') {
-          hero.inventory.iron += 1;
-          hero.inventory.titanium += 1;
-          state.lastSpinResult = `Supply Crate! +1 Iron Ore & +1 Titanium 🧰!`;
-          sound.playHarvest();
-          showToast(state.lastSpinResult, 'emerald');
-        } else if (wedge.type === 'storm') {
-          hero.stormActive = true;
-          state.lastSpinResult = `⛈️ SPACE STORM HIT! Use 1 Solar Crystal to clear the skies!`;
-          sound.playStormZap();
-          showToast(state.lastSpinResult, 'red');
+          if (t < 1) {
+            state.spinAnimFrameId = requestAnimationFrame(step);
+          } else {
+            // Finalize landing on exact targetAngle
+            state.wheelAngle = targetAngle;
+            state.highlightedWedgeIndex = wedgeIndex;
+            state.spinAnimFrameId = null;
+            applySpinOutcome(hero, WHEEL_WEDGES[wedgeIndex]);
+            state.isSpinning = false;
+            saveProfiles();
+            render();
+
+            if (hero.spinsRemaining === 0) {
+              setTimeout(() => promptCosmicDawnReset(), 650);
+            }
+          }
+        } catch (err) {
+          console.error('Spinner animation error:', err);
+          state.isSpinning = false;
+          state.spinAnimFrameId = null;
+          render();
         }
+      }
 
-        saveProfiles();
-        render();
-
-        // Check if 20-Turn Sundown has been reached
-        if (hero.spinsRemaining === 0) {
-          setTimeout(() => {
-            promptCosmicDawnReset();
-          }, 650);
-        }
-      }, 2450);
+      state.spinAnimFrameId = requestAnimationFrame(step);
     }
 
-    function clearSpaceStorm() {
+    function applySpinOutcome(hero, wedge) {
+      hero.spinsRemaining = Math.max(0, hero.spinsRemaining - 1);
+      hero.stats.totalSpins = (hero.stats.totalSpins || 0) + 1;
+
+      if (wedge.type === 'commodity') {
+        hero.inventory[wedge.key] = (hero.inventory[wedge.key] || 0) + wedge.amount;
+        state.lastSpinResult = `Harvested +${wedge.amount} ${COMMODITIES[wedge.key].name} ${COMMODITIES[wedge.key].icon}!`;
+        sound.playHarvest();
+        showToast(state.lastSpinResult, 'emerald');
+      } else if (wedge.type === 'coins') {
+        hero.coins += wedge.amount;
+        state.lastSpinResult = `Collected +${wedge.amount} Space Coins 🪙!`;
+        sound.playHarvest();
+        showToast(state.lastSpinResult, 'amber');
+      } else if (wedge.type === 'stardust') {
+        hero.stardust += wedge.amount;
+        state.lastSpinResult = `Gathered +${wedge.amount} Star Stardust ✨!`;
+        sound.playHarvest();
+        showToast(state.lastSpinResult, 'purple');
+      } else if (wedge.type === 'storm') {
+        hero.stormActive = true;
+        state.lastSpinResult = `⛈️ SPACE STORM HIT! Clear it with 1 Solar Crystal!`;
+        sound.playStormZap();
+        showToast(state.lastSpinResult, 'red');
+      }
+    }
+
+    function clearStormWithSolarCrystal() {
       const hero = getActiveProfile();
       if (!hero || !hero.stormActive) return;
 
       if ((hero.inventory.solar || 0) < 1) {
         sound.playGentleOops();
-        showToast('You need 1 ☀️ Solar Crystal! Trade 2 resources or play a Minigame to get one!', 'amber');
+        showToast('You need 1 ☀️ Solar Crystal! Swap in Trading Hub or win a Quest!', 'amber');
         return;
       }
 
@@ -1352,7 +1410,7 @@
       hero.stats.stormsCleared = (hero.stats.stormsCleared || 0) + 1;
       state.lastSpinResult = '☀️ Solar Crystal beam cleared the Space Storm!';
       sound.playStormClear();
-      showToast('☀️ Space Storm cleared! Skies are safe for harvesting!', 'emerald');
+      showToast('☀️ Space Storm cleared! Skies are safe for spinning!', 'emerald');
       saveProfiles();
       render();
     }
@@ -1365,14 +1423,14 @@
         <div class="text-5xl mb-3">🌙✨</div>
         <h2 class="text-2xl sm:text-3xl font-bold text-amber-300 mb-2">Sundown Reached!</h2>
         <p class="text-indigo-100 text-base mb-4">
-          All <strong>${MAX_SUNDOWN_SPINS} cosmic turns</strong> for Day ${hero.dayCount} are complete!
-          ${hero.name} rests inside the star-camp while comets streak overhead.
+          All <strong>${MAX_SUNDOWN_SPINS} turns</strong> for Day ${hero.dayCount} are complete!
+          ${escapeHTML(hero.name)} rests inside the star-camp while comets streak overhead.
         </p>
         <div class="bg-indigo-950/80 border border-indigo-400/30 rounded-2xl p-3 mb-5 text-sm text-cyan-200">
-          🌅 Ready for <strong>Day ${hero.dayCount + 1}</strong>? Your Sundown Clock will reset back to <strong>20 / 20 Spins</strong>!
+          🌅 Ready for <strong>Day ${hero.dayCount + 1}</strong>? Your Sundown Clock resets back to <strong>20 / 20 Sundowns</strong>!
         </div>
         <button onclick="resetForCosmicDawn()" class="btn-space w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-bold text-lg">
-          🌅 Wake Up at Cosmic Dawn (+20 Spins)
+          🌅 Wake Up at Cosmic Dawn (+20 Turns)
         </button>
       `);
     }
@@ -1384,7 +1442,7 @@
       hero.dayCount = (hero.dayCount || 1) + 1;
       sound.playHarvest();
       closeModal();
-      showToast(`🌅 Cosmic Dawn! Day ${hero.dayCount} begins with 20 fresh spins!`, 'amber');
+      showToast(`🌅 Cosmic Dawn! Day ${hero.dayCount} begins with 20 / 20 Sundowns!`, 'amber');
       saveProfiles();
       render();
     }
@@ -1400,9 +1458,7 @@
       const levelData = BUILD_LEVELS.find(l => l.level === hero.level) || BUILD_LEVELS[BUILD_LEVELS.length - 1];
       const currentStageIdx = hero.buildStage;
 
-      if (currentStageIdx >= levelData.stages.length) {
-        return;
-      }
+      if (currentStageIdx >= levelData.stages.length) return;
 
       const stage = levelData.stages[currentStageIdx];
       if (!canAffordStage(hero, stage.cost)) {
@@ -1411,7 +1467,6 @@
         return;
       }
 
-      // Deduct required commodities
       Object.entries(stage.cost).forEach(([key, qty]) => {
         hero.inventory[key] -= qty;
       });
@@ -1419,7 +1474,6 @@
       hero.buildStage += 1;
 
       if (hero.buildStage >= levelData.stages.length) {
-        // Structure Completed! Award Space Coins & Star Stardust
         hero.coins += levelData.rewardCoins;
         hero.stardust += levelData.rewardStardust;
         sound.playWinFanfare();
@@ -1432,7 +1486,7 @@
           openModal(`
             <div class="text-5xl mb-2">🎉🚀</div>
             <h2 class="text-2xl sm:text-3xl font-bold text-amber-300 mb-2">${levelData.name} Complete!</h2>
-            <p class="text-indigo-100 mb-4">Awesome engineering, <strong>${hero.name}</strong>! You earned:</p>
+            <p class="text-indigo-100 mb-4">Awesome engineering, <strong>${escapeHTML(hero.name)}</strong>! You earned:</p>
             <div class="flex justify-center gap-4 mb-5">
               <div class="bg-amber-500/20 border border-amber-400 rounded-2xl px-4 py-2 font-bold text-amber-300">
                 +${levelData.rewardCoins} 🪙 Coins
@@ -1452,7 +1506,7 @@
             <div class="text-5xl mb-2">👑🏰✨</div>
             <h2 class="text-2xl sm:text-3xl font-bold text-amber-300 mb-2">GALACTIC MASTER BUILDER!</h2>
             <p class="text-indigo-100 mb-4">
-              Incredible job, <strong>${hero.name}</strong>! You completed all 5 cosmic wonders including the legendary <strong>Venus Palace</strong>!
+              Incredible job, <strong>${escapeHTML(hero.name)}</strong>! You completed all 5 cosmic wonders including the legendary <strong>Venus Palace</strong>!
             </p>
             <div class="flex justify-center gap-4 mb-5">
               <div class="bg-amber-500/20 border border-amber-400 rounded-2xl px-4 py-2 font-bold text-amber-300">
@@ -1476,20 +1530,20 @@
       render();
     }
 
-    function replayMasterSanbox() {
+    function replayMasterSandbox() {
       const hero = getActiveProfile();
       if (!hero) return;
       hero.level = 1;
       hero.buildStage = 0;
       hero.masterCompleted = false;
       sound.playClick();
-      showToast('🔄 New Cosmic Tour started from Level 1 with all your gear & coins!', 'indigo');
+      showToast('🔄 New Galactic Tour started from Level 1 with all your gear & coins!', 'indigo');
       saveProfiles();
       render();
     }
 
     /* --------------------------------------------------------------------------
-     * 10. COMMODITY TRADING HUB LOGIC
+     * 11. COMMODITY TRADING HUB LOGIC
      * -------------------------------------------------------------------------- */
     function executeTwoForOneTrade() {
       const hero = getActiveProfile();
@@ -1543,13 +1597,13 @@
       hero.coins -= 25;
       hero.inventory.solar = (hero.inventory.solar || 0) + 1;
       sound.playPurchase();
-      showToast('☀️ Exchanged 25 Space Coins for 1 Emergency Solar Crystal!', 'amber');
+      showToast('☀️ Exchanged 25 Space Coins for 1 Solar Crystal!', 'amber');
       saveProfiles();
       render();
     }
 
     /* --------------------------------------------------------------------------
-     * 11. EDUCATIONAL MINIGAMES (SPACE MATH & HEBREW SPEECH SYNTHESIS)
+     * 12. EDUCATIONAL MINIGAMES (SPACE MATH & HEBREW SPEECH SYNTHESIS)
      * -------------------------------------------------------------------------- */
     function generateMathProblem() {
       const hero = getActiveProfile();
@@ -1557,7 +1611,6 @@
       let a, b, op, answer;
 
       if (lvl <= 2) {
-        // Addition & subtraction within 25
         op = Math.random() < 0.6 ? '+' : '-';
         if (op === '+') {
           a = Math.floor(Math.random() * 14) + 3;
@@ -1569,7 +1622,6 @@
           answer = a - b;
         }
       } else {
-        // Levels 3–5: Two-digit addition/subtraction within 99
         op = Math.random() < 0.55 ? '+' : '-';
         if (op === '+') {
           a = Math.floor(Math.random() * 45) + 12;
@@ -1618,13 +1670,12 @@
         hero.coins += 12;
         hero.stats.mathSolved = (hero.stats.mathSolved || 0) + 1;
 
-        // If a Space Storm is active, reward a Solar Crystal so player is never stuck!
-        let bonusMsg = '+2 ✨ Stardust & +12 🪙 Coins!';
+        let bonusMsg = '';
         if (hero.stormActive) {
           hero.inventory.solar = (hero.inventory.solar || 0) + 1;
           bonusMsg = '+1 ☀️ Solar Crystal (Storm Buster!) +2 ✨ Stardust & +12 🪙!';
         } else {
-          const keys = ['iron', 'titanium', 'solar', 'quartz'];
+          const keys = ['iron', 'titanium', 'solar', 'fuel'];
           const pick = keys[Math.floor(Math.random() * keys.length)];
           hero.inventory[pick] += 1;
           bonusMsg = `+2 ✨ Stardust, +12 🪙 Coins & +1 ${COMMODITIES[pick].short} ${COMMODITIES[pick].icon}!`;
@@ -1662,12 +1713,12 @@
         hero.coins += 15;
         hero.stats.hebrewSolved = (hero.stats.hebrewSolved || 0) + 1;
 
-        let bonusMsg = '+2 ✨ Stardust & +15 🪙 Coins!';
+        let bonusMsg = '';
         if (hero.stormActive) {
           hero.inventory.solar = (hero.inventory.solar || 0) + 1;
           bonusMsg = '+1 ☀️ Solar Crystal (Storm Buster!) +2 ✨ Stardust & +15 🪙!';
         } else {
-          const keys = ['solar', 'quartz', 'titanium', 'iron'];
+          const keys = ['solar', 'fuel', 'titanium', 'iron'];
           const pick = keys[Math.floor(Math.random() * keys.length)];
           hero.inventory[pick] += 1;
           bonusMsg = `+2 ✨ Stardust, +15 🪙 Coins & +1 ${COMMODITIES[pick].short} ${COMMODITIES[pick].icon}!`;
@@ -1686,7 +1737,7 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 12. SPACE STORE ACTIONS (LIVE PREVIEW, BUY, EQUIP, UNEQUIP)
+     * 13. SPACE STORE ACTIONS (LIVE PREVIEW, BUY, EQUIP, UNEQUIP)
      * -------------------------------------------------------------------------- */
     function previewStoreItem(itemId) {
       const hero = getActiveProfile();
@@ -1730,7 +1781,6 @@
         sound.playPurchase();
         showToast(`🎉 Unlocked & Equipped ${item.name}!`, 'emerald');
       } else {
-        // Equip (or unequip back to starter default if already equipped)
         if (hero.equipped[item.category] === item.id && !item.starter) {
           const starter = STORE_ITEMS.find(i => i.category === item.category && i.starter);
           hero.equipped[item.category] = starter.id;
@@ -1749,19 +1799,17 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 13. VIEW RENDERERS (MENU, HERO CREATOR, MAIN GAME, TABS)
+     * 14. VIEW RENDERERS (MENU, HERO CREATOR, MAIN GAME, TABS)
      * -------------------------------------------------------------------------- */
     function renderMenuScreen() {
       return `
         <div class="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 max-w-5xl mx-auto w-full">
-          <!-- Top Sound Controls -->
           <div class="w-full flex justify-end mb-4">
             <button onclick="sound.toggleMusic(); render();" class="btn-space px-4 py-2 rounded-2xl bg-indigo-600/80 border border-indigo-300/40 text-sm font-bold flex items-center gap-2">
               ${sound.musicOn ? '🎵 Space Music: ON' : '🔇 Space Music: OFF'}
             </button>
           </div>
 
-          <!-- Title Header -->
           <div class="text-center mb-8 animate-float-slow">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-xs sm:text-sm font-bold tracking-wider uppercase mb-3">
               🚀 Cosmic Adventure & Learning Quest
@@ -1774,7 +1822,6 @@
             </p>
           </div>
 
-          <!-- Saved Hero Profiles Grid -->
           <div class="w-full space-panel rounded-3xl p-6 sm:p-8">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
@@ -1811,10 +1858,10 @@
                       <div class="text-xs font-semibold text-cyan-300 mb-2">
                         Level ${p.level}: ${lvlData.name} • Day ${p.dayCount || 1}
                       </div>
-                      <div class="flex items-center gap-3 text-xs font-bold mb-4">
+                      <div class="flex items-center gap-2 text-xs font-bold mb-4">
                         <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300">🪙 ${p.coins}</span>
                         <span class="px-2.5 py-1 rounded-lg bg-pink-500/20 text-pink-300">✨ ${p.stardust}</span>
-                        <span class="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-200">⏳ ${p.spinsRemaining}/20</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-200">🌅 ${p.spinsRemaining}/20</span>
                       </div>
                       <button onclick="launchProfile('${p.id}')" class="btn-space w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold text-base">
                         Blast Off! 🚀
@@ -1863,6 +1910,7 @@
       state.screen = 'game';
       state.activeTab = 'build';
       state.previewEquipped = null;
+      state.highlightedWedgeIndex = -1;
       if (!state.mathProblem) generateMathProblem();
       if (!state.hebrewQuestion) generateHebrewQuestion(false);
       render();
@@ -1887,17 +1935,15 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <!-- Live Hero Stage -->
               <div class="flex flex-col items-center justify-center bg-gradient-to-b from-indigo-900/60 to-slate-950/80 border-2 border-indigo-400/30 rounded-3xl p-6">
                 <div class="animate-float-slow">
                   ${renderBoySVG(previewProfile, { sizeClass: 'w-48 h-56' })}
                 </div>
-                <div class="mt-3 px-4 py-1.5 rounded-full bg-indigo-500/30 border border-indigo-300/30 text-lg font-bold text-white">
+                <div id="creator-name-badge" class="mt-3 px-4 py-1.5 rounded-full bg-indigo-500/30 border border-indigo-300/30 text-lg font-bold text-white">
                   ${escapeHTML(state.creatorName || 'Captain Leo')}
                 </div>
               </div>
 
-              <!-- Customization Controls -->
               <div class="space-y-6">
                 <div>
                   <label class="block text-sm font-bold text-indigo-200 uppercase tracking-wider mb-2">
@@ -1909,7 +1955,7 @@
                       type="text"
                       maxlength="20"
                       value="${escapeHTML(state.creatorName)}"
-                      oninput="state.creatorName = this.value; document.querySelector('#creator-name-badge')?.textContent;"
+                      oninput="state.creatorName = this.value; const b = document.getElementById('creator-name-badge'); if(b) b.textContent = this.value || 'Captain Leo';"
                       placeholder="Enter hero name..."
                       class="flex-1 px-4 py-3 rounded-2xl bg-slate-900 border-2 border-indigo-400/40 focus:border-amber-400 outline-none text-white font-bold text-lg"
                     />
@@ -1970,8 +2016,47 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 14. MAIN GAMEPLAY SCREEN (HEADER, 20-TURN SUNDOWN CLOCK, TABS)
+     * 15. 20-SEGMENT SUNDOWN CLOCK GAUGE & MAIN GAMEPLAY HEADER
      * -------------------------------------------------------------------------- */
+    function renderSundownArcGauge(spinsRemaining) {
+      // 20-segment circular arc gauge around a central sun/moon icon
+      const segments = [];
+      const total = MAX_SUNDOWN_SPINS; // 20
+      const cx = 42, cy = 42, r = 33;
+      const stepDeg = 360 / total; // 18° per segment
+
+      for (let i = 0; i < total; i++) {
+        const active = i < spinsRemaining;
+        const a1 = ((i * stepDeg + 2) - 90) * (Math.PI / 180);
+        const a2 = (((i + 1) * stepDeg - 2) - 90) * (Math.PI / 180);
+        const x1 = cx + r * Math.cos(a1);
+        const y1 = cy + r * Math.sin(a1);
+        const x2 = cx + r * Math.cos(a2);
+        const y2 = cy + r * Math.sin(a2);
+
+        let strokeColor = '#1e293b';
+        if (active) {
+          if (spinsRemaining >= 11) strokeColor = '#38bdf8';
+          else if (spinsRemaining >= 5) strokeColor = '#fb923c';
+          else strokeColor = '#c084fc';
+        }
+
+        segments.push(`
+          <path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}"
+                fill="none" stroke="${strokeColor}" stroke-width="6.5" stroke-linecap="round" />
+        `);
+      }
+
+      return `
+        <svg viewBox="0 0 84 84" class="w-16 h-16 sm:w-20 sm:h-20 shrink-0" aria-label="${spinsRemaining} of 20 Sundowns remaining">
+          ${segments.join('')}
+          <circle cx="42" cy="42" r="22" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <text x="42" y="40" text-anchor="middle" fill="#fde047" font-size="14" font-weight="bold">${spinsRemaining}</text>
+          <text x="42" y="52" text-anchor="middle" fill="#94a3b8" font-size="8.5" font-weight="bold">/ 20</text>
+        </svg>
+      `;
+    }
+
     function renderGameScreen() {
       const hero = getActiveProfile();
       if (!hero) {
@@ -1979,13 +2064,11 @@
         return renderMenuScreen();
       }
 
-      // Compute 20-Turn Sundown Clock progress & phase label
       const spinsUsed = MAX_SUNDOWN_SPINS - hero.spinsRemaining;
-      const pctRemaining = Math.round((hero.spinsRemaining / MAX_SUNDOWN_SPINS) * 100);
       let timePhase = { label: '☀️ Cosmic Day', color: 'text-sky-300', bar: 'from-sky-400 to-emerald-400' };
-      if (hero.spinsRemaining <= 8 && hero.spinsRemaining >= 4) {
+      if (hero.spinsRemaining <= 10 && hero.spinsRemaining >= 5) {
         timePhase = { label: '🌅 Nebula Sunset', color: 'text-orange-300', bar: 'from-amber-400 to-rose-500' };
-      } else if (hero.spinsRemaining <= 3) {
+      } else if (hero.spinsRemaining <= 4) {
         timePhase = { label: '🌙 Starlight Nightfall', color: 'text-purple-300', bar: 'from-purple-500 to-indigo-400' };
       }
 
@@ -1993,9 +2076,8 @@
         <div class="flex-1 flex flex-col max-w-6xl mx-auto w-full p-3 sm:p-5 gap-4">
           <!-- TOP HUD BAR -->
           <header class="space-panel rounded-3xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3">
-            <!-- Hero Identity -->
             <div class="flex items-center gap-3">
-              <button onclick="state.screen='menu'; render();" class="btn-space px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-bold">
+              <button onclick="if(!state.isSpinning){ state.screen='menu'; render(); }" class="btn-space px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs sm:text-sm font-bold">
                 🏠 Heroes
               </button>
               <div class="w-11 h-11 rounded-2xl bg-indigo-900/90 border border-indigo-400/40 flex items-center justify-center overflow-hidden">
@@ -2028,26 +2110,26 @@
             </div>
           </header>
 
-          <!-- 20-TURN SUNDOWN CLOCK BANNER -->
-          <section class="space-panel rounded-2xl px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <!-- 20-TURN SUNDOWN CLOCK BANNER WITH 20-SEGMENT GAUGE -->
+          <section class="space-panel rounded-2xl px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-              <div class="text-2xl sm:text-3xl">${hero.spinsRemaining > 8 ? '☀️' : hero.spinsRemaining > 3 ? '🌅' : '🌙'}</div>
+              ${renderSundownArcGauge(hero.spinsRemaining)}
               <div>
-                <div class="flex items-center gap-2">
-                  <span class="font-bold text-sm sm:text-base ${timePhase.color}">${timePhase.label}</span>
-                  <span class="text-xs px-2 py-0.5 rounded-full bg-white/10 text-indigo-100 font-semibold">
-                    20-Turn Sundown Clock
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="font-bold text-base sm:text-lg ${timePhase.color}">${timePhase.label}</span>
+                  <span class="text-xs px-2.5 py-0.5 rounded-full bg-white/10 text-amber-200 font-bold">
+                    ${hero.spinsRemaining} / 20 Sundowns
                   </span>
                 </div>
-                <p class="text-xs text-indigo-200">
-                  <strong>${hero.spinsRemaining} of 20</strong> spins left before Sundown (${spinsUsed} used)
+                <p class="text-xs sm:text-sm text-indigo-200">
+                  <strong>${hero.spinsRemaining}</strong> turns left before Sundown (${spinsUsed} of 20 used)
                 </p>
               </div>
             </div>
 
-            <!-- 20-Segment Visual Sundown Meter -->
+            <!-- 20-Segment Linear Progress Bar -->
             <div class="flex-1 max-w-md w-full">
-              <div class="grid grid-cols-20 gap-1 mb-1" style="grid-template-columns: repeat(20, minmax(0, 1fr));">
+              <div class="grid gap-1 mb-1" style="grid-template-columns: repeat(20, minmax(0, 1fr));">
                 ${Array.from({ length: MAX_SUNDOWN_SPINS }).map((_, idx) => {
                   const active = idx < hero.spinsRemaining;
                   return `<div class="h-3 rounded-sm transition-all ${active ? `bg-gradient-to-t ${timePhase.bar}` : 'bg-slate-800 border border-slate-700'}"></div>`;
@@ -2055,7 +2137,7 @@
               </div>
               <div class="flex justify-between text-[11px] font-semibold text-indigo-300">
                 <span>Cosmic Dawn (20)</span>
-                <span>${pctRemaining}% Daylight</span>
+                <span>Day ${hero.dayCount || 1}</span>
                 <span>Sundown (0)</span>
               </div>
             </div>
@@ -2097,6 +2179,7 @@
     }
 
     function switchTab(tabId) {
+      if (state.isSpinning) return;
       sound.playClick();
       state.activeTab = tabId;
       if (tabId === 'minigames') {
@@ -2107,43 +2190,61 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 15. TAB 1: SPACE COMPASS SPINNER & SEQUENTIAL BUILD TRACK
+     * 16. TAB 1: ICONS-ONLY SPACE COMPASS SPINNER & SEQUENTIAL BUILD TRACK
      * -------------------------------------------------------------------------- */
     function renderBuildAndSpinTab(hero) {
       const levelData = BUILD_LEVELS.find(l => l.level === hero.level) || BUILD_LEVELS[BUILD_LEVELS.length - 1];
       const currentStage = levelData.stages[hero.buildStage];
       const solarCount = hero.inventory.solar || 0;
 
-      // Build SVG Compass Wheel Wedges
-      const sliceDeg = 360 / WHEEL_WEDGES.length;
+      // Build 8-Wedge SVG Wheel with ICONS ONLY (ZERO text/numbers inside wedges!)
+      const sliceDeg = 360 / WHEEL_WEDGES.length; // 45°
       const wheelSlicesSVG = WHEEL_WEDGES.map((w, i) => {
         const startAngle = (i * sliceDeg - 90) * (Math.PI / 180);
         const endAngle = ((i + 1) * sliceDeg - 90) * (Math.PI / 180);
-        const x1 = 150 + 140 * Math.cos(startAngle);
-        const y1 = 150 + 140 * Math.sin(startAngle);
-        const x2 = 150 + 140 * Math.cos(endAngle);
-        const y2 = 150 + 140 * Math.sin(endAngle);
+        const x1 = 150 + 138 * Math.cos(startAngle);
+        const y1 = 150 + 138 * Math.sin(startAngle);
+        const x2 = 150 + 138 * Math.cos(endAngle);
+        const y2 = 150 + 138 * Math.sin(endAngle);
 
         const midAngleDeg = i * sliceDeg + sliceDeg / 2;
+        const isWinner = !state.isSpinning && state.highlightedWedgeIndex === i;
+
         return `
           <g>
-            <path d="M150,150 L${x1.toFixed(1)},${y1.toFixed(1)} A140,140 0 0,1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${w.color}" stroke="#0f172a" stroke-width="2.5"/>
-            <g transform="translate(150,150) rotate(${midAngleDeg})">
-              <text x="0" y="-98" text-anchor="middle" font-size="22">${w.icon}</text>
-              <text x="0" y="-74" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">${w.label}</text>
+            <path
+              d="M150,150 L${x1.toFixed(1)},${y1.toFixed(1)} A138,138 0 0,1 ${x2.toFixed(1)},${y2.toFixed(1)} Z"
+              fill="${w.bg}"
+              stroke="${isWinner ? '#fde047' : '#0f172a'}"
+              stroke-width="${isWinner ? '4.5' : '2.5'}"
+            />
+            ${isWinner ? `
+              <path
+                d="M150,150 L${x1.toFixed(1)},${y1.toFixed(1)} A138,138 0 0,1 ${x2.toFixed(1)},${y2.toFixed(1)} Z"
+                fill="rgba(253, 224, 71, 0.24)"
+              />
+            ` : ''}
+            <g transform="translate(150,150) rotate(${midAngleDeg}) translate(0,-88)">
+              ${renderWedgeIconSVG(w.iconType)}
             </g>
           </g>
         `;
       }).join('');
 
+      // Outer rim decorative gold studs (zero text!)
+      const rimStudsSVG = Array.from({ length: 16 }).map((_, idx) => {
+        const deg = idx * 22.5;
+        return `<circle cx="150" cy="7" r="3" fill="#fde047" transform="rotate(${deg} 150 150)"/>`;
+      }).join('');
+
       return `
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <!-- LEFT COLUMN: SPACE COMPASS SPINNER & SPACE STORM -->
+          <!-- LEFT COLUMN: ICONS-ONLY SPACE COMPASS SPINNER & SPACE STORM -->
           <div class="lg:col-span-6 space-panel rounded-3xl p-5 sm:p-6 flex flex-col items-center justify-between relative overflow-hidden">
             <div class="w-full flex items-center justify-between mb-2">
               <h2 class="text-xl sm:text-2xl font-bold text-cyan-300">🧭 Space Compass</h2>
               <span class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/30 border border-indigo-300/30 text-indigo-100">
-                ${hero.spinsRemaining} Spins Left
+                ${hero.spinsRemaining} / 20 Left
               </span>
             </div>
 
@@ -2153,10 +2254,10 @@
                 <div class="text-4xl mb-1">⛈️⚡🌪️</div>
                 <h3 class="text-xl font-bold text-rose-200">SPACE STORM BLOCKING ORBIT!</h3>
                 <p class="text-xs sm:text-sm text-rose-100 mt-1 mb-3">
-                  Cosmic lightning prevents harvesting until you blast the storm with <strong>1 Solar Crystal</strong>!
+                  Cosmic lightning prevents harvesting until you clear the storm with <strong>1 Solar Crystal</strong>!
                 </p>
                 <button
-                  onclick="clearSpaceStorm()"
+                  onclick="clearStormWithSolarCrystal()"
                   class="btn-space w-full py-3.5 px-4 rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 ${
                     solarCount >= 1
                       ? 'bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950'
@@ -2180,30 +2281,63 @@
               </div>
             ` : ''}
 
-            <!-- Spinner Wheel Assembly -->
+            <!-- Spinner Wheel Assembly (Tap either the wheel OR the central/bottom SPIN button!) -->
             <div class="relative my-3 flex items-center justify-center">
-              <!-- Top Pointer Arrow -->
-              <div class="absolute -top-3 z-20 text-3xl drop-shadow-lg">🔻</div>
-
-              <div
-                style="transform: rotate(${state.wheelAngle}deg); transition: transform ${state.isSpinning ? '2.4s cubic-bezier(0.15, 0.85, 0.25, 1)' : '0s'};"
-                class="w-64 h-64 sm:w-72 sm:h-72 rounded-full shadow-2xl">
-                <svg viewBox="0 0 300 300" class="w-full h-full">
-                  <circle cx="150" cy="150" r="146" fill="#0f172a" stroke="#fbbf24" stroke-width="5"/>
-                  ${wheelSlicesSVG}
-                  <circle cx="150" cy="150" r="28" fill="#1e293b" stroke="#fbbf24" stroke-width="4"/>
-                  <text x="150" y="156" text-anchor="middle" font-size="20">🚀</text>
+              <!-- Top Pointer Arrow (pointer-events: none so clicks always pass through) -->
+              <div id="compass-pointer" class="absolute -top-4 left-1/2 -translate-x-1/2 z-20 drop-shadow-xl">
+                <svg viewBox="0 0 44 44" class="w-10 h-10">
+                  <polygon points="22,40 6,8 38,8" fill="#facc15" stroke="#0f172a" stroke-width="3.5" stroke-linejoin="round"/>
+                  <circle cx="22" cy="14" r="4" fill="#ef4444"/>
                 </svg>
               </div>
+
+              <!-- Rotating Wheel Container -->
+              <div
+                id="compass-wheel-rotor"
+                onclick="spinSpaceCompass()"
+                role="button"
+                tabindex="0"
+                aria-label="Spin the Space Compass Wheel"
+                style="transform: rotate(${state.wheelAngle}deg);"
+                class="w-64 h-64 sm:w-72 sm:h-72 rounded-full shadow-2xl cursor-pointer select-none">
+                <svg viewBox="0 0 300 300" class="w-full h-full pointer-events-none">
+                  <circle cx="150" cy="150" r="147" fill="#0f172a" stroke="#fbbf24" stroke-width="5"/>
+                  ${rimStudsSVG}
+                  ${wheelSlicesSVG}
+                  <circle cx="150" cy="150" r="34" fill="#0f172a" stroke="#fbbf24" stroke-width="3.5"/>
+                </svg>
+              </div>
+
+              <!-- Central Tactile SPIN Hub Button -->
+              <button
+                type="button"
+                onclick="spinSpaceCompass()"
+                ${state.isSpinning || hero.stormActive ? 'disabled' : ''}
+                class="btn-space absolute z-10 w-16 h-16 rounded-full bg-gradient-to-b from-amber-300 to-orange-500 border-4 border-slate-950 text-slate-950 font-extrabold text-sm tracking-wider flex items-center justify-center shadow-xl">
+                SPIN
+              </button>
             </div>
 
-            <!-- Last Spin Feedback Pill -->
-            <div class="w-full min-h-[38px] flex items-center justify-center text-center px-3 py-1.5 rounded-xl bg-slate-900/75 border border-indigo-400/20 text-xs sm:text-sm font-semibold text-amber-200 mb-3">
-              ${state.lastSpinResult || 'Tap SPIN COMPASS to harvest cosmic resources!'}
+            <!-- Compact Icon Legend Outside Below the Wheel -->
+            <div class="w-full grid grid-cols-4 sm:grid-cols-7 gap-1.5 mb-3 text-[11px] font-bold text-indigo-100">
+              <div class="flex items-center justify-center gap-1 bg-slate-900/70 py-1 px-1.5 rounded-lg border border-white/10">🪨<span>+2</span></div>
+              <div class="flex items-center justify-center gap-1 bg-slate-900/70 py-1 px-1.5 rounded-lg border border-white/10">🔩<span>+1</span></div>
+              <div class="flex items-center justify-center gap-1 bg-slate-900/70 py-1 px-1.5 rounded-lg border border-white/10">☀️<span>+1</span></div>
+              <div class="flex items-center justify-center gap-1 bg-slate-900/70 py-1 px-1.5 rounded-lg border border-white/10">🧪<span>+1</span></div>
+              <div class="flex items-center justify-center gap-1 bg-slate-900/70 py-1 px-1.5 rounded-lg border border-white/10">✨<span>+2</span></div>
+              <div class="flex items-center justify-center gap-1 bg-slate-900/70 py-1 px-1.5 rounded-lg border border-white/10">🪙<span>+15</span></div>
+              <div class="col-span-2 sm:col-span-1 flex items-center justify-center gap-1 bg-rose-950/70 py-1 px-1.5 rounded-lg border border-rose-400/30 text-rose-200">⛈️<span>Storm</span></div>
             </div>
 
-            <!-- Spin Trigger Button -->
+            <!-- Last Spin Harvest Banner -->
+            <div class="w-full min-h-[40px] flex items-center justify-center text-center px-3 py-2 rounded-xl bg-slate-900/80 border border-indigo-400/25 text-xs sm:text-sm font-semibold text-amber-200 mb-3">
+              ${state.lastSpinResult || 'Tap the wheel or SPIN button to harvest cosmic resources!'}
+            </div>
+
+            <!-- Primary Spin Trigger Button -->
             <button
+              id="spin-compass-btn"
+              type="button"
               onclick="spinSpaceCompass()"
               ${state.isSpinning || hero.stormActive ? 'disabled' : ''}
               class="btn-space w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 text-slate-950 font-bold text-xl tracking-wide">
@@ -2250,12 +2384,10 @@
 
               <p class="text-xs sm:text-sm text-indigo-200 mb-3">${levelData.description}</p>
 
-              <!-- Multi-Stage Procedural SVG Structure Display -->
               <div class="mb-4">
                 ${renderStructureSVG(levelData.level, hero.masterCompleted ? 3 : hero.buildStage)}
               </div>
 
-              <!-- 3-Stage Checklist -->
               <div class="space-y-2 mb-4">
                 ${levelData.stages.map((st, idx) => {
                   const built = hero.masterCompleted || hero.buildStage > idx;
@@ -2289,9 +2421,8 @@
               </div>
             </div>
 
-            <!-- Build Action Button -->
             ${hero.masterCompleted ? `
-              <button onclick="replayMasterSanbox()" class="btn-space w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-pink-500 text-slate-950 font-bold text-lg">
+              <button onclick="replayMasterSandbox()" class="btn-space w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-pink-500 text-slate-950 font-bold text-lg">
                 🔄 Start New Galactic Tour (Keep All Gear & Coins!)
               </button>
             ` : `
@@ -2308,12 +2439,11 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 16. TAB 2: COMMODITY TRADING HUB
+     * 17. TAB 2: COMMODITY TRADING HUB
      * -------------------------------------------------------------------------- */
     function renderTradingHubTab(hero) {
       return `
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <!-- 2-FOR-1 COMMODITY EXCHANGE -->
           <div class="space-panel rounded-3xl p-6">
             <h2 class="text-2xl font-bold text-cyan-300 mb-1">⚖️ 2-for-1 Commodity Exchange</h2>
             <p class="text-sm text-indigo-200 mb-5">
@@ -2370,7 +2500,6 @@
             </button>
           </div>
 
-          <!-- STARDUST 3-FOR-1 ALCHEMY & EMERGENCY SOLAR BEACON -->
           <div class="space-panel rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <h2 class="text-2xl font-bold text-pink-300 mb-1">✨ Star Stardust Alchemy (3-for-1)</h2>
@@ -2392,7 +2521,6 @@
               </div>
             </div>
 
-            <!-- Emergency Solar Crystal Supply -->
             <div class="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/40">
               <div class="flex items-center justify-between gap-3">
                 <div>
@@ -2413,7 +2541,7 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 17. TAB 3: EDUCATIONAL MINIGAMES (SPACE MATH & HEBREW SPEECH SYNTHESIS)
+     * 18. TAB 3: EDUCATIONAL MINIGAMES (SPACE MATH & HEBREW SPEECH SYNTHESIS)
      * -------------------------------------------------------------------------- */
     function renderMinigamesTab(hero) {
       if (!state.mathProblem) generateMathProblem();
@@ -2421,7 +2549,6 @@
 
       return `
         <div class="space-panel rounded-3xl p-5 sm:p-6">
-          <!-- Sub-Selector -->
           <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div class="flex gap-2">
               <button
@@ -2462,7 +2589,6 @@
         <div class="max-w-md mx-auto text-center">
           <p class="text-sm text-indigo-200 mb-3">Solve the cosmic navigation equation!</p>
 
-          <!-- Equation Display -->
           <div class="bg-slate-950/90 border-2 border-cyan-400/50 rounded-3xl p-6 mb-4">
             <div class="text-4xl sm:text-5xl font-bold text-white tracking-wider mb-3">
               ${p.a} <span class="text-amber-400">${p.op}</span> ${p.b} = <span class="text-cyan-300">${state.mathInput || '?'}</span>
@@ -2470,7 +2596,6 @@
             <div class="text-xs text-indigo-300">Tap the keypad below or type on your keyboard</div>
           </div>
 
-          <!-- Touch-Friendly 0–9 Number Pad -->
           <div class="grid grid-cols-3 gap-2.5 mb-3">
             ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => `
               <button
@@ -2513,7 +2638,6 @@
             Listen to the Hebrew word and tap the matching Hebrew card!
           </p>
 
-          <!-- Audio Prompt Card -->
           <div class="bg-slate-950/90 border-2 border-purple-400/50 rounded-3xl p-5 mb-5">
             <div class="text-4xl mb-2">${q.target.emoji}</div>
             <div class="text-lg font-bold text-amber-300 mb-1">
@@ -2544,7 +2668,6 @@
             </div>
           </div>
 
-          <!-- 4 Multiple-Choice Hebrew Sight Word Cards -->
           <div class="grid grid-cols-2 gap-3.5">
             ${q.choices.map(choice => `
               <button
@@ -2560,7 +2683,7 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 18. TAB 4: SPACE STORE (20 UNLOCKABLE ITEMS & LIVE HERO PREVIEW)
+     * 19. TAB 4: SPACE STORE (20 UNLOCKABLE ITEMS & LIVE HERO PREVIEW)
      * -------------------------------------------------------------------------- */
     function renderSpaceStoreTab(hero) {
       const effectiveEquipped = state.previewEquipped || hero.equipped;
@@ -2573,7 +2696,6 @@
 
       return `
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <!-- LEFT COLUMN: LIVE CHARACTER PREVIEW STAGE -->
           <div class="lg:col-span-4 space-panel rounded-3xl p-6 flex flex-col items-center justify-between text-center">
             <div class="w-full flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-cyan-300">Live Dressing Room</span>
@@ -2606,9 +2728,7 @@
             </div>
           </div>
 
-          <!-- RIGHT COLUMN: 3-TAB CATALOG -->
           <div class="lg:col-span-8 space-panel rounded-3xl p-5 sm:p-6">
-            <!-- Store Category Tabs -->
             <div class="grid grid-cols-3 gap-2.5 mb-5">
               ${[
                 { id: 'suit', label: 'Space Suits', icon: '🧑‍🚀' },
@@ -2631,7 +2751,6 @@
               }).join('')}
             </div>
 
-            <!-- Items Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[520px] overflow-y-auto pr-1">
               ${itemsInCategory.map(item => {
                 const unlocked = hero.unlockedItems.includes(item.id);
@@ -2694,7 +2813,7 @@
     }
 
     /* --------------------------------------------------------------------------
-     * 19. UTILITIES, KEYBOARD SUPPORT & MASTER RENDER LOOP
+     * 20. UTILITIES, KEYBOARD SUPPORT & MASTER RENDER LOOP
      * -------------------------------------------------------------------------- */
     function escapeHTML(str) {
       return String(str)
@@ -2704,7 +2823,6 @@
         .replace(/"/g, '&quot;');
     }
 
-    // Physical keyboard support for Space Math minigame
     window.addEventListener('keydown', (e) => {
       if (state.screen === 'game' && state.activeTab === 'minigames' && state.activeMinigame === 'math') {
         if (e.key >= '0' && e.key <= '9') {
@@ -2733,7 +2851,6 @@
       }
     }
 
-    // Initialize Application on Load
     window.addEventListener('DOMContentLoaded', () => {
       buildStarfield();
       loadProfiles();
