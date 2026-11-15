@@ -1,0 +1,3344 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Space Builder — Cosmic Adventure &amp; Learning Game</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Fredoka (weights 400, 500, 600, 700) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['Fredoka', 'sans-serif'],
+          },
+          colors: {
+            space: {
+              950: '#070a1c',
+              900: '#0d1333',
+              800: '#161f4d',
+              700: '#232f6e',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Base Typography & Cosmic Background */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background: radial-gradient(ellipse at top, #1b2559 0%, #0d1333 48%, #060918 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* Animated Twinkling Starfield */
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.25; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.25); }
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.65)); }
+      50% { filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.95)); }
+    }
+
+    @keyframes stormCrack {
+      0%, 100% { opacity: 0.85; transform: scale(1); }
+      25% { opacity: 1; transform: scale(1.02) rotate(-0.5deg); }
+      50% { opacity: 0.75; transform: scale(0.99) rotate(0.5deg); }
+      75% { opacity: 1; transform: scale(1.01); }
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.82) translateY(12px); }
+      70% { opacity: 1; transform: scale(1.03) translateY(-2px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes floatReward {
+      0% { opacity: 0; transform: translate(-50%, 10px) scale(0.7); }
+      20% { opacity: 1; transform: translate(-50%, -12px) scale(1.08); }
+      80% { opacity: 1; transform: translate(-50%, -34px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -52px) scale(0.9); }
+    }
+
+    .star-twinkle {
+      animation: twinkle var(--dur, 3s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+
+    .float-slow {
+      animation: floatSlow 4.5s ease-in-out infinite;
+    }
+
+    .pulse-glow {
+      animation: pulseGlow 2.4s ease-in-out infinite;
+    }
+
+    .storm-overlay-anim {
+      animation: stormCrack 1.8s ease-in-out infinite;
+    }
+
+    .pop-in {
+      animation: popIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .reward-float {
+      animation: floatReward 1.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Tactile Arcade 3D Button Styling */
+    .btn-arcade {
+      transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-arcade:hover:not(:disabled) {
+      filter: brightness(1.07);
+      transform: translateY(-1px);
+    }
+    .btn-arcade:active:not(:disabled) {
+      transform: translateY(3px);
+      border-bottom-width: 1px !important;
+    }
+    .btn-arcade:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Custom Scrollbar for Modals */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.55);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(129, 140, 248, 0.85);
+    }
+  </style>
+</head>
+<body class="relative selection:bg-amber-400 selection:text-slate-900">
+
+  <!-- ===================================================================== -->
+  <!-- ANIMATED COSMIC STARFIELD & PLANETS BACKGROUND LAYER                  -->
+  <!-- ===================================================================== -->
+  <div id="cosmic-bg" class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <!-- Nebula Glows -->
+    <div class="absolute -top-28 -left-28 w-96 h-96 rounded-full bg-purple-600/20 blur-3xl"></div>
+    <div class="absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-sky-500/15 blur-3xl"></div>
+    <div class="absolute -bottom-32 left-1/4 w-[28rem] h-[28rem] rounded-full bg-indigo-600/20 blur-3xl"></div>
+
+    <!-- Decorative Distant Planets SVG -->
+    <svg class="absolute top-16 right-8 w-24 h-24 opacity-35 float-slow hidden sm:block" viewBox="0 0 100 100">
+      <defs>
+        <radialGradient id="bgPlanet1" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fb923c" />
+          <stop offset="100%" stop-color="#9a3412" />
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="26" fill="url(#bgPlanet1)" />
+      <ellipse cx="50" cy="52" rx="44" ry="11" fill="none" stroke="#fde047" stroke-width="4" stroke-opacity="0.65" transform="rotate(-18 50 50)" />
+    </svg>
+
+    <svg class="absolute bottom-20 left-8 w-20 h-20 opacity-25 float-slow hidden md:block" style="animation-delay: 1.5s;" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="32" fill="#38bdf8" />
+      <circle cx="38" cy="40" r="7" fill="#0284c7" opacity="0.5" />
+      <circle cx="62" cy="58" r="9" fill="#0284c7" opacity="0.45" />
+      <circle cx="54" cy="33" r="4" fill="#0284c7" opacity="0.5" />
+    </svg>
+
+    <!-- Dynamic Twinkling Stars Container (populated via JS) -->
+    <div id="starfield-container" class="absolute inset-0"></div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- FLOATING TOAST NOTIFICATION BANNER                                    -->
+  <!-- ===================================================================== -->
+  <div id="toast-container" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none w-[92%] max-w-md"></div>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN APPLICATION SHELL                                                -->
+  <!-- ===================================================================== -->
+  <div id="app-root" class="relative z-10 min-h-screen flex flex-col">
+
+    <!-- =================================================================== -->
+    <!-- SCREEN 1: MAIN MENU & PROFILE SELECTOR                              -->
+    <!-- =================================================================== -->
+    <section id="screen-menu" class="flex-1 flex flex-col items-center justify-between px-4 py-6 sm:py-10 max-w-5xl mx-auto w-full">
+      <!-- Top Audio Bar on Main Menu -->
+      <div class="w-full flex justify-end gap-2 mb-2">
+        <button onclick="toggleMusic()" class="menu-music-btn btn-arcade px-3.5 py-2 rounded-xl bg-slate-800/90 border-2 border-b-4 border-indigo-500/60 text-sm font-semibold flex items-center gap-1.5 shadow-lg">
+          <span>🎵</span> <span class="music-status-label">Music: ON</span>
+        </button>
+        <button onclick="toggleSfx()" class="menu-sfx-btn btn-arcade px-3.5 py-2 rounded-xl bg-slate-800/90 border-2 border-b-4 border-sky-500/60 text-sm font-semibold flex items-center gap-1.5 shadow-lg">
+          <span>🔊</span> <span class="sfx-status-label">SFX: ON</span>
+        </button>
+      </div>
+
+      <!-- Hero Title Emblem -->
+      <div class="text-center my-2 sm:my-4">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/25 border border-indigo-400/40 text-sky-300 text-xs sm:text-sm font-semibold tracking-wider uppercase mb-3 shadow">
+          <span>🚀</span> Cosmic Engineering &amp; Brain Quest
+        </div>
+        <h1 class="text-5xl sm:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-orange-500 drop-shadow-[0_5px_0_rgba(124,45,18,0.85)]">
+          SPACE BUILDER
+        </h1>
+        <p class="text-indigo-200 text-base sm:text-xl font-medium mt-2 max-w-xl mx-auto">
+          Spin the Space Compass, solve cosmic puzzles, unlock glowing gear, and build wonders across the galaxy!
+        </p>
+      </div>
+
+      <!-- Saved Hero Profiles Section -->
+      <div class="w-full my-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+            <span>👨‍🚀</span> Choose Your Space Hero
+          </h2>
+          <button onclick="openCreatorScreen()" class="btn-arcade w-full sm:w-auto px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-bold text-base sm:text-lg border-b-4 border-emerald-700 shadow-lg flex items-center justify-center gap-2">
+            <span class="text-xl">➕</span> Create New Hero
+          </button>
+        </div>
+
+        <!-- Profiles Grid -->
+        <div id="profiles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated dynamically via renderMenuProfiles() -->
+        </div>
+      </div>
+
+      <!-- Footer Hint -->
+      <div class="text-center text-xs sm:text-sm text-indigo-300/75 mt-4">
+        Progress automatically saves on this device • Designed for young Space Architects
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SCREEN 2: INTERACTIVE HERO PROFILE CREATOR                          -->
+    <!-- =================================================================== -->
+    <section id="screen-creator" class="hidden flex-1 flex flex-col items-center justify-center px-4 py-6 max-w-4xl mx-auto w-full">
+      <div class="w-full bg-slate-900/90 backdrop-blur-md border-2 border-indigo-500/40 rounded-3xl p-5 sm:p-8 shadow-2xl pop-in">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <button onclick="showScreen('menu')" class="btn-arcade px-4 py-2 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-slate-200 font-semibold text-sm flex items-center gap-1.5">
+            ← Back
+          </button>
+          <h2 class="text-2xl sm:text-3xl font-bold text-amber-300 text-center">Create Space Hero</h2>
+          <div class="w-16"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
+          <!-- Left: Live Character Preview Pedestal -->
+          <div class="flex flex-col items-center justify-center bg-gradient-to-b from-indigo-950/90 to-slate-950/90 border-2 border-indigo-400/30 rounded-3xl p-6 relative overflow-hidden">
+            <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold">
+              LIVE HERO PREVIEW
+            </div>
+
+            <div id="creator-avatar-preview" class="w-48 h-56 sm:w-56 sm:h-64 flex items-center justify-center my-2 float-slow">
+              <!-- Live SVG rendered here -->
+            </div>
+
+            <!-- Glowing Hologram Pedestal Base -->
+            <div class="w-44 h-5 rounded-full bg-gradient-to-r from-cyan-400/20 via-cyan-300/60 to-cyan-400/20 blur-[1px] border border-cyan-300/50 shadow-[0_0_20px_rgba(34,211,238,0.6)]"></div>
+            <p id="creator-preview-nameplate" class="mt-3 text-lg font-bold text-amber-300 tracking-wide">
+              Captain Orion
+            </p>
+          </div>
+
+          <!-- Right: Customization Controls -->
+          <div class="flex flex-col gap-6">
+            <!-- Hero Name Input + Randomizer -->
+            <div>
+              <label for="hero-name-input" class="block text-sm font-bold uppercase tracking-wider text-indigo-300 mb-2">
+                1. Hero Name
+              </label>
+              <div class="flex gap-2">
+                <input
+                  id="hero-name-input"
+                  type="text"
+                  maxlength="18"
+                  placeholder="Enter Hero Name..."
+                  oninput="updateCreatorName(this.value)"
+                  class="flex-1 px-4 py-3 rounded-2xl bg-slate-800 border-2 border-indigo-500/50 focus:border-amber-400 focus:outline-none text-white font-bold text-lg placeholder:text-slate-500"
+                />
+                <button
+                  type="button"
+                  onclick="assignRandomHeroName()"
+                  title="Random Space Name"
+                  class="btn-arcade px-4 py-3 rounded-2xl bg-indigo-600 border-b-4 border-indigo-800 text-white font-bold text-sm sm:text-base flex items-center gap-1.5 shrink-0"
+                >
+                  <span>🎲</span> <span class="hidden sm:inline">Random</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 8 Skin Tone Palette Swatches -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-bold uppercase tracking-wider text-indigo-300">
+                  2. Choose Skin Tone
+                </label>
+                <span id="creator-skin-label" class="text-xs font-semibold text-amber-300">Warm Honey</span>
+              </div>
+              <div id="skin-tone-palette" class="grid grid-cols-4 gap-3 bg-slate-800/70 p-4 rounded-2xl border border-indigo-500/30">
+                <!-- Populated dynamically with 8 palette options -->
+              </div>
+            </div>
+
+            <!-- Starter Gear Summary -->
+            <div class="bg-indigo-950/60 border border-indigo-400/25 rounded-2xl p-3.5 text-xs sm:text-sm text-indigo-200 flex items-center gap-3">
+              <span class="text-2xl">🎁</span>
+              <div>
+                <span class="font-bold text-white">Starter Explorer Kit Ready!</span>
+                Includes Cadet Jumpsuit, Moon Boots, Laser-Wrench, <span class="text-amber-300 font-bold">50 Credits</span> &amp; starter materials.
+              </div>
+            </div>
+
+            <!-- Launch Button -->
+            <button
+              type="button"
+              onclick="createHeroProfile()"
+              class="btn-arcade w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 text-slate-950 font-bold text-xl border-b-4 border-orange-700 shadow-xl flex items-center justify-center gap-2"
+            >
+              <span>🚀</span> Blast Off to Space Build!
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SCREEN 3: MAIN GAMEPLAY (SPACE BUILD TRACK)                         -->
+    <!-- =================================================================== -->
+    <section id="screen-game" class="hidden flex-1 flex flex-col max-w-6xl mx-auto w-full px-3 sm:px-5 pb-8 pt-3 gap-4">
+
+      <!-- ================================================================= -->
+      <!-- TOP HUD BAR                                                       -->
+      <!-- ================================================================= -->
+      <header class="bg-slate-900/90 backdrop-blur-md border-2 border-indigo-500/40 rounded-3xl px-3 sm:px-5 py-2.5 shadow-xl flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+        <!-- Hero Mini Badge & Level -->
+        <div class="flex items-center gap-2.5">
+          <div id="hud-avatar" class="w-11 h-12 sm:w-12 sm:h-14 rounded-2xl bg-indigo-950 border border-indigo-400/40 flex items-center justify-center overflow-hidden shrink-0"></div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span id="hud-hero-name" class="font-bold text-white text-sm sm:text-base truncate max-w-[115px] sm:max-w-[160px]">Captain Orion</span>
+              <span id="hud-level-badge" class="px-2 py-0.5 rounded-lg bg-amber-400 text-slate-950 font-bold text-xs">LVL 1</span>
+            </div>
+            <div id="hud-world-subtitle" class="text-xs text-sky-300 font-medium">Asteroid Gap</div>
+          </div>
+        </div>
+
+        <!-- Currency & Sunset Clock Gauges -->
+        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <!-- Space Credits -->
+          <div class="px-3 py-1.5 rounded-2xl bg-amber-500/15 border border-amber-400/40 flex items-center gap-1.5" title="Space Credits (Spend in Space Store)">
+            <span class="text-base sm:text-lg">🪙</span>
+            <div>
+              <div class="text-[10px] uppercase tracking-wider text-amber-200/80 leading-none">Credits</div>
+              <div id="hud-credits" class="font-bold text-amber-300 text-sm sm:text-base leading-tight">50</div>
+            </div>
+          </div>
+
+          <!-- Star Stardust -->
+          <div class="px-3 py-1.5 rounded-2xl bg-purple-500/15 border border-purple-400/40 flex items-center gap-1.5" title="Star Stardust (Trade 3-to-1 for rare resources)">
+            <span class="text-base sm:text-lg">✨</span>
+            <div>
+              <div class="text-[10px] uppercase tracking-wider text-purple-200/80 leading-none">Stardust</div>
+              <div id="hud-stardust" class="font-bold text-purple-300 text-sm sm:text-base leading-tight">1</div>
+            </div>
+          </div>
+
+          <!-- Sunset Clock Gauge -->
+          <div id="hud-sunset-box" class="px-3 py-1.5 rounded-2xl bg-orange-500/15 border border-orange-400/40 flex items-center gap-2" title="Sunset Clock: Spins left before Cosmic Dawn">
+            <div id="hud-sunset-icon" class="text-lg sm:text-xl">☀️</div>
+            <div>
+              <div class="text-[10px] uppercase tracking-wider text-orange-200/80 leading-none">Sunset Clock</div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <div id="hud-sunset-pips" class="flex gap-0.5"></div>
+                <span id="hud-sunset-text" class="font-bold text-orange-300 text-xs">8/8</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action & Audio Controls -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <button onclick="openStoreModal()" class="btn-arcade relative px-3 py-2 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 border-b-4 border-purple-900 text-white font-bold text-xs sm:text-sm flex items-center gap-1 shadow">
+            <span>🛍️</span> <span class="hidden sm:inline">Store</span>
+            <span id="store-affordable-dot" class="hidden absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-amber-300 border-2 border-slate-900 animate-ping"></span>
+          </button>
+
+          <button onclick="toggleMusic()" title="Toggle Space Music" class="btn-arcade p-2 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-sm">
+            <span class="music-icon-only">🎵</span>
+          </button>
+
+          <button onclick="toggleSfx()" title="Toggle Sound Effects" class="btn-arcade p-2 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-sm">
+            <span class="sfx-icon-only">🔊</span>
+          </button>
+
+          <button onclick="showScreen('menu')" title="Main Menu" class="btn-arcade p-2 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-sm">
+            🏠
+          </button>
+        </div>
+      </header>
+
+      <!-- ================================================================= -->
+      <!-- 5-LEVEL SEQUENTIAL BUILDING TRACK STEPPER                         -->
+      <!-- ================================================================= -->
+      <nav aria-label="Space Build Track Progress" class="bg-slate-900/80 border border-indigo-500/30 rounded-2xl p-2.5 sm:p-3 overflow-x-auto">
+        <div id="level-track-stepper" class="flex items-center justify-between min-w-[540px] gap-2">
+          <!-- Populated dynamically via renderLevelStepper() -->
+        </div>
+      </nav>
+
+      <!-- ================================================================= -->
+      <!-- MAIN GAMEPLAY 2-COLUMN WORKSPACE                                  -->
+      <!-- ================================================================= -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+
+        <!-- =============================================================== -->
+        <!-- LEFT COLUMN (7 cols): ACTIVE STRUCTURE CONSTRUCTION BLUEPRINT   -->
+        <!-- =============================================================== -->
+        <div class="lg:col-span-7 bg-slate-900/90 border-2 border-indigo-500/40 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <!-- Structure Header -->
+            <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
+              <div>
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold uppercase tracking-wider">
+                  <span>🏗️</span> <span id="build-level-tag">Level 1 Project</span>
+                </div>
+                <h2 id="build-structure-title" class="text-2xl sm:text-3xl font-bold text-white mt-1">Space Bridge</h2>
+                <p id="build-structure-desc" class="text-xs sm:text-sm text-indigo-200">Span the sparkling Asteroid Gap so star-rovers can cross safely!</p>
+              </div>
+
+              <!-- Completion Reward Pill -->
+              <div class="bg-slate-800/90 border border-amber-400/30 rounded-2xl px-3 py-2 text-right">
+                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Completion Reward</div>
+                <div id="build-reward-preview" class="text-xs sm:text-sm font-bold text-amber-300 mt-0.5">
+                  +150 🪙 &amp; +2 ✨
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Live SVG Structure Construction Stage -->
+            <div class="relative rounded-2xl bg-gradient-to-b from-[#090e29] via-[#121b47] to-[#1c2863] border-2 border-indigo-400/30 p-3 sm:p-4 my-3 overflow-hidden">
+              <!-- Overall Build Percentage Pill -->
+              <div class="absolute top-3 right-3 z-10 px-3 py-1 rounded-full bg-slate-950/80 border border-cyan-400/40 text-cyan-300 font-bold text-xs sm:text-sm">
+                Built: <span id="build-percent-label">0%</span>
+              </div>
+
+              <div id="structure-svg-stage" class="w-full h-48 sm:h-56 flex items-center justify-center">
+                <!-- Dynamic Structure SVG rendered here -->
+              </div>
+            </div>
+
+            <!-- Required Commodities Progress List -->
+            <div class="mt-3">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-indigo-300">Required Materials</span>
+                <span class="text-xs text-indigo-300/80">Tap a material or use Build All!</span>
+              </div>
+              <div id="build-requirements-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <!-- Populated dynamically via renderBuildRequirements() -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Primary Build / Contribute Action Button -->
+          <div class="mt-4 pt-3 border-t border-indigo-500/25 flex flex-col sm:flex-row gap-2.5">
+            <button
+              id="btn-contribute-all"
+              onclick="contributeAllResources()"
+              class="btn-arcade flex-1 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 font-bold text-base sm:text-lg border-b-4 border-teal-700 shadow-lg flex items-center justify-center gap-2"
+            >
+              <span>🔨</span> <span id="btn-contribute-label">Build with My Materials</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- RIGHT COLUMN (5 cols): SPACE COMPASS (SPINNER WHEEL) & STORM    -->
+        <!-- =============================================================== -->
+        <div class="lg:col-span-5 bg-slate-900/90 border-2 border-indigo-500/40 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col items-center justify-between relative overflow-hidden">
+          <!-- Header -->
+          <div class="w-full flex items-center justify-between mb-2">
+            <div>
+              <h3 class="text-xl sm:text-2xl font-bold text-amber-300 flex items-center gap-1.5">
+                <span>🧭</span> Space Compass
+              </h3>
+              <p class="text-xs text-indigo-200">Spin to harvest resources (uses 1 Sunset turn)</p>
+            </div>
+            <button
+              onclick="openTradeModal()"
+              class="btn-arcade px-3 py-2 rounded-xl bg-indigo-600/90 border-b-4 border-indigo-900 text-white font-bold text-xs flex items-center gap-1"
+            >
+              <span>🔄</span> Trade
+            </button>
+          </div>
+
+          <!-- Circular Spinner Wheel Container -->
+          <div class="relative my-2 flex items-center justify-center w-64 h-64 sm:w-72 sm:h-72">
+            <!-- Top Pointer Flapper -->
+            <div id="wheel-pointer" class="absolute -top-3 left-1/2 -translate-x-1/2 z-20 transition-transform duration-75 origin-top">
+              <svg width="36" height="42" viewBox="0 0 36 42">
+                <polygon points="18,40 4,8 32,8" fill="#fbbf24" stroke="#78350f" stroke-width="3" stroke-linejoin="round" />
+                <circle cx="18" cy="10" r="6" fill="#fef08a" stroke="#78350f" stroke-width="2.5" />
+              </svg>
+            </div>
+
+            <!-- Rotating SVG Wheel -->
+            <div id="compass-wheel-rotator" class="w-full h-full will-change-transform">
+              <!-- Populated once on init via buildCompassWheelSVG() -->
+            </div>
+
+            <!-- Center Spin Hub Button -->
+            <button
+              id="btn-spin-wheel"
+              onclick="spinCompassWheel()"
+              class="btn-arcade absolute z-20 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-amber-300 via-amber-400 to-orange-500 border-4 border-slate-900 shadow-[0_0_25px_rgba(251,191,36,0.65)] flex flex-col items-center justify-center text-slate-950 font-bold leading-tight"
+            >
+              <span class="text-xs uppercase tracking-wider">TAP</span>
+              <span class="text-base sm:text-lg font-extrabold">SPIN!</span>
+            </button>
+
+            <!-- Floating Reward Popup Anchor -->
+            <div id="wheel-reward-popup-anchor" class="absolute top-1/2 left-1/2 z-30 pointer-events-none"></div>
+          </div>
+
+          <!-- Bottom Spin Status / CTA -->
+          <div class="w-full mt-2">
+            <button
+              id="btn-spin-bottom"
+              onclick="spinCompassWheel()"
+              class="btn-arcade w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-bold text-base sm:text-lg border-b-4 border-orange-700 shadow-lg flex items-center justify-center gap-2"
+            >
+              <span>🧭</span> Spin Space Compass
+            </button>
+          </div>
+
+          <!-- ============================================================= -->
+          <!-- SPACE STORM OBSTACLE OVERLAY (Blocks Compass Until Cleared)   -->
+          <!-- ============================================================= -->
+          <div id="space-storm-overlay" class="hidden absolute inset-0 z-30 bg-gradient-to-b from-purple-950/95 via-indigo-950/95 to-slate-950/95 backdrop-blur-md p-5 flex flex-col items-center justify-center text-center storm-overlay-anim">
+            <div class="text-5xl sm:text-6xl mb-2 animate-bounce">⛈️⚡</div>
+            <div class="px-3 py-1 rounded-full bg-purple-500/30 border border-purple-400 text-purple-200 text-xs font-bold uppercase tracking-wider mb-1">
+              Cosmic Weather Alert!
+            </div>
+            <h4 class="text-2xl sm:text-3xl font-bold text-white">Space Storm!</h4>
+            <p class="text-xs sm:text-sm text-purple-200 max-w-xs mt-1 mb-4">
+              Crackling plasma clouds are blocking the Space Compass! Spend <span class="font-bold text-amber-300">1 unit of any material</span> to power up the storm shields.
+            </p>
+
+            <!-- Auto-Clear Smart Button -->
+            <button
+              id="btn-storm-auto"
+              onclick="clearStormAuto()"
+              class="btn-arcade w-full max-w-xs py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-bold text-base border-b-4 border-amber-600 shadow-lg mb-3 flex items-center justify-center gap-2"
+            >
+              <span>⚡</span> Pick One For Me
+            </button>
+
+            <!-- Specific Commodity Buttons -->
+            <div id="storm-commodity-choices" class="flex flex-wrap items-center justify-center gap-2 max-w-sm">
+              <!-- Populated dynamically based on player's current inventory -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- BOTTOM BACKPACK INVENTORY & EDUCATIONAL BONUS ACTION DECK         -->
+      <!-- ================================================================= -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <!-- Backpack Commodity Inventory (7 cols) -->
+        <div class="lg:col-span-7 bg-slate-900/90 border-2 border-indigo-500/40 rounded-3xl p-4 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <span>🎒</span> Space Backpack Inventory
+            </h3>
+            <button onclick="openTradeModal()" class="btn-arcade px-3 py-1.5 rounded-xl bg-indigo-600 border-b-4 border-indigo-900 text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
+              <span>🔄</span> 2-for-1 &amp; Stardust Trade
+            </button>
+          </div>
+          <div id="backpack-inventory-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            <!-- Populated dynamically via renderBackpack() -->
+          </div>
+        </div>
+
+        <!-- Educational Minigames & Store Deck (5 cols) -->
+        <div class="lg:col-span-5 bg-slate-900/90 border-2 border-indigo-500/40 rounded-3xl p-4 shadow-xl flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2.5">
+            <h3 class="text-base sm:text-lg font-bold text-sky-300 flex items-center gap-1.5">
+              <span>🎓</span> Bonus Training Quests
+            </h3>
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[11px] font-bold">
+              Free • No Sunset Cost!
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Space Math Minigame Button -->
+            <button
+              onclick="openMathModal()"
+              class="btn-arcade p-3.5 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 border-b-4 border-blue-950 text-left flex flex-col justify-between shadow-lg"
+            >
+              <div class="flex items-center justify-between w-full mb-1">
+                <span class="text-2xl sm:text-3xl">🧮</span>
+                <span class="px-2 py-0.5 rounded-lg bg-white/20 text-[10px] font-bold text-white">+2 ✨ +1 📦</span>
+              </div>
+              <div>
+                <div class="font-bold text-white text-sm sm:text-base">Space Math</div>
+                <div class="text-[11px] text-sky-100 leading-tight">Fuel &amp; Shield Puzzles</div>
+              </div>
+            </button>
+
+            <!-- Hebrew Sight Words Minigame Button -->
+            <button
+              onclick="openHebrewModal()"
+              class="btn-arcade p-3.5 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-700 border-b-4 border-indigo-950 text-left flex flex-col justify-between shadow-lg"
+            >
+              <div class="flex items-center justify-between w-full mb-1">
+                <span class="text-2xl sm:text-3xl">🔊</span>
+                <span class="px-2 py-0.5 rounded-lg bg-white/20 text-[10px] font-bold text-white">+2 ✨ +1 📦</span>
+              </div>
+              <div>
+                <div class="font-bold text-white text-sm sm:text-base">Hebrew Quest</div>
+                <div class="text-[11px] text-purple-100 leading-tight">Listen &amp; Match Words</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 1: SPACE STORE & LIVE CHARACTER PREVIEW                       -->
+    <!-- =================================================================== -->
+    <div id="modal-store" class="hidden fixed inset-0 z-40 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+      <div class="bg-slate-900 border-2 border-purple-500/50 rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl pop-in">
+        <!-- Modal Header -->
+        <div class="px-5 py-4 bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-900 border-b border-purple-500/30 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <span class="text-2xl sm:text-3xl">🛍️</span>
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Galactic Space Store</h2>
+              <p class="text-xs text-purple-200">20 Cosmic Gear Items • Tap any item to preview live!</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-1.5 rounded-2xl bg-amber-500/20 border border-amber-400/50 flex items-center gap-1.5">
+              <span>🪙</span>
+              <span id="store-credits-balance" class="font-bold text-amber-300 text-base sm:text-lg">50</span>
+            </div>
+            <button onclick="closeModal('modal-store')" class="btn-arcade w-10 h-10 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-lg flex items-center justify-center">
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Body: Split Live Preview + 3-Tab Shop Grid -->
+        <div class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-12">
+          <!-- Left: Live Character Preview Pedestal -->
+          <div class="md:col-span-5 bg-gradient-to-b from-indigo-950/80 to-slate-950 p-5 flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-indigo-500/30">
+            <div class="w-full flex items-center justify-between">
+              <span id="store-preview-status" class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold">
+                Equipped Look
+              </span>
+              <span id="store-unlocked-count" class="text-xs font-bold text-indigo-300">0 / 20 Unlocked</span>
+            </div>
+
+            <div id="store-avatar-preview" class="w-48 h-56 sm:w-56 sm:h-64 flex items-center justify-center my-2 float-slow">
+              <!-- Live SVG rendered here -->
+            </div>
+
+            <!-- Hologram Base -->
+            <div class="w-44 h-4 rounded-full bg-cyan-400/40 border border-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.65)] mb-3"></div>
+
+            <!-- Quick Slot Controls (Unequip / Reset to Starter per Slot) -->
+            <div class="w-full bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-3">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 mb-2 text-center">
+                Equipped Slots (Tap to Reset Slot)
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <button onclick="resetGearSlot('suit')" class="btn-arcade p-2 rounded-xl bg-slate-800 border-b-2 border-slate-950 text-xs">
+                  <div class="text-slate-400 text-[10px]">Suit</div>
+                  <div id="slot-label-suit" class="font-bold text-white truncate">Cadet</div>
+                </button>
+                <button onclick="resetGearSlot('helmet')" class="btn-arcade p-2 rounded-xl bg-slate-800 border-b-2 border-slate-950 text-xs">
+                  <div class="text-slate-400 text-[10px]">Helmet</div>
+                  <div id="slot-label-helmet" class="font-bold text-white truncate">None</div>
+                </button>
+                <button onclick="resetGearSlot('boots')" class="btn-arcade p-2 rounded-xl bg-slate-800 border-b-2 border-slate-950 text-xs">
+                  <div class="text-slate-400 text-[10px]">Boots</div>
+                  <div id="slot-label-boots" class="font-bold text-white truncate">Cadet</div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: 3-Tab Shop Items -->
+          <div class="md:col-span-7 p-4 sm:p-5 flex flex-col">
+            <!-- 3 Category Tabs -->
+            <div class="grid grid-cols-3 gap-2 bg-slate-950/80 p-1.5 rounded-2xl border border-indigo-500/30 mb-4">
+              <button id="store-tab-suit" onclick="switchStoreTab('suit')" class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition bg-purple-600 text-white shadow">
+                🧑‍🚀 Space Suits (7)
+              </button>
+              <button id="store-tab-helmet" onclick="switchStoreTab('helmet')" class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition text-indigo-300 hover:text-white">
+                🪖 Helmets (7)
+              </button>
+              <button id="store-tab-boots" onclick="switchStoreTab('boots')" class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition text-indigo-300 hover:text-white">
+                🥾 Boots (6)
+              </button>
+            </div>
+
+            <!-- Shop Items Grid -->
+            <div id="store-items-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-y-auto pr-1">
+              <!-- Populated dynamically via renderStoreItems() -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 2: COMMODITY TRADING HUB                                      -->
+    <!-- =================================================================== -->
+    <div id="modal-trade" class="hidden fixed inset-0 z-40 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+      <div class="bg-slate-900 border-2 border-indigo-500/50 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl pop-in">
+        <!-- Header -->
+        <div class="px-5 py-4 bg-indigo-950 border-b border-indigo-500/30 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="text-2xl">🔄</span>
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-white">Cosmic Trading Hub</h2>
+              <p class="text-xs text-indigo-200">Swap surplus materials or exchange Star Stardust!</p>
+            </div>
+          </div>
+          <button onclick="closeModal('modal-trade')" class="btn-arcade w-10 h-10 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold">
+            ✕
+          </button>
+        </div>
+
+        <div class="p-5 space-y-6 max-h-[80vh] overflow-y-auto">
+          <!-- Section A: 2-for-1 Commodity Trade -->
+          <div class="bg-slate-800/70 border border-indigo-500/30 rounded-2xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-base sm:text-lg text-sky-300">1. Material Swap (2-for-1)</h3>
+              <span class="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-200 text-xs font-bold">Give 2 ➔ Get 1</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Give 2 Of:</label>
+                <div id="trade-give-list" class="space-y-1.5"></div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Receive +1 Of:</label>
+                <div id="trade-receive-list" class="space-y-1.5"></div>
+              </div>
+            </div>
+
+            <button
+              id="btn-execute-2for1"
+              onclick="executeCommodityTrade()"
+              class="btn-arcade w-full mt-4 py-3 rounded-2xl bg-gradient-to-r from-sky-400 to-indigo-500 text-slate-950 font-bold text-base border-b-4 border-indigo-800 shadow"
+            >
+              🔄 Trade 2 Materials for 1
+            </button>
+          </div>
+
+          <!-- Section B: 3-to-1 Star Stardust Exchange -->
+          <div class="bg-purple-950/40 border border-purple-500/30 rounded-2xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-base sm:text-lg text-purple-300">2. Star Stardust Exchange (3-to-1)</h3>
+              <span class="px-2.5 py-0.5 rounded-full bg-purple-500/25 text-purple-200 text-xs font-bold">
+                Your Stardust: <span id="trade-stardust-count">0</span> ✨
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Spend 3 Stardust -> Get 1 Chosen Commodity -->
+              <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-purple-400/25 flex flex-col justify-between">
+                <div>
+                  <div class="text-sm font-bold text-white mb-1">✨ 3 Stardust ➔ +1 Material</div>
+                  <p class="text-xs text-purple-200 mb-2.5">Pick any material to synthesize:</p>
+                  <select id="stardust-to-mat-select" class="w-full p-2.5 rounded-xl bg-slate-800 border border-purple-400/40 text-white font-semibold text-sm mb-3"></select>
+                </div>
+                <button
+                  id="btn-stardust-to-mat"
+                  onclick="exchangeStardustForMaterial()"
+                  class="btn-arcade w-full py-2.5 rounded-xl bg-purple-500 border-b-4 border-purple-800 text-white font-bold text-sm"
+                >
+                  Synthesize (+1 Material)
+                </button>
+              </div>
+
+              <!-- Trade 3 of a Commodity -> Gain 1 Stardust -->
+              <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-amber-400/25 flex flex-col justify-between">
+                <div>
+                  <div class="text-sm font-bold text-white mb-1">📦 3 Materials ➔ +1 Stardust ✨</div>
+                  <p class="text-xs text-amber-200 mb-2.5">Convert 3 surplus items into Stardust:</p>
+                  <select id="mat-to-stardust-select" class="w-full p-2.5 rounded-xl bg-slate-800 border border-amber-400/40 text-white font-semibold text-sm mb-3"></select>
+                </div>
+                <button
+                  id="btn-mat-to-stardust"
+                  onclick="exchangeMaterialForStardust()"
+                  class="btn-arcade w-full py-2.5 rounded-xl bg-amber-400 border-b-4 border-amber-700 text-slate-950 font-bold text-sm"
+                >
+                  Distill (+1 ✨ Stardust)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 3: SPACE MATH EDUCATIONAL MINIGAME                            -->
+    <!-- =================================================================== -->
+    <div id="modal-math" class="hidden fixed inset-0 z-40 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+      <div class="bg-slate-900 border-2 border-sky-400/50 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl pop-in">
+        <!-- Header -->
+        <div class="px-5 py-4 bg-gradient-to-r from-sky-900 to-blue-950 border-b border-sky-400/30 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🧮</span>
+            <div>
+              <h2 class="text-xl font-bold text-white">Space Math Mission</h2>
+              <p class="text-xs text-sky-200">Solve to earn +2 ✨, +1 Material &amp; +25 🪙</p>
+            </div>
+          </div>
+          <button onclick="closeModal('modal-math')" class="btn-arcade w-9 h-9 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold">
+            ✕
+          </button>
+        </div>
+
+        <div class="p-5 text-center">
+          <!-- Streak Badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold mb-3">
+            <span>🔥</span> Rocket Streak: <span id="math-streak-val">0</span>
+          </div>
+
+          <!-- Story Context -->
+          <p id="math-story-prompt" class="text-xs sm:text-sm text-indigo-200 mb-3">
+            Calculate the rocket thruster fuel cells needed for orbit!
+          </p>
+
+          <!-- Equation Display Card -->
+          <div class="bg-slate-950/90 border-2 border-sky-400/40 rounded-2xl py-4 px-5 mb-3">
+            <div id="math-equation-display" class="text-3xl sm:text-4xl font-bold text-white tracking-wider">
+              14 + 8 = ?
+            </div>
+            <div class="mt-2 flex items-center justify-center">
+              <div id="math-answer-box" class="min-w-[120px] h-12 px-4 rounded-xl bg-slate-800 border-2 border-amber-400 text-amber-300 font-bold text-2xl sm:text-3xl flex items-center justify-center">
+                <span id="math-user-input" class="tracking-widest">_</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feedback Message -->
+          <div id="math-feedback" class="h-6 text-sm font-bold text-emerald-300 mb-2"></div>
+
+          <!-- Touch-Friendly Number Pad -->
+          <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto">
+            <button onclick="appendMathDigit('1')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">1</button>
+            <button onclick="appendMathDigit('2')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">2</button>
+            <button onclick="appendMathDigit('3')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">3</button>
+            <button onclick="appendMathDigit('4')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">4</button>
+            <button onclick="appendMathDigit('5')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">5</button>
+            <button onclick="appendMathDigit('6')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">6</button>
+            <button onclick="appendMathDigit('7')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">7</button>
+            <button onclick="appendMathDigit('8')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">8</button>
+            <button onclick="appendMathDigit('9')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">9</button>
+            <button onclick="backspaceMathDigit()" class="btn-arcade py-3 rounded-xl bg-rose-600/80 border-b-4 border-rose-950 text-white font-bold text-lg">⌫</button>
+            <button onclick="appendMathDigit('0')" class="btn-arcade py-3 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold text-xl">0</button>
+            <button onclick="submitMathAnswer()" class="btn-arcade py-3 rounded-xl bg-emerald-400 border-b-4 border-emerald-700 text-slate-950 font-bold text-lg">🚀 GO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 4: HEBREW SIGHT WORDS EDUCATIONAL MINIGAME                    -->
+    <!-- =================================================================== -->
+    <div id="modal-hebrew" class="hidden fixed inset-0 z-40 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+      <div class="bg-slate-900 border-2 border-purple-400/50 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl pop-in">
+        <!-- Header -->
+        <div class="px-5 py-4 bg-gradient-to-r from-purple-900 to-indigo-950 border-b border-purple-400/30 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">✡️</span>
+            <div>
+              <h2 class="text-xl font-bold text-white">Hebrew Word Quest</h2>
+              <p class="text-xs text-purple-200">Listen &amp; pick the meaning for +2 ✨ +1 Material!</p>
+            </div>
+          </div>
+          <button onclick="closeModal('modal-hebrew')" class="btn-arcade w-9 h-9 rounded-xl bg-slate-800 border-b-4 border-slate-950 text-white font-bold">
+            ✕
+          </button>
+        </div>
+
+        <div class="p-5 text-center">
+          <!-- Streak & Voice Rate Toggle -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold">
+              <span>⭐</span> Streak: <span id="hebrew-streak-val">0</span>
+            </div>
+
+            <button
+              id="btn-speech-speed"
+              onclick="toggleSpeechSpeed()"
+              class="btn-arcade px-3 py-1 rounded-full bg-slate-800 border border-purple-400/40 text-purple-200 text-xs font-bold"
+            >
+              🚀 Speed: Normal
+            </button>
+          </div>
+
+          <!-- Hebrew Word Display & Prominent Listen Button -->
+          <div class="bg-slate-950/90 border-2 border-purple-400/40 rounded-3xl p-5 mb-4">
+            <div class="text-xs uppercase tracking-wider text-purple-300 font-bold mb-1">
+              Listen to the Hebrew Word
+            </div>
+            <div id="hebrew-word-display" dir="rtl" class="text-5xl sm:text-6xl font-bold text-amber-300 my-2 tracking-wide">
+              כּוֹכָב
+            </div>
+            <div id="hebrew-translit-hint" class="text-sm font-semibold text-indigo-300 mb-3">
+              (Sound: <span id="hebrew-translit-text">Ko-khav</span>)
+            </div>
+
+            <button
+              id="btn-hear-hebrew"
+              onclick="speakCurrentHebrewWord()"
+              class="btn-arcade px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-bold text-base sm:text-lg border-b-4 border-orange-700 shadow-lg inline-flex items-center gap-2"
+            >
+              <span class="text-xl">🔊</span> Hear Word Again
+            </button>
+          </div>
+
+          <!-- Feedback Message -->
+          <div id="hebrew-feedback" class="h-6 text-sm font-bold text-emerald-300 mb-2"></div>
+
+          <!-- 4 Multiple Choice Options -->
+          <div id="hebrew-options-grid" class="grid grid-cols-2 gap-3">
+            <!-- Populated dynamically via renderHebrewQuestion() -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 5: LEVEL COMPLETE / GRAND SPACE ARCHITECT CELEBRATION         -->
+    <!-- =================================================================== -->
+    <div id="modal-level-complete" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+      <div class="bg-gradient-to-b from-indigo-900 via-slate-900 to-slate-950 border-2 border-amber-400 rounded-3xl w-full max-w-md p-6 text-center shadow-[0_0_50px_rgba(251,191,36,0.4)] pop-in">
+        <div class="text-6xl mb-2 animate-bounce" id="celebration-emoji">🏆🚀</div>
+        <div id="celebration-badge" class="inline-block px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300 text-amber-300 text-xs font-bold uppercase tracking-wider mb-2">
+          Structure Complete!
+        </div>
+        <h2 id="celebration-title" class="text-3xl font-bold text-white mb-1">Space Bridge Built!</h2>
+        <p id="celebration-subtitle" class="text-sm text-indigo-200 mb-4">
+          Amazing engineering, Hero! Your cosmic creation shines across the stars!
+        </p>
+
+        <!-- Rewards Box -->
+        <div class="bg-slate-950/80 border border-amber-400/40 rounded-2xl p-4 mb-5">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Mission Rewards Earned</div>
+          <div id="celebration-rewards" class="flex items-center justify-center gap-4 text-xl font-bold text-amber-300">
+            <span>+150 🪙</span>
+            <span>+2 ✨</span>
+          </div>
+        </div>
+
+        <button
+          id="btn-next-level"
+          onclick="advanceToNextLevel()"
+          class="btn-arcade w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 font-bold text-lg border-b-4 border-teal-700 shadow-xl"
+        >
+          🚀 Fly to Next Planet!
+        </button>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 6: COSMIC DAWN (SUNSET CLOCK NEW DAY RESET)                   -->
+    <!-- =================================================================== -->
+    <div id="modal-cosmic-dawn" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+      <div class="bg-gradient-to-b from-orange-950 via-indigo-950 to-slate-900 border-2 border-orange-400 rounded-3xl w-full max-w-sm p-6 text-center shadow-2xl pop-in">
+        <div class="text-6xl mb-2">🌅✨</div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-amber-300 mb-1">Cosmic Dawn!</h2>
+        <p class="text-sm text-orange-100 mb-4">
+          The alien moons have set and a brand new starlight morning has risen! Your Sunset Clock is recharged to <span class="font-bold text-amber-300">8/8 spins</span>.
+        </p>
+        <div class="inline-block px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-200 text-xs font-bold mb-5">
+          Day <span id="dawn-day-number">2</span> Begins!
+        </div>
+        <button
+          onclick="closeModal('modal-cosmic-dawn')"
+          class="btn-arcade w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-bold text-lg border-b-4 border-orange-700 shadow-lg"
+        >
+          ☀️ Start New Day!
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT GAME ENGINE                                                -->
+  <!-- ===================================================================== -->
+  <script>
+    /* =====================================================================
+     * 1. GAME CONSTANTS, DATA DEFINITIONS & CATALOGS
+     * ===================================================================== */
+    const STORAGE_KEY = 'space_builder_save_v1';
+    const MAX_SUNSET_TURNS = 8;
+
+    // 8 Rich, Natural Human Skin Tones for Hero Customization
+    const SKIN_TONES = [
+      { id: 'porcelain', name: 'Fair Peach', hex: '#F9D5B8', shadow: '#E0B18E' },
+      { id: 'ivory', name: 'Light Ivory', hex: '#F3C69F', shadow: '#D6A176' },
+      { id: 'sand', name: 'Golden Sand', hex: '#E5B285', shadow: '#C48D5E' },
+      { id: 'honey', name: 'Warm Honey', hex: '#D39666', shadow: '#B07345' },
+      { id: 'caramel', name: 'Toasted Caramel', hex: '#B97848', shadow: '#94582D' },
+      { id: 'bronze', name: 'Rich Bronze', hex: '#985B34', shadow: '#75401F' },
+      { id: 'espresso', name: 'Deep Espresso', hex: '#734022', shadow: '#522912' },
+      { id: 'obsidian', name: 'Warm Umber', hex: '#522B17', shadow: '#36190B' }
+    ];
+
+    // Random Hero Name Generator Pool
+    const RANDOM_HERO_NAMES = [
+      'Captain Orion', 'Astro Leo', 'Commander Kai', 'Nova Max',
+      'Rocket Eli', 'Star-Pilot Zev', 'Cosmo Sam', 'Blaze Finn',
+      'Major Atlas', 'Comet Ari', 'Nebula Jude', 'Orbit Theo'
+    ];
+
+    // 5 Cosmic Commodities
+    const COMMODITIES = {
+      ironOre: {
+        key: 'ironOre',
+        name: 'Iron Ore',
+        short: 'Iron',
+        icon: '🪨',
+        color: '#94a3b8',
+        bgClass: 'bg-slate-500/20 border-slate-400/40 text-slate-200',
+        barClass: 'bg-slate-400'
+      },
+      titanium: {
+        key: 'titanium',
+        name: 'Titanium',
+        short: 'Titanium',
+        icon: '🔩',
+        color: '#38bdf8',
+        bgClass: 'bg-sky-500/20 border-sky-400/40 text-sky-200',
+        barClass: 'bg-sky-400'
+      },
+      lunarGlass: {
+        key: 'lunarGlass',
+        name: 'Lunar Glass',
+        short: 'Glass',
+        icon: '💠',
+        color: '#2dd4bf',
+        bgClass: 'bg-teal-500/20 border-teal-400/40 text-teal-200',
+        barClass: 'bg-teal-400'
+      },
+      plasmaCrystal: {
+        key: 'plasmaCrystal',
+        name: 'Plasma Crystal',
+        short: 'Plasma',
+        icon: '🔮',
+        color: '#c084fc',
+        bgClass: 'bg-purple-500/20 border-purple-400/40 text-purple-200',
+        barClass: 'bg-purple-400'
+      },
+      solarAlloy: {
+        key: 'solarAlloy',
+        name: 'Solar Alloy',
+        short: 'Alloy',
+        icon: '🔆',
+        color: '#fbbf24',
+        bgClass: 'bg-amber-500/20 border-amber-400/40 text-amber-200',
+        barClass: 'bg-amber-400'
+      }
+    };
+
+    const COMMODITY_KEYS = Object.keys(COMMODITIES);
+
+    // 5 Sequential Building Levels
+    const LEVELS = [
+      {
+        level: 1,
+        structureName: 'Space Bridge',
+        worldName: 'Asteroid Gap',
+        icon: '🌉',
+        description: 'Build a glowing magnetic bridge across the floating Asteroid Gap!',
+        costs: { ironOre: 3, lunarGlass: 2 },
+        rewardCredits: 150,
+        rewardStardust: 2
+      },
+      {
+        level: 2,
+        structureName: 'Star House',
+        worldName: 'Comet Outpost',
+        icon: '🏠',
+        description: 'Construct a cozy zero-gravity Star House with a panoramic dome!',
+        costs: { ironOre: 4, titanium: 3, lunarGlass: 2 },
+        rewardCredits: 250,
+        rewardStardust: 3
+      },
+      {
+        level: 3,
+        structureName: 'Moon Bouncy Castle',
+        worldName: 'Tranquility Crater',
+        icon: '🏰',
+        description: 'Inflate an ultra-springy Moon Bouncy Castle in low lunar gravity!',
+        costs: { titanium: 4, lunarGlass: 4, plasmaCrystal: 3 },
+        rewardCredits: 400,
+        rewardStardust: 4
+      },
+      {
+        level: 4,
+        structureName: 'Solar Sky-Forge',
+        worldName: 'Orbital Ring',
+        icon: '🛰️',
+        description: 'Assemble an orbital Solar Sky-Forge powered by golden starbeams!',
+        costs: { titanium: 5, plasmaCrystal: 5, solarAlloy: 4 },
+        rewardCredits: 600,
+        rewardStardust: 5
+      },
+      {
+        level: 5,
+        structureName: 'Venus Palace',
+        worldName: 'Cloud Citadel of Venus',
+        icon: '👑',
+        description: 'Raise the legendary floating Venus Palace high above the golden clouds!',
+        costs: { plasmaCrystal: 6, solarAlloy: 6, lunarGlass: 5, ironOre: 4 },
+        rewardCredits: 1000,
+        rewardStardust: 10
+      }
+    ];
+
+    // 8 Segments of the Space Compass Spinner Wheel
+    const WHEEL_SEGMENTS = [
+      { id: 'iron', label: 'Iron Ore', short: 'Iron', icon: '🪨', type: 'commodity', key: 'ironOre', amount: 1, bg: '#334155', text: '#f8fafc' },
+      { id: 'titanium', label: 'Titanium', short: 'Titanium', icon: '🔩', type: 'commodity', key: 'titanium', amount: 1, bg: '#0284c7', text: '#ffffff' },
+      { id: 'glass', label: 'Lunar Glass', short: 'Glass', icon: '💠', type: 'commodity', key: 'lunarGlass', amount: 1, bg: '#0d9488', text: '#ffffff' },
+      { id: 'stardust', label: '+2 Stardust', short: '+2 ✨', icon: '✨', type: 'stardust', amount: 2, bg: '#7e22ce', text: '#fef08a' },
+      { id: 'plasma', label: 'Plasma Crystal', short: 'Plasma', icon: '🔮', type: 'commodity', key: 'plasmaCrystal', amount: 1, bg: '#9333ea', text: '#ffffff' },
+      { id: 'alloy', label: 'Solar Alloy', short: 'Alloy', icon: '🔆', type: 'commodity', key: 'solarAlloy', amount: 1, bg: '#d97706', text: '#ffffff' },
+      { id: 'credits', label: '+50 Credits', short: '+50 🪙', icon: '🪙', type: 'credits', amount: 50, bg: '#15803d', text: '#fef08a' },
+      { id: 'storm', label: 'Space Storm!', short: 'Storm!', icon: '⛈️', type: 'storm', amount: 1, bg: '#be123c', text: '#ffffff' }
+    ];
+
+    // =====================================================================
+    // SPACE STORE CATALOG: 20 UNIQUE UNLOCKABLE ITEMS + 3 STARTER DEFAULTS
+    // (7 Unlockable Suits, 7 Unlockable Helmets, 6 Unlockable Boots = 20)
+    // Includes 7 Rare/Legendary Glowing Items (glow: true)
+    // =====================================================================
+    const STORE_CATALOG = [
+      // --- STARTER ITEMS (Owned by default, free) ---
+      { id: 'suit_starter', slot: 'suit', name: 'Cadet Jumpsuit', price: 0, starter: true, primary: '#3b82f6', secondary: '#e2e8f0', accent: '#fbbf24', badge: 'star', glow: false },
+      { id: 'helmet_none', slot: 'helmet', name: 'Cadet Headset', price: 0, starter: true, primary: '#38bdf8', visor: '#38bdf8', style: 'headset', glow: false },
+      { id: 'boots_starter', slot: 'boots', name: 'Cadet Boots', price: 0, starter: true, primary: '#475569', sole: '#94a3b8', accent: '#38bdf8', style: 'standard', glow: false },
+
+      // --- 7 UNLOCKABLE SPACE SUITS ---
+      { id: 'suit_astro_blue', slot: 'suit', name: 'Cobalt Commander', price: 120, primary: '#1d4ed8', secondary: '#93c5fd', accent: '#38bdf8', badge: 'rocket', glow: false, desc: 'Reinforced deep-space cobalt plating.' },
+      { id: 'suit_red_comet', slot: 'suit', name: 'Red Comet Racer', price: 180, primary: '#dc2626', secondary: '#fef08a', accent: '#f97316', badge: 'bolt', glow: false, desc: 'Aerodynamic racing suit built for speed!' },
+      { id: 'suit_jungle_ranger', slot: 'suit', name: 'Exo-Planet Ranger', price: 240, primary: '#15803d', secondary: '#bbf7d0', accent: '#facc15', badge: 'planet', glow: false, desc: 'Rugged green armor for alien moons.' },
+      { id: 'suit_gold_captain', slot: 'suit', name: 'Star Captain Armor', price: 320, primary: '#d97706', secondary: '#fef3c7', accent: '#38bdf8', badge: 'crown', glow: false, desc: 'Gleaming gold plating for fleet leaders.' },
+      { id: 'suit_nebula_pulse', slot: 'suit', name: 'Nebula Pulse Suit', price: 420, primary: '#6b21a8', secondary: '#f0abfc', accent: '#e879f9', badge: 'diamond', glow: true, glowColor: '#e879f9', rarity: 'RARE GLOW', desc: 'Crackles with cosmic nebula energy!' },
+      { id: 'suit_cyber_volt', slot: 'suit', name: 'Cyber Volt Exosuit', price: 550, primary: '#0f172a', secondary: '#22d3ee', accent: '#38bdf8', badge: 'bolt', glow: true, glowColor: '#22d3ee', rarity: 'RARE GLOW', desc: 'Neon laser circuits hum with power!' },
+      { id: 'suit_supernova', slot: 'suit', name: 'Supernova King Suit', price: 750, primary: '#7c2d12', secondary: '#fde047', accent: '#fb923c', badge: 'crown', glow: true, glowColor: '#fde047', rarity: 'LEGENDARY GLOW', desc: 'Radiates pure starlight aura!' },
+
+      // --- 7 UNLOCKABLE HELMETS ---
+      { id: 'helmet_bubble', slot: 'helmet', name: 'Classic Bubble Dome', price: 100, primary: '#e2e8f0', visor: '#38bdf8', style: 'bubble', glow: false, desc: '360-degree crystal clear space dome.' },
+      { id: 'helmet_ranger', slot: 'helmet', name: 'Cobalt Ranger Helm', price: 160, primary: '#1d4ed8', visor: '#67e8f9', style: 'visor', glow: false, desc: 'Tinted sky visor with twin antennas.' },
+      { id: 'helmet_comet', slot: 'helmet', name: 'Comet Aero-Helmet', price: 220, primary: '#dc2626', visor: '#fde047', style: 'aero', glow: false, desc: 'Sleek dorsal fin for meteor surfing!' },
+      { id: 'helmet_dino_astro', slot: 'helmet', name: 'Astro-Rex Crest Helm', price: 300, primary: '#16a34a', visor: '#bef264', style: 'dino', glow: false, desc: 'Roaring dino spikes built for space!' },
+      { id: 'helmet_plasma_visor', slot: 'helmet', name: 'Plasma Cyber Visor', price: 400, primary: '#1e1b4b', visor: '#22d3ee', style: 'cyber', glow: true, glowColor: '#22d3ee', rarity: 'RARE GLOW', desc: 'Glowing holographic scanner visor!' },
+      { id: 'helmet_cosmic_knight', slot: 'helmet', name: 'Nebula Knight Helm', price: 520, primary: '#581c87', visor: '#f0abfc', style: 'knight', glow: true, glowColor: '#d946ef', rarity: 'RARE GLOW', desc: 'Royal star-knight crest with violet glow.' },
+      { id: 'helmet_celestial_crown', slot: 'helmet', name: 'Celestial Star Crown', price: 700, primary: '#f59e0b', visor: '#fef08a', style: 'crown', glow: true, glowColor: '#fbbf24', rarity: 'LEGENDARY GLOW', desc: 'Floating golden star-halo dome!' },
+
+      // --- 6 UNLOCKABLE BOOTS ---
+      { id: 'boots_mag_grip', slot: 'boots', name: 'Mag-Grip Clompers', price: 90, primary: '#334155', sole: '#ef4444', accent: '#f8fafc', style: 'heavy', glow: false, desc: 'Stick to upside-down asteroids!' },
+      { id: 'boots_comet_sprint', slot: 'boots', name: 'Comet Sprinters', price: 150, primary: '#dc2626', sole: '#fbbf24', accent: '#ffffff', style: 'winged', glow: false, desc: 'Side-fins for super-fast moon jumps.' },
+      { id: 'boots_rock_hopper', slot: 'boots', name: 'Crater Hoppers', price: 210, primary: '#15803d', sole: '#a3e635', accent: '#fde047', style: 'spring', glow: false, desc: 'Bouncy coils for giant crater leaps!' },
+      { id: 'boots_jet_thruster', slot: 'boots', name: 'Twin-Jet Thrusters', price: 310, primary: '#1d4ed8', sole: '#f97316', accent: '#38bdf8', style: 'thruster', glow: false, desc: 'Mini rocket boosters on each heel!' },
+      { id: 'boots_plasma_hover', slot: 'boots', name: 'Plasma Hover-Boots', price: 440, primary: '#0f172a', sole: '#22d3ee', accent: '#67e8f9', style: 'hover', glow: true, glowColor: '#22d3ee', rarity: 'RARE GLOW', desc: 'Float on glowing cyan anti-gravity rings!' },
+      { id: 'boots_starlight_warp', slot: 'boots', name: 'Starlight Warp Boots', price: 600, primary: '#6b21a8', sole: '#fde047', accent: '#f0abfc', style: 'hover', glow: true, glowColor: '#fde047', rarity: 'LEGENDARY GLOW', desc: 'Leave a trail of golden stardust!' }
+    ];
+
+    // 20 Curated Hebrew Sight Words (with Nikud vowels, transliteration, English & Emoji)
+    const HEBREW_WORDS = [
+      { id: 'kokhav', hebrew: 'כּוֹכָב', translit: 'Ko-khav', english: 'Star', icon: '⭐' },
+      { id: 'yareach', hebrew: 'יָרֵחַ', translit: 'Ya-re-ach', english: 'Moon', icon: '🌙' },
+      { id: 'shemesh', hebrew: 'שֶׁמֶשׁ', translit: 'She-mesh', english: 'Sun', icon: '☀️' },
+      { id: 'chalal', hebrew: 'חָלָל', translit: 'Cha-lal', english: 'Space', icon: '🌌' },
+      { id: 'til', hebrew: 'טִיל', translit: 'Til', english: 'Rocket', icon: '🚀' },
+      { id: 'bayit', hebrew: 'בַּיִת', translit: 'Ba-yit', english: 'House', icon: '🏠' },
+      { id: 'gesher', hebrew: 'גֶּשֶׁר', translit: 'Ge-sher', english: 'Bridge', icon: '🌉' },
+      { id: 'shalom', hebrew: 'שָׁלוֹם', translit: 'Sha-lom', english: 'Peace / Hello', icon: '🕊️' },
+      { id: 'or', hebrew: 'אוֹר', translit: 'Or', english: 'Light', icon: '💡' },
+      { id: 'mayim', hebrew: 'מַיִם', translit: 'Ma-yim', english: 'Water', icon: '💧' },
+      { id: 'esh', hebrew: 'אֵשׁ', translit: 'Esh', english: 'Fire', icon: '🔥' },
+      { id: 'ruach', hebrew: 'רוּחַ', translit: 'Ru-ach', english: 'Wind', icon: '💨' },
+      { id: 'even', hebrew: 'אֶבֶן', translit: 'E-ven', english: 'Stone', icon: '🪨' },
+      { id: 'zahav', hebrew: 'זָהָב', translit: 'Za-hav', english: 'Gold', icon: '🪙' },
+      { id: 'kesef', hebrew: 'כֶּסֶף', translit: 'Ke-sef', english: 'Silver', icon: '🥈' },
+      { id: 'gibor', hebrew: 'גִּבּוֹר', translit: 'Gi-bor', english: 'Hero', icon: '🦸' },
+      { id: 'chaver', hebrew: 'חָבֵר', translit: 'Cha-ver', english: 'Friend', icon: '🤝' },
+      { id: 'sefer', hebrew: 'סֵפֶר', translit: 'Se-fer', english: 'Book', icon: '📖' },
+      { id: 'lev', hebrew: 'לֵב', translit: 'Lev', english: 'Heart', icon: '❤️' },
+      { id: 'shamayim', hebrew: 'שָׁמַיִם', translit: 'Sha-ma-yim', english: 'Sky', icon: '☁️' }
+    ];
+
+    /* =====================================================================
+     * 2. PROCEDURAL WEB AUDIO API ENGINE (Music Loop & Sound Effects)
+     * ===================================================================== */
+    class SpaceAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.musicTimer = null;
+        this.stepIndex = 0;
+        this.isPlayingMusic = false;
+      }
+
+      // Unlock AudioContext on first user gesture
+      unlock() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+        if (gameState.settings.musicEnabled && !this.isPlayingMusic) {
+          this.startMusicLoop();
+        }
+      }
+
+      // Start gentle cosmic space arpeggio loop
+      startMusicLoop() {
+        if (!gameState.settings.musicEnabled) return;
+        this.unlock();
+        if (!this.ctx || this.isPlayingMusic) return;
+
+        this.isPlayingMusic = true;
+        // Whimsical C-Lydian / Pentatonic cosmic melody notes (Hz)
+        const melody = [
+          261.63, 329.63, 392.00, 493.88, 523.25, 493.88, 392.00, 329.63,
+          293.66, 369.99, 440.00, 587.33, 523.25, 440.00, 369.99, 329.63
+        ];
+        const bass = [130.81, 130.81, 164.81, 164.81, 146.83, 146.83, 196.00, 164.81];
+
+        const playStep = () => {
+          if (!gameState.settings.musicEnabled || !this.isPlayingMusic) return;
+          if (this.ctx && this.ctx.state === 'running' && !document.hidden) {
+            const now = this.ctx.currentTime;
+            const freq = melody[this.stepIndex % melody.length];
+
+            // Soft space bell lead
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.028, now + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.58);
+
+            // Warm low bass pulse every 2 steps
+            if (this.stepIndex % 2 === 0) {
+              const bassFreq = bass[(this.stepIndex / 2) % bass.length];
+              const bOsc = this.ctx.createOscillator();
+              const bGain = this.ctx.createGain();
+              bOsc.type = 'triangle';
+              bOsc.frequency.setValueAtTime(bassFreq, now);
+
+              bGain.gain.setValueAtTime(0.0001, now);
+              bGain.gain.exponentialRampToValueAtTime(0.032, now + 0.08);
+              bGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.95);
+
+              bOsc.connect(bGain);
+              bGain.connect(this.ctx.destination);
+              bOsc.start(now);
+              bOsc.stop(now + 1.0);
+            }
+
+            this.stepIndex++;
+          }
+        };
+
+        playStep();
+        this.musicTimer = setInterval(playStep, 520);
+      }
+
+      stopMusicLoop() {
+        this.isPlayingMusic = false;
+        if (this.musicTimer) {
+          clearInterval(this.musicTimer);
+          this.musicTimer = null;
+        }
+      }
+
+      // Helper to play a clean synthesized tone
+      playTone(freq, duration = 0.18, type = 'sine', volume = 0.12, delay = 0, endFreq = null) {
+        if (!gameState.settings.sfxEnabled) return;
+        this.unlock();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime + delay;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        if (endFreq) {
+          osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
+        }
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(volume, now + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      }
+
+      // Wheel tick sound (pitch varies with speed)
+      playWheelTick(speedRatio = 0.5) {
+        const pitch = 420 + speedRatio * 340;
+        this.playTone(pitch, 0.045, 'triangle', 0.09);
+      }
+
+      // Resource harvest chime
+      playHarvest() {
+        this.playTone(523.25, 0.14, 'sine', 0.13, 0);
+        this.playTone(659.25, 0.14, 'sine', 0.13, 0.07);
+        this.playTone(783.99, 0.24, 'triangle', 0.14, 0.14);
+      }
+
+      // Space Storm warning rumble
+      playStormWarning() {
+        this.playTone(180, 0.35, 'sawtooth', 0.11, 0, 75);
+        this.playTone(130, 0.4, 'square', 0.08, 0.15, 55);
+      }
+
+      // Space Storm cleared whoosh
+      playStormClear() {
+        this.playTone(260, 0.35, 'sine', 0.13, 0, 880);
+        this.playTone(523.25, 0.25, 'triangle', 0.12, 0.18);
+      }
+
+      // Store purchase arpeggio chime
+      playPurchase() {
+        [523.25, 659.25, 783.99, 1046.50].forEach((n, idx) => {
+          this.playTone(n, 0.2, 'triangle', 0.13, idx * 0.065);
+        });
+      }
+
+      // Equip / UI click
+      playClick() {
+        this.playTone(580, 0.06, 'sine', 0.08);
+      }
+
+      // Construction contribution sound
+      playBuildClang() {
+        this.playTone(320, 0.12, 'triangle', 0.12, 0, 480);
+        this.playTone(640, 0.15, 'sine', 0.1, 0.08);
+      }
+
+      // Minigame correct chime
+      playSuccess() {
+        this.playTone(587.33, 0.14, 'sine', 0.14, 0);
+        this.playTone(880.00, 0.28, 'triangle', 0.15, 0.09);
+      }
+
+      // Gentle retry sound
+      playRetry() {
+        this.playTone(280, 0.16, 'sine', 0.09, 0, 220);
+      }
+
+      // Celebratory Multi-Note Level Complete Fanfare
+      playFanfare() {
+        const notes = [
+          { f: 523.25, d: 0.15, t: 0.00 },
+          { f: 523.25, d: 0.15, t: 0.16 },
+          { f: 523.25, d: 0.15, t: 0.32 },
+          { f: 659.25, d: 0.35, t: 0.48 },
+          { f: 587.33, d: 0.20, t: 0.85 },
+          { f: 659.25, d: 0.20, t: 1.06 },
+          { f: 783.99, d: 0.55, t: 1.28 }
+        ];
+        notes.forEach(n => this.playTone(n.f, n.d, 'triangle', 0.16, n.t));
+      }
+
+      // Cosmic Dawn Sunrise Chime
+      playDawn() {
+        [392.00, 493.88, 587.33, 783.99].forEach((n, i) => {
+          this.playTone(n, 0.35, 'sine', 0.11, i * 0.11);
+        });
+      }
+    }
+
+    const soundEngine = new SpaceAudioEngine();
+
+    /* =====================================================================
+     * 3. APPLICATION STATE & LOCALSTORAGE PERSISTENCE
+     * ===================================================================== */
+    let gameState = {
+      activeProfileId: null,
+      settings: {
+        musicEnabled: true,
+        sfxEnabled: true,
+        speechSlow: false
+      },
+      profiles: []
+    };
+
+    // Transient UI State (not persisted)
+    let creatorState = {
+      name: 'Captain Orion',
+      skinTone: SKIN_TONES[3].hex
+    };
+    let currentWheelAngle = 0;
+    let isWheelSpinning = false;
+    let storeActiveTab = 'suit';
+    let storePreviewEquipped = null; // Temporary preview overrides in Store
+    let tradeGiveKey = 'ironOre';
+    let tradeReceiveKey = 'titanium';
+    let currentMathPuzzle = null;
+    let mathUserInputStr = '';
+    let mathStreak = 0;
+    let currentHebrewQuestion = null;
+    let hebrewStreak = 0;
+    let pendingDeleteProfileId = null;
+
+    function loadGameState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.profiles)) {
+            gameState = {
+              activeProfileId: parsed.activeProfileId || null,
+              settings: {
+                musicEnabled: parsed.settings?.musicEnabled ?? true,
+                sfxEnabled: parsed.settings?.sfxEnabled ?? true,
+                speechSlow: parsed.settings?.speechSlow ?? false
+              },
+              profiles: parsed.profiles
+            };
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load saved game state:', err);
+      }
+    }
+
+    function saveGameState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+      } catch (err) {
+        console.warn('Could not save game state:', err);
+      }
+    }
+
+    function getActiveProfile() {
+      return gameState.profiles.find(p => p.id === gameState.activeProfileId) || null;
+    }
+
+    function getLevelConfig(levelNum) {
+      return LEVELS[Math.min(Math.max(1, levelNum), LEVELS.length) - 1];
+    }
+
+    function getStoreItem(itemId) {
+      return STORE_CATALOG.find(item => item.id === itemId) || null;
+    }
+
+    /* =====================================================================
+     * 4. PROCEDURAL SVG CHARACTER RENDERER (`renderBoySVG`)
+     * ===================================================================== */
+    let svgRenderCounter = 0;
+
+    function renderBoySVG(profile, options = {}) {
+      svgRenderCounter++;
+      const uid = `boy_${svgRenderCounter}`;
+
+      const skinHex = profile?.skinTone || SKIN_TONES[3].hex;
+      const skinObj = SKIN_TONES.find(s => s.hex === skinHex) || { hex: skinHex, shadow: '#b07345' };
+
+      const equipped = options.equippedOverride || profile?.equipped || {
+        suit: 'suit_starter',
+        helmet: 'helmet_none',
+        boots: 'boots_starter'
+      };
+
+      const suit = getStoreItem(equipped.suit) || getStoreItem('suit_starter');
+      const helmet = getStoreItem(equipped.helmet) || getStoreItem('helmet_none');
+      const boots = getStoreItem(equipped.boots) || getStoreItem('boots_starter');
+
+      // Determine if any equipped item has a rare/legendary glow
+      const glowingItem = [suit, helmet, boots].find(item => item && item.glow);
+      const hasGlow = Boolean(glowingItem);
+      const glowColor = glowingItem ? glowingItem.glowColor : '#38bdf8';
+
+      // Chest Badge SVG helper
+      let badgeSVG = '';
+      if (suit.badge === 'star') {
+        badgeSVG = `<polygon points="110,136 113,143 120,143 114,148 116,155 110,151 104,155 106,148 100,143 107,143" fill="${suit.accent}" />`;
+      } else if (suit.badge === 'bolt') {
+        badgeSVG = `<polygon points="112,135 104,146 110,146 107,157 117,144 111,144" fill="${suit.accent}" />`;
+      } else if (suit.badge === 'rocket') {
+        badgeSVG = `<path d="M110,134 C115,140 115,149 110,155 C105,149 105,140 110,134 Z" fill="${suit.accent}" /><circle cx="110" cy="144" r="2.5" fill="#ffffff" />`;
+      } else if (suit.badge === 'planet') {
+        badgeSVG = `<circle cx="110" cy="145" r="6" fill="${suit.accent}" /><ellipse cx="110" cy="145" rx="11" ry="3" fill="none" stroke="#ffffff" stroke-width="1.8" transform="rotate(-20 110 145)" />`;
+      } else if (suit.badge === 'crown') {
+        badgeSVG = `<polygon points="102,151 102,140 106,145 110,138 114,145 118,140 118,151" fill="${suit.accent}" />`;
+      } else if (suit.badge === 'diamond') {
+        badgeSVG = `<polygon points="110,135 118,145 110,155 102,145" fill="${suit.accent}" stroke="#ffffff" stroke-width="1.2" />`;
+      }
+
+      // Boots Style Details
+      let bootsExtrasSVG = '';
+      if (boots.style === 'thruster') {
+        bootsExtrasSVG = `
+          <polygon points="82,232 77,246 89,246" fill="#fb923c" />
+          <polygon points="134,232 129,246 141,246" fill="#fb923c" />
+        `;
+      } else if (boots.style === 'hover') {
+        bootsExtrasSVG = `
+          <ellipse cx="86" cy="238" rx="18" ry="4.5" fill="none" stroke="${boots.sole}" stroke-width="3" opacity="0.9" />
+          <ellipse cx="134" cy="238" rx="18" ry="4.5" fill="none" stroke="${boots.sole}" stroke-width="3" opacity="0.9" />
+        `;
+      } else if (boots.style === 'winged') {
+        bootsExtrasSVG = `
+          <polygon points="72,216 60,210 68,223" fill="${boots.sole}" />
+          <polygon points="148,216 160,210 152,223" fill="${boots.sole}" />
+        `;
+      }
+
+      // Helmet Back & Front Layers (so boy's face & skin tone remain clearly visible inside)
+      let helmetBackSVG = '';
+      let helmetFrontSVG = '';
+
+      if (helmet.style === 'headset') {
+        // Starter cadet headset & cute space antenna
+        helmetFrontSVG = `
+          <path d="M74,74 C74,46 146,46 146,74" fill="none" stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round" />
+          <rect x="68" y="68" width="9" height="18" rx="4.5" fill="#0284c7" stroke="#e0f2fe" stroke-width="1.5" />
+          <rect x="143" y="68" width="9" height="18" rx="4.5" fill="#0284c7" stroke="#e0f2fe" stroke-width="1.5" />
+          <line x1="147" y1="68" x2="152" y2="48" stroke="#e0f2fe" stroke-width="2.5" stroke-linecap="round" />
+          <circle cx="152" cy="46" r="4" fill="#fbbf24" />
+        `;
+      } else {
+        // Full / Visor Space Helmets
+        helmetBackSVG = `
+          <circle cx="110" cy="76" r="45" fill="${helmet.primary}" stroke="#0f172a" stroke-width="3" />
+          <circle cx="110" cy="76" r="39" fill="#0f172a" opacity="0.35" />
+        `;
+
+        // Helmet Top Ornament (Dino spikes, Crown, Fin, Antennas)
+        let helmetTopOrnament = '';
+        if (helmet.style === 'dino') {
+          helmetTopOrnament = `
+            <polygon points="94,34 100,18 106,33" fill="#facc15" stroke="#0f172a" stroke-width="2" />
+            <polygon points="105,32 111,14 117,32" fill="#f97316" stroke="#0f172a" stroke-width="2" />
+            <polygon points="116,34 122,19 127,35" fill="#facc15" stroke="#0f172a" stroke-width="2" />
+          `;
+        } else if (helmet.style === 'crown') {
+          helmetTopOrnament = `
+            <polygon points="92,31 95,16 103,26 110,12 117,26 125,16 128,31" fill="#fde047" stroke="#b45309" stroke-width="2" stroke-linejoin="round" />
+            <circle cx="110" cy="22" r="3" fill="#38bdf8" />
+          `;
+        } else if (helmet.style === 'aero' || helmet.style === 'knight') {
+          helmetTopOrnament = `
+            <path d="M106,31 L110,14 L118,32 Z" fill="${helmet.visor}" stroke="#0f172a" stroke-width="2" />
+          `;
+        } else if (helmet.style === 'visor' || helmet.style === 'cyber') {
+          helmetTopOrnament = `
+            <line x1="74" y1="54" x2="66" y2="32" stroke="${helmet.visor}" stroke-width="3" stroke-linecap="round" />
+            <circle cx="66" cy="30" r="4" fill="${helmet.visor}" />
+            <line x1="146" y1="54" x2="154" y2="32" stroke="${helmet.visor}" stroke-width="3" stroke-linecap="round" />
+            <circle cx="154" cy="30" r="4" fill="${helmet.visor}" />
+          `;
+        }
+
+        // Translucent Tinted Visor Glass + Rim (keeps boy's face clearly visible!)
+        helmetFrontSVG = `
+          ${helmetTopOrnament}
+          <ellipse cx="110" cy="78" rx="37" ry="34" fill="${helmet.visor}" fill-opacity="0.22" stroke="${helmet.primary}" stroke-width="6" />
+          <ellipse cx="110" cy="78" rx="37" ry="34" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.6" />
+          <!-- Visor Specular Reflection Glint -->
+          <path d="M84,61 Q93,51 106,51" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.7" />
+          <circle cx="81" cy="68" r="2.2" fill="#ffffff" opacity="0.75" />
+          <!-- Helmet Neck Ring -->
+          <rect x="78" y="108" width="64" height="9" rx="4.5" fill="${helmet.primary}" stroke="#0f172a" stroke-width="2.5" />
+        `;
+      }
+
+      return `
+        <svg viewBox="0 0 220 255" class="w-full h-full overflow-visible" role="img" aria-label="Space Hero Character">
+          <defs>
+            <filter id="glow_${uid}" x="-35%" y="-35%" width="170%" height="170%">
+              <feGaussianBlur stdDeviation="7" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- LAYER 1: RARE ITEM COSMIC GLOWING AURA -->
+          ${hasGlow ? `
+            <g filter="url(#glow_${uid})">
+              <ellipse cx="110" cy="135" rx="76" ry="104" fill="${glowColor}" fill-opacity="0.22" stroke="${glowColor}" stroke-width="2.5" stroke-dasharray="10 6" />
+              <circle cx="44" cy="82" r="4" fill="${glowColor}" />
+              <circle cx="176" cy="96" r="5" fill="${glowColor}" />
+              <circle cx="50" cy="186" r="3.5" fill="${glowColor}" />
+              <circle cx="172" cy="178" r="4" fill="${glowColor}" />
+            </g>
+          ` : ''}
+
+          <!-- LAYER 2: SPACE JETPACK BACKPACK -->
+          <rect x="68" y="116" width="84" height="62" rx="16" fill="#334155" stroke="#0f172a" stroke-width="3" />
+          <rect x="62" y="124" width="12" height="44" rx="6" fill="${suit.accent}" stroke="#0f172a" stroke-width="2.5" />
+          <rect x="146" y="124" width="12" height="44" rx="6" fill="${suit.accent}" stroke="#0f172a" stroke-width="2.5" />
+
+          <!-- LAYER 3: HELMET BACK SHELL (if wearing full helmet) -->
+          ${helmetBackSVG}
+
+          <!-- LAYER 4: SPACE SUIT LEGS & TORSO -->
+          <!-- Legs -->
+          <rect x="78" y="174" width="24" height="36" rx="9" fill="${suit.primary}" stroke="#0f172a" stroke-width="3" />
+          <rect x="118" y="174" width="24" height="36" rx="9" fill="${suit.primary}" stroke="#0f172a" stroke-width="3" />
+          <!-- Knee Pads -->
+          <rect x="81" y="185" width="18" height="9" rx="4" fill="${suit.secondary}" />
+          <rect x="121" y="185" width="18" height="9" rx="4" fill="${suit.secondary}" />
+
+          <!-- Torso -->
+          <rect x="72" y="114" width="76" height="68" rx="22" fill="${suit.primary}" stroke="#0f172a" stroke-width="3" />
+          <!-- Chest Plate & Neon Lines -->
+          <rect x="86" y="126" width="48" height="34" rx="11" fill="${suit.secondary}" fill-opacity="0.25" stroke="${suit.glow ? glowColor : suit.secondary}" stroke-width="2.2" />
+          ${badgeSVG}
+
+          <!-- Utility Belt -->
+          <rect x="73" y="164" width="74" height="11" rx="5" fill="#1e293b" stroke="#0f172a" stroke-width="2.5" />
+          <rect x="101" y="162" width="18" height="15" rx="4" fill="${suit.accent}" stroke="#0f172a" stroke-width="2" />
+
+          <!-- Left Arm & Glove -->
+          <path d="M74,124 Q52,140 58,166" fill="none" stroke="${suit.primary}" stroke-width="18" stroke-linecap="round" />
+          <path d="M74,124 Q52,140 58,166" fill="none" stroke="#0f172a" stroke-width="21" stroke-linecap="round" style="mix-blend-mode:destination-over" />
+          <circle cx="58" cy="168" r="10" fill="${suit.secondary}" stroke="#0f172a" stroke-width="2.5" />
+
+          <!-- Right Arm & Glove (holding Space Builder Tool) -->
+          <path d="M146,124 Q168,136 168,156" fill="none" stroke="${suit.primary}" stroke-width="18" stroke-linecap="round" />
+          <circle cx="168" cy="158" r="10" fill="${suit.secondary}" stroke="#0f172a" stroke-width="2.5" />
+
+          <!-- LAYER 5: SPACE BOOTS -->
+          ${bootsExtrasSVG}
+          <!-- Left Boot -->
+          <path d="M74,205 L104,205 L104,226 C104,230 100,232 95,232 L72,232 C68,232 66,228 68,223 Z" fill="${boots.primary}" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" />
+          <rect x="68" y="226" width="36" height="6" rx="3" fill="${boots.sole}" />
+          <rect x="76" y="208" width="26" height="5" rx="2.5" fill="${boots.accent}" />
+          <!-- Right Boot -->
+          <path d="M116,205 L146,205 L152,223 C154,228 152,232 148,232 L125,232 C120,232 116,230 116,226 Z" fill="${boots.primary}" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" />
+          <rect x="116" y="226" width="36" height="6" rx="3" fill="${boots.sole}" />
+          <rect x="118" y="208" width="26" height="5" rx="2.5" fill="${boots.accent}" />
+
+          <!-- LAYER 6: BOY'S HEAD & EXPRESSIVE FACE (Dynamic Skin Tone) -->
+          <!-- Ears -->
+          <circle cx="77" cy="80" r="7.5" fill="${skinObj.hex}" stroke="#0f172a" stroke-width="2.5" />
+          <circle cx="143" cy="80" r="7.5" fill="${skinObj.hex}" stroke="#0f172a" stroke-width="2.5" />
+          <!-- Head Shape -->
+          <rect x="80" y="46" width="60" height="64" rx="28" fill="${skinObj.hex}" stroke="#0f172a" stroke-width="3" />
+          <!-- Cool Boyish Spiky Hair Tuft -->
+          <path d="M81,66 C80,44 102,38 114,42 C124,37 141,45 139,66 C134,55 124,53 115,56 C108,51 94,52 81,66 Z" fill="#2b1810" stroke="#0f172a" stroke-width="2.2" stroke-linejoin="round" />
+
+          <!-- Eyebrows -->
+          <path d="M91,68 Q97,64 103,68" fill="none" stroke="#2b1810" stroke-width="2.6" stroke-linecap="round" />
+          <path d="M117,68 Q123,64 129,68" fill="none" stroke="#2b1810" stroke-width="2.6" stroke-linecap="round" />
+
+          <!-- Big Curious Eyes + Catchlights -->
+          <circle cx="97" cy="77" r="5.2" fill="#0f172a" />
+          <circle cx="95.3" cy="75.2" r="1.9" fill="#ffffff" />
+          <circle cx="123" cy="77" r="5.2" fill="#0f172a" />
+          <circle cx="121.3" cy="75.2" r="1.9" fill="#ffffff" />
+
+          <!-- Friendly Rosy Cheeks -->
+          <ellipse cx="89" cy="86" rx="4.5" ry="2.5" fill="#fb7185" opacity="0.45" />
+          <ellipse cx="131" cy="86" rx="4.5" ry="2.5" fill="#fb7185" opacity="0.45" />
+
+          <!-- Cheerful Adventurous Grin -->
+          <path d="M99,91 Q110,102 121,91" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round" />
+
+          <!-- LAYER 7: HELMET VISOR / FRONT RIM -->
+          ${helmetFrontSVG}
+
+          <!-- LAYER 8: HANDHELD SPACE BUILDER LASER-WRENCH -->
+          <g transform="translate(168, 152) rotate(-22)">
+            <rect x="-4" y="-34" width="8" height="44" rx="4" fill="#94a3b8" stroke="#0f172a" stroke-width="2.2" />
+            <path d="M-11,-42 C-11,-32 11,-32 11,-42 L11,-50 L5,-50 L5,-42 L-5,-42 L-5,-50 L-11,-50 Z" fill="#38bdf8" stroke="#0f172a" stroke-width="2.2" stroke-linejoin="round" />
+            <circle cx="0" cy="-16" r="3" fill="#fbbf24" />
+          </g>
+        </svg>
+      `;
+    }
+
+    /* =====================================================================
+     * 5. PROCEDURAL STRUCTURE CONSTRUCTION SVG GENERATOR
+     * ===================================================================== */
+    function renderStructureSVG(levelNum, progressRatio) {
+      const pct = Math.min(1, Math.max(0, progressRatio));
+      const stage1 = pct > 0;       // Foundation / Blueprint active
+      const stage2 = pct >= 0.35;   // Main hull / supports
+      const stage3 = pct >= 0.70;   // Domes / towers / details
+      const complete = pct >= 1.0;  // Full glowing operational structure
+
+      const ghostStroke = 'stroke="#38bdf8" stroke-width="2" stroke-dasharray="6 4" fill="#38bdf8" fill-opacity="0.08"';
+
+      let sceneSVG = '';
+
+      if (levelNum === 1) {
+        // LEVEL 1: SPACE BRIDGE across Asteroid Gap
+        sceneSVG = `
+          <!-- Left & Right Asteroids -->
+          <ellipse cx="55" cy="165" rx="52" ry="32" fill="#475569" stroke="#1e293b" stroke-width="3" />
+          <circle cx="38" cy="156" r="7" fill="#334155" />
+          <circle cx="66" cy="170" r="9" fill="#334155" />
+          <ellipse cx="345" cy="165" rx="52" ry="32" fill="#475569" stroke="#1e293b" stroke-width="3" />
+          <circle cx="332" cy="158" r="8" fill="#334155" />
+          <circle cx="362" cy="168" r="6" fill="#334155" />
+
+          <!-- Bridge Pylons (Stage 1) -->
+          <g ${stage1 ? '' : ghostStroke}>
+            <rect x="85" y="102" width="16" height="54" rx="4" fill="${stage1 ? '#94a3b8' : 'none'}" stroke="#0f172a" stroke-width="2.5" />
+            <rect x="299" y="102" width="16" height="54" rx="4" fill="${stage1 ? '#94a3b8' : 'none'}" stroke="#0f172a" stroke-width="2.5" />
+          </g>
+
+          <!-- Main Bridge Deck (Stage 2) -->
+          <g ${stage2 ? '' : ghostStroke}>
+            <rect x="80" y="132" width="240" height="16" rx="6" fill="${stage2 ? '#38bdf8' : 'none'}" stroke="#0f172a" stroke-width="2.5" />
+            <line x1="93" y1="106" x2="200" y2="132" stroke="${stage2 ? '#fbbf24' : '#38bdf8'}" stroke-width="3" />
+            <line x1="307" y1="106" x2="200" y2="132" stroke="${stage2 ? '#fbbf24' : '#38bdf8'}" stroke-width="3" />
+          </g>
+
+          <!-- Energy Forcefield & Beacons (Stage 3) -->
+          ${stage3 ? `
+            <rect x="96" y="122" width="208" height="8" rx="4" fill="#2dd4bf" opacity="0.85" />
+            <circle cx="93" cy="98" r="7" fill="#fbbf24" />
+            <circle cx="307" cy="98" r="7" fill="#fbbf24" />
+          ` : ''}
+
+          <!-- Complete Celebration Flag & Glow -->
+          ${complete ? `
+            <line x1="200" y1="122" x2="200" y2="86" stroke="#ffffff" stroke-width="3" />
+            <polygon points="200,86 228,94 200,102" fill="#f43f5e" />
+            <text x="200" y="65" text-anchor="middle" fill="#fde047" font-size="16" font-weight="bold">✨ BRIDGE OPERATIONAL! ✨</text>
+          ` : ''}
+        `;
+      } else if (levelNum === 2) {
+        // LEVEL 2: STAR HOUSE on Comet Outpost
+        sceneSVG = `
+          <!-- Comet Ground -->
+          <path d="M20,185 Q200,145 380,185 L380,200 L20,200 Z" fill="#334155" stroke="#1e293b" stroke-width="3" />
+          <!-- Foundation Pad (Stage 1) -->
+          <rect x="115" y="156" width="170" height="14" rx="6" ${stage1 ? 'fill="#64748b" stroke="#0f172a" stroke-width="2.5"' : ghostStroke} />
+          <!-- Habitat Cabin (Stage 2) -->
+          <rect x="130" y="102" width="140" height="54" rx="14" ${stage2 ? 'fill="#3b82f6" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          <rect x="184" y="120" width="32" height="36" rx="8" ${stage2 ? 'fill="#fbbf24" stroke="#0f172a" stroke-width="2.5"' : ghostStroke} />
+          <!-- Star Glass Dome Roof & Telescope (Stage 3) -->
+          <path d="M136,102 C136,54 264,54 264,102 Z" ${stage3 ? 'fill="#2dd4bf" fill-opacity="0.55" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          ${stage3 ? `
+            <circle cx="156" cy="128" r="11" fill="#fef08a" stroke="#0f172a" stroke-width="2" />
+            <circle cx="244" cy="128" r="11" fill="#fef08a" stroke="#0f172a" stroke-width="2" />
+            <line x1="200" y1="66" x2="200" y2="42" stroke="#fbbf24" stroke-width="4" />
+            <circle cx="200" cy="39" r="6" fill="#f43f5e" />
+          ` : ''}
+          ${complete ? `<text x="200" y="26" text-anchor="middle" fill="#fde047" font-size="16" font-weight="bold">⭐ STAR HOUSE READY! ⭐</text>` : ''}
+        `;
+      } else if (levelNum === 3) {
+        // LEVEL 3: MOON BOUNCY CASTLE in Tranquility Crater
+        sceneSVG = `
+          <!-- Lunar Crater Surface -->
+          <path d="M15,180 Q110,192 200,180 Q290,192 385,180 L385,200 L15,200 Z" fill="#475569" />
+          <!-- Inflatable Bounce Mat (Stage 1) -->
+          <rect x="95" y="150" width="210" height="28" rx="12" ${stage1 ? 'fill="#ec4899" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          <!-- Bouncy Castle Towers & Walls (Stage 2) -->
+          <rect x="105" y="92" width="36" height="60" rx="10" ${stage2 ? 'fill="#a855f7" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          <rect x="259" y="92" width="36" height="60" rx="10" ${stage2 ? 'fill="#a855f7" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          <rect x="141" y="106" width="118" height="44" rx="8" ${stage2 ? 'fill="#38bdf8" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          <!-- Turret Cones & Pennants (Stage 3) -->
+          <polygon points="100,92 123,56 146,92" ${stage3 ? 'fill="#fbbf24" stroke="#0f172a" stroke-width="2.5"' : ghostStroke} />
+          <polygon points="254,92 277,56 300,92" ${stage3 ? 'fill="#fbbf24" stroke="#0f172a" stroke-width="2.5"' : ghostStroke} />
+          ${stage3 ? `<path d="M180,150 C180,122 220,122 220,150 Z" fill="#fef08a" stroke="#0f172a" stroke-width="2.5" />` : ''}
+          ${complete ? `<text x="200" y="36" text-anchor="middle" fill="#fde047" font-size="16" font-weight="bold">🏰 BOUNCE TIME ON THE MOON! 🏰</text>` : ''}
+        `;
+      } else if (levelNum === 4) {
+        // LEVEL 4: SOLAR SKY-FORGE on Orbital Ring
+        sceneSVG = `
+          <!-- Orbital Ring Arc -->
+          <path d="M25,172 Q200,132 375,172" fill="none" stroke="#64748b" stroke-width="10" stroke-linecap="round" />
+          <!-- Central Reactor Core (Stage 1) -->
+          <circle cx="200" cy="112" r="34" ${stage1 ? 'fill="#f59e0b" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          <!-- Twin Solar Collector Wings (Stage 2) -->
+          <rect x="58" y="94" width="96" height="36" rx="6" ${stage2 ? 'fill="#0284c7" stroke="#fde047" stroke-width="2.5"' : ghostStroke} />
+          <rect x="246" y="94" width="96" height="36" rx="6" ${stage2 ? 'fill="#0284c7" stroke="#fde047" stroke-width="2.5"' : ghostStroke} />
+          <!-- Plasma Rings & Spire (Stage 3) -->
+          ${stage3 ? `
+            <ellipse cx="200" cy="112" rx="54" ry="16" fill="none" stroke="#fde047" stroke-width="3.5" />
+            <polygon points="188,78 200,38 212,78" fill="#fbbf24" stroke="#0f172a" stroke-width="2.5" />
+            <circle cx="200" cy="112" r="16" fill="#fef08a" />
+          ` : ''}
+          ${complete ? `<text x="200" y="25" text-anchor="middle" fill="#fde047" font-size="16" font-weight="bold">🛰️ SOLAR SKY-FORGE IGNITED! 🛰️</text>` : ''}
+        `;
+      } else {
+        // LEVEL 5: VENUS PALACE in Cloud Citadel
+        sceneSVG = `
+          <!-- Golden Venus Clouds -->
+          <ellipse cx="120" cy="176" rx="85" ry="20" fill="#fbbf24" opacity="0.35" />
+          <ellipse cx="280" cy="176" rx="85" ry="20" fill="#fbbf24" opacity="0.35" />
+          <ellipse cx="200" cy="180" rx="125" ry="22" fill="#fde047" opacity="0.45" />
+          <!-- Floating Palace Terrace (Stage 1) -->
+          <rect x="85" y="148" width="230" height="18" rx="9" ${stage1 ? 'fill="#f59e0b" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          <!-- Grand Palace Halls & Minarets (Stage 2) -->
+          <rect x="115" y="96" width="170" height="52" rx="10" ${stage2 ? 'fill="#ec4899" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          <rect x="92" y="84" width="24" height="64" rx="8" ${stage2 ? 'fill="#a855f7" stroke="#0f172a" stroke-width="2.5"' : ghostStroke} />
+          <rect x="284" y="84" width="24" height="64" rx="8" ${stage2 ? 'fill="#a855f7" stroke="#0f172a" stroke-width="2.5"' : ghostStroke} />
+          <!-- Royal Golden Onion Dome & Star Crown (Stage 3) -->
+          <path d="M150,96 C150,48 250,48 250,96 Z" ${stage3 ? 'fill="#fbbf24" stroke="#0f172a" stroke-width="3"' : ghostStroke} />
+          ${stage3 ? `
+            <polygon points="104,64 114,84 94,84" fill="#38bdf8" />
+            <polygon points="296,64 306,84 286,84" fill="#38bdf8" />
+            <path d="M182,148 C182,118 218,118 218,148 Z" fill="#fef08a" stroke="#0f172a" stroke-width="2.5" />
+            <circle cx="200" cy="40" r="8" fill="#fef08a" />
+          ` : ''}
+          ${complete ? `<text x="200" y="24" text-anchor="middle" fill="#fde047" font-size="16" font-weight="bold">👑 VENUS PALACE COMPLETE! 👑</text>` : ''}
+        `;
+      }
+
+      return `
+        <svg viewBox="0 0 400 205" class="w-full h-full max-h-56 overflow-visible">
+          ${sceneSVG}
+        </svg>
+      `;
+    }
+
+    /* =====================================================================
+     * 6. SPACE COMPASS (8-SEGMENT SPINNER WHEEL) BUILD & SPIN PHYSICS
+     * ===================================================================== */
+    function buildCompassWheelSVG() {
+      const cx = 150, cy = 150, r = 134;
+      const numSegs = WHEEL_SEGMENTS.length;
+      const sliceDeg = 360 / numSegs;
+
+      let wedgesSVG = '';
+      let pegsSVG = '';
+
+      WHEEL_SEGMENTS.forEach((seg, i) => {
+        // Offset by -90 - sliceDeg/2 so segment 0 is centered directly under the top pointer at angle 0
+        const startAngle = (-90 - sliceDeg / 2 + i * sliceDeg) * (Math.PI / 180);
+        const endAngle = (-90 - sliceDeg / 2 + (i + 1) * sliceDeg) * (Math.PI / 180);
+        const midAngle = (startAngle + endAngle) / 2;
+
+        const x1 = cx + r * Math.cos(startAngle);
+        const y1 = cy + r * Math.sin(startAngle);
+        const x2 = cx + r * Math.cos(endAngle);
+        const y2 = cy + r * Math.sin(endAngle);
+
+        wedgesSVG += `
+          <path d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z"
+                fill="${seg.bg}" stroke="#0f172a" stroke-width="2.5" />
+        `;
+
+        // Icon and Short Label positioned along the wedge radius
+        const iconDist = r * 0.72;
+        const textDist = r * 0.47;
+        const ix = cx + iconDist * Math.cos(midAngle);
+        const iy = cy + iconDist * Math.sin(midAngle);
+        const tx = cx + textDist * Math.cos(midAngle);
+        const ty = cy + textDist * Math.sin(midAngle);
+        const textRot = (midAngle * 180 / Math.PI) + 90;
+
+        wedgesSVG += `
+          <text x="${ix}" y="${iy}" text-anchor="middle" dominant-baseline="central" font-size="22"
+                transform="rotate(${textRot} ${ix} ${iy})">${seg.icon}</text>
+          <text x="${tx}" y="${ty}" text-anchor="middle" dominant-baseline="central"
+                fill="${seg.text}" font-size="11" font-weight="700"
+                transform="rotate(${textRot} ${tx} ${ty})">${seg.short}</text>
+        `;
+
+        // Outer Brass Peg
+        const px = cx + (r - 5) * Math.cos(startAngle);
+        const py = cy + (r - 5) * Math.sin(startAngle);
+        pegsSVG += `<circle cx="${px}" cy="${py}" r="4" fill="#fef08a" stroke="#78350f" stroke-width="1.5" />`;
+      });
+
+      document.getElementById('compass-wheel-rotator').innerHTML = `
+        <svg viewBox="0 0 300 300" class="w-full h-full drop-shadow-[0_10px_25px_rgba(0,0,0,0.65)]">
+          <!-- Outer Metallic Bezel -->
+          <circle cx="${cx}" cy="${cy}" r="145" fill="#1e293b" stroke="#fbbf24" stroke-width="5" />
+          ${wedgesSVG}
+          ${pegsSVG}
+          <circle cx="${cx}" cy="${cy}" r="134" fill="none" stroke="#fbbf24" stroke-width="3" />
+        </svg>
+      `;
+    }
+
+    function spinCompassWheel() {
+      const profile = getActiveProfile();
+      if (!profile || isWheelSpinning) return;
+
+      if (profile.stormActive) {
+        showToast('⚡ Clear the Space Storm first!', 'purple');
+        soundEngine.playStormWarning();
+        return;
+      }
+
+      soundEngine.unlock();
+      isWheelSpinning = true;
+      updateSpinButtonsState();
+
+      // Choose winning segment index (0..7)
+      const winningIndex = Math.floor(Math.random() * WHEEL_SEGMENTS.length);
+      const sliceDeg = 360 / WHEEL_SEGMENTS.length;
+
+      // Target angle so winningIndex lands cleanly under top pointer (0 deg)
+      const targetMod = (360 - (winningIndex * sliceDeg)) % 360;
+      const currentMod = ((currentWheelAngle % 360) + 360) % 360;
+      let delta = targetMod - currentMod;
+      if (delta < 0) delta += 360;
+
+      // Add 5 full rotations + slight natural jitter inside the wedge
+      const jitter = (Math.random() - 0.5) * (sliceDeg * 0.45);
+      const totalRotation = 360 * 5 + delta + jitter;
+      const startAngle = currentWheelAngle;
+      const endAngle = startAngle + totalRotation;
+      const duration = 3400; // ms
+      const startTime = performance.now();
+
+      const wheelEl = document.getElementById('compass-wheel-rotator');
+      const pointerEl = document.getElementById('wheel-pointer');
+      let lastTickIndex = Math.floor(startAngle / sliceDeg);
+
+      function animateSpin(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(1, elapsed / duration);
+        // Smooth quintic ease-out deceleration
+        const easeOut = 1 - Math.pow(1 - t, 4);
+        const angle = startAngle + totalRotation * easeOut;
+
+        wheelEl.style.transform = `rotate(${angle}deg)`;
+
+        // Trigger tick sound & pointer bounce each time a segment peg passes
+        const currentTickIndex = Math.floor((angle + sliceDeg / 2) / sliceDeg);
+        if (currentTickIndex !== lastTickIndex) {
+          lastTickIndex = currentTickIndex;
+          soundEngine.playWheelTick(1 - t);
+          pointerEl.style.transform = 'translateX(-50%) rotate(-24deg)';
+          setTimeout(() => {
+            pointerEl.style.transform = 'translateX(-50%) rotate(0deg)';
+          }, 65);
+        }
+
+        if (t < 1) {
+          requestAnimationFrame(animateSpin);
+        } else {
+          currentWheelAngle = endAngle;
+          isWheelSpinning = false;
+          updateSpinButtonsState();
+          handleWheelLanding(WHEEL_SEGMENTS[winningIndex]);
+        }
+      }
+
+      requestAnimationFrame(animateSpin);
+    }
+
+    function handleWheelLanding(segment) {
+      const profile = getActiveProfile();
+      if (!profile) return;
+
+      // 1. Apply segment reward or storm
+      if (segment.type === 'storm') {
+        profile.stormActive = true;
+        soundEngine.playStormWarning();
+        spawnFloatingWheelPopup('⛈️ SPACE STORM!', '#f43f5e');
+        showToast('⛈️ Space Storm! Spend 1 material to clear the skies!', 'purple');
+      } else {
+        if (segment.type === 'commodity') {
+          profile.inventory[segment.key] = (profile.inventory[segment.key] || 0) + segment.amount;
+          spawnFloatingWheelPopup(`+${segment.amount} ${segment.icon} ${segment.label}`, '#34d399');
+          showToast(`Harvested +${segment.amount} ${segment.label}!`, 'emerald');
+        } else if (segment.type === 'stardust') {
+          profile.stardust += segment.amount;
+          spawnFloatingWheelPopup(`+${segment.amount} ✨ Stardust!`, '#e879f9');
+          showToast(`Collected +${segment.amount} Star Stardust!`, 'purple');
+        } else if (segment.type === 'credits') {
+          profile.credits += segment.amount;
+          spawnFloatingWheelPopup(`+${segment.amount} 🪙 Credits!`, '#fbbf24');
+          showToast(`Earned +${segment.amount} Space Credits!`, 'amber');
+        }
+        soundEngine.playHarvest();
+
+        // ~15% random cosmic weather storm chance after harvesting
+        if (Math.random() < 0.15) {
+          setTimeout(() => {
+            profile.stormActive = true;
+            soundEngine.playStormWarning();
+            saveGameState();
+            renderAllGameUI();
+            showToast('⚡ Sudden Space Storm rolled in! Clear it to spin again.', 'purple');
+          }, 650);
+        }
+      }
+
+      // 2. Advance Sunset Clock by 1 turn
+      profile.sunsetTurnsRemaining = Math.max(0, profile.sunsetTurnsRemaining - 1);
+      if (profile.sunsetTurnsRemaining === 0) {
+        setTimeout(() => {
+          triggerCosmicDawn(profile);
+        }, 900);
+      }
+
+      saveGameState();
+      renderAllGameUI();
+    }
+
+    function spawnFloatingWheelPopup(text, colorHex) {
+      const anchor = document.getElementById('wheel-reward-popup-anchor');
+      const el = document.createElement('div');
+      el.className = 'reward-float whitespace-nowrap px-4 py-2 rounded-2xl bg-slate-950/95 border-2 font-bold text-base sm:text-lg shadow-2xl';
+      el.style.borderColor = colorHex;
+      el.style.color = colorHex;
+      el.textContent = text;
+      anchor.appendChild(el);
+      setTimeout(() => el.remove(), 1950);
+    }
+
+    function triggerCosmicDawn(profile) {
+      profile.dayCount = (profile.dayCount || 1) + 1;
+      profile.sunsetTurnsRemaining = MAX_SUNSET_TURNS;
+      saveGameState();
+      renderAllGameUI();
+      soundEngine.playDawn();
+      document.getElementById('dawn-day-number').textContent = profile.dayCount;
+      openModal('modal-cosmic-dawn');
+    }
+
+    /* =====================================================================
+     * 7. SPACE STORM OBSTACLE CLEARING LOGIC
+     * ===================================================================== */
+    function renderStormOverlay() {
+      const profile = getActiveProfile();
+      const overlay = document.getElementById('space-storm-overlay');
+      if (!profile || !profile.stormActive) {
+        overlay.classList.add('hidden');
+        return;
+      }
+
+      overlay.classList.remove('hidden');
+      const choicesContainer = document.getElementById('storm-commodity-choices');
+      choicesContainer.innerHTML = '';
+
+      const ownedKeys = COMMODITY_KEYS.filter(k => (profile.inventory[k] || 0) > 0);
+      const autoBtn = document.getElementById('btn-storm-auto');
+
+      if (ownedKeys.length === 0) {
+        // Emergency free fallback if inventory is completely empty so player never gets stuck
+        autoBtn.innerHTML = '<span>🛡️</span> Emergency Solar Pulse (Free)';
+        choicesContainer.innerHTML = `
+          <div class="text-xs text-purple-200 bg-purple-900/50 px-3 py-1.5 rounded-xl border border-purple-400/30">
+            Backpack empty! Use your emergency shield pulse to clear the storm.
+          </div>
+        `;
+      } else {
+        autoBtn.innerHTML = '<span>⚡</span> Pick One For Me (-1 Material)';
+        ownedKeys.forEach(key => {
+          const c = COMMODITIES[key];
+          const count = profile.inventory[key];
+          const btn = document.createElement('button');
+          btn.className = 'btn-arcade px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-b-2 border-purple-400/50 text-xs font-bold text-white flex items-center gap-1';
+          btn.innerHTML = `<span>${c.icon}</span> <span>${c.short} (${count})</span>`;
+          btn.onclick = () => clearStormWithCommodity(key);
+          choicesContainer.appendChild(btn);
+        });
+      }
+    }
+
+    function clearStormAuto() {
+      const profile = getActiveProfile();
+      if (!profile || !profile.stormActive) return;
+
+      const ownedKeys = COMMODITY_KEYS.filter(k => (profile.inventory[k] || 0) > 0);
+      if (ownedKeys.length === 0) {
+        // Free emergency shield pulse
+        profile.stormActive = false;
+        soundEngine.playStormClear();
+        saveGameState();
+        renderAllGameUI();
+        showToast('🛡️ Emergency Solar Pulse cleared the Space Storm!', 'emerald');
+        return;
+      }
+
+      // Smart pick: prefer a commodity NOT currently needed for the active build, otherwise the one with largest quantity
+      const lvlCfg = getLevelConfig(profile.level);
+      const unNeeded = ownedKeys.filter(k => {
+        const req = lvlCfg.costs[k] || 0;
+        const done = profile.buildProgress[k] || 0;
+        return done >= req;
+      });
+
+      const pool = unNeeded.length > 0 ? unNeeded : ownedKeys;
+      pool.sort((a, b) => (profile.inventory[b] || 0) - (profile.inventory[a] || 0));
+      clearStormWithCommodity(pool[0]);
+    }
+
+    function clearStormWithCommodity(key) {
+      const profile = getActiveProfile();
+      if (!profile || !profile.stormActive) return;
+      if ((profile.inventory[key] || 0) <= 0) return;
+
+      profile.inventory[key] -= 1;
+      profile.stormActive = false;
+      soundEngine.playStormClear();
+      saveGameState();
+      renderAllGameUI();
+      showToast(`⚡ Used 1 ${COMMODITIES[key].name} to clear the Space Storm!`, 'emerald');
+    }
+
+    /* =====================================================================
+     * 8. SEQUENTIAL BUILDING TRACK & CONSTRUCTION CONTRIBUTIONS
+     * ===================================================================== */
+    function contributeSingleResource(key) {
+      const profile = getActiveProfile();
+      if (!profile) return;
+
+      const lvlCfg = getLevelConfig(profile.level);
+      const required = lvlCfg.costs[key] || 0;
+      const current = profile.buildProgress[key] || 0;
+      const available = profile.inventory[key] || 0;
+
+      if (current >= required || available <= 0) return;
+
+      profile.inventory[key] -= 1;
+      profile.buildProgress[key] = current + 1;
+      soundEngine.playBuildClang();
+
+      saveGameState();
+      renderAllGameUI();
+      checkStructureCompletion();
+    }
+
+    function contributeAllResources() {
+      const profile = getActiveProfile();
+      if (!profile) return;
+
+      const lvlCfg = getLevelConfig(profile.level);
+      let contributedAny = false;
+
+      Object.entries(lvlCfg.costs).forEach(([key, required]) => {
+        const current = profile.buildProgress[key] || 0;
+        const needed = Math.max(0, required - current);
+        const available = profile.inventory[key] || 0;
+        const toUse = Math.min(needed, available);
+
+        if (toUse > 0) {
+          profile.inventory[key] -= toUse;
+          profile.buildProgress[key] = current + toUse;
+          contributedAny = true;
+        }
+      });
+
+      if (!contributedAny) {
+        showToast('Spin the Space Compass or play quests to gather needed materials!', 'amber');
+        return;
+      }
+
+      soundEngine.playBuildClang();
+      saveGameState();
+      renderAllGameUI();
+      checkStructureCompletion();
+    }
+
+    function checkStructureCompletion() {
+      const profile = getActiveProfile();
+      if (!profile) return;
+
+      const lvlCfg = getLevelConfig(profile.level);
+      const isComplete = Object.entries(lvlCfg.costs).every(([key, req]) => {
+        return (profile.buildProgress[key] || 0) >= req;
+      });
+
+      if (!isComplete) return;
+
+      // Award Level Completion Rewards!
+      profile.credits += lvlCfg.rewardCredits;
+      profile.stardust += lvlCfg.rewardStardust;
+      profile.stats.buildsCompleted = (profile.stats.buildsCompleted || 0) + 1;
+
+      if (profile.level >= LEVELS.length) {
+        profile.completedAll = true;
+      }
+
+      saveGameState();
+      renderAllGameUI();
+      soundEngine.playFanfare();
+
+      // Populate Celebration Modal
+      const isFinal = profile.level >= LEVELS.length;
+      document.getElementById('celebration-emoji').textContent = isFinal ? '👑🏆🚀' : `${lvlCfg.icon}🎉`;
+      document.getElementById('celebration-badge').textContent = isFinal ? 'GRAND SPACE ARCHITECT!' : `LEVEL ${profile.level} COMPLETE!`;
+      document.getElementById('celebration-title').textContent = `${lvlCfg.structureName} Built!`;
+      document.getElementById('celebration-subtitle').textContent = isFinal
+        ? 'Incredible! You built every cosmic wonder from the Asteroid Gap to the Venus Palace!'
+        : `Awesome job, ${profile.name}! Ready to launch to the next world?`;
+      document.getElementById('celebration-rewards').innerHTML = `
+        <span>+${lvlCfg.rewardCredits} 🪙</span>
+        <span>+${lvlCfg.rewardStardust} ✨</span>
+      `;
+      document.getElementById('btn-next-level').textContent = isFinal
+        ? '🌟 Celebrate & Keep Exploring!'
+        : `🚀 Launch to Level ${profile.level + 1}!`;
+
+      openModal('modal-level-complete');
+    }
+
+    function advanceToNextLevel() {
+      const profile = getActiveProfile();
+      closeModal('modal-level-complete');
+      if (!profile) return;
+
+      if (profile.level < LEVELS.length) {
+        profile.level += 1;
+        profile.buildProgress = {};
+        saveGameState();
+        renderAllGameUI();
+        const nextCfg = getLevelConfig(profile.level);
+        showToast(`🚀 Arrived at ${nextCfg.worldName}: Build the ${nextCfg.structureName}!`, 'sky');
+      } else {
+        // After Level 5, reset Venus Palace blueprint for repeatable bonus building if desired
+        profile.buildProgress = {};
+        saveGameState();
+        renderAllGameUI();
+        showToast('👑 Grand Space Architect! Keep spinning, trading & unlocking all 20 Store items!', 'amber');
+      }
+    }
+
+    /* =====================================================================
+     * 9. COMMODITY TRADING HUB (2-FOR-1 & 3-TO-1 STARDUST EXCHANGE)
+     * ===================================================================== */
+    function openTradeModal() {
+      const profile = getActiveProfile();
+      if (!profile) return;
+      soundEngine.playClick();
+
+      // Default give key to first commodity with >= 2
+      const richKey = COMMODITY_KEYS.find(k => (profile.inventory[k] || 0) >= 2);
+      if (richKey) tradeGiveKey = richKey;
+      if (tradeReceiveKey === tradeGiveKey) {
+        tradeReceiveKey = COMMODITY_KEYS.find(k => k !== tradeGiveKey) || 'titanium';
+      }
+
+      renderTradeModal();
+      openModal('modal-trade');
+    }
+
+    function renderTradeModal() {
+      const profile = getActiveProfile();
+      if (!profile) return;
+
+      document.getElementById('trade-stardust-count').textContent = profile.stardust;
+
+      const giveList = document.getElementById('trade-give-list');
+      const receiveList = document.getElementById('trade-receive-list');
+      giveList.innerHTML = '';
+      receiveList.innerHTML = '';
+
+      COMMODITY_KEYS.forEach(key => {
+        const c = COMMODITIES[key];
+        const count = profile.inventory[key] || 0;
+        const isSelectedGive = tradeGiveKey === key;
+        const canGive = count >= 2;
+
+        // Give button
+        const gBtn = document.createElement('button');
+        gBtn.className = `w-full px-3 py-2 rounded-xl border text-left text-xs sm:text-sm font-bold flex items-center justify-between transition ${
+          isSelectedGive
+            ? 'bg-sky-500/30 border-sky-400 text-white'
+            : 'bg-slate-900/80 border-slate-700 text-slate-300 hover:border-slate-500'
+        } ${!canGive ? 'opacity-50' : ''}`;
+        gBtn.innerHTML = `<span>${c.icon} ${c.name}</span><span>Have: ${count}</span>`;
+        gBtn.onclick = () => {
+          tradeGiveKey = key;
+          if (tradeReceiveKey === tradeGiveKey) {
+            tradeReceiveKey = COMMODITY_KEYS.find(k => k !== key);
+          }
+          renderTradeModal();
+        };
+        giveList.appendChild(gBtn);
+
+        // Receive button
+        const isSelectedRec = tradeReceiveKey === key;
+        const rBtn = document.createElement('button');
+        rBtn.disabled = key === tradeGiveKey;
+        rBtn.className = `w-full px-3 py-2 rounded-xl border text-left text-xs sm:text-sm font-bold flex items-center justify-between transition ${
+          isSelectedRec
+            ? 'bg-emerald-500/30 border-emerald-400 text-white'
+            : 'bg-slate-900/80 border-slate-700 text-slate-300 hover:border-slate-500'
+        } ${key === tradeGiveKey ? 'opacity-30 cursor-not-allowed' : ''}`;
+        rBtn.innerHTML = `<span>${c.icon} ${c.name}</span><span>+1</span>`;
+        rBtn.onclick = () => {
+          tradeReceiveKey = key;
+          renderTradeModal();
+        };
+        receiveList.appendChild(rBtn);
+      });
+
+      const execBtn = document.getElementById('btn-execute-2for1');
+      const canTrade2For1 = (profile.inventory[tradeGiveKey] || 0) >= 2 && tradeGiveKey !== tradeReceiveKey;
+      execBtn.disabled = !canTrade2For1;
+      execBtn.textContent = `🔄 Trade 2 ${COMMODITIES[tradeGiveKey].short} ➔ +1 ${COMMODITIES[tradeReceiveKey].short}`;
+
+      // Populate Stardust exchange selects
+      const sToM = document.getElementById('stardust-to-mat-select');
+      const mToS = document.getElementById('mat-to-stardust-select');
+      sToM.innerHTML = COMMODITY_KEYS.map(k => `<option value="${k}">${COMMODITIES[k].icon} ${COMMODITIES[k].name} (Have: ${profile.inventory[k] || 0})</option>`).join('');
+      mToS.innerHTML = COMMODITY_KEYS.map(k => `<option value="${k}">${COMMODITIES[k].icon} ${COMMODITIES[k].name} (Have: ${profile.inventory[k] || 0})</option>`).join('');
+
+      document.getElementById('btn-stardust-to-mat').disabled = profile.stardust < 3;
+    }
+
+    function executeCommodityTrade() {
+      const profile = getActiveProfile();
+      if (!profile) return;
+      if ((profile.inventory[tradeGiveKey] || 0) < 2 || tradeGiveKey === tradeReceiveKey) return;
+
+      profile.inventory[tradeGiveKey] -= 2;
+      profile.inventory[tradeReceiveKey] = (profile.inventory[tradeReceiveKey] || 0) + 1;
+
+      soundEngine.playHarvest();
+      saveGameState();
+      renderTradeModal();
+      renderAllGameUI();
+      showToast(`Swapped 2 ${COMMODITIES[tradeGiveKey].short} for +1 ${COMMODITIES[tradeReceiveKey].short}!`, 'sky');
+    }
+
+    function exchangeStardustForMaterial() {
+      const profile = getActiveProfile();
+      if (!profile || profile.stardust < 3) return;
+      const targetKey = document.getElementById('stardust-to-mat-select').value;
+
+      profile.stardust -= 3;
+      profile.inventory[targetKey] = (profile.inventory[targetKey] || 0) + 1;
+
+      soundEngine.playHarvest();
+      saveGameState();
+      renderTradeModal();
+      renderAllGameUI();
+      showToast(`✨ Synthesized +1 ${COMMODITIES[targetKey].name}!`, 'purple');
+    }
+
+    function exchangeMaterialForStardust() {
+      const profile = getActiveProfile();
+      if (!profile) return;
+      const sourceKey = document.getElementById('mat-to-stardust-select').value;
+      if ((profile.inventory[sourceKey] || 0) < 3) {
+        showToast(`You need at least 3 ${COMMODITIES[sourceKey].name}!`, 'amber');
+        soundEngine.playRetry();
+        return;
+      }
+
+      profile.inventory[sourceKey] -= 3;
+      profile.stardust += 1;
+
+      soundEngine.playHarvest();
+      saveGameState();
+      renderTradeModal();
+      renderAllGameUI();
+      showToast(`Distilled 3 ${COMMODITIES[sourceKey].short} into +1 ✨ Stardust!`, 'amber');
+    }
+
+    /* =====================================================================
+     * 10. EDUCATIONAL MINIGAME 1: SPACE MATH
+     * ===================================================================== */
+    function openMathModal() {
+      soundEngine.playClick();
+      generateMathPuzzle();
+      openModal('modal-math');
+    }
+
+    function generateMathPuzzle() {
+      const profile = getActiveProfile();
+      const lvl = profile ? profile.level : 1;
+      const isAddition = Math.random() < 0.55;
+
+      let a, b, answer, op;
+      if (lvl <= 2) {
+        // Levels 1-2: Addition & subtraction within 30
+        if (isAddition) {
+          a = Math.floor(Math.random() * 18) + 4;
+          b = Math.floor(Math.random() * (30 - a)) + 2;
+          answer = a + b;
+          op = '+';
+        } else {
+          a = Math.floor(Math.random() * 19) + 10;
+          b = Math.floor(Math.random() * (a - 2)) + 2;
+          answer = a - b;
+          op = '−';
+        }
+      } else {
+        // Levels 3-5: Two-digit addition & subtraction within 100
+        if (isAddition) {
+          a = Math.floor(Math.random() * 48) + 15;
+          b = Math.floor(Math.random() * (98 - a)) + 11;
+          answer = a + b;
+          op = '+';
+        } else {
+          a = Math.floor(Math.random() * 55) + 35;
+          b = Math.floor(Math.random() * (a - 14)) + 12;
+          answer = a - b;
+          op = '−';
+        }
+      }
+
+      const stories = [
+        'Charge the hyper-thrusters with the exact fuel count!',
+        'Balance the meteor deflector shields before launch!',
+        'Program the navigation computer coordinates!'
+      ];
+
+      currentMathPuzzle = { a, b, op, answer };
+      mathUserInputStr = '';
+      document.getElementById('math-story-prompt').textContent = stories[Math.floor(Math.random() * stories.length)];
+      document.getElementById('math-equation-display').textContent = `${a} ${op} ${b} = ?`;
+      document.getElementById('math-user-input').textContent = '_';
+      document.getElementById('math-feedback').textContent = '';
+      document.getElementById('math-streak-val').textContent = mathStreak;
+    }
+
+    function appendMathDigit(digit) {
+      if (!currentMathPuzzle || mathUserInputStr.length >= 3) return;
+      soundEngine.playClick();
+      mathUserInputStr += digit;
+      document.getElementById('math-user-input').textContent = mathUserInputStr;
+    }
+
+    function backspaceMathDigit() {
+      if (!currentMathPuzzle) return;
+      soundEngine.playClick();
+      mathUserInputStr = mathUserInputStr.slice(0, -1);
+      document.getElementById('math-user-input').textContent = mathUserInputStr || '_';
+    }
+
+    function submitMathAnswer() {
+      if (!currentMathPuzzle || mathUserInputStr === '') return;
+      const guess = parseInt(mathUserInputStr, 10);
+      const feedbackEl = document.getElementById('math-feedback');
+
+      if (guess === currentMathPuzzle.answer) {
+        const profile = getActiveProfile();
+        mathStreak += 1;
+        document.getElementById('math-streak-val').textContent = mathStreak;
+        soundEngine.playSuccess();
+
+        const bonusKey = grantEducationalReward(profile, 2, 25);
+        feedbackEl.className = 'h-6 text-sm font-bold text-emerald-300 mb-2';
+        feedbackEl.textContent = `🎉 Correct! +2 ✨, +1 ${COMMODITIES[bonusKey].short} & +25 🪙!`;
+
+        setTimeout(() => {
+          if (!document.getElementById('modal-math').classList.contains('hidden')) {
+            generateMathPuzzle();
+          }
+        }, 1250);
+      } else {
+        mathStreak = 0;
+        document.getElementById('math-streak-val').textContent = mathStreak;
+        soundEngine.playRetry();
+        feedbackEl.className = 'h-6 text-sm font-bold text-amber-300 mb-2';
+        feedbackEl.textContent = `Almost! Try calculating ${currentMathPuzzle.a} ${currentMathPuzzle.op} ${currentMathPuzzle.b} again!`;
+        mathUserInputStr = '';
+        document.getElementById('math-user-input').textContent = '_';
+      }
+    }
+
+    /* =====================================================================
+     * 11. EDUCATIONAL MINIGAME 2: HEBREW LANGUAGE QUIZZING (SpeechSynthesis)
+     * ===================================================================== */
+    let preferredHebrewVoice = null;
+
+    function initSpeechVoices() {
+      if (!('speechSynthesis' in window)) return;
+      const loadVoices = () => {
+        const voices = window.speechSynthesis.getVoices();
+        preferredHebrewVoice =
+          voices.find(v => v.lang && v.lang.toLowerCase().startsWith('he')) ||
+          voices.find(v => v.name && v.name.toLowerCase().includes('hebrew')) ||
+          null;
+      };
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function openHebrewModal() {
+      soundEngine.playClick();
+      updateSpeechSpeedButton();
+      generateHebrewQuestion();
+      openModal('modal-hebrew');
+    }
+
+    function toggleSpeechSpeed() {
+      gameState.settings.speechSlow = !gameState.settings.speechSlow;
+      saveGameState();
+      updateSpeechSpeedButton();
+      speakCurrentHebrewWord();
+    }
+
+    function updateSpeechSpeedButton() {
+      const btn = document.getElementById('btn-speech-speed');
+      btn.textContent = gameState.settings.speechSlow ? '🐢 Speed: Slow' : '🚀 Speed: Normal';
+    }
+
+    function speakCurrentHebrewWord() {
+      if (!currentHebrewQuestion) return;
+
+      // Visual pulse on Hear Word button
+      const hearBtn = document.getElementById('btn-hear-hebrew');
+      hearBtn.classList.add('scale-105', 'ring-4', 'ring-amber-300/60');
+      setTimeout(() => hearBtn.classList.remove('scale-105', 'ring-4', 'ring-amber-300/60'), 450);
+
+      if (!('speechSynthesis' in window)) {
+        showToast(`Pronunciation: ${currentHebrewQuestion.translit}`, 'purple');
+        return;
+      }
+
+      try {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(currentHebrewQuestion.hebrew);
+        utterance.lang = 'he-IL';
+        if (preferredHebrewVoice) {
+          utterance.voice = preferredHebrewVoice;
+        }
+        utterance.pitch = 1.1;
+        utterance.rate = gameState.settings.speechSlow ? 0.62 : 0.88;
+        window.speechSynthesis.speak(utterance);
+      } catch (err) {
+        console.warn('Speech synthesis error:', err);
+      }
+    }
+
+    function generateHebrewQuestion() {
+      // Pick target word (avoid immediate repeat)
+      let candidates = HEBREW_WORDS;
+      if (currentHebrewQuestion) {
+        candidates = HEBREW_WORDS.filter(w => w.id !== currentHebrewQuestion.id);
+      }
+      const target = candidates[Math.floor(Math.random() * candidates.length)];
+
+      // Pick 3 distinct distractors
+      const others = HEBREW_WORDS.filter(w => w.id !== target.id);
+      const shuffledOthers = [...others].sort(() => Math.random() - 0.5).slice(0, 3);
+      const options = [target, ...shuffledOthers].sort(() => Math.random() - 0.5);
+
+      currentHebrewQuestion = target;
+
+      document.getElementById('hebrew-word-display').textContent = target.hebrew;
+      document.getElementById('hebrew-translit-text').textContent = target.translit;
+      document.getElementById('hebrew-streak-val').textContent = hebrewStreak;
+      document.getElementById('hebrew-feedback').textContent = '';
+
+      const grid = document.getElementById('hebrew-options-grid');
+      grid.innerHTML = '';
+
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-arcade p-3.5 rounded-2xl bg-slate-800 hover:bg-indigo-900/70 border-2 border-b-4 border-indigo-500/40 flex flex-col items-center justify-center gap-1 transition';
+        btn.innerHTML = `
+          <span class="text-2xl sm:text-3xl">${opt.icon}</span>
+          <span class="font-bold text-white text-sm sm:text-base">${opt.english}</span>
+        `;
+        btn.onclick = () => checkHebrewAnswer(opt, btn);
+        grid.appendChild(btn);
+      });
+
+      // Automatically pronounce sight word aloud on prompt load
+      setTimeout(() => speakCurrentHebrewWord(), 250);
+    }
+
+    function checkHebrewAnswer(selectedOption, btnEl) {
+      if (!currentHebrewQuestion) return;
+      const feedbackEl = document.getElementById('hebrew-feedback');
+
+      if (selectedOption.id === currentHebrewQuestion.id) {
+        const profile = getActiveProfile();
+        hebrewStreak += 1;
+        document.getElementById('hebrew-streak-val').textContent = hebrewStreak;
+        soundEngine.playSuccess();
+
+        btnEl.classList.remove('bg-slate-800', 'border-indigo-500/40');
+        btnEl.classList.add('bg-emerald-500/30', 'border-emerald-400');
+
+        const bonusKey = grantEducationalReward(profile, 2, 30);
+        feedbackEl.className = 'h-6 text-sm font-bold text-emerald-300 mb-2';
+        feedbackEl.textContent = `🌟 Kol HaKavod! +2 ✨, +1 ${COMMODITIES[bonusKey].short} & +30 🪙!`;
+
+        // Disable buttons briefly before next word
+        document.querySelectorAll('#hebrew-options-grid button').forEach(b => (b.disabled = true));
+
+        setTimeout(() => {
+          if (!document.getElementById('modal-hebrew').classList.contains('hidden')) {
+            generateHebrewQuestion();
+          }
+        }, 1350);
+      } else {
+        hebrewStreak = 0;
+        document.getElementById('hebrew-streak-val').textContent = hebrewStreak;
+        soundEngine.playRetry();
+
+        btnEl.disabled = true;
+        btnEl.classList.add('opacity-40', 'border-rose-500');
+        feedbackEl.className = 'h-6 text-sm font-bold text-amber-300 mb-2';
+        feedbackEl.textContent = `Not quite! Tap "Hear Word Again" and try another card!`;
+      }
+    }
+
+    // Shared reward helper for Space Math & Hebrew Quest
+    function grantEducationalReward(profile, stardustAmt, creditsAmt) {
+      if (!profile) return 'ironOre';
+      profile.stardust += stardustAmt;
+      profile.credits += creditsAmt;
+
+      // Smartly choose a commodity currently needed for the active structure!
+      const lvlCfg = getLevelConfig(profile.level);
+      const neededKeys = Object.keys(lvlCfg.costs).filter(k => (profile.buildProgress[k] || 0) < lvlCfg.costs[k]);
+      const rewardPool = neededKeys.length > 0 ? neededKeys : COMMODITY_KEYS;
+      const chosenKey = rewardPool[Math.floor(Math.random() * rewardPool.length)];
+
+      profile.inventory[chosenKey] = (profile.inventory[chosenKey] || 0) + 1;
+      saveGameState();
+      renderAllGameUI();
+      return chosenKey;
+    }
+
+    /* =====================================================================
+     * 12. SPACE STORE & LIVE CHARACTER PREVIEW
+     * ===================================================================== */
+    function openStoreModal() {
+      const profile = getActiveProfile();
+      if (!profile) return;
+      soundEngine.playClick();
+      storePreviewEquipped = { ...profile.equipped };
+      renderStoreModal();
+      openModal('modal-store');
+    }
+
+    function switchStoreTab(tabSlot) {
+      soundEngine.playClick();
+      storeActiveTab = tabSlot;
+      renderStoreModal();
+    }
+
+    function resetGearSlot(slot) {
+      const profile = getActiveProfile();
+      if (!profile) return;
+      const starterMap = { suit: 'suit_starter', helmet: 'helmet_none', boots: 'boots_starter' };
+      const defaultId = starterMap[slot];
+
+      profile.equipped[slot] = defaultId;
+      storePreviewEquipped[slot] = defaultId;
+      soundEngine.playClick();
+      saveGameState();
+      renderStoreModal();
+      renderAllGameUI();
+    }
+
+    function renderStoreModal() {
+      const profile = getActiveProfile();
+      if (!profile) return;
+
+      document.getElementById('store-credits-balance').textContent = profile.credits;
+
+      // Count unlocked non-starter items out of 20
+      const unlockableItems = STORE_CATALOG.filter(i => !i.starter);
+      const unlockedCount = unlockableItems.filter(i => profile.unlockedItems.includes(i.id)).length;
+      document.getElementById('store-unlocked-count').textContent = `${unlockedCount} / ${unlockableItems.length} Unlocked`;
+
+      // Render Live Character Preview with storePreviewEquipped
+      const previewEq = storePreviewEquipped || profile.equipped;
+      document.getElementById('store-avatar-preview').innerHTML = renderBoySVG(profile, { equippedOverride: previewEq });
+
+      // Update equipped slot labels
+      document.getElementById('slot-label-suit').textContent = (getStoreItem(profile.equipped.suit)?.name || 'Cadet').split(' ')[0];
+      document.getElementById('slot-label-helmet').textContent = profile.equipped.helmet === 'helmet_none' ? 'None' : (getStoreItem(profile.equipped.helmet)?.name || 'Helm').split(' ')[0];
+      document.getElementById('slot-label-boots').textContent = (getStoreItem(profile.equipped.boots)?.name || 'Cadet').split(' ')[0];
+
+      // Check if preview differs from actually equipped
+      const isPreviewingUnowned = ['suit', 'helmet', 'boots'].some(s => previewEq[s] !== profile.equipped[s]);
+      const statusPill = document.getElementById('store-preview-status');
+      if (isPreviewingUnowned) {
+        statusPill.className = 'px-3 py-1 rounded-full bg-amber-500/25 border border-amber-400/50 text-amber-300 text-xs font-bold';
+        statusPill.textContent = '👀 Try-On Preview';
+      } else {
+        statusPill.className = 'px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold';
+        statusPill.textContent = '✅ Equipped Look';
+      }
+
+      // Highlight active tab button
+      ['suit', 'helmet', 'boots'].forEach(tab => {
+        const btn = document.getElementById(`store-tab-${tab}`);
+        if (tab === storeActiveTab) {
+          btn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition bg-purple-600 text-white shadow';
+        } else {
+          btn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition text-indigo-300 hover:text-white';
+        }
+      });
+
+      // Render items for active tab
+      const grid = document.getElementById('store-items-grid');
+      grid.innerHTML = '';
+
+      const tabItems = STORE_CATALOG.filter(item => item.slot === storeActiveTab && !item.starter);
+      tabItems.forEach(item => {
+        const isOwned = profile.unlockedItems.includes(item.id);
+        const isEquipped = profile.equipped[item.slot] === item.id;
+        const isPreviewed = previewEq[item.slot] === item.id;
+        const canAfford = profile.credits >= item.price;
+
+        const card = document.createElement('div');
+        card.className = `rounded-2xl p-3.5 border-2 transition cursor-pointer flex flex-col justify-between ${
+          isEquipped
+            ? 'bg-emerald-950/40 border-emerald-400'
+            : isPreviewed
+            ? 'bg-indigo-900/60 border-amber-400'
+            : item.glow
+            ? 'bg-purple-950/35 border-purple-400/50 hover:border-purple-300'
+            : 'bg-slate-800/80 border-slate-700 hover:border-indigo-400'
+        }`;
+
+        // Clicking card previews item on live character immediately
+        card.onclick = () => {
+          storePreviewEquipped = { ...profile.equipped, [item.slot]: item.id };
+          if (isOwned) {
+            profile.equipped[item.slot] = item.id;
+            saveGameState();
+            renderAllGameUI();
+          }
+          soundEngine.playClick();
+          renderStoreModal();
+        };
+
+        const rarityBadge = item.glow
+          ? `<span class="px-2 py-0.5 rounded-md bg-gradient-to-r from-fuchsia-500 to-amber-400 text-slate-950 text-[10px] font-extrabold tracking-wide">✨ ${item.rarity}</span>`
+          : `<span class="px-2 py-0.5 rounded-md bg-slate-700 text-slate-300 text-[10px] font-bold uppercase">${item.slot}</span>`;
+
+        let actionHTML = '';
+        if (isEquipped) {
+          actionHTML = `<button class="w-full py-2 rounded-xl bg-emerald-500/25 border border-emerald-400 text-emerald-300 font-bold text-xs">✅ Equipped</button>`;
+        } else if (isOwned) {
+          actionHTML = `<button class="btn-arcade w-full py-2 rounded-xl bg-sky-500 border-b-2 border-sky-800 text-slate-950 font-bold text-xs">Equip Gear</button>`;
+        } else {
+          actionHTML = `
+            <button
+              onclick="event.stopPropagation(); buyStoreItem('${item.id}')"
+              ${!canAfford ? 'disabled' : ''}
+              class="btn-arcade w-full py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 border-b-2 border-orange-700 text-slate-950 font-bold text-xs flex items-center justify-center gap-1"
+            >
+              <span>🪙</span> Buy for ${item.price}
+            </button>
+          `;
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+              ${rarityBadge}
+              <span class="w-4 h-4 rounded-full border border-white/50" style="background:${item.glow ? item.glowColor : item.primary}"></span>
+            </div>
+            <div class="font-bold text-white text-sm sm:text-base">${item.name}</div>
+            <p class="text-[11px] text-indigo-200/80 mt-0.5 mb-3 leading-snug">${item.desc || ''}</p>
+          </div>
+          ${actionHTML}
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function buyStoreItem(itemId) {
+      const profile = getActiveProfile();
+      const item = getStoreItem(itemId);
+      if (!profile || !item) return;
+
+      if (profile.unlockedItems.includes(itemId)) return;
+      if (profile.credits < item.price) {
+        showToast('Not enough Space Credits! Spin the wheel or complete builds!', 'amber');
+        soundEngine.playRetry();
+        return;
+      }
+
+      profile.credits -= item.price;
+      profile.unlockedItems.push(item.id);
+      profile.equipped[item.slot] = item.id;
+      storePreviewEquipped = { ...profile.equipped };
+
+      soundEngine.playPurchase();
+      saveGameState();
+      renderStoreModal();
+      renderAllGameUI();
+      showToast(`🎉 Unlocked & Equipped ${item.name}!`, 'purple');
+    }
+
+    /* =====================================================================
+     * 13. MAIN MENU, PROFILE CREATOR & SCREEN NAVIGATION
+     * ===================================================================== */
+    function showScreen(screenName) {
+      ['menu', 'creator', 'game'].forEach(name => {
+        const el = document.getElementById(`screen-${name}`);
+        if (name === screenName) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+
+      if (screenName === 'menu') {
+        pendingDeleteProfileId = null;
+        renderMenuProfiles();
+      } else if (screenName === 'game') {
+        renderAllGameUI();
+      }
+    }
+
+    function renderMenuProfiles() {
+      const grid = document.getElementById('profiles-grid');
+      grid.innerHTML = '';
+
+      if (gameState.profiles.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-slate-900/80 border-2 border-dashed border-indigo-400/40 rounded-3xl p-8 text-center">
+            <div class="text-5xl mb-3">👨‍🚀✨</div>
+            <h3 class="text-xl font-bold text-white mb-1">No Space Heroes Yet!</h3>
+            <p class="text-sm text-indigo-200 mb-4">Create your custom Space Explorer to start building across the solar system.</p>
+            <button onclick="openCreatorScreen()" class="btn-arcade px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-bold text-base border-b-4 border-orange-700 shadow-lg">
+              🚀 Create My First Hero
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      gameState.profiles.forEach(profile => {
+        const lvlCfg = getLevelConfig(profile.level);
+        const isConfirmingDelete = pendingDeleteProfileId === profile.id;
+
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900/90 border-2 border-indigo-500/40 hover:border-amber-400/70 rounded-3xl p-4 shadow-xl flex flex-col justify-between transition pop-in';
+
+        card.innerHTML = `
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-20 h-24 rounded-2xl bg-indigo-950/90 border border-indigo-400/30 flex items-center justify-center shrink-0 p-1">
+              ${renderBoySVG(profile)}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-bold text-xs mb-1">
+                <span>${lvlCfg.icon}</span> Level ${profile.level}: ${lvlCfg.structureName}
+              </div>
+              <h3 class="text-xl font-bold text-white truncate">${escapeHTML(profile.name)}</h3>
+              <div class="flex items-center gap-3 text-xs font-bold text-indigo-200 mt-1">
+                <span>🪙 ${profile.credits}</span>
+                <span>✨ ${profile.stardust}</span>
+                <span>🛍️ ${Math.max(0, profile.unlockedItems.length - 3)}/20</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 pt-2 border-t border-indigo-500/20">
+            <button onclick="selectAndPlayProfile('${profile.id}')" class="btn-arcade flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-bold text-sm border-b-4 border-emerald-700">
+              🚀 Play Adventure
+            </button>
+            ${
+              isConfirmingDelete
+                ? `<button onclick="confirmDeleteProfile('${profile.id}')" class="btn-arcade px-3 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs border-b-4 border-rose-900">Delete!</button>
+                   <button onclick="cancelDeleteProfile()" class="btn-arcade px-2.5 py-2.5 rounded-xl bg-slate-700 text-slate-200 font-bold text-xs border-b-4 border-slate-900">No</button>`
+                : `<button onclick="requestDeleteProfile('${profile.id}')" title="Delete Profile" class="btn-arcade p-2.5 rounded-xl bg-slate-800 hover:bg-rose-950 text-slate-400 hover:text-rose-300 border-b-4 border-slate-950 text-sm">🗑️</button>`
+            }
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function selectAndPlayProfile(profileId) {
+      soundEngine.unlock();
+      soundEngine.playClick();
+      gameState.activeProfileId = profileId;
+      saveGameState();
+      showScreen('game');
+    }
+
+    function requestDeleteProfile(profileId) {
+      soundEngine.playClick();
+      pendingDeleteProfileId = profileId;
+      renderMenuProfiles();
+    }
+
+    function cancelDeleteProfile() {
+      soundEngine.playClick();
+      pendingDeleteProfileId = null;
+      renderMenuProfiles();
+    }
+
+    function confirmDeleteProfile(profileId) {
+      soundEngine.playRetry();
+      gameState.profiles = gameState.profiles.filter(p => p.id !== profileId);
+      if (gameState.activeProfileId === profileId) {
+        gameState.activeProfileId = gameState.profiles[0]?.id || null;
+      }
+      pendingDeleteProfileId = null;
+      saveGameState();
+      renderMenuProfiles();
+      showToast('Hero profile removed.', 'slate');
+    }
+
+    // Hero Creator Screen Logic
+    function openCreatorScreen() {
+      soundEngine.unlock();
+      soundEngine.playClick();
+      creatorState = {
+        name: RANDOM_HERO_NAMES[Math.floor(Math.random() * RANDOM_HERO_NAMES.length)],
+        skinTone: SKIN_TONES[3].hex
+      };
+      document.getElementById('hero-name-input').value = creatorState.name;
+      renderCreatorUI();
+      showScreen('creator');
+    }
+
+    function updateCreatorName(val) {
+      creatorState.name = val;
+      document.getElementById('creator-preview-nameplate').textContent = val.trim() || 'Space Hero';
+    }
+
+    function assignRandomHeroName() {
+      soundEngine.playClick();
+      const others = RANDOM_HERO_NAMES.filter(n => n !== creatorState.name);
+      const picked = others[Math.floor(Math.random() * others.length)];
+      creatorState.name = picked;
+      document.getElementById('hero-name-input').value = picked;
+      document.getElementById('creator-preview-nameplate').textContent = picked;
+    }
+
+    function selectCreatorSkinTone(hex) {
+      soundEngine.playClick();
+      creatorState.skinTone = hex;
+      renderCreatorUI();
+    }
+
+    function renderCreatorUI() {
+      document.getElementById('creator-preview-nameplate').textContent = creatorState.name.trim() || 'Space Hero';
+      document.getElementById('creator-avatar-preview').innerHTML = renderBoySVG({
+        skinTone: creatorState.skinTone,
+        equipped: { suit: 'suit_starter', helmet: 'helmet_none', boots: 'boots_starter' }
+      });
+
+      const skinObj = SKIN_TONES.find(s => s.hex === creatorState.skinTone) || SKIN_TONES[3];
+      document.getElementById('creator-skin-label').textContent = skinObj.name;
+
+      const paletteEl = document.getElementById('skin-tone-palette');
+      paletteEl.innerHTML = '';
+
+      SKIN_TONES.forEach(tone => {
+        const isSelected = tone.hex === creatorState.skinTone;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.title = tone.name;
+        btn.className = `w-11 h-11 sm:w-12 sm:h-12 mx-auto rounded-full transition transform ${
+          isSelected ? 'scale-110 ring-4 ring-amber-400 shadow-lg' : 'hover:scale-105 opacity-90 hover:opacity-100 ring-2 ring-slate-900'
+        }`;
+        btn.style.backgroundColor = tone.hex;
+        btn.onclick = () => selectCreatorSkinTone(tone.hex);
+        paletteEl.appendChild(btn);
+      });
+    }
+
+    function createHeroProfile() {
+      const cleanName = (creatorState.name || '').trim() || 'Captain Orion';
+      const newProfile = {
+        id: 'hero_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        name: cleanName,
+        skinTone: creatorState.skinTone,
+        level: 1,
+        completedAll: false,
+        buildProgress: {},
+        inventory: {
+          ironOre: 1,
+          titanium: 0,
+          lunarGlass: 1,
+          plasmaCrystal: 0,
+          solarAlloy: 0
+        },
+        credits: 50,
+        stardust: 1,
+        unlockedItems: ['suit_starter', 'helmet_none', 'boots_starter'],
+        equipped: {
+          suit: 'suit_starter',
+          helmet: 'helmet_none',
+          boots: 'boots_starter'
+        },
+        sunsetTurnsRemaining: MAX_SUNSET_TURNS,
+        dayCount: 1,
+        stormActive: false,
+        stats: { mathSolved: 0, hebrewSolved: 0, buildsCompleted: 0 }
+      };
+
+      gameState.profiles.push(newProfile);
+      gameState.activeProfileId = newProfile.id;
+      saveGameState();
+
+      soundEngine.playPurchase();
+      showScreen('game');
+      showToast(`🚀 Welcome aboard, ${cleanName}!`, 'amber');
+    }
+
+    /* =====================================================================
+     * 14. MAIN GAMEPLAY UI RENDERING FUNCTIONS
+     * ===================================================================== */
+    function renderAllGameUI() {
+      const profile = getActiveProfile();
+      if (!profile) return;
+
+      const lvlCfg = getLevelConfig(profile.level);
+
+      // 1. Top HUD Bar
+      document.getElementById('hud-avatar').innerHTML = renderBoySVG(profile);
+      document.getElementById('hud-hero-name').textContent = profile.name;
+      document.getElementById('hud-level-badge').textContent = `LVL ${profile.level}`;
+      document.getElementById('hud-world-subtitle').textContent = lvlCfg.worldName;
+      document.getElementById('hud-credits').textContent = profile.credits;
+      document.getElementById('hud-stardust').textContent = profile.stardust;
+
+      // Sunset Clock Gauge
+      const turns = profile.sunsetTurnsRemaining;
+      document.getElementById('hud-sunset-text').textContent = `${turns}/${MAX_SUNSET_TURNS}`;
+      document.getElementById('hud-sunset-icon').textContent = turns > 4 ? '☀️' : turns > 2 ? '🌇' : '🌙';
+
+      const pipsEl = document.getElementById('hud-sunset-pips');
+      pipsEl.innerHTML = '';
+      for (let i = 0; i < MAX_SUNSET_TURNS; i++) {
+        const active = i < turns;
+        const pip = document.createElement('span');
+        pip.className = `w-1.5 h-3 rounded-full ${active ? 'bg-amber-400' : 'bg-slate-700'}`;
+        pipsEl.appendChild(pip);
+      }
+
+      // Store affordable indicator dot
+      const canBuySomething = STORE_CATALOG.some(
+        item => !item.starter && !profile.unlockedItems.includes(item.id) && profile.credits >= item.price
+      );
+      const dotEl = document.getElementById('store-affordable-dot');
+      if (canBuySomething) dotEl.classList.remove('hidden');
+      else dotEl.classList.add('hidden');
+
+      // 2. 5-Level Progression Stepper
+      renderLevelStepper(profile);
+
+      // 3. Active Structure Blueprint & Requirements
+      renderStructureSection(profile, lvlCfg);
+
+      // 4. Backpack Inventory
+      renderBackpack(profile);
+
+      // 5. Storm Overlay & Spin Button States
+      renderStormOverlay();
+      updateSpinButtonsState();
+    }
+
+    function renderLevelStepper(profile) {
+      const stepper = document.getElementById('level-track-stepper');
+      stepper.innerHTML = '';
+
+      LEVELS.forEach((lvl, idx) => {
+        const isCurrent = lvl.level === profile.level;
+        const isDone = lvl.level < profile.level || (lvl.level === 5 && profile.completedAll);
+
+        const node = document.createElement('div');
+        node.className = `flex-1 flex items-center gap-2 px-3 py-1.5 rounded-xl border ${
+          isCurrent
+            ? 'bg-indigo-600/40 border-amber-400 text-white shadow'
+            : isDone
+            ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
+            : 'bg-slate-950/50 border-slate-800 text-slate-400'
+        }`;
+
+        node.innerHTML = `
+          <span class="text-lg">${isDone ? '✅' : lvl.icon}</span>
+          <div class="min-w-0">
+            <div class="text-[10px] font-bold uppercase tracking-wider opacity-80">Level ${lvl.level}</div>
+            <div class="text-xs font-bold truncate">${lvl.structureName}</div>
+          </div>
+        `;
+        stepper.appendChild(node);
+
+        if (idx < LEVELS.length - 1) {
+          const arrow = document.createElement('span');
+          arrow.className = 'text-indigo-500 font-bold text-xs';
+          arrow.textContent = '➔';
+          stepper.appendChild(arrow);
+        }
+      });
+    }
+
+    function renderStructureSection(profile, lvlCfg) {
+      document.getElementById('build-level-tag').textContent = `Level ${lvlCfg.level} • ${lvlCfg.worldName}`;
+      document.getElementById('build-structure-title').textContent = `${lvlCfg.icon} ${lvlCfg.structureName}`;
+      document.getElementById('build-structure-desc').textContent = lvlCfg.description;
+      document.getElementById('build-reward-preview').textContent = `+${lvlCfg.rewardCredits} 🪙 & +${lvlCfg.rewardStardust} ✨`;
+
+      // Compute overall build percentage
+      let totalRequired = 0;
+      let totalContributed = 0;
+      Object.entries(lvlCfg.costs).forEach(([key, req]) => {
+        totalRequired += req;
+        totalContributed += Math.min(req, profile.buildProgress[key] || 0);
+      });
+      const ratio = totalRequired > 0 ? totalContributed / totalRequired : 0;
+      document.getElementById('build-percent-label').textContent = `${Math.round(ratio * 100)}%`;
+
+      // Render Live SVG Structure Blueprint
+      document.getElementById('structure-svg-stage').innerHTML = renderStructureSVG(lvlCfg.level, ratio);
+
+      // Render Requirement Progress Bars
+      const listEl = document.getElementById('build-requirements-list');
+      listEl.innerHTML = '';
+
+      let totalUsableFromBag = 0;
+
+      Object.entries(lvlCfg.costs).forEach(([key, req]) => {
+        const comm = COMMODITIES[key];
+        const done = Math.min(req, profile.buildProgress[key] || 0);
+        const inBag = profile.inventory[key] || 0;
+        const needed = Math.max(0, req - done);
+        const canAddOne = needed > 0 && inBag > 0;
+        totalUsableFromBag += Math.min(needed, inBag);
+
+        const rowPct = Math.round((done / req) * 100);
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'bg-slate-800/80 border border-indigo-500/30 rounded-2xl p-2.5 flex flex-col justify-between';
+        itemDiv.innerHTML = `
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <div class="flex items-center gap-1.5">
+              <span class="text-lg">${comm.icon}</span>
+              <div>
+                <div class="text-xs font-bold text-white leading-none">${comm.name}</div>
+                <div class="text-[11px] text-indigo-300 mt-0.5">In Bag: <span class="font-bold text-white">${inBag}</span></div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold ${done >= req ? 'text-emerald-300' : 'text-amber-300'}">${done}/${req}</span>
+              ${
+                done >= req
+                  ? `<span class="px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-bold">✓</span>`
+                  : `<button onclick="contributeSingleResource('${key}')" ${!canAddOne ? 'disabled' : ''} class="btn-arcade px-2.5 py-1 rounded-lg bg-emerald-400 border-b-2 border-emerald-700 text-slate-950 font-bold text-xs">+1</button>`
+              }
+            </div>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
+            <div class="h-full ${done >= req ? 'bg-emerald-400' : comm.barClass} transition-all duration-300" style="width:${rowPct}%"></div>
+          </div>
+        `;
+        listEl.appendChild(itemDiv);
+      });
+
+      const buildAllBtn = document.getElementById('btn-contribute-all');
+      const buildAllLabel = document.getElementById('btn-contribute-label');
+      buildAllBtn.disabled = totalUsableFromBag === 0;
+      buildAllLabel.textContent = totalUsableFromBag > 0
+        ? `Build! Contribute ${totalUsableFromBag} Material${totalUsableFromBag > 1 ? 's' : ''}`
+        : 'Gather Materials to Build';
+    }
+
+    function renderBackpack(profile) {
+      const grid = document.getElementById('backpack-inventory-grid');
+      grid.innerHTML = '';
+
+      COMMODITY_KEYS.forEach(key => {
+        const c = COMMODITIES[key];
+        const qty = profile.inventory[key] || 0;
+
+        const pill = document.createElement('div');
+        pill.className = `rounded-2xl border p-2.5 flex items-center justify-between sm:flex-col sm:justify-center sm:text-center ${c.bgClass}`;
+        pill.innerHTML = `
+          <div class="flex items-center gap-2 sm:flex-col sm:gap-0.5">
+            <span class="text-xl sm:text-2xl">${c.icon}</span>
+            <span class="text-xs font-bold leading-tight">${c.short}</span>
+          </div>
+          <span class="text-base sm:text-lg font-extrabold text-white mt-0 sm:mt-1">${qty}</span>
+        `;
+        grid.appendChild(pill);
+      });
+    }
+
+    function updateSpinButtonsState() {
+      const profile = getActiveProfile();
+      const disabled = !profile || isWheelSpinning || profile.stormActive;
+      document.getElementById('btn-spin-wheel').disabled = disabled;
+      document.getElementById('btn-spin-bottom').disabled = disabled;
+    }
+
+    /* =====================================================================
+     * 15. MODAL, AUDIO TOGGLE & TOAST UTILITIES
+     * ===================================================================== */
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      soundEngine.playClick();
+      document.getElementById(id).classList.add('hidden');
+      if (id === 'modal-hebrew' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function toggleMusic() {
+      gameState.settings.musicEnabled = !gameState.settings.musicEnabled;
+      saveGameState();
+      updateAudioButtonsUI();
+
+      if (gameState.settings.musicEnabled) {
+        soundEngine.startMusicLoop();
+        showToast('🎵 Space Music ON', 'sky');
+      } else {
+        soundEngine.stopMusicLoop();
+        showToast('🔇 Space Music OFF', 'slate');
+      }
+    }
+
+    function toggleSfx() {
+      gameState.settings.sfxEnabled = !gameState.settings.sfxEnabled;
+      saveGameState();
+      updateAudioButtonsUI();
+      if (gameState.settings.sfxEnabled) {
+        soundEngine.playClick();
+        showToast('🔊 Sound Effects ON', 'sky');
+      }
+    }
+
+    function updateAudioButtonsUI() {
+      const mOn = gameState.settings.musicEnabled;
+      const sOn = gameState.settings.sfxEnabled;
+
+      document.querySelectorAll('.music-status-label').forEach(el => (el.textContent = mOn ? 'Music: ON' : 'Music: OFF'));
+      document.querySelectorAll('.sfx-status-label').forEach(el => (el.textContent = sOn ? 'SFX: ON' : 'SFX: OFF'));
+      document.querySelectorAll('.music-icon-only').forEach(el => (el.textContent = mOn ? '🎵' : '🔇'));
+      document.querySelectorAll('.sfx-icon-only').forEach(el => (el.textContent = sOn ? '🔊' : '🔈'));
+    }
+
+    function showToast(message, theme = 'sky') {
+      const container = document.getElementById('toast-container');
+      const colorMap = {
+        sky: 'bg-slate-900/95 border-sky-400 text-sky-200',
+        emerald: 'bg-slate-900/95 border-emerald-400 text-emerald-200',
+        amber: 'bg-slate-900/95 border-amber-400 text-amber-200',
+        purple: 'bg-slate-900/95 border-purple-400 text-purple-200',
+        slate: 'bg-slate-900/95 border-slate-500 text-slate-200'
+      };
+
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-2.5 rounded-2xl border-2 font-bold text-xs sm:text-sm shadow-2xl pop-in text-center ${colorMap[theme] || colorMap.sky}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 2600);
+    }
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    // Generate twinkling background stars
+    function populateStarfield() {
+      const container = document.getElementById('starfield-container');
+      let starsHTML = '';
+      for (let i = 0; i < 65; i++) {
+        const left = (Math.random() * 100).toFixed(2);
+        const top = (Math.random() * 100).toFixed(2);
+        const size = (Math.random() * 2.6 + 1.2).toFixed(1);
+        const dur = (Math.random() * 3 + 2).toFixed(1);
+        const delay = (Math.random() * 4).toFixed(1);
+        starsHTML += `<div class="absolute rounded-full bg-white star-twinkle" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px;--dur:${dur}s;--delay:${delay}s;"></div>`;
+      }
+      container.innerHTML = starsHTML;
+    }
+
+    // Physical keyboard support for Space Math modal
+    window.addEventListener('keydown', e => {
+      const mathModal = document.getElementById('modal-math');
+      if (!mathModal.classList.contains('hidden')) {
+        if (e.key >= '0' && e.key <= '9') {
+          appendMathDigit(e.key);
+        } else if (e.key === 'Backspace') {
+          backspaceMathDigit();
+        } else if (e.key === 'Enter') {
+          submitMathAnswer();
+        }
+      }
+    });
+
+    // Unlock audio on first pointer interaction anywhere
+    window.addEventListener('pointerdown', () => soundEngine.unlock(), { once: true });
+
+    /* =====================================================================
+     * 16. INITIALIZATION ON WINDOW LOAD
+     * ===================================================================== */
+    window.onload = function () {
+      populateStarfield();
+      loadGameState();
+      buildCompassWheelSVG();
+      initSpeechVoices();
+      updateAudioButtonsUI();
+      showScreen('menu');
+    };
+  </script>
+</body>
+</html>
