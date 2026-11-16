@@ -1,0 +1,2705 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KETAV &amp; QUEST: Chronicles of the Living Word</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cinzel (Fantasy Display), Inter (UI), Frank Ruhl Libre & Noto Sans Hebrew (Crisp RTL Hebrew) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&family=Inter:wght@400;500;600;700&family=Noto+Sans+Hebrew:wght@500;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Cinzel', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            hebrew: ['"Frank Ruhl Libre"', '"Noto Sans Hebrew"', 'serif'],
+          },
+          colors: {
+            obsidian: '#070a12',
+            parchment: '#131826',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Custom Fantasy RPG Styling & Animations */
+    :root {
+      --glow-gold: 0 0 20px rgba(251, 191, 36, 0.25);
+      --glow-indigo: 0 0 24px rgba(99, 102, 241, 0.3);
+      --glow-crimson: 0 0 24px rgba(244, 63, 94, 0.35);
+    }
+
+    body {
+      background-color: #070a12;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(49, 46, 129, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(180, 83, 9, 0.14) 0%, transparent 45%),
+        linear-gradient(180deg, #070a12 0%, #0b101d 100%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .font-hebrew-display {
+      font-family: 'Frank Ruhl Libre', 'Noto Sans Hebrew', serif;
+      direction: rtl;
+      unicode-bidi: isolate;
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+    }
+
+    .fantasy-card {
+      background: linear-gradient(165deg, rgba(15, 23, 42, 0.94) 0%, rgba(9, 13, 24, 0.97) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(251, 191, 36, 0.12);
+    }
+
+    .fantasy-card-indigo {
+      background: linear-gradient(165deg, rgba(30, 27, 75, 0.78) 0%, rgba(15, 23, 42, 0.96) 100%);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(165, 180, 252, 0.15);
+    }
+
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #fde68a 0%, #f59e0b 55%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Combat Animations */
+    @keyframes floatIdle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes lungeRight {
+      0% { transform: translateX(0) scale(1); }
+      40% { transform: translateX(48px) scale(1.08); }
+      100% { transform: translateX(0) scale(1); }
+    }
+
+    @keyframes lungeLeft {
+      0% { transform: translateX(0) scale(1); }
+      40% { transform: translateX(-48px) scale(1.08); }
+      100% { transform: translateX(0) scale(1); }
+    }
+
+    @keyframes hitShake {
+      0%, 100% { transform: translateX(0); filter: brightness(1); }
+      20% { transform: translateX(-10px); filter: brightness(2.2) saturate(2); }
+      40% { transform: translateX(10px); filter: brightness(1.6); }
+      60% { transform: translateX(-7px); }
+      80% { transform: translateX(7px); }
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-6px, 3px); }
+      40% { transform: translate(6px, -3px); }
+      60% { transform: translate(-4px, -2px); }
+      80% { transform: translate(4px, 2px); }
+    }
+
+    @keyframes floatUpFade {
+      0% { opacity: 1; transform: translateY(0) scale(0.85); }
+      25% { opacity: 1; transform: translateY(-16px) scale(1.12); }
+      100% { opacity: 0; transform: translateY(-56px) scale(0.95); }
+    }
+
+    @keyframes pulseAura {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.45)); }
+      50% { filter: drop-shadow(0 0 18px rgba(251, 191, 36, 0.7)); }
+    }
+
+    .animate-idle { animation: floatIdle 3s ease-in-out infinite; }
+    .animate-lunge-right { animation: lungeRight 0.42s cubic-bezier(0.22, 1, 0.36, 1); }
+    .animate-lunge-left { animation: lungeLeft 0.42s cubic-bezier(0.22, 1, 0.36, 1); }
+    .animate-hit { animation: hitShake 0.42s ease-in-out; }
+    .animate-screen-shake { animation: screenShake 0.35s ease-in-out; }
+    .animate-boss-aura { animation: pulseAura 2.4s ease-in-out infinite; }
+
+    .floating-popup {
+      position: absolute;
+      pointer-events: none;
+      animation: floatUpFade 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      z-index: 30;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070a12;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- MAIN APPLICATION CONTAINER -->
+  <div id="app" class="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col min-h-screen">
+    <!-- Top Persistent Header / HUD -->
+    <header id="top-hud" class="fantasy-card rounded-2xl p-3 sm:p-4 mb-5 transition-all"></header>
+
+    <!-- Dynamic Main Screen Viewport -->
+    <main id="main-view" class="flex-1 flex flex-col"></main>
+
+    <!-- Subtle Footer -->
+    <footer class="mt-8 pt-4 border-t border-slate-800/70 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+      <div>KETAV &amp; QUEST • Chronicles of the Living Word • 120 Curated Hebrew Vocabulary Words</div>
+      <div class="flex items-center gap-3">
+        <span id="speech-status-badge" class="inline-flex items-center gap-1.5 text-slate-400"></span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Custom Non-Blocking Modal Overlay (Used for Reset Confirmations, Level Ups, Realm Victories, etc.) -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div id="modal-content" class="fantasy-card rounded-2xl max-w-md w-full p-6 border-amber-400/50 shadow-2xl transform transition-all"></div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm"></div>
+
+  <script>
+    /**
+     * ============================================================================
+     * KETAV & QUEST: Chronicles of the Living Word
+     * Complete Single-File Fantasy RPG Hebrew Vocabulary Learning Game
+     * ============================================================================
+     */
+
+    // ----------------------------------------------------------------------------
+    // 1. CURATED VOCABULARY DATABASE (5 REALMS x 24 WORDS = 120 WORDS)
+    // ----------------------------------------------------------------------------
+    const REALMS = [
+      {
+        id: 1,
+        name: 'Whispering Woods',
+        hebrewTitle: 'יַעַר הַלְּחִישׁוֹת',
+        theme: 'Nature & Elements',
+        description: 'Ancient sun-dappled groves where every leaf, river, and star carries an elemental name.',
+        accent: 'emerald',
+        bgGradient: 'from-emerald-950/70 via-slate-900/90 to-slate-950',
+        borderClass: 'border-emerald-500/40',
+        badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+        monsters: [
+          { id: 'wolf', name: 'Thornwood Wolf', title: 'Forest Stalker', baseHp: 55, atk: 10 },
+          { id: 'golem', name: 'Moss Golem', title: 'Stone Guardian', baseHp: 68, atk: 12 },
+          { id: 'wisp', name: 'Will-o\'-Wisp', title: 'Lantern Spirit', baseHp: 50, atk: 11 }
+        ],
+        boss: {
+          id: 'boss_treant',
+          name: 'Sylvakor, Elder of Etz',
+          title: 'Realm Guardian Boss',
+          baseHp: 115,
+          atk: 15,
+          isBoss: true
+        }
+      },
+      {
+        id: 2,
+        name: 'Crossroads Bazaar',
+        hebrewTitle: 'שׁוּק הַדְּרָכִים',
+        theme: 'Food, Home & Everyday Objects',
+        description: 'Lantern-lit merchant stalls overflowing with sweet honey, warm bread, books, and silver keys.',
+        accent: 'amber',
+        bgGradient: 'from-amber-950/60 via-slate-900/90 to-slate-950',
+        borderClass: 'border-amber-500/40',
+        badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+        monsters: [
+          { id: 'cutpurse', name: 'Alley Cutpurse', title: 'Bazaar Trickster', baseHp: 75, atk: 14 },
+          { id: 'hound', name: 'Brass Clockhound', title: 'Gilded Construct', baseHp: 85, atk: 15 },
+          { id: 'djinn', name: 'Cinnamon Djinn', title: 'Brazier Spirit', baseHp: 80, atk: 16 }
+        ],
+        boss: {
+          id: 'boss_sultan',
+          name: 'Malik of Zahav',
+          title: 'Realm Guardian Boss',
+          baseHp: 155,
+          atk: 20,
+          isBoss: true
+        }
+      },
+      {
+        id: 3,
+        name: 'Ironhold Bastion',
+        hebrewTitle: 'מִבְצַר הַבַּרְזֶל',
+        theme: 'People, Body & Adjectives',
+        description: 'High battlements defended by wise kings, brave heroes, and mighty stone sentinels.',
+        accent: 'sky',
+        bgGradient: 'from-sky-950/65 via-slate-900/90 to-slate-950',
+        borderClass: 'border-sky-500/40',
+        badgeClass: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+        monsters: [
+          { id: 'sentinel', name: 'Ironclad Sentinel', title: 'Bastion Guard', baseHp: 100, atk: 18 },
+          { id: 'gargoyle', name: 'Granite Gargoyle', title: 'Parapet Watcher', baseHp: 110, atk: 19 },
+          { id: 'berserker', name: 'Cinder Berserker', title: 'Forge Warrior', baseHp: 95, atk: 21 }
+        ],
+        boss: {
+          id: 'boss_warden',
+          name: 'General Barzel',
+          title: 'Realm Guardian Boss',
+          baseHp: 200,
+          atk: 25,
+          isBoss: true
+        }
+      },
+      {
+        id: 4,
+        name: 'Chronicle Spire',
+        hebrewTitle: 'מִגְדַּל הַכְּתָבִים',
+        theme: 'Essential Present-Tense Verbs',
+        description: 'An endless library tower where living verbs animate floating tomes and ancient scribes.',
+        accent: 'indigo',
+        bgGradient: 'from-indigo-950/75 via-slate-900/90 to-slate-950',
+        borderClass: 'border-indigo-500/40',
+        badgeClass: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+        monsters: [
+          { id: 'phantom', name: 'Ink Phantom', title: 'Quill Apparition', baseHp: 125, atk: 22 },
+          { id: 'tome', name: 'Grimoire Mimic', title: 'Living Lexicon', baseHp: 135, atk: 23 },
+          { id: 'sphinx', name: 'Riddle Sphinx', title: 'Spire Oracle', baseHp: 130, atk: 24 }
+        ],
+        boss: {
+          id: 'boss_archon',
+          name: 'Archon Vav, Keeper of Script',
+          title: 'Realm Guardian Boss',
+          baseHp: 255,
+          atk: 29,
+          isBoss: true
+        }
+      },
+      {
+        id: 5,
+        name: 'Shadow Citadel',
+        hebrewTitle: 'מְצוּדַת הַצֵּל',
+        theme: 'Time, Travel & Abstract Concepts',
+        description: 'The obsidian fortress beyond time where truth, hope, secrets, and victory are forged.',
+        accent: 'rose',
+        bgGradient: 'from-rose-950/65 via-slate-900/90 to-slate-950',
+        borderClass: 'border-rose-500/40',
+        badgeClass: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+        monsters: [
+          { id: 'wraith', name: 'Void Wraith', title: 'Eclipse Shade', baseHp: 155, atk: 26 },
+          { id: 'obsknight', name: 'Obsidian Dreadknight', title: 'Citadel Champion', baseHp: 170, atk: 28 },
+          { id: 'stalker', name: 'Chrono Stalker', title: 'Hourglass Fiend', baseHp: 160, atk: 29 }
+        ],
+        boss: {
+          id: 'boss_choshekh',
+          name: 'Lord Choshekh, Eclipse Sovereign',
+          title: 'Final Realm Boss',
+          baseHp: 320,
+          atk: 34,
+          isBoss: true
+        }
+      }
+    ];
+
+    const VOCABULARY = [
+      // REALM 1: Whispering Woods (Nature & Elements - 24 words)
+      { id: 'w1_01', realm: 1, hebrew: 'יַעַר', translit: "Ya'ar", meaning: 'Forest', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_02', realm: 1, hebrew: 'נָהָר', translit: 'Nahar', meaning: 'River', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_03', realm: 1, hebrew: 'הַר', translit: 'Har', meaning: 'Mountain', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_04', realm: 1, hebrew: 'אֶבֶן', translit: 'Even', meaning: 'Stone / Rock', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_05', realm: 1, hebrew: 'עֵץ', translit: 'Etz', meaning: 'Tree / Wood', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_06', realm: 1, hebrew: 'שֶׁמֶשׁ', translit: 'Shemesh', meaning: 'Sun', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_07', realm: 1, hebrew: 'יָרֵחַ', translit: "Yare'ach", meaning: 'Moon', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_08', realm: 1, hebrew: 'כּוֹכָב', translit: 'Kokhav', meaning: 'Star', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_09', realm: 1, hebrew: 'רוּחַ', translit: "Ru'ach", meaning: 'Wind / Spirit', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_10', realm: 1, hebrew: 'אֵשׁ', translit: 'Esh', meaning: 'Fire', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_11', realm: 1, hebrew: 'גֶּשֶׁם', translit: 'Geshem', meaning: 'Rain', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_12', realm: 1, hebrew: 'עָנָן', translit: 'Anan', meaning: 'Cloud', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_13', realm: 1, hebrew: 'פֶּרַח', translit: 'Perach', meaning: 'Flower', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_14', realm: 1, hebrew: 'דֶּשֶׁא', translit: 'Deshe', meaning: 'Grass', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_15', realm: 1, hebrew: 'חוֹל', translit: 'Chol', meaning: 'Sand', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_16', realm: 1, hebrew: 'יָם', translit: 'Yam', meaning: 'Sea / Ocean', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_17', realm: 1, hebrew: 'שָׁמַיִם', translit: 'Shamayim', meaning: 'Sky / Heavens', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_18', realm: 1, hebrew: 'אֲדָמָה', translit: 'Adamah', meaning: 'Earth / Soil', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_19', realm: 1, hebrew: 'צֵל', translit: 'Tzel', meaning: 'Shadow / Shade', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_20', realm: 1, hebrew: 'אוֹר', translit: 'Or', meaning: 'Light', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_21', realm: 1, hebrew: 'חֹשֶׁךְ', translit: 'Choshekh', meaning: 'Darkness', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_22', realm: 1, hebrew: 'בֹּקֶר', translit: 'Boker', meaning: 'Morning', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_23', realm: 1, hebrew: 'לַיְלָה', translit: 'Laylah', meaning: 'Night', category: 'Nature & Elements', pos: 'Noun' },
+      { id: 'w1_24', realm: 1, hebrew: 'עֶרֶב', translit: 'Erev', meaning: 'Evening', category: 'Nature & Elements', pos: 'Noun' },
+
+      // REALM 2: Crossroads Bazaar (Food, Home & Everyday Objects - 24 words)
+      { id: 'w2_01', realm: 2, hebrew: 'לֶחֶם', translit: 'Lechem', meaning: 'Bread', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_02', realm: 2, hebrew: 'מַיִם', translit: 'Mayim', meaning: 'Water', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_03', realm: 2, hebrew: 'חָלָב', translit: 'Chalav', meaning: 'Milk', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_04', realm: 2, hebrew: 'דְּבַשׁ', translit: 'Devash', meaning: 'Honey', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_05', realm: 2, hebrew: 'תַּפּוּחַ', translit: "Tapu'ach", meaning: 'Apple', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_06', realm: 2, hebrew: 'יַיִן', translit: 'Yayin', meaning: 'Wine', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_07', realm: 2, hebrew: 'שֻׁלְחָן', translit: 'Shulchan', meaning: 'Table', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_08', realm: 2, hebrew: 'כִּסֵּא', translit: 'Kise', meaning: 'Chair', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_09', realm: 2, hebrew: 'דֶּלֶת', translit: 'Delet', meaning: 'Door', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_10', realm: 2, hebrew: 'חַלּוֹן', translit: 'Chalon', meaning: 'Window', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_11', realm: 2, hebrew: 'בַּיִת', translit: 'Bayit', meaning: 'House / Home', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_12', realm: 2, hebrew: 'מַפְתֵּחַ', translit: "Mafte'ach", meaning: 'Key', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_13', realm: 2, hebrew: 'סֵפֶר', translit: 'Sefer', meaning: 'Book', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_14', realm: 2, hebrew: 'נֵר', translit: 'Ner', meaning: 'Candle', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_15', realm: 2, hebrew: 'כֶּסֶף', translit: 'Kesef', meaning: 'Silver / Money', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_16', realm: 2, hebrew: 'זָהָב', translit: 'Zahav', meaning: 'Gold', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_17', realm: 2, hebrew: 'בֶּגֶד', translit: 'Beged', meaning: 'Garment / Clothes', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_18', realm: 2, hebrew: 'נַעַל', translit: "Na'al", meaning: 'Shoe', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_19', realm: 2, hebrew: 'כּוֹס', translit: 'Kos', meaning: 'Cup / Glass', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_20', realm: 2, hebrew: 'צַלַּחַת', translit: 'Tzalachat', meaning: 'Plate', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_21', realm: 2, hebrew: 'סַכִּין', translit: 'Sakin', meaning: 'Knife', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_22', realm: 2, hebrew: 'מֶלַח', translit: 'Melach', meaning: 'Salt', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_23', realm: 2, hebrew: 'שֶׁמֶן', translit: 'Shemen', meaning: 'Oil', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+      { id: 'w2_24', realm: 2, hebrew: 'בָּשָׂר', translit: 'Basar', meaning: 'Meat / Flesh', category: 'Food, Home & Everyday Objects', pos: 'Noun' },
+
+      // REALM 3: Ironhold Bastion (People, Body & Adjectives - 24 words)
+      { id: 'w3_01', realm: 3, hebrew: 'לֵב', translit: 'Lev', meaning: 'Heart', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_02', realm: 3, hebrew: 'רֹאשׁ', translit: 'Rosh', meaning: 'Head', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_03', realm: 3, hebrew: 'יָד', translit: 'Yad', meaning: 'Hand', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_04', realm: 3, hebrew: 'רֶגֶל', translit: 'Regel', meaning: 'Foot / Leg', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_05', realm: 3, hebrew: 'עַיִן', translit: 'Ayin', meaning: 'Eye', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_06', realm: 3, hebrew: 'אֹזֶן', translit: 'Ozen', meaning: 'Ear', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_07', realm: 3, hebrew: 'פֶּה', translit: 'Peh', meaning: 'Mouth', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_08', realm: 3, hebrew: 'שֵׁן', translit: 'Shen', meaning: 'Tooth', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_09', realm: 3, hebrew: 'גּוּף', translit: 'Guf', meaning: 'Body', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_10', realm: 3, hebrew: 'מֶלֶךְ', translit: 'Melekh', meaning: 'King', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_11', realm: 3, hebrew: 'מַלְכָּה', translit: 'Malkah', meaning: 'Queen', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_12', realm: 3, hebrew: 'חָבֵר', translit: 'Chaver', meaning: 'Friend', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_13', realm: 3, hebrew: 'אוֹיֵב', translit: 'Oyev', meaning: 'Enemy', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_14', realm: 3, hebrew: 'גִּבּוֹר', translit: 'Gibor', meaning: 'Hero / Brave', category: 'People, Body & Adjectives', pos: 'Noun' },
+      { id: 'w3_15', realm: 3, hebrew: 'חָכָם', translit: 'Chakham', meaning: 'Wise', category: 'People, Body & Adjectives', pos: 'Adj' },
+      { id: 'w3_16', realm: 3, hebrew: 'חָזָק', translit: 'Chazak', meaning: 'Strong', category: 'People, Body & Adjectives', pos: 'Adj' },
+      { id: 'w3_17', realm: 3, hebrew: 'מָהִיר', translit: 'Mahir', meaning: 'Fast / Quick', category: 'People, Body & Adjectives', pos: 'Adj' },
+      { id: 'w3_18', realm: 3, hebrew: 'אִטִּי', translit: 'Iti', meaning: 'Slow', category: 'People, Body & Adjectives', pos: 'Adj' },
+      { id: 'w3_19', realm: 3, hebrew: 'גָּדוֹל', translit: 'Gadol', meaning: 'Big / Great', category: 'People, Body & Adjectives', pos: 'Adj' },
+      { id: 'w3_20', realm: 3, hebrew: 'קָטָן', translit: 'Katan', meaning: 'Small / Little', category: 'People, Body & Adjectives', pos: 'Adj' },
+      { id: 'w3_21', realm: 3, hebrew: 'חָדָשׁ', translit: 'Chadash', meaning: 'New', category: 'People, Body & Adjectives', pos: 'Adj' },
+      { id: 'w3_22', realm: 3, hebrew: 'יָשָׁן', translit: 'Yashan', meaning: 'Old (things)', category: 'People, Body & Adjectives', pos: 'Adj' },
+      { id: 'w3_23', realm: 3, hebrew: 'טוֹב', translit: 'Tov', meaning: 'Good', category: 'People, Body & Adjectives', pos: 'Adj' },
+      { id: 'w3_24', realm: 3, hebrew: 'רַע', translit: 'Ra', meaning: 'Bad / Evil', category: 'People, Body & Adjectives', pos: 'Adj' },
+
+      // REALM 4: Chronicle Spire (Essential Present-Tense Verbs - 24 words)
+      { id: 'w4_01', realm: 4, hebrew: 'הוֹלֵךְ', translit: 'Holekh', meaning: 'Walks / Goes', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_02', realm: 4, hebrew: 'רָץ', translit: 'Ratz', meaning: 'Runs', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_03', realm: 4, hebrew: 'אוֹכֵל', translit: 'Okhel', meaning: 'Eats', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_04', realm: 4, hebrew: 'שׁוֹתֶה', translit: 'Shoteh', meaning: 'Drinks', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_05', realm: 4, hebrew: 'יָשֵׁן', translit: 'Yashen', meaning: 'Sleeps', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_06', realm: 4, hebrew: 'קָם', translit: 'Kam', meaning: 'Gets up / Rises', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_07', realm: 4, hebrew: 'כּוֹתֵב', translit: 'Kotev', meaning: 'Writes', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_08', realm: 4, hebrew: 'קוֹרֵא', translit: 'Kore', meaning: 'Reads / Calls', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_09', realm: 4, hebrew: 'שׁוֹמֵעַ', translit: "Shome'a", meaning: 'Hears / Listens', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_10', realm: 4, hebrew: 'רוֹאֶה', translit: "Ro'eh", meaning: 'Sees', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_11', realm: 4, hebrew: 'מְדַבֵּר', translit: 'Medaber', meaning: 'Speaks / Talks', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_12', realm: 4, hebrew: 'שׁוֹאֵל', translit: "Sho'el", meaning: 'Asks', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_13', realm: 4, hebrew: 'עוֹנֶה', translit: 'Oneh', meaning: 'Answers', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_14', realm: 4, hebrew: 'נוֹתֵן', translit: 'Noten', meaning: 'Gives', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_15', realm: 4, hebrew: 'לוֹקֵחַ', translit: "Loke'ach", meaning: 'Takes', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_16', realm: 4, hebrew: 'פּוֹתֵחַ', translit: "Pote'ach", meaning: 'Opens', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_17', realm: 4, hebrew: 'סוֹגֵר', translit: 'Soger', meaning: 'Closes', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_18', realm: 4, hebrew: 'אוֹהֵב', translit: 'Ohev', meaning: 'Loves / Likes', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_19', realm: 4, hebrew: 'יוֹדֵעַ', translit: "Yode'a", meaning: 'Knows', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_20', realm: 4, hebrew: 'לוֹמֵד', translit: 'Lomed', meaning: 'Learns / Studies', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_21', realm: 4, hebrew: 'עוֹבֵד', translit: 'Oved', meaning: 'Works', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_22', realm: 4, hebrew: 'שָׂמֵחַ', translit: "Same'ach", meaning: 'Rejoices / Happy', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_23', realm: 4, hebrew: 'בּוֹכֶה', translit: 'Bokheh', meaning: 'Cries / Weeps', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+      { id: 'w4_24', realm: 4, hebrew: 'שָׁר', translit: 'Shar', meaning: 'Sings', category: 'Essential Present-Tense Verbs', pos: 'Verb' },
+
+      // REALM 5: Shadow Citadel (Time, Travel & Abstract Concepts - 24 words)
+      { id: 'w5_01', realm: 5, hebrew: 'זְמַן', translit: 'Zman', meaning: 'Time', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_02', realm: 5, hebrew: 'הַיּוֹם', translit: 'Hayom', meaning: 'Today', category: 'Time, Travel & Abstract Concepts', pos: 'Adv' },
+      { id: 'w5_03', realm: 5, hebrew: 'מָחָר', translit: 'Machar', meaning: 'Tomorrow', category: 'Time, Travel & Abstract Concepts', pos: 'Adv' },
+      { id: 'w5_04', realm: 5, hebrew: 'אֶתְמוֹל', translit: 'Etmol', meaning: 'Yesterday', category: 'Time, Travel & Abstract Concepts', pos: 'Adv' },
+      { id: 'w5_05', realm: 5, hebrew: 'עַכְשָׁו', translit: 'Akhshav', meaning: 'Now', category: 'Time, Travel & Abstract Concepts', pos: 'Adv' },
+      { id: 'w5_06', realm: 5, hebrew: 'תָּמִיד', translit: 'Tamid', meaning: 'Always', category: 'Time, Travel & Abstract Concepts', pos: 'Adv' },
+      { id: 'w5_07', realm: 5, hebrew: 'דֶּרֶךְ', translit: 'Derekh', meaning: 'Way / Road', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_08', realm: 5, hebrew: 'עִיר', translit: 'Ir', meaning: 'City', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_09', realm: 5, hebrew: 'כְּפָר', translit: 'Kfar', meaning: 'Village', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_10', realm: 5, hebrew: 'גֶּשֶׁר', translit: 'Gesher', meaning: 'Bridge', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_11', realm: 5, hebrew: 'שַׁעַר', translit: "Sha'ar", meaning: 'Gate', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_12', realm: 5, hebrew: 'חוֹמָה', translit: 'Chomah', meaning: 'Wall (fortress)', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_13', realm: 5, hebrew: 'אֱמֶת', translit: 'Emet', meaning: 'Truth', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_14', realm: 5, hebrew: 'שָׁלוֹם', translit: 'Shalom', meaning: 'Peace / Hello', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_15', realm: 5, hebrew: 'מִלְחָמָה', translit: 'Milchamah', meaning: 'War / Battle', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_16', realm: 5, hebrew: 'תִּקְוָה', translit: 'Tikvah', meaning: 'Hope', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_17', realm: 5, hebrew: 'פַּחַד', translit: 'Pachad', meaning: 'Fear', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_18', realm: 5, hebrew: 'כֹּחַ', translit: "Ko'ach", meaning: 'Strength / Power', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_19', realm: 5, hebrew: 'חַיִּים', translit: 'Chayim', meaning: 'Life', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_20', realm: 5, hebrew: 'חֲלוֹם', translit: 'Chalom', meaning: 'Dream', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_21', realm: 5, hebrew: 'שְׁאֵלָה', translit: "She'elah", meaning: 'Question', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_22', realm: 5, hebrew: 'תְּשׁוּבָה', translit: 'Teshuvah', meaning: 'Answer / Reply', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_23', realm: 5, hebrew: 'סוֹד', translit: 'Sod', meaning: 'Secret', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' },
+      { id: 'w5_24', realm: 5, hebrew: 'נִצָּחוֹן', translit: 'Nitzachon', meaning: 'Victory', category: 'Time, Travel & Abstract Concepts', pos: 'Noun' }
+    ];
+
+    const HERO_CLASSES = {
+      knight: {
+        id: 'knight',
+        name: 'Word-Knight',
+        hebrewName: 'שׁוֹמֵר',
+        translit: 'Shomer',
+        tagline: 'Vanguard of the Sacred Script',
+        perkText: '+20% Max HP & +20% Sword Strike Damage',
+        accent: 'amber'
+      },
+      mage: {
+        id: 'mage',
+        name: 'Scroll-Mage',
+        hebrewName: 'סוֹפֵר',
+        translit: 'Sofer',
+        tagline: 'Weaver of Illuminated Glyphs',
+        perkText: '+25% XP Gained & Starts with +2 Reveal Scrolls',
+        accent: 'indigo'
+      },
+      scout: {
+        id: 'scout',
+        name: 'Shadow-Scout',
+        hebrewName: 'צַיָּד',
+        translit: 'Tzayad',
+        tagline: 'Whisper-Blade of the Borderlands',
+        perkText: '+25% Gold Earned & Higher Combo Crit Multiplier',
+        accent: 'emerald'
+      }
+    };
+
+    // ----------------------------------------------------------------------------
+    // 2. PROCEDURAL WEB AUDIO API SOUND ENGINE (ZERO EXTERNAL FILES)
+    // ----------------------------------------------------------------------------
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      ensureContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      playTone(freq, type = 'sine', duration = 0.15, volume = 0.14, delay = 0, slideTo = null) {
+        if (this.muted) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime + delay;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        if (slideTo) {
+          osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+        }
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(volume, now + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      }
+
+      click() {
+        this.playTone(520, 'triangle', 0.06, 0.08, 0, 380);
+      }
+
+      swordSlash() {
+        this.playTone(680, 'sawtooth', 0.14, 0.12, 0, 140);
+        this.playTone(220, 'square', 0.18, 0.1, 0.03, 75);
+      }
+
+      critStrike() {
+        this.playTone(587.33, 'triangle', 0.18, 0.16, 0, 880);
+        this.playTone(880, 'sine', 0.28, 0.16, 0.07, 1174.66);
+        this.playTone(180, 'sawtooth', 0.22, 0.14, 0.02, 65);
+      }
+
+      magicCast() {
+        const notes = [440, 554.37, 659.25, 880];
+        notes.forEach((n, idx) => {
+          this.playTone(n, 'sine', 0.22, 0.11, idx * 0.055);
+        });
+      }
+
+      enemyHit() {
+        this.playTone(150, 'sawtooth', 0.24, 0.18, 0, 55);
+        this.playTone(110, 'square', 0.2, 0.14, 0.04, 48);
+      }
+
+      heal() {
+        const notes = [392.00, 493.88, 587.33, 783.99];
+        notes.forEach((n, idx) => {
+          this.playTone(n, 'triangle', 0.25, 0.12, idx * 0.07);
+        });
+      }
+
+      gold() {
+        this.playTone(987.77, 'sine', 0.1, 0.12, 0);
+        this.playTone(1318.51, 'sine', 0.22, 0.13, 0.08);
+      }
+
+      levelUp() {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((n, idx) => {
+          this.playTone(n, 'triangle', 0.3, 0.16, idx * 0.11);
+        });
+      }
+
+      bossRoar() {
+        this.playTone(95, 'sawtooth', 0.55, 0.2, 0, 42);
+        this.playTone(72, 'square', 0.5, 0.14, 0.08, 36);
+      }
+    }
+
+    const sfx = new SoundEngine();
+
+    // ----------------------------------------------------------------------------
+    // 3. HEBREW TEXT UTILITIES & WEB SPEECH API (he-IL)
+    // ----------------------------------------------------------------------------
+    /**
+     * Strips Unicode Hebrew cantillation & Nikud vowel points (\u0591-\u05C7)
+     * when the player toggles off Nikud for advanced reading practice.
+     */
+    function formatHebrew(text, showNikud) {
+      if (!text) return '';
+      return showNikud ? text : text.replace(/[\u0591-\u05C7]/g, '');
+    }
+
+    const SpeechManager = {
+      available: typeof window !== 'undefined' && 'speechSynthesis' in window,
+      hebrewVoice: null,
+
+      init() {
+        if (!this.available) return;
+        const loadVoices = () => {
+          const voices = window.speechSynthesis.getVoices();
+          this.hebrewVoice =
+            voices.find(v => v.lang && v.lang.toLowerCase().startsWith('he')) ||
+            voices.find(v => v.name && v.name.toLowerCase().includes('hebrew')) ||
+            null;
+          updateSpeechBadge();
+        };
+        loadVoices();
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      },
+
+      speak(hebrewText, onStateChange = null) {
+        if (!this.available) {
+          showToast('Browser speech synthesis unavailable — use Peek Transliteration!', 'amber');
+          return;
+        }
+        try {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(hebrewText);
+          utterance.lang = 'he-IL';
+          if (this.hebrewVoice) {
+            utterance.voice = this.hebrewVoice;
+          }
+          utterance.rate = 0.86; // Clear learner cadence
+          utterance.pitch = 1.0;
+
+          if (onStateChange) onStateChange(true);
+          utterance.onend = () => {
+            if (onStateChange) onStateChange(false);
+          };
+          utterance.onerror = () => {
+            if (onStateChange) onStateChange(false);
+            showToast('Audio voice unavailable on this device — check Transliteration hint.', 'slate');
+          };
+
+          window.speechSynthesis.speak(utterance);
+        } catch (err) {
+          if (onStateChange) onStateChange(false);
+        }
+      }
+    };
+
+    // ----------------------------------------------------------------------------
+    // 4. CUSTOM INLINE SVG ARTWORK GENERATOR (HEROES & 20 MONSTERS/BOSSES)
+    // ----------------------------------------------------------------------------
+    function getHeroSVG(heroClass, sizeClass = 'w-28 h-28 sm:w-36 sm:h-36') {
+      if (heroClass === 'mage') {
+        return `
+          <svg viewBox="0 0 160 160" class="${sizeClass} drop-shadow-[0_10px_18px_rgba(99,102,241,0.45)]" aria-label="Scroll-Mage Portrait">
+            <defs>
+              <radialGradient id="mageGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#818cf8" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#312e81" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="mageRobe" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4f46e5"/>
+                <stop offset="100%" stop-color="#1e1b4b"/>
+              </linearGradient>
+            </defs>
+            <circle cx="80" cy="80" r="72" fill="url(#mageGlow)"/>
+            <!-- Arcane Halo -->
+            <circle cx="80" cy="48" r="28" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.8"/>
+            <!-- Cloak & Robe -->
+            <path d="M44 142 L56 76 L104 76 L116 142 Z" fill="url(#mageRobe)" stroke="#a5b4fc" stroke-width="2"/>
+            <path d="M68 78 L80 138 L92 78 Z" fill="#fbbf24" opacity="0.85"/>
+            <!-- Hood & Face -->
+            <path d="M54 64 C54 34, 106 34, 106 64 L98 78 L62 78 Z" fill="#312e81" stroke="#818cf8" stroke-width="2"/>
+            <ellipse cx="80" cy="59" rx="14" ry="15" fill="#fde68a"/>
+            <!-- Glowing Eyes -->
+            <circle cx="75" cy="58" r="2.3" fill="#38bdf8"/>
+            <circle cx="85" cy="58" r="2.3" fill="#38bdf8"/>
+            <!-- Staff -->
+            <line x1="124" y1="26" x2="118" y2="144" stroke="#d97706" stroke-width="4.5" stroke-linecap="round"/>
+            <polygon points="124,14 131,26 124,38 117,26" fill="#38bdf8" stroke="#fef08a" stroke-width="1.5"/>
+            <!-- Floating Hebrew Scroll -->
+            <rect x="24" y="66" width="26" height="34" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+            <line x1="29" y1="75" x2="45" y2="75" stroke="#92400e" stroke-width="2"/>
+            <line x1="29" y1="82" x2="45" y2="82" stroke="#92400e" stroke-width="2"/>
+            <line x1="29" y1="89" x2="40" y2="89" stroke="#92400e" stroke-width="2"/>
+          </svg>
+        `;
+      }
+      if (heroClass === 'scout') {
+        return `
+          <svg viewBox="0 0 160 160" class="${sizeClass} drop-shadow-[0_10px_18px_rgba(16,185,129,0.4)]" aria-label="Shadow-Scout Portrait">
+            <defs>
+              <radialGradient id="scoutGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.38"/>
+                <stop offset="100%" stop-color="#064e3b" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="scoutCloak" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#059669"/>
+                <stop offset="100%" stop-color="#022c22"/>
+              </linearGradient>
+            </defs>
+            <circle cx="80" cy="80" r="72" fill="url(#scoutGlow)"/>
+            <!-- Forest Cloak -->
+            <path d="M40 140 L54 72 L106 72 L120 140 Z" fill="url(#scoutCloak)" stroke="#34d399" stroke-width="2"/>
+            <!-- Leather Tunic & Belt -->
+            <rect x="62" y="76" width="36" height="54" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+            <rect x="60" y="102" width="40" height="7" fill="#d97706"/>
+            <!-- Hooded Head & Mask -->
+            <path d="M52 62 C52 32, 108 32, 108 62 L100 76 L60 76 Z" fill="#065f46" stroke="#34d399" stroke-width="2"/>
+            <ellipse cx="80" cy="57" rx="14" ry="14" fill="#fed7aa"/>
+            <path d="M66 59 L94 59 L90 70 L70 70 Z" fill="#0f172a"/>
+            <circle cx="74" cy="54" r="2.4" fill="#34d399"/>
+            <circle cx="86" cy="54" r="2.4" fill="#34d399"/>
+            <!-- Twin Daggers -->
+            <polygon points="34,74 42,106 28,106" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+            <rect x="32" y="106" width="6" height="12" fill="#f59e0b"/>
+            <polygon points="126,74 132,106 118,106" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+            <rect x="122" y="106" width="6" height="12" fill="#f59e0b"/>
+          </svg>
+        `;
+      }
+      // Default: Word-Knight (Shomer)
+      return `
+        <svg viewBox="0 0 160 160" class="${sizeClass} drop-shadow-[0_10px_18px_rgba(245,158,11,0.4)]" aria-label="Word-Knight Portrait">
+          <defs>
+            <radialGradient id="knightGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.38"/>
+              <stop offset="100%" stop-color="#78350f" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="plateArmor" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#cbd5e1"/>
+              <stop offset="100%" stop-color="#475569"/>
+            </linearGradient>
+          </defs>
+          <circle cx="80" cy="80" r="72" fill="url(#knightGlow)"/>
+          <!-- Crimson Cape -->
+          <path d="M42 142 L54 74 L106 74 L118 142 Z" fill="#991b1b" stroke="#f59e0b" stroke-width="1.5"/>
+          <!-- Chestplate -->
+          <path d="M56 76 L104 76 L98 132 L62 132 Z" fill="url(#plateArmor)" stroke="#fbbf24" stroke-width="2"/>
+          <!-- Helmet & Plume -->
+          <path d="M72 28 C78 14, 96 18, 92 34 Z" fill="#ef4444"/>
+          <rect x="62" y="36" width="36" height="36" rx="12" fill="url(#plateArmor)" stroke="#fbbf24" stroke-width="2"/>
+          <rect x="68" y="50" width="24" height="6" rx="2" fill="#0f172a"/>
+          <circle cx="74" cy="53" r="2" fill="#fbbf24"/>
+          <circle cx="86" cy="53" r="2" fill="#fbbf24"/>
+          <!-- Broadsword -->
+          <polygon points="124,24 130,34 128,104 120,104 118,34" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+          <rect x="112" y="104" width="24" height="6" rx="2" fill="#f59e0b"/>
+          <rect x="121" y="110" width="6" height="16" fill="#78350f"/>
+          <!-- Hebrew Inscribed Shield -->
+          <path d="M24 76 L54 76 L54 106 C54 122, 39 130, 39 130 C39 130, 24 122, 24 106 Z" fill="#1e3a8a" stroke="#fbbf24" stroke-width="2.5"/>
+          <text x="39" y="108" text-anchor="middle" fill="#fde68a" font-size="20" font-family="serif" font-weight="bold">א</text>
+        </svg>
+      `;
+    }
+
+    function getMonsterSVG(monsterId, isBoss = false) {
+      const sizeClass = isBoss ? 'w-32 h-32 sm:w-44 sm:h-44 animate-boss-aura' : 'w-28 h-28 sm:w-36 sm:h-36';
+      const palettes = {
+        wolf: { primary: '#475569', secondary: '#10b981', eye: '#fbbf24', symbol: 'זְאֵב' },
+        golem: { primary: '#57534e', secondary: '#34d399', eye: '#a7f3d0', symbol: 'אֶבֶן' },
+        wisp: { primary: '#0d9488', secondary: '#99f6e4', eye: '#fef08a', symbol: 'אוֹר' },
+        boss_treant: { primary: '#3f6212', secondary: '#f59e0b', eye: '#ef4444', symbol: 'עֵץ' },
+
+        cutpurse: { primary: '#78350f', secondary: '#f59e0b', eye: '#fde047', symbol: 'כֶּסֶף' },
+        hound: { primary: '#b45309', secondary: '#fcd34d', eye: '#38bdf8', symbol: 'זָהָב' },
+        djinn: { primary: '#9a3412', secondary: '#fb923c', eye: '#fef08a', symbol: 'אֵשׁ' },
+        boss_sultan: { primary: '#92400e', secondary: '#fbbf24', eye: '#f43f5e', symbol: 'מֶלֶךְ' },
+
+        sentinel: { primary: '#334155', secondary: '#38bdf8', eye: '#7dd3fc', symbol: 'חָזָק' },
+        gargoyle: { primary: '#44403c', secondary: '#0284c7', eye: '#f87171', symbol: 'רֹאשׁ' },
+        berserker: { primary: '#7f1d1d', secondary: '#f97316', eye: '#fde047', symbol: 'גִּבּוֹר' },
+        boss_warden: { primary: '#1e293b', secondary: '#38bdf8', eye: '#fbbf24', symbol: 'לֵב' },
+
+        phantom: { primary: '#312e81', secondary: '#818cf8', eye: '#c7d2fe', symbol: 'כּוֹתֵב' },
+        tome: { primary: '#4c1d95', secondary: '#c084fc', eye: '#fde047', symbol: 'קוֹרֵא' },
+        sphinx: { primary: '#854d0e', secondary: '#a5b4fc', eye: '#34d399', symbol: 'שׁוֹאֵל' },
+        boss_archon: { primary: '#1e1b4b', secondary: '#fbbf24', eye: '#38bdf8', symbol: 'יוֹדֵעַ' },
+
+        wraith: { primary: '#4c0519', secondary: '#fb7185', eye: '#fda4af', symbol: 'צֵל' },
+        obsknight: { primary: '#18181b', secondary: '#e11d48', eye: '#fbbf24', symbol: 'מִלְחָמָה' },
+        stalker: { primary: '#3b0764', secondary: '#f43f5e', eye: '#fde047', symbol: 'זְמַן' },
+        boss_choshekh: { primary: '#090d16', secondary: '#f43f5e', eye: '#fbbf24', symbol: 'חֹשֶׁךְ' }
+      };
+
+      const p = palettes[monsterId] || { primary: '#334155', secondary: '#f59e0b', eye: '#ef4444', symbol: 'אוֹיֵב' };
+
+      if (isBoss) {
+        return `
+          <svg viewBox="0 0 180 180" class="${sizeClass}" aria-label="Boss Monster">
+            <defs>
+              <radialGradient id="bossAura_${monsterId}" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="${p.secondary}" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="${p.primary}" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="90" cy="90" r="84" fill="url(#bossAura_${monsterId})"/>
+            <!-- Crown / Horns -->
+            <polygon points="34,62 22,20 56,48" fill="${p.secondary}" stroke="#fef08a" stroke-width="1.5"/>
+            <polygon points="146,62 158,20 124,48" fill="${p.secondary}" stroke="#fef08a" stroke-width="1.5"/>
+            <polygon points="72,38 90,14 108,38" fill="#fbbf24"/>
+            <!-- Armored Monstrous Torso -->
+            <path d="M32 154 L46 72 L134 72 L148 154 Z" fill="${p.primary}" stroke="${p.secondary}" stroke-width="3"/>
+            <!-- Shoulder Pauldrons -->
+            <ellipse cx="40" cy="84" rx="22" ry="16" fill="${p.primary}" stroke="#fbbf24" stroke-width="2"/>
+            <ellipse cx="140" cy="84" rx="22" ry="16" fill="${p.primary}" stroke="#fbbf24" stroke-width="2"/>
+            <!-- Boss Visage -->
+            <rect x="56" y="42" width="68" height="48" rx="14" fill="${p.primary}" stroke="${p.secondary}" stroke-width="2.5"/>
+            <polygon points="66,60 82,66 66,70" fill="${p.eye}"/>
+            <polygon points="114,60 98,66 114,70" fill="${p.eye}"/>
+            <path d="M72 78 L80 74 L90 79 L100 74 L108 78" fill="none" stroke="#fef08a" stroke-width="2.5"/>
+            <!-- Chest Glyph Medallion -->
+            <circle cx="90" cy="118" r="24" fill="#0f172a" stroke="#fbbf24" stroke-width="2.5"/>
+            <text x="90" y="125" text-anchor="middle" fill="#fde68a" font-size="18" font-family="serif" font-weight="bold">${p.symbol}</text>
+          </svg>
+        `;
+      }
+
+      return `
+        <svg viewBox="0 0 160 160" class="${sizeClass} drop-shadow-[0_10px_18px_rgba(0,0,0,0.75)]" aria-label="Monster">
+          <defs>
+            <radialGradient id="mobGlow_${monsterId}" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="${p.secondary}" stop-opacity="0.32"/>
+              <stop offset="100%" stop-color="${p.primary}" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="80" cy="80" r="70" fill="url(#mobGlow_${monsterId})"/>
+          <!-- Horns / Ears -->
+          <polygon points="46,56 36,26 64,46" fill="${p.secondary}"/>
+          <polygon points="114,56 124,26 96,46" fill="${p.secondary}"/>
+          <!-- Body -->
+          <path d="M40 138 C40 84, 120 84, 120 138 Z" fill="${p.primary}" stroke="${p.secondary}" stroke-width="2.5"/>
+          <!-- Head -->
+          <rect x="50" y="42" width="60" height="46" rx="16" fill="${p.primary}" stroke="${p.secondary}" stroke-width="2.5"/>
+          <!-- Fierce Eyes -->
+          <circle cx="67" cy="62" r="5" fill="${p.eye}"/>
+          <circle cx="93" cy="62" r="5" fill="${p.eye}"/>
+          <path d="M66 76 L74 72 L80 76 L86 72 L94 76" fill="none" stroke="#f8fafc" stroke-width="2"/>
+          <!-- Rune Core -->
+          <rect x="58" y="98" width="44" height="26" rx="8" fill="#0f172a" stroke="${p.secondary}" stroke-width="1.8"/>
+          <text x="80" y="116" text-anchor="middle" fill="#f8fafc" font-size="15" font-family="serif" font-weight="bold">${p.symbol}</text>
+        </svg>
+      `;
+    }
+
+    // ----------------------------------------------------------------------------
+    // 5. GAME STATE & PERSISTENT LOCALSTORAGE MANAGEMENT
+    // ----------------------------------------------------------------------------
+    const STORAGE_KEY = 'ketav_quest_save_v1';
+
+    function createInitialWordProgress() {
+      const progress = {};
+      VOCABULARY.forEach(w => {
+        progress[w.id] = {
+          discovered: false,
+          attempts: 0,
+          correct: 0,
+          mastery: 0, // 0 to 3 stars
+          weight: 5   // Higher weight = appears more often in Spaced Repetition
+        };
+      });
+      return progress;
+    }
+
+    function createDefaultState() {
+      return {
+        initialized: false,
+        hero: {
+          name: 'Ari',
+          heroClass: 'knight',
+          level: 1,
+          xp: 0,
+          xpToNext: 100,
+          hp: 120,
+          maxHp: 120,
+          gold: 40,
+          weaponLevel: 1,
+          armorLevel: 1
+        },
+        inventory: {
+          potions: 2,
+          scrolls: 2,
+          tonics: 1
+        },
+        settings: {
+          showNikud: true,
+          muted: false
+        },
+        realmProgress: {
+          1: { encountersCleared: 0, bossDefeated: false },
+          2: { encountersCleared: 0, bossDefeated: false },
+          3: { encountersCleared: 0, bossDefeated: false },
+          4: { encountersCleared: 0, bossDefeated: false },
+          5: { encountersCleared: 0, bossDefeated: false }
+        },
+        wordProgress: createInitialWordProgress(),
+        stats: {
+          totalAnswered: 0,
+          totalCorrect: 0,
+          bestCombo: 0,
+          monstersSlain: 0
+        }
+      };
+    }
+
+    let state = loadState();
+
+    // Ephemeral UI & Combat State (not saved mid-swing)
+    let ui = {
+      screen: state.initialized ? 'map' : 'creation', // 'creation' | 'map' | 'combat' | 'merchant' | 'grimoire'
+      selectedClass: 'knight',
+      heroNameInput: 'Ari',
+      grimoireFilterRealm: 'all',
+      grimoireFilterMastery: 'all',
+      grimoireSearch: '',
+      isSpeaking: false,
+      combat: null
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return createDefaultState();
+        const parsed = JSON.parse(raw);
+        const def = createDefaultState();
+        // Merge safely to ensure forward compatibility
+        return {
+          ...def,
+          ...parsed,
+          hero: { ...def.hero, ...(parsed.hero || {}) },
+          inventory: { ...def.inventory, ...(parsed.inventory || {}) },
+          settings: { ...def.settings, ...(parsed.settings || {}) },
+          realmProgress: { ...def.realmProgress, ...(parsed.realmProgress || {}) },
+          wordProgress: { ...def.wordProgress, ...(parsed.wordProgress || {}) },
+          stats: { ...def.stats, ...(parsed.stats || {}) }
+        };
+      } catch (e) {
+        return createDefaultState();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // Ignore storage quota issues gracefully
+      }
+    }
+
+    // Apply initial audio mute state
+    sfx.muted = !!state.settings.muted;
+
+    // ----------------------------------------------------------------------------
+    // 6. STAT CALCULATORS & SPACED REPETITION ENGINE
+    // ----------------------------------------------------------------------------
+    function calculateMaxHp() {
+      const base = 90 + (state.hero.level - 1) * 18 + (state.hero.armorLevel - 1) * 25;
+      return state.hero.heroClass === 'knight' ? Math.round(base * 1.2) : base;
+    }
+
+    function calculateBaseAttack() {
+      const base = 18 + (state.hero.level - 1) * 4 + (state.hero.weaponLevel - 1) * 7;
+      return state.hero.heroClass === 'knight' ? Math.round(base * 1.2) : base;
+    }
+
+    function getMasteredCount(realmId = null) {
+      return VOCABULARY.filter(w => {
+        if (realmId && w.realm !== realmId) return false;
+        return (state.wordProgress[w.id]?.mastery || 0) >= 3;
+      }).length;
+    }
+
+    function getDiscoveredCount(realmId = null) {
+      return VOCABULARY.filter(w => {
+        if (realmId && w.realm !== realmId) return false;
+        return !!state.wordProgress[w.id]?.discovered;
+      }).length;
+    }
+
+    /**
+     * Weighted Spaced Repetition Picker:
+     * Selects a word from the current realm (plus occasional review words from unlocked realms)
+     * prioritizing missed or unmastered words.
+     */
+    function pickNextWord(realmId, excludeWordId = null) {
+      let pool = VOCABULARY.filter(w => w.realm === realmId && w.id !== excludeWordId);
+
+      // 20% chance to weave in a non-mastered word from an earlier realm for spaced review
+      if (realmId > 1 && Math.random() < 0.2) {
+        const reviewCandidates = VOCABULARY.filter(
+          w => w.realm < realmId && w.id !== excludeWordId && (state.wordProgress[w.id]?.mastery || 0) < 3
+        );
+        if (reviewCandidates.length > 0) {
+          pool = reviewCandidates;
+        }
+      }
+
+      const weightedItems = pool.map(word => {
+        const wp = state.wordProgress[word.id] || { weight: 5, mastery: 0 };
+        const effectiveWeight = Math.max(1, wp.weight);
+        return { word, weight: effectiveWeight };
+      });
+
+      const totalWeight = weightedItems.reduce((sum, item) => sum + item.weight, 0);
+      let roll = Math.random() * totalWeight;
+      for (const item of weightedItems) {
+        roll -= item.weight;
+        if (roll <= 0) return item.word;
+      }
+      return weightedItems[0].word;
+    }
+
+    /**
+     * Generates 4 multiple-choice options (1 correct + 3 smart distractors matching Part of Speech)
+     */
+    function generateChoices(targetWord, isCounterGlyph) {
+      const samePosPool = VOCABULARY.filter(
+        w => w.id !== targetWord.id && w.pos === targetWord.pos && w.meaning !== targetWord.meaning
+      );
+      const fallbackPool = VOCABULARY.filter(
+        w => w.id !== targetWord.id && w.meaning !== targetWord.meaning
+      );
+
+      const sourcePool = samePosPool.length >= 3 ? samePosPool : fallbackPool;
+      const shuffledDistractors = [...sourcePool].sort(() => Math.random() - 0.5).slice(0, 3);
+
+      const options = [targetWord, ...shuffledDistractors].sort(() => Math.random() - 0.5);
+      return options.map(opt => ({
+        wordId: opt.id,
+        label: isCounterGlyph ? opt.hebrew : opt.meaning,
+        isCorrect: opt.id === targetWord.id,
+        eliminated: false
+      }));
+    }
+
+    // ----------------------------------------------------------------------------
+    // 7. UI FEEDBACK HELPERS (TOASTS, MODALS, FLOATING POPUPS)
+    // ----------------------------------------------------------------------------
+    function showToast(message, tone = 'amber') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toneClasses = {
+        amber: 'border-amber-400/50 bg-slate-900/95 text-amber-200',
+        emerald: 'border-emerald-400/50 bg-slate-900/95 text-emerald-200',
+        rose: 'border-rose-400/50 bg-slate-900/95 text-rose-200',
+        indigo: 'border-indigo-400/50 bg-slate-900/95 text-indigo-200',
+        slate: 'border-slate-600 bg-slate-900/95 text-slate-200'
+      };
+
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-medium shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 ${toneClasses[tone] || toneClasses.amber}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 2800);
+    }
+
+    function openModal(htmlContent) {
+      const backdrop = document.getElementById('modal-backdrop');
+      const content = document.getElementById('modal-content');
+      content.innerHTML = htmlContent;
+      backdrop.classList.remove('hidden');
+      backdrop.classList.add('flex');
+    }
+
+    function closeModal() {
+      const backdrop = document.getElementById('modal-backdrop');
+      backdrop.classList.add('hidden');
+      backdrop.classList.remove('flex');
+    }
+
+    function spawnFloatingText(targetElementId, text, colorClass = 'text-amber-300') {
+      const target = document.getElementById(targetElementId);
+      if (!target) return;
+      const el = document.createElement('div');
+      el.className = `floating-popup font-display font-extrabold text-lg sm:text-2xl ${colorClass}`;
+      el.style.left = '50%';
+      el.style.top = '22%';
+      el.style.transform = 'translateX(-50%)';
+      el.textContent = text;
+      target.appendChild(el);
+      setTimeout(() => el.remove(), 1150);
+    }
+
+    function updateSpeechBadge() {
+      const badge = document.getElementById('speech-status-badge');
+      if (!badge) return;
+      if (!SpeechManager.available) {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span> Speech API Unavailable`;
+      } else if (SpeechManager.hebrewVoice) {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Hebrew Audio Ready (he-IL)`;
+      } else {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> Web Speech Active (he-IL)`;
+      }
+    }
+
+    // ----------------------------------------------------------------------------
+    // 8. COMBAT ENGINE & ENCOUNTER FLOW
+    // ----------------------------------------------------------------------------
+    function startEncounter(realmId, isBossBattle = false) {
+      const realm = REALMS.find(r => r.id === realmId);
+      if (!realm) return;
+
+      // Ensure hero HP is topped up to at least 60% if entering a new battle low, or keep current
+      state.hero.maxHp = calculateMaxHp();
+      if (state.hero.hp <= 0) {
+        state.hero.hp = state.hero.maxHp;
+      }
+
+      const template = isBossBattle
+        ? realm.boss
+        : realm.monsters[Math.floor(Math.random() * realm.monsters.length)];
+
+      // Slight scaling based on player level so combat stays brisk & exciting
+      const levelScale = 1 + (state.hero.level - 1) * 0.08;
+      const enemyMaxHp = Math.round(template.baseHp * levelScale);
+      const enemyAtk = Math.round(template.atk * (1 + (state.hero.level - 1) * 0.05));
+
+      if (isBossBattle) {
+        sfx.bossRoar();
+      } else {
+        sfx.click();
+      }
+
+      const firstWord = pickNextWord(realmId);
+      state.wordProgress[firstWord.id].discovered = true;
+      saveState();
+
+      ui.combat = {
+        realmId,
+        realm,
+        isBoss: isBossBattle,
+        enemy: {
+          ...template,
+          hp: enemyMaxHp,
+          maxHp: enemyMaxHp,
+          atk: enemyAtk
+        },
+        turnNumber: 1,
+        combo: 0,
+        currentWord: firstWord,
+        isCounterGlyph: false, // Every 4th turn becomes true!
+        choices: generateChoices(firstWord, false),
+        translitRevealed: false,
+        feedbackState: null, // null | { type: 'correct'|'wrong', word: obj, damageDealt/damageTaken }
+        battleLog: isBossBattle
+          ? `BOSS ENCOUNTER! ${template.name} blocks your path!`
+          : `A wild ${template.name} emerges from ${realm.name}!`
+      };
+
+      ui.screen = 'combat';
+      render();
+    }
+
+    function advanceCombatTurn() {
+      const c = ui.combat;
+      if (!c) return;
+
+      c.turnNumber += 1;
+      c.translitRevealed = false;
+      c.feedbackState = null;
+
+      // Every 4th turn triggers a "Counter-Glyph" reverse challenge!
+      c.isCounterGlyph = c.turnNumber % 4 === 0;
+      const nextWord = pickNextWord(c.realmId, c.currentWord.id);
+      c.currentWord = nextWord;
+      state.wordProgress[nextWord.id].discovered = true;
+      c.choices = generateChoices(nextWord, c.isCounterGlyph);
+      saveState();
+      render();
+    }
+
+    function handleAnswerSelection(choiceIndex) {
+      const c = ui.combat;
+      if (!c || c.feedbackState) return;
+
+      const choice = c.choices[choiceIndex];
+      if (!choice || choice.eliminated) return;
+
+      const word = c.currentWord;
+      const wp = state.wordProgress[word.id];
+      wp.discovered = true;
+      wp.attempts += 1;
+      state.stats.totalAnswered += 1;
+
+      if (choice.isCorrect) {
+        // --- CORRECT ANSWER ---
+        wp.correct += 1;
+        wp.mastery = Math.min(3, wp.mastery + 1);
+        wp.weight = Math.max(1, wp.weight - 2);
+        state.stats.totalCorrect += 1;
+
+        c.combo += 1;
+        if (c.combo > state.stats.bestCombo) {
+          state.stats.bestCombo = c.combo;
+        }
+
+        // Compute damage with Class & Combo multipliers
+        const baseAtk = calculateBaseAttack();
+        const isScout = state.hero.heroClass === 'scout';
+        const comboBonus = Math.min(1.25, (c.combo - 1) * (isScout ? 0.25 : 0.15));
+        const counterMultiplier = c.isCounterGlyph ? 1.5 : 1.0;
+        const variance = 0.92 + Math.random() * 0.18;
+        const damage = Math.max(12, Math.round(baseAtk * (1 + comboBonus) * counterMultiplier * variance));
+
+        const isCrit = c.isCounterGlyph || c.combo >= 3;
+        if (isCrit) {
+          sfx.critStrike();
+        } else {
+          sfx.swordSlash();
+        }
+
+        c.enemy.hp = Math.max(0, c.enemy.hp - damage);
+        c.battleLog = c.isCounterGlyph
+          ? `COUNTER-GLYPH SHATTERED! You struck ${c.enemy.name} for ${damage} critical damage!`
+          : `True reading! You struck ${c.enemy.name} for ${damage} damage!`;
+
+        saveState();
+        render();
+
+        // Trigger visual lunge & hit animations
+        const heroSprite = document.getElementById('hero-sprite-box');
+        const enemySprite = document.getElementById('enemy-sprite-box');
+        if (heroSprite) heroSprite.classList.add('animate-lunge-right');
+        if (enemySprite) enemySprite.classList.add('animate-hit');
+        spawnFloatingText(
+          'enemy-sprite-box',
+          isCrit ? `CRIT -${damage}!` : `-${damage}`,
+          isCrit ? 'text-amber-300' : 'text-emerald-300'
+        );
+
+        // Check Enemy Defeat
+        if (c.enemy.hp <= 0) {
+          setTimeout(() => handleEnemyDefeated(), 650);
+          return;
+        }
+
+        // Brief celebratory pause before next word
+        c.feedbackState = { type: 'correct', damage };
+        render();
+        setTimeout(() => {
+          if (ui.combat && ui.combat.feedbackState?.type === 'correct') {
+            advanceCombatTurn();
+          }
+        }, 780);
+      } else {
+        // --- WRONG ANSWER (PEDAGOGICAL CORRECTION + ENEMY COUNTER-ATTACK) ---
+        wp.mastery = Math.max(0, wp.mastery - 1);
+        wp.weight = Math.min(18, wp.weight + 4); // Spaced Repetition boost
+        c.combo = 0;
+
+        sfx.enemyHit();
+
+        const dmgTaken = Math.max(6, Math.round(c.enemy.atk * (0.9 + Math.random() * 0.2)));
+        state.hero.hp = Math.max(0, state.hero.hp - dmgTaken);
+
+        c.feedbackState = {
+          type: 'wrong',
+          chosenLabel: choice.label,
+          word: word,
+          damageTaken: dmgTaken
+        };
+        c.battleLog = `${c.enemy.name} countered for ${dmgTaken} damage! Study the scroll below to master this word.`;
+
+        saveState();
+        render();
+
+        // Animate Enemy Attack & Screen Shake
+        const arena = document.getElementById('battle-arena-card');
+        const heroSprite = document.getElementById('hero-sprite-box');
+        const enemySprite = document.getElementById('enemy-sprite-box');
+        if (enemySprite) enemySprite.classList.add('animate-lunge-left');
+        if (heroSprite) heroSprite.classList.add('animate-hit');
+        if (arena) arena.classList.add('animate-screen-shake');
+        spawnFloatingText('hero-sprite-box', `-${dmgTaken} HP`, 'text-rose-400');
+
+        // Speak the correct word automatically on miss to reinforce auditory memory!
+        SpeechManager.speak(word.hebrew);
+
+        if (state.hero.hp <= 0) {
+          setTimeout(() => handleHeroDefeated(), 900);
+        }
+      }
+    }
+
+    function handlePeekTransliteration() {
+      const c = ui.combat;
+      if (!c || c.translitRevealed || c.feedbackState) return;
+      sfx.click();
+      c.translitRevealed = true;
+      if (c.combo > 0) {
+        c.combo = 0;
+        showToast('Transliteration revealed — battle combo reset!', 'amber');
+      } else {
+        showToast('Transliteration peeked!', 'indigo');
+      }
+      render();
+    }
+
+    function useCombatItem(itemType) {
+      const c = ui.combat;
+      if (!c || c.feedbackState) return;
+
+      if (itemType === 'potion') {
+        if (state.inventory.potions <= 0) {
+          showToast('No Health Potions remaining!', 'rose');
+          return;
+        }
+        if (state.hero.hp >= state.hero.maxHp) {
+          showToast('Your HP is already full!', 'amber');
+          return;
+        }
+        state.inventory.potions -= 1;
+        const healAmt = Math.max(40, Math.round(state.hero.maxHp * 0.45));
+        state.hero.hp = Math.min(state.hero.maxHp, state.hero.hp + healAmt);
+        sfx.heal();
+        c.battleLog = `You drank a Health Potion and restored +${healAmt} HP!`;
+        saveState();
+        render();
+        spawnFloatingText('hero-sprite-box', `+${healAmt} HP`, 'text-emerald-400');
+      } else if (itemType === 'scroll') {
+        if (state.inventory.scrolls <= 0) {
+          showToast('No Scrolls of Insight remaining!', 'rose');
+          return;
+        }
+        const wrongChoices = c.choices.filter(ch => !ch.isCorrect && !ch.eliminated);
+        if (wrongChoices.length <= 1) {
+          showToast('Insight has already been applied to this glyph!', 'amber');
+          return;
+        }
+        state.inventory.scrolls -= 1;
+        // Eliminate 2 wrong choices
+        wrongChoices.sort(() => Math.random() - 0.5).slice(0, 2).forEach(ch => {
+          ch.eliminated = true;
+        });
+        sfx.magicCast();
+        c.battleLog = 'Scroll of Insight burned away 2 false meanings!';
+        saveState();
+        render();
+      } else if (itemType === 'tonic') {
+        if (state.inventory.tonics <= 0) {
+          showToast('No Aether Tonics remaining!', 'rose');
+          return;
+        }
+        state.inventory.tonics -= 1;
+        const arcaneDmg = 25 + (state.hero.level - 1) * 5;
+        c.enemy.hp = Math.max(0, c.enemy.hp - arcaneDmg);
+        sfx.magicCast();
+        SpeechManager.speak(c.currentWord.hebrew);
+        c.battleLog = `Aether Tonic unleashed ${arcaneDmg} arcane damage and echoed the word aloud!`;
+        saveState();
+        render();
+        spawnFloatingText('enemy-sprite-box', `-${arcaneDmg} ARCANE`, 'text-indigo-300');
+
+        if (c.enemy.hp <= 0) {
+          setTimeout(() => handleEnemyDefeated(), 650);
+        }
+      }
+    }
+
+    function handleEnemyDefeated() {
+      const c = ui.combat;
+      if (!c) return;
+
+      state.stats.monstersSlain += 1;
+
+      // Calculate Gold & XP Rewards with Class Perks
+      let baseGold = c.isBoss ? 65 + c.realmId * 25 : 18 + c.realmId * 7;
+      let baseXp = c.isBoss ? 90 + c.realmId * 30 : 32 + c.realmId * 10;
+
+      if (state.hero.heroClass === 'scout') baseGold = Math.round(baseGold * 1.25);
+      if (state.hero.heroClass === 'mage') baseXp = Math.round(baseXp * 1.25);
+
+      state.hero.gold += baseGold;
+      state.hero.xp += baseXp;
+
+      // Update Realm Progression
+      const rp = state.realmProgress[c.realmId];
+      let unlockedBossNow = false;
+      let defeatedRealmBossNow = false;
+
+      if (c.isBoss) {
+        if (!rp.bossDefeated) {
+          defeatedRealmBossNow = true;
+        }
+        rp.bossDefeated = true;
+      } else {
+        rp.encountersCleared += 1;
+        if (rp.encountersCleared === 5 && !rp.bossDefeated) {
+          unlockedBossNow = true;
+        }
+      }
+
+      // Check Level Up
+      let leveledUp = false;
+      while (state.hero.xp >= state.hero.xpToNext) {
+        state.hero.xp -= state.hero.xpToNext;
+        state.hero.level += 1;
+        state.hero.xpToNext = Math.round(state.hero.xpToNext * 1.28);
+        state.hero.maxHp = calculateMaxHp();
+        state.hero.hp = state.hero.maxHp; // Full heal on level up!
+        leveledUp = true;
+      }
+
+      // Restore a small post-battle breather (+15% Max HP)
+      if (!leveledUp) {
+        state.hero.hp = Math.min(state.hero.maxHp, state.hero.hp + Math.round(state.hero.maxHp * 0.15));
+      }
+
+      if (leveledUp) {
+        sfx.levelUp();
+      } else {
+        sfx.gold();
+      }
+
+      const defeatedEnemyName = c.enemy.name;
+      const realmName = c.realm.name;
+      const realmId = c.realmId;
+
+      ui.combat = null;
+      ui.screen = 'map';
+      saveState();
+      render();
+
+      openModal(`
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-3xl mb-3">
+            ${c.isBoss ? '👑' : '⚔️'}
+          </div>
+          <h2 class="font-display text-2xl font-bold gold-gradient-text mb-1">
+            ${c.isBoss ? 'REALM GUARDIAN VANQUISHED!' : 'VICTORY IN BATTLE!'}
+          </h2>
+          <p class="text-sm text-slate-300 mb-4">
+            You defeated <span class="font-semibold text-white">${defeatedEnemyName}</span> in ${realmName}.
+          </p>
+
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="rounded-xl bg-slate-900/90 border border-amber-500/30 p-3">
+              <div class="text-xs text-slate-400 uppercase tracking-wider">Gold Earned</div>
+              <div class="text-xl font-bold text-amber-400">+${baseGold} 🪙</div>
+            </div>
+            <div class="rounded-xl bg-slate-900/90 border border-indigo-500/30 p-3">
+              <div class="text-xs text-slate-400 uppercase tracking-wider">Experience</div>
+              <div class="text-xl font-bold text-indigo-300">+${baseXp} XP</div>
+            </div>
+          </div>
+
+          ${leveledUp ? `
+            <div class="rounded-xl bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 border border-amber-400/60 p-3 mb-4">
+              <div class="font-display font-bold text-amber-300 text-base">✨ LEVEL UP! LEVEL ${state.hero.level} ✨</div>
+              <div class="text-xs text-amber-100/90 mt-0.5">Max HP &amp; Attack increased! HP fully restored.</div>
+            </div>
+          ` : ''}
+
+          ${unlockedBossNow ? `
+            <div class="rounded-xl bg-rose-950/70 border border-rose-500/50 p-3 mb-4 text-xs text-rose-200">
+              🔥 <strong>Realm Boss Unlocked!</strong> You have cleared 5 encounters in ${realmName}. The Realm Guardian awaits!
+            </div>
+          ` : ''}
+
+          ${defeatedRealmBossNow && realmId < 5 ? `
+            <div class="rounded-xl bg-emerald-950/70 border border-emerald-500/50 p-3 mb-4 text-xs text-emerald-200">
+              🗺️ <strong>New Realm Unlocked!</strong> The path to <strong>${REALMS[realmId].name}</strong> is now open!
+            </div>
+          ` : ''}
+
+          ${defeatedRealmBossNow && realmId === 5 ? `
+            <div class="rounded-xl bg-indigo-950/80 border border-amber-400/60 p-3 mb-4 text-xs text-amber-200">
+              🏆 <strong>CHRONICLE COMPLETE!</strong> You conquered the Shadow Citadel! Continue exploring to master all 120 Hebrew words.
+            </div>
+          ` : ''}
+
+          <button onclick="closeModal()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold tracking-wide shadow-lg transition">
+            Continue Quest
+          </button>
+        </div>
+      `);
+    }
+
+    function handleHeroDefeated() {
+      const c = ui.combat;
+      const realmName = c ? c.realm.name : 'the wilds';
+      state.hero.hp = state.hero.maxHp;
+      ui.combat = null;
+      ui.screen = 'map';
+      saveState();
+      render();
+
+      openModal(`
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-400/40 text-3xl mb-3">
+            🛡️
+          </div>
+          <h2 class="font-display text-2xl font-bold text-rose-400 mb-2">RETREAT TO SANCTUARY</h2>
+          <p class="text-sm text-slate-300 mb-4 leading-relaxed">
+            You were overwhelmed in <span class="text-white font-semibold">${realmName}</span>, but the Chroniclers carried you back to camp and restored your health. Every missed word has been marked in your Grimoire for practice!
+          </p>
+          <button onclick="closeModal()" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-400/40 text-amber-200 font-semibold transition">
+            Rise Again
+          </button>
+        </div>
+      `);
+    }
+
+    // ----------------------------------------------------------------------------
+    // 9. MERCHANT CAMP PURCHASES & HERO CREATION / RESET
+    // ----------------------------------------------------------------------------
+    function buyMerchantItem(itemKey) {
+      const weaponCost = 45 + (state.hero.weaponLevel - 1) * 35;
+      const armorCost = 45 + (state.hero.armorLevel - 1) * 35;
+
+      if (itemKey === 'weapon') {
+        if (state.hero.gold < weaponCost) {
+          showToast('Not enough Gold for Weapon Forge!', 'rose');
+          return;
+        }
+        state.hero.gold -= weaponCost;
+        state.hero.weaponLevel += 1;
+        sfx.gold();
+        showToast(`Weapon forged to Lv.${state.hero.weaponLevel}! (+7 Base ATK)`, 'emerald');
+      } else if (itemKey === 'armor') {
+        if (state.hero.gold < armorCost) {
+          showToast('Not enough Gold for Armor Reinforcement!', 'rose');
+          return;
+        }
+        state.hero.gold -= armorCost;
+        state.hero.armorLevel += 1;
+        state.hero.maxHp = calculateMaxHp();
+        state.hero.hp = state.hero.maxHp;
+        sfx.gold();
+        showToast(`Armor reinforced to Lv.${state.hero.armorLevel}! (+25 Max HP)`, 'emerald');
+      } else if (itemKey === 'potion') {
+        if (state.hero.gold < 20) {
+          showToast('Need 20 Gold for a Health Potion!', 'rose');
+          return;
+        }
+        state.hero.gold -= 20;
+        state.inventory.potions += 1;
+        sfx.gold();
+        showToast('Purchased Health Potion (+1)', 'emerald');
+      } else if (itemKey === 'scroll') {
+        if (state.hero.gold < 25) {
+          showToast('Need 25 Gold for a Scroll of Insight!', 'rose');
+          return;
+        }
+        state.hero.gold -= 25;
+        state.inventory.scrolls += 1;
+        sfx.gold();
+        showToast('Purchased Scroll of Insight (+1)', 'indigo');
+      } else if (itemKey === 'tonic') {
+        if (state.hero.gold < 30) {
+          showToast('Need 30 Gold for an Aether Tonic!', 'rose');
+          return;
+        }
+        state.hero.gold -= 30;
+        state.inventory.tonics += 1;
+        sfx.gold();
+        showToast('Purchased Aether Tonic (+1)', 'indigo');
+      } else if (itemKey === 'rest') {
+        if (state.hero.hp >= state.hero.maxHp) {
+          showToast('Your HP is already completely full!', 'amber');
+          return;
+        }
+        if (state.hero.gold < 10) {
+          showToast('Need 10 Gold to rest at the Hearthfire!', 'rose');
+          return;
+        }
+        state.hero.gold -= 10;
+        state.hero.hp = state.hero.maxHp;
+        sfx.heal();
+        showToast('Rested by the Hearthfire — HP 100% restored!', 'emerald');
+      }
+
+      saveState();
+      render();
+    }
+
+    function createNewHero() {
+      const nameInput = document.getElementById('hero-name-input');
+      const chosenName = (nameInput ? nameInput.value.trim() : ui.heroNameInput.trim()) || 'Ari';
+      const chosenClass = ui.selectedClass || 'knight';
+
+      state = createDefaultState();
+      state.initialized = true;
+      state.hero.name = chosenName.slice(0, 20);
+      state.hero.heroClass = chosenClass;
+      state.hero.maxHp = calculateMaxHp();
+      state.hero.hp = state.hero.maxHp;
+
+      if (chosenClass === 'mage') {
+        state.inventory.scrolls += 2;
+        state.inventory.tonics += 1;
+      }
+
+      sfx.levelUp();
+      saveState();
+      ui.combat = null;
+      ui.screen = 'map';
+      render();
+      showToast(`Welcome, ${state.hero.name} the ${HERO_CLASSES[chosenClass].name}!`, 'amber');
+    }
+
+    function promptResetHero() {
+      sfx.click();
+      openModal(`
+        <div>
+          <h3 class="font-display text-xl font-bold text-amber-300 mb-2">Start a New Hero?</h3>
+          <p class="text-sm text-slate-300 mb-5 leading-relaxed">
+            This will reset your current hero level, gold, realm progress, and word mastery stars so you can create a brand new character from scratch.
+          </p>
+          <div class="flex gap-3">
+            <button onclick="closeModal()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition">
+              Cancel
+            </button>
+            <button onclick="confirmResetHero()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold transition">
+              Reset &amp; Create Hero
+            </button>
+          </div>
+        </div>
+      `);
+    }
+
+    function confirmResetHero() {
+      closeModal();
+      localStorage.removeItem(STORAGE_KEY);
+      state = createDefaultState();
+      ui.combat = null;
+      ui.screen = 'creation';
+      ui.selectedClass = 'knight';
+      ui.heroNameInput = 'Ari';
+      render();
+    }
+
+    function toggleNikud() {
+      sfx.click();
+      state.settings.showNikud = !state.settings.showNikud;
+      saveState();
+      render();
+      showToast(
+        state.settings.showNikud
+          ? 'Nikud (Vowels) ON — Full vocalization shown'
+          : 'Nikud (Vowels) OFF — Unpointed reading challenge!',
+        state.settings.showNikud ? 'emerald' : 'indigo'
+      );
+    }
+
+    function toggleMute() {
+      state.settings.muted = !state.settings.muted;
+      sfx.muted = state.settings.muted;
+      saveState();
+      if (!sfx.muted) sfx.click();
+      render();
+    }
+
+    function switchScreen(targetScreen) {
+      sfx.click();
+      if (targetScreen !== 'combat') {
+        ui.combat = null;
+      }
+      ui.screen = targetScreen;
+      render();
+    }
+
+    // ----------------------------------------------------------------------------
+    // 10. VIEW RENDERERS (HUD, CREATION, WORLD MAP, COMBAT, MERCHANT, GRIMOIRE)
+    // ----------------------------------------------------------------------------
+    function renderTopHUD() {
+      const hud = document.getElementById('top-hud');
+      if (!hud) return;
+
+      if (!state.initialized || ui.screen === 'creation') {
+        hud.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-xl">📜</div>
+              <div>
+                <h1 class="font-display text-lg sm:text-xl font-extrabold gold-gradient-text tracking-wide">KETAV &amp; QUEST</h1>
+                <p class="text-xs text-slate-400">Chronicles of the Living Word • Hebrew Vocabulary RPG</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="toggleNikud()" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition flex items-center gap-1.5 ${
+                state.settings.showNikud
+                  ? 'bg-emerald-500/20 border-emerald-400/50 text-emerald-200'
+                  : 'bg-slate-800 border-slate-600 text-slate-300'
+              }" title="Toggle Hebrew vowel points (Nikud)">
+                <span class="font-hebrew text-base leading-none">${state.settings.showNikud ? 'נִקּוּד' : 'נקוד'}</span>
+                <span>Vowels: ${state.settings.showNikud ? 'ON' : 'OFF'}</span>
+              </button>
+              <button onclick="toggleMute()" class="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-300 transition" title="Toggle Sound Effects">
+                ${state.settings.muted ? '🔇' : '🔊'}
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const h = state.hero;
+      const cls = HERO_CLASSES[h.heroClass];
+      const hpPct = Math.max(0, Math.min(100, Math.round((h.hp / h.maxHp) * 100)));
+      const xpPct = Math.max(0, Math.min(100, Math.round((h.xp / h.xpToNext) * 100)));
+      const masteredTotal = getMasteredCount();
+
+      hud.innerHTML = `
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <!-- Hero Identity & Vital Bars -->
+          <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-11 h-11 rounded-xl bg-slate-800 border border-amber-400/40 flex flex-col items-center justify-center">
+                <span class="text-[10px] uppercase tracking-wider text-amber-400/80 font-bold">LV</span>
+                <span class="font-display text-base font-extrabold text-white leading-none">${h.level}</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-display font-bold text-white text-sm sm:text-base">${escapeHtml(h.name)}</span>
+                  <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300">
+                    ${cls.name} (<span class="font-hebrew">${formatHebrew(cls.hebrewName, state.settings.showNikud)}</span>)
+                  </span>
+                </div>
+                <!-- HP & XP Progress Bars -->
+                <div class="flex items-center gap-3 mt-1.5">
+                  <div class="w-28 sm:w-36">
+                    <div class="flex justify-between text-[10px] font-semibold mb-0.5">
+                      <span class="text-rose-300">HP</span>
+                      <span class="text-slate-300">${h.hp}/${h.maxHp}</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-800 overflow-hidden border border-slate-700/80">
+                      <div class="h-full bg-gradient-to-r from-rose-600 to-emerald-500 transition-all duration-300" style="width: ${hpPct}%"></div>
+                    </div>
+                  </div>
+                  <div class="w-24 sm:w-32">
+                    <div class="flex justify-between text-[10px] font-semibold mb-0.5">
+                      <span class="text-indigo-300">XP</span>
+                      <span class="text-slate-400">${h.xp}/${h.xpToNext}</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-800 overflow-hidden border border-slate-700/80">
+                      <div class="h-full bg-gradient-to-r from-indigo-500 to-sky-400 transition-all duration-300" style="width: ${xpPct}%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gold & Mastery Summary -->
+            <div class="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+              <div class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-amber-500/30 font-semibold text-amber-300">
+                🪙 ${h.gold}
+              </div>
+              <div class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-emerald-500/30 font-semibold text-emerald-300" title="Mastered Words (3 Stars)">
+                ⭐ ${masteredTotal}/120
+              </div>
+            </div>
+          </div>
+
+          <!-- Pedagogical Nikud Switch & Navigation Controls -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Nikud Vowel Toggle -->
+            <button onclick="toggleNikud()" class="px-3 py-2 rounded-xl text-xs font-semibold border transition flex items-center gap-2 cursor-pointer ${
+              state.settings.showNikud
+                ? 'bg-emerald-500/20 border-emerald-400/50 text-emerald-200 hover:bg-emerald-500/30'
+                : 'bg-indigo-500/20 border-indigo-400/50 text-indigo-200 hover:bg-indigo-500/30'
+            }" title="Toggle Hebrew Vowel Points (Nikud)">
+              <span class="font-hebrew text-base leading-none">${state.settings.showNikud ? 'נִקּוּד' : 'נקוד'}</span>
+              <span>Nikud: <strong>${state.settings.showNikud ? 'ON' : 'OFF'}</strong></span>
+            </button>
+
+            ${ui.screen !== 'map' ? `
+              <button onclick="switchScreen('map')" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 border border-amber-400/30 text-amber-200 transition">
+                🗺️ World Map
+              </button>
+            ` : ''}
+
+            ${ui.screen !== 'merchant' && ui.screen !== 'combat' ? `
+              <button onclick="switchScreen('merchant')" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 border border-amber-400/30 text-amber-200 transition">
+                ⛺ Merchant
+              </button>
+            ` : ''}
+
+            ${ui.screen !== 'grimoire' && ui.screen !== 'combat' ? `
+              <button onclick="switchScreen('grimoire')" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 border border-indigo-400/30 text-indigo-200 transition">
+                📖 Grimoire
+              </button>
+            ` : ''}
+
+            <button onclick="toggleMute()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 transition" title="${state.settings.muted ? 'Unmute Audio' : 'Mute Audio'}">
+              ${state.settings.muted ? '🔇' : '🔊'}
+            </button>
+
+            ${ui.screen !== 'combat' ? `
+              <button onclick="promptResetHero()" class="px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-rose-950/70 border border-slate-700 hover:border-rose-500/40 text-slate-400 hover:text-rose-300 text-xs transition" title="New Hero / Reset Progress">
+                ↺ Reset
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCreationScreen() {
+      return `
+        <div class="max-w-4xl mx-auto w-full my-auto py-2">
+          <div class="fantasy-card rounded-3xl p-6 sm:p-8 border-amber-400/40">
+            <div class="text-center max-w-2xl mx-auto mb-7">
+              <div class="inline-block px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-semibold tracking-wider uppercase mb-3">
+                Begin Your Vocabulary Odyssey
+              </div>
+              <h2 class="font-display text-2xl sm:text-4xl font-extrabold gold-gradient-text mb-3">
+                Forge Your Chronicler
+              </h2>
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+                You already know how to read Hebrew letters—now awaken their meanings! Battle monsters across five mythical realms, hear native <span class="text-amber-300 font-semibold">he-IL</span> pronunciation, and fill your 120-word Grimoire.
+              </p>
+            </div>
+
+            <!-- Hero Name Input -->
+            <div class="max-w-md mx-auto mb-7">
+              <label for="hero-name-input" class="block text-xs font-semibold uppercase tracking-wider text-amber-300/90 mb-2">
+                Hero Name
+              </label>
+              <input
+                id="hero-name-input"
+                type="text"
+                maxlength="20"
+                value="${escapeHtml(ui.heroNameInput)}"
+                oninput="ui.heroNameInput = this.value"
+                placeholder="Enter your hero's name..."
+                class="w-full px-4 py-3 rounded-xl bg-slate-950/90 border border-amber-400/40 focus:border-amber-400 focus:outline-none text-white font-semibold text-base"
+              />
+            </div>
+
+            <!-- Class Selection Grid -->
+            <div class="mb-7">
+              <div class="text-xs font-semibold uppercase tracking-wider text-amber-300/90 mb-3 text-center">
+                Choose Your Class &amp; Passive Perk
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                ${Object.values(HERO_CLASSES).map(cls => {
+                  const selected = ui.selectedClass === cls.id;
+                  return `
+                    <button
+                      type="button"
+                      onclick="ui.selectedClass = '${cls.id}'; sfx.click(); render();"
+                      class="text-left rounded-2xl p-5 border transition-all cursor-pointer flex flex-col items-center text-center ${
+                        selected
+                          ? 'bg-gradient-to-b from-amber-500/20 to-slate-900/95 border-amber-400 ring-2 ring-amber-400/40 scale-[1.02]'
+                          : 'bg-slate-900/75 border-slate-700/80 hover:border-amber-400/40'
+                      }"
+                    >
+                      ${getHeroSVG(cls.id, 'w-24 h-24 mb-3')}
+                      <div class="font-hebrew-display text-2xl font-bold text-amber-300 mb-0.5">
+                        ${formatHebrew(cls.hebrewName, state.settings.showNikud)}
+                      </div>
+                      <div class="text-xs text-slate-400 mb-2">${cls.translit}</div>
+                      <h3 class="font-display text-lg font-bold text-white mb-1">${cls.name}</h3>
+                      <p class="text-xs text-slate-400 mb-3">${cls.tagline}</p>
+                      <div class="mt-auto w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-amber-500/25 text-xs font-medium text-amber-200">
+                        ✨ ${cls.perkText}
+                      </div>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <div class="text-center">
+              <button
+                onclick="createNewHero()"
+                class="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-display font-extrabold text-base sm:text-lg tracking-wide shadow-[0_0_25px_rgba(251,191,36,0.4)] transition transform active:scale-95 cursor-pointer"
+              >
+                ⚔️ Enter the Chronicles
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderWorldMapScreen() {
+      const totalMastered = getMasteredCount();
+      const totalDiscovered = getDiscoveredCount();
+
+      return `
+        <div class="space-y-6">
+          <!-- Quick Action Banner -->
+          <div class="fantasy-card rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h2 class="font-display text-xl sm:text-2xl font-bold gold-gradient-text">
+                Realms of the Living Word
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                Clear 5 encounters in a realm to summon its Guardian Boss. Discovered: <strong class="text-white">${totalDiscovered}/120</strong> • Mastered (3★): <strong class="text-emerald-400">${totalMastered}/120</strong>
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2.5 w-full md:w-auto">
+              <button onclick="switchScreen('merchant')" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-200 font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+                <span>⛺</span> Merchant Camp
+              </button>
+              <button onclick="switchScreen('grimoire')" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/50 text-indigo-200 font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+                <span>📖</span> Word Grimoire
+              </button>
+            </div>
+          </div>
+
+          <!-- 5 Realms Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            ${REALMS.map(realm => {
+              const rp = state.realmProgress[realm.id];
+              const isUnlocked = realm.id === 1 || state.realmProgress[realm.id - 1].bossDefeated;
+              const bossReady = rp.encountersCleared >= 5;
+              const realmMastered = getMasteredCount(realm.id);
+              const realmDiscovered = getDiscoveredCount(realm.id);
+              const progressPips = Math.min(5, rp.encountersCleared);
+
+              return `
+                <div class="rounded-2xl p-5 border bg-gradient-to-b ${realm.bgGradient} ${
+                  isUnlocked ? realm.borderClass : 'border-slate-800 opacity-65'
+                } shadow-xl flex flex-col justify-between transition-all">
+                  <div>
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                      <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${realm.badgeClass}">
+                        Realm ${realm.id} • ${realm.theme}
+                      </span>
+                      ${rp.bossDefeated
+                        ? `<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">👑 Cleared</span>`
+                        : !isUnlocked
+                          ? `<span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400">🔒 Locked</span>`
+                          : ''
+                      }
+                    </div>
+
+                    <div class="mt-2 mb-1 flex items-baseline justify-between gap-2">
+                      <h3 class="font-display text-xl font-bold text-white">${realm.name}</h3>
+                      <span class="font-hebrew-display text-xl font-bold text-amber-300">
+                        ${formatHebrew(realm.hebrewTitle, state.settings.showNikud)}
+                      </span>
+                    </div>
+
+                    <p class="text-xs text-slate-300/90 leading-relaxed mb-4">
+                      ${realm.description}
+                    </p>
+
+                    <!-- Boss Progress Pips & Word Mastery -->
+                    <div class="rounded-xl bg-slate-950/70 border border-slate-800 p-3 mb-4 space-y-2">
+                      <div class="flex items-center justify-between text-xs">
+                        <span class="text-slate-400">Guardian Boss Unlock</span>
+                        <span class="font-semibold ${bossReady ? 'text-amber-300' : 'text-slate-300'}">
+                          ${progressPips}/5 Encounters
+                        </span>
+                      </div>
+                      <div class="grid grid-cols-5 gap-1.5">
+                        ${[1, 2, 3, 4, 5].map(step => `
+                          <div class="h-2 rounded-full ${
+                            step <= progressPips ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'bg-slate-800'
+                          }"></div>
+                        `).join('')}
+                      </div>
+                      <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-800/80">
+                        <span class="text-slate-400">Realm Vocabulary</span>
+                        <span class="text-emerald-300 font-semibold">${realmMastered}/24 Mastered (${realmDiscovered} seen)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  ${isUnlocked ? `
+                    <div class="flex flex-col sm:flex-row gap-2">
+                      <button
+                        onclick="startEncounter(${realm.id}, false)"
+                        class="flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-400/40 text-amber-200 font-semibold text-xs sm:text-sm transition cursor-pointer"
+                      >
+                        ⚔️ Explore Realm
+                      </button>
+                      ${bossReady ? `
+                        <button
+                          onclick="startEncounter(${realm.id}, true)"
+                          class="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs sm:text-sm shadow-lg transition cursor-pointer"
+                        >
+                          👑 ${rp.bossDefeated ? 'Rematch Boss' : 'Fight Boss!'}
+                        </button>
+                      ` : ''}
+                    </div>
+                  ` : `
+                    <div class="py-2.5 px-3 rounded-xl bg-slate-900/90 border border-slate-800 text-center text-xs text-slate-400">
+                      Defeat the Realm ${realm.id - 1} Boss to unlock
+                    </div>
+                  `}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCombatScreen() {
+      const c = ui.combat;
+      if (!c) return renderWorldMapScreen();
+
+      const word = c.currentWord;
+      const wp = state.wordProgress[word.id] || { mastery: 0 };
+      const enemyHpPct = Math.max(0, Math.min(100, Math.round((c.enemy.hp / c.enemy.maxHp) * 100)));
+      const heroHpPct = Math.max(0, Math.min(100, Math.round((state.hero.hp / state.hero.maxHp) * 100)));
+      const displayedHebrew = formatHebrew(word.hebrew, state.settings.showNikud);
+
+      return `
+        <div class="space-y-4 max-w-4xl mx-auto w-full">
+          <!-- Top Battle Sub-Bar -->
+          <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${c.realm.badgeClass} border">
+                ${c.realm.name}
+              </span>
+              <span class="text-xs text-slate-400">Turn ${c.turnNumber}</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <!-- Combo Multiplier Badge -->
+              <div class="px-3 py-1 rounded-full text-xs font-bold border transition ${
+                c.combo >= 2
+                  ? 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.3)]'
+                  : 'bg-slate-900 border-slate-700 text-slate-400'
+              }">
+                🔥 Combo: ${c.combo}x
+              </div>
+
+              <button onclick="switchScreen('map')" class="px-3 py-1 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-slate-300 transition">
+                🏃 Flee to Map
+              </button>
+            </div>
+          </div>
+
+          <!-- BATTLE ARENA VISUAL STAGE -->
+          <div id="battle-arena-card" class="rounded-3xl p-4 sm:p-6 border bg-gradient-to-b ${c.realm.bgGradient} ${c.realm.borderClass} shadow-2xl relative overflow-hidden">
+            <div class="grid grid-cols-2 gap-3 sm:gap-8 items-center">
+              <!-- Left: Hero Side -->
+              <div class="flex flex-col items-center text-center">
+                <div class="w-full max-w-[210px] mb-2">
+                  <div class="flex justify-between text-xs font-bold mb-1">
+                    <span class="text-amber-300 truncate">${escapeHtml(state.hero.name)}</span>
+                    <span class="text-slate-200">${state.hero.hp}/${state.hero.maxHp}</span>
+                  </div>
+                  <div class="h-2.5 rounded-full bg-slate-950/90 border border-slate-700 overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300" style="width: ${heroHpPct}%"></div>
+                  </div>
+                </div>
+                <div id="hero-sprite-box" class="relative animate-idle py-1">
+                  ${getHeroSVG(state.hero.heroClass)}
+                </div>
+                <div class="mt-1 text-[11px] text-slate-300 bg-slate-950/70 px-2.5 py-0.5 rounded-full border border-slate-800">
+                  ATK ${calculateBaseAttack()} • Lv.${state.hero.level}
+                </div>
+              </div>
+
+              <!-- Right: Monster / Boss Side -->
+              <div class="flex flex-col items-center text-center">
+                <div class="w-full max-w-[220px] mb-2">
+                  <div class="flex justify-between text-xs font-bold mb-1 gap-1">
+                    <span class="${c.isBoss ? 'text-amber-300' : 'text-rose-300'} truncate">${c.enemy.name}</span>
+                    <span class="text-slate-200 shrink-0">${c.enemy.hp}/${c.enemy.maxHp}</span>
+                  </div>
+                  <div class="h-2.5 rounded-full bg-slate-950/90 border border-slate-700 overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-rose-600 to-amber-500 transition-all duration-300" style="width: ${enemyHpPct}%"></div>
+                  </div>
+                </div>
+                <div id="enemy-sprite-box" class="relative animate-idle py-1">
+                  ${getMonsterSVG(c.enemy.id, c.isBoss)}
+                </div>
+                <div class="mt-1 text-[11px] text-slate-300 bg-slate-950/70 px-2.5 py-0.5 rounded-full border border-slate-800">
+                  ${c.enemy.title} • DMG ~${c.enemy.atk}
+                </div>
+              </div>
+            </div>
+
+            <!-- Combat Status Log Strip -->
+            <div class="mt-4 pt-2.5 border-t border-white/10 text-center text-xs sm:text-sm text-amber-100/90 font-medium">
+              ${c.battleLog}
+            </div>
+          </div>
+
+          <!-- WORD CHALLENGE CARD -->
+          <div class="${c.isCounterGlyph ? 'fantasy-card-indigo' : 'fantasy-card'} rounded-3xl p-5 sm:p-6 transition-all">
+            ${c.isCounterGlyph ? `
+              <div class="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-indigo-400/25">
+                <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-indigo-300">
+                  ⚡ COUNTER-GLYPH TURN (1.5x CRITICAL DAMAGE!)
+                </span>
+                <span class="text-xs text-indigo-200/80">Read &amp; choose the matching Hebrew word</span>
+              </div>
+            ` : `
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  Translate the Sacred Word • <span class="text-amber-300">${word.pos}</span>
+                </span>
+                <span class="text-xs text-amber-300/90" title="Word Mastery Stars">
+                  Mastery: ${'★'.repeat(wp.mastery)}${'☆'.repeat(3 - wp.mastery)}
+                </span>
+              </div>
+            `}
+
+            <!-- Prompt Display (Standard Hebrew -> English OR Counter-Glyph English -> Hebrew) -->
+            ${!c.isCounterGlyph ? `
+              <div class="flex flex-col items-center justify-center py-3 sm:py-4 rounded-2xl bg-slate-950/75 border border-amber-500/20 mb-5">
+                <div class="font-hebrew-display text-5xl sm:text-6xl font-black text-white tracking-wide mb-3 select-all">
+                  ${displayedHebrew}
+                </div>
+
+                <!-- Transliteration Reveal Slot -->
+                <div class="min-h-[24px] mb-3">
+                  ${c.translitRevealed
+                    ? `<span class="px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-200 text-sm font-semibold">Pronunciation: <em>${word.translit}</em></span>`
+                    : `<span class="text-xs text-slate-500">Read the Hebrew letters first, or use Speak / Peek below</span>`
+                  }
+                </div>
+
+                <!-- Audio Speak & Peek Transliteration Controls -->
+                <div class="flex flex-wrap items-center justify-center gap-2.5">
+                  <button
+                    type="button"
+                    onclick="SpeechManager.speak('${word.hebrew}')"
+                    class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-200 text-xs sm:text-sm font-semibold flex items-center gap-2 transition active:scale-95 cursor-pointer"
+                  >
+                    <span>🔊</span> Speak Word
+                  </button>
+
+                  <button
+                    type="button"
+                    onclick="handlePeekTransliteration()"
+                    ${c.translitRevealed ? 'disabled' : ''}
+                    class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                      c.translitRevealed
+                        ? 'bg-slate-900 border-slate-800 text-slate-500 cursor-default'
+                        : 'bg-slate-800/90 hover:bg-slate-700 border-slate-600 text-slate-200'
+                    }"
+                    title="Reveals phonetic transliteration (resets active battle combo)"
+                  >
+                    <span>👁️</span> ${c.translitRevealed ? word.translit : 'Peek Transliteration'}
+                  </button>
+                </div>
+              </div>
+            ` : `
+              <div class="flex flex-col items-center justify-center py-4 sm:py-5 rounded-2xl bg-slate-950/75 border border-indigo-400/30 mb-5 text-center px-4">
+                <div class="text-xs uppercase tracking-widest text-indigo-300 font-bold mb-1">${word.pos}</div>
+                <div class="font-display text-2xl sm:text-4xl font-extrabold text-white mb-2">
+                  "${word.meaning}"
+                </div>
+                <div class="flex items-center gap-2 mt-1">
+                  <button
+                    type="button"
+                    onclick="SpeechManager.speak('${word.hebrew}')"
+                    class="px-3.5 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/40 text-indigo-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                  >
+                    <span>🔊</span> Audio Clue
+                  </button>
+                  <button
+                    type="button"
+                    onclick="handlePeekTransliteration()"
+                    ${c.translitRevealed ? 'disabled' : ''}
+                    class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-semibold transition cursor-pointer"
+                  >
+                    👁️ ${c.translitRevealed ? word.translit : 'Peek Sound'}
+                  </button>
+                </div>
+              </div>
+            `}
+
+            <!-- Immediate Pedagogical Correction Banner on Wrong Answer -->
+            ${c.feedbackState && c.feedbackState.type === 'wrong' ? `
+              <div class="rounded-2xl bg-rose-950/85 border-2 border-rose-500/70 p-4 mb-4 animate-fade-in">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <div class="text-xs font-extrabold uppercase tracking-wider text-rose-300 mb-1">
+                      ❌ Enemy Counter-Strike (-${c.feedbackState.damageTaken} HP) — Learn This Word:
+                    </div>
+                    <div class="flex flex-wrap items-baseline gap-3">
+                      <span class="font-hebrew-display text-3xl font-bold text-white">${word.hebrew}</span>
+                      <span class="text-sm text-amber-300 font-semibold">(${word.translit})</span>
+                      <span class="text-base text-emerald-300 font-bold">= "${word.meaning}"</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onclick="SpeechManager.speak('${word.hebrew}')"
+                      class="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-400/40 text-amber-200 text-xs font-semibold cursor-pointer"
+                    >
+                      🔊 Hear Again
+                    </button>
+                    <button
+                      type="button"
+                      onclick="advanceCombatTurn()"
+                      class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs sm:text-sm shadow-lg cursor-pointer"
+                    >
+                      Got It → Next Turn
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- 4 Multiple-Choice Answer Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+              ${c.choices.map((ch, idx) => {
+                const disabled = !!c.feedbackState || ch.eliminated;
+                let btnStyle = 'bg-slate-900/90 hover:bg-slate-800 border-slate-700 hover:border-amber-400/60 text-white';
+
+                if (ch.eliminated) {
+                  btnStyle = 'bg-slate-950/40 border-slate-800/60 text-slate-600 line-through opacity-50 cursor-not-allowed';
+                } else if (c.feedbackState) {
+                  if (ch.isCorrect) {
+                    btnStyle = 'bg-emerald-950/90 border-emerald-400 text-emerald-200 ring-2 ring-emerald-400/40';
+                  } else if (c.feedbackState.type === 'wrong' && c.feedbackState.chosenLabel === ch.label) {
+                    btnStyle = 'bg-rose-950/90 border-rose-500 text-rose-200';
+                  } else {
+                    btnStyle = 'bg-slate-900/50 border-slate-800 text-slate-500';
+                  }
+                }
+
+                const labelText = c.isCounterGlyph
+                  ? formatHebrew(ch.label, state.settings.showNikud)
+                  : ch.label;
+
+                return `
+                  <button
+                    type="button"
+                    onclick="handleAnswerSelection(${idx})"
+                    ${disabled ? 'disabled' : ''}
+                    class="p-3.5 sm:p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${btnStyle}"
+                  >
+                    <span class="w-7 h-7 rounded-lg bg-slate-800/90 border border-slate-600/70 flex items-center justify-center text-xs font-bold text-amber-300 shrink-0">
+                      ${idx + 1}
+                    </span>
+                    <span class="${c.isCounterGlyph ? 'font-hebrew-display text-3xl font-bold flex-1 text-center' : 'font-semibold text-base sm:text-lg flex-1'}">
+                      ${labelText}
+                    </span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Combat Tactical Items Bar -->
+            <div class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Combat Satchel:</span>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onclick="useCombatItem('potion')"
+                  ${state.inventory.potions <= 0 || c.feedbackState ? 'disabled' : ''}
+                  class="px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                    state.inventory.potions > 0 && !c.feedbackState
+                      ? 'bg-emerald-950/70 hover:bg-emerald-900/70 border-emerald-500/40 text-emerald-200'
+                      : 'bg-slate-900/50 border-slate-800 text-slate-600 cursor-not-allowed'
+                  }"
+                >
+                  <span>🧪</span> Health Potion (${state.inventory.potions})
+                </button>
+
+                <button
+                  type="button"
+                  onclick="useCombatItem('scroll')"
+                  ${state.inventory.scrolls <= 0 || c.feedbackState ? 'disabled' : ''}
+                  class="px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                    state.inventory.scrolls > 0 && !c.feedbackState
+                      ? 'bg-amber-950/70 hover:bg-amber-900/70 border-amber-500/40 text-amber-200'
+                      : 'bg-slate-900/50 border-slate-800 text-slate-600 cursor-not-allowed'
+                  }"
+                >
+                  <span>📜</span> Scroll of Insight (${state.inventory.scrolls})
+                </button>
+
+                <button
+                  type="button"
+                  onclick="useCombatItem('tonic')"
+                  ${state.inventory.tonics <= 0 || c.feedbackState ? 'disabled' : ''}
+                  class="px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                    state.inventory.tonics > 0 && !c.feedbackState
+                      ? 'bg-indigo-950/70 hover:bg-indigo-900/70 border-indigo-500/40 text-indigo-200'
+                      : 'bg-slate-900/50 border-slate-800 text-slate-600 cursor-not-allowed'
+                  }"
+                >
+                  <span>🔮</span> Aether Tonic (${state.inventory.tonics})
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMerchantScreen() {
+      const h = state.hero;
+      const weaponCost = 45 + (h.weaponLevel - 1) * 35;
+      const armorCost = 45 + (h.armorLevel - 1) * 35;
+
+      return `
+        <div class="space-y-5 max-w-5xl mx-auto w-full">
+          <div class="fantasy-card rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="font-display text-2xl font-bold gold-gradient-text">⛺ Wayfarer's Merchant Camp</h2>
+              <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                Spend your hard-earned Gold on forged weapons, reinforced armor, and tactical scrolls.
+              </p>
+            </div>
+            <div class="px-4 py-2.5 rounded-xl bg-slate-950/90 border border-amber-400/40 text-amber-300 font-bold text-base shrink-0">
+              Treasury: 🪙 ${h.gold} Gold
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Weapon Upgrade -->
+            <div class="fantasy-card rounded-2xl p-5 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-2xl">⚔️</span>
+                  <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300">
+                    Current: Lv.${h.weaponLevel}
+                  </span>
+                </div>
+                <h3 class="font-display text-lg font-bold text-white mb-1">Temper Blade / Staff</h3>
+                <p class="text-xs text-slate-300 mb-4">
+                  Permanently increases your base attack damage by <strong class="text-amber-300">+7 ATK</strong> (Current ATK: ${calculateBaseAttack()}).
+                </p>
+              </div>
+              <button
+                onclick="buyMerchantItem('weapon')"
+                class="w-full py-3 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  h.gold >= weaponCost
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950'
+                    : 'bg-slate-800 text-slate-500 border border-slate-700'
+                }"
+              >
+                Upgrade Weapon • 🪙 ${weaponCost}
+              </button>
+            </div>
+
+            <!-- Armor Upgrade -->
+            <div class="fantasy-card rounded-2xl p-5 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-2xl">🛡️</span>
+                  <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-300">
+                    Current: Lv.${h.armorLevel}
+                  </span>
+                </div>
+                <h3 class="font-display text-lg font-bold text-white mb-1">Reinforce Armor</h3>
+                <p class="text-xs text-slate-300 mb-4">
+                  Permanently increases your Maximum HP by <strong class="text-emerald-300">+25 Max HP</strong> and restores you to full health.
+                </p>
+              </div>
+              <button
+                onclick="buyMerchantItem('armor')"
+                class="w-full py-3 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  h.gold >= armorCost
+                    ? 'bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400 text-white'
+                    : 'bg-slate-800 text-slate-500 border border-slate-700'
+                }"
+              >
+                Upgrade Armor • 🪙 ${armorCost}
+              </button>
+            </div>
+
+            <!-- Hearthfire Rest -->
+            <div class="fantasy-card rounded-2xl p-5 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-2xl">🔥</span>
+                  <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300">
+                    HP: ${h.hp}/${h.maxHp}
+                  </span>
+                </div>
+                <h3 class="font-display text-lg font-bold text-white mb-1">Hearthfire Rest</h3>
+                <p class="text-xs text-slate-300 mb-4">
+                  Share warm bread and honey by the campfire to restore <strong class="text-emerald-300">100% of your HP</strong> before your next battle.
+                </p>
+              </div>
+              <button
+                onclick="buyMerchantItem('rest')"
+                class="w-full py-3 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  h.gold >= 10 && h.hp < h.maxHp
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                    : 'bg-slate-800 text-slate-500 border border-slate-700'
+                }"
+              >
+                Rest &amp; Heal • 🪙 10
+              </button>
+            </div>
+
+            <!-- Health Potion -->
+            <div class="fantasy-card rounded-2xl p-5 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-2xl">🧪</span>
+                  <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">
+                    Owned: ${state.inventory.potions}
+                  </span>
+                </div>
+                <h3 class="font-display text-lg font-bold text-white mb-1">Health Potion</h3>
+                <p class="text-xs text-slate-300 mb-4">
+                  Restores <strong class="text-emerald-300">+40 HP</strong> (or 45% Max HP) mid-battle without losing your turn.
+                </p>
+              </div>
+              <button
+                onclick="buyMerchantItem('potion')"
+                class="w-full py-3 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  h.gold >= 20
+                    ? 'bg-slate-800 hover:bg-slate-700 border border-emerald-400/50 text-emerald-200'
+                    : 'bg-slate-900 text-slate-600 border border-slate-800'
+                }"
+              >
+                Buy Potion • 🪙 20
+              </button>
+            </div>
+
+            <!-- Scroll of Insight -->
+            <div class="fantasy-card rounded-2xl p-5 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-2xl">📜</span>
+                  <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">
+                    Owned: ${state.inventory.scrolls}
+                  </span>
+                </div>
+                <h3 class="font-display text-lg font-bold text-white mb-1">Scroll of Insight</h3>
+                <p class="text-xs text-slate-300 mb-4">
+                  Eliminates <strong class="text-amber-300">2 wrong choices</strong> on a tricky word while preserving your combo multiplier!
+                </p>
+              </div>
+              <button
+                onclick="buyMerchantItem('scroll')"
+                class="w-full py-3 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  h.gold >= 25
+                    ? 'bg-slate-800 hover:bg-slate-700 border border-amber-400/50 text-amber-200'
+                    : 'bg-slate-900 text-slate-600 border border-slate-800'
+                }"
+              >
+                Buy Scroll • 🪙 25
+              </button>
+            </div>
+
+            <!-- Aether Tonic -->
+            <div class="fantasy-card rounded-2xl p-5 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-2xl">🔮</span>
+                  <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">
+                    Owned: ${state.inventory.tonics}
+                  </span>
+                </div>
+                <h3 class="font-display text-lg font-bold text-white mb-1">Aether Tonic</h3>
+                <p class="text-xs text-slate-300 mb-4">
+                  Deals <strong class="text-indigo-300">25+ Arcane Damage</strong> directly to the enemy and speaks the current Hebrew word aloud.
+                </p>
+              </div>
+              <button
+                onclick="buyMerchantItem('tonic')"
+                class="w-full py-3 rounded-xl font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  h.gold >= 30
+                    ? 'bg-slate-800 hover:bg-slate-700 border border-indigo-400/50 text-indigo-200'
+                    : 'bg-slate-900 text-slate-600 border border-slate-800'
+                }"
+              >
+                Buy Tonic • 🪙 30
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGrimoireScreen() {
+      const searchLower = ui.grimoireSearch.trim().toLowerCase();
+
+      const filteredWords = VOCABULARY.filter(w => {
+        const wp = state.wordProgress[w.id] || { discovered: false, mastery: 0 };
+        if (ui.grimoireFilterRealm !== 'all' && String(w.realm) !== String(ui.grimoireFilterRealm)) {
+          return false;
+        }
+        if (ui.grimoireFilterMastery === 'mastered' && wp.mastery < 3) return false;
+        if (ui.grimoireFilterMastery === 'learning' && (!wp.discovered || wp.mastery >= 3)) return false;
+        if (ui.grimoireFilterMastery === 'unseen' && wp.discovered) return false;
+
+        if (searchLower) {
+          const plainHeb = formatHebrew(w.hebrew, false);
+          return (
+            w.meaning.toLowerCase().includes(searchLower) ||
+            w.translit.toLowerCase().includes(searchLower) ||
+            w.hebrew.includes(searchLower) ||
+            plainHeb.includes(searchLower)
+          );
+        }
+        return true;
+      });
+
+      const accuracy = state.stats.totalAnswered > 0
+        ? Math.round((state.stats.totalCorrect / state.stats.totalAnswered) * 100)
+        : 0;
+
+      return `
+        <div class="space-y-5">
+          <!-- Grimoire Header & Stats -->
+          <div class="fantasy-card rounded-2xl p-5">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+              <div>
+                <h2 class="font-display text-2xl font-bold gold-gradient-text">📖 The Living Word Grimoire</h2>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                  Click any Hebrew card to hear its <span class="text-amber-300 font-semibold">he-IL</span> pronunciation. Toggle <strong>Nikud</strong> in the top bar anytime to test unpointed reading!
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-2 text-xs">
+                <div class="px-3 py-2 rounded-xl bg-slate-950/90 border border-slate-800">
+                  Discovered: <strong class="text-white">${getDiscoveredCount()}/120</strong>
+                </div>
+                <div class="px-3 py-2 rounded-xl bg-slate-950/90 border border-emerald-500/30">
+                  Mastered: <strong class="text-emerald-400">${getMasteredCount()}/120</strong>
+                </div>
+                <div class="px-3 py-2 rounded-xl bg-slate-950/90 border border-amber-500/30">
+                  Accuracy: <strong class="text-amber-300">${accuracy}%</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filter & Search Controls -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <input
+                type="text"
+                value="${escapeHtml(ui.grimoireSearch)}"
+                oninput="ui.grimoireSearch = this.value; renderGrimoireGridOnly();"
+                placeholder="Search English, transliteration, or Hebrew..."
+                class="px-3.5 py-2.5 rounded-xl bg-slate-950/90 border border-slate-700 focus:border-amber-400 focus:outline-none text-sm text-white"
+              />
+
+              <select
+                onchange="ui.grimoireFilterRealm = this.value; render();"
+                class="px-3.5 py-2.5 rounded-xl bg-slate-950/90 border border-slate-700 focus:border-amber-400 focus:outline-none text-sm text-slate-200"
+              >
+                <option value="all" ${ui.grimoireFilterRealm === 'all' ? 'selected' : ''}>All 5 Realms (120 Words)</option>
+                ${REALMS.map(r => `
+                  <option value="${r.id}" ${String(ui.grimoireFilterRealm) === String(r.id) ? 'selected' : ''}>
+                    Realm ${r.id}: ${r.name}
+                  </option>
+                `).join('')}
+              </select>
+
+              <select
+                onchange="ui.grimoireFilterMastery = this.value; render();"
+                class="px-3.5 py-2.5 rounded-xl bg-slate-950/90 border border-slate-700 focus:border-amber-400 focus:outline-none text-sm text-slate-200"
+              >
+                <option value="all" ${ui.grimoireFilterMastery === 'all' ? 'selected' : ''}>All Mastery Statuses</option>
+                <option value="mastered" ${ui.grimoireFilterMastery === 'mastered' ? 'selected' : ''}>⭐⭐⭐ Mastered (3 Stars)</option>
+                <option value="learning" ${ui.grimoireFilterMastery === 'learning' ? 'selected' : ''}>In Progress (1–2 Stars)</option>
+                <option value="unseen" ${ui.grimoireFilterMastery === 'unseen' ? 'selected' : ''}>Undiscovered</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Words Grid -->
+          <div id="grimoire-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+            ${renderGrimoireCardsHTML(filteredWords)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGrimoireCardsHTML(wordsList) {
+      if (wordsList.length === 0) {
+        return `
+          <div class="col-span-full fantasy-card rounded-2xl p-8 text-center text-slate-400">
+            No vocabulary words match your current filter.
+          </div>
+        `;
+      }
+
+      return wordsList.map(w => {
+        const wp = state.wordProgress[w.id] || { discovered: false, mastery: 0 };
+        const isMastered = wp.mastery >= 3;
+        const displayedHebrew = formatHebrew(w.hebrew, state.settings.showNikud);
+
+        return `
+          <div
+            onclick="SpeechManager.speak('${w.hebrew}')"
+            class="rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
+              isMastered
+                ? 'bg-gradient-to-b from-emerald-950/50 to-slate-900/95 border-emerald-500/45 hover:border-emerald-400'
+                : wp.discovered
+                  ? 'bg-slate-900/90 border-amber-500/30 hover:border-amber-400/70'
+                  : 'bg-slate-950/80 border-slate-800/90 hover:border-slate-600'
+            }"
+            title="Click to hear pronunciation"
+          >
+            <div>
+              <div class="flex items-center justify-between text-[11px] mb-2">
+                <span class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-medium">
+                  R${w.realm} • ${w.pos}
+                </span>
+                <span class="${isMastered ? 'text-emerald-400' : 'text-amber-400/80'} font-bold">
+                  ${'★'.repeat(wp.mastery)}${'☆'.repeat(3 - wp.mastery)}
+                </span>
+              </div>
+
+              <div class="text-center py-2">
+                <div class="font-hebrew-display text-3xl sm:text-4xl font-bold text-white mb-1">
+                  ${displayedHebrew}
+                </div>
+                <div class="text-xs text-amber-300/90 font-medium">${w.translit}</div>
+              </div>
+            </div>
+
+            <div class="pt-2.5 mt-2 border-t border-slate-800/80 flex items-center justify-between gap-2">
+              <span class="font-semibold text-sm ${wp.discovered ? 'text-slate-100' : 'text-slate-400'}">
+                ${w.meaning}
+              </span>
+              <span class="text-xs px-2 py-1 rounded-lg bg-amber-500/15 text-amber-300">🔊</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderGrimoireGridOnly() {
+      const grid = document.getElementById('grimoire-grid');
+      if (!grid) return render();
+      const searchLower = ui.grimoireSearch.trim().toLowerCase();
+      const filteredWords = VOCABULARY.filter(w => {
+        const wp = state.wordProgress[w.id] || { discovered: false, mastery: 0 };
+        if (ui.grimoireFilterRealm !== 'all' && String(w.realm) !== String(ui.grimoireFilterRealm)) return false;
+        if (ui.grimoireFilterMastery === 'mastered' && wp.mastery < 3) return false;
+        if (ui.grimoireFilterMastery === 'learning' && (!wp.discovered || wp.mastery >= 3)) return false;
+        if (ui.grimoireFilterMastery === 'unseen' && wp.discovered) return false;
+        if (searchLower) {
+          const plainHeb = formatHebrew(w.hebrew, false);
+          return (
+            w.meaning.toLowerCase().includes(searchLower) ||
+            w.translit.toLowerCase().includes(searchLower) ||
+            w.hebrew.includes(searchLower) ||
+            plainHeb.includes(searchLower)
+          );
+        }
+        return true;
+      });
+      grid.innerHTML = renderGrimoireCardsHTML(filteredWords);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ----------------------------------------------------------------------------
+    // 11. MAIN RENDER DISPATCHER & KEYBOARD SHORTCUTS (1-4 IN COMBAT)
+    // ----------------------------------------------------------------------------
+    function render() {
+      renderTopHUD();
+      const main = document.getElementById('main-view');
+      if (!main) return;
+
+      switch (ui.screen) {
+        case 'creation':
+          main.innerHTML = renderCreationScreen();
+          break;
+        case 'combat':
+          main.innerHTML = renderCombatScreen();
+          break;
+        case 'merchant':
+          main.innerHTML = renderMerchantScreen();
+          break;
+        case 'grimoire':
+          main.innerHTML = renderGrimoireScreen();
+          break;
+        case 'map':
+        default:
+          main.innerHTML = renderWorldMapScreen();
+          break;
+      }
+      updateSpeechBadge();
+    }
+
+    // Support keys 1-4 for rapid combat selection and 's' for speaking the word
+    document.addEventListener('keydown', (e) => {
+      if (ui.screen !== 'combat' || !ui.combat) return;
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      if (['1', '2', '3', '4'].includes(e.key)) {
+        const idx = parseInt(e.key, 10) - 1;
+        if (!ui.combat.feedbackState) {
+          handleAnswerSelection(idx);
+        } else if (ui.combat.feedbackState.type === 'wrong' && e.key === '1') {
+          advanceCombatTurn();
+        }
+      } else if (e.key.toLowerCase() === 's') {
+        SpeechManager.speak(ui.combat.currentWord.hebrew);
+      } else if (e.key === 'Enter' && ui.combat.feedbackState?.type === 'wrong') {
+        advanceCombatTurn();
+      }
+    });
+
+    // Initialize Speech Voices & Boot App
+    SpeechManager.init();
+    render();
+  </script>
+</body>
+</html>
